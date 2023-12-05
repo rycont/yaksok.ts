@@ -1,164 +1,103 @@
 // ## Code example:
-// 만약 ("짜장" 좋아함) 이고 ("짬뽕" 좋아함) 이면
-//     "짬짜면" 시키기
-// 
-//     출력한횟수:0
-//     반복
-//         "다시는 교실에서 비행기를 날리지 않겠습니다." 보여주기
-//         출력한횟수:이전 출력한횟수 + 1
-//         만약 출력한횟수 >= 500 이면
-//             반복 그만
+// 내_나이 = 10
 
-import { YaksokError } from "./errors.ts"
+import { YaksokError } from './errors.ts'
+import { EOLPiece, KeywordPiece, NumberPiece, Piece, StringPiece } from './piece/index.tsx'
 
-const OPERATORS = ["+", "-", "*", "/", "%", "^", ">", "<", ">=", "<=", "!=", "=", '"']
-const EXPRESSIONS = ["(", ")", "{", "}", "[", "]", ":"]
-const KEYWORDS = [
-    "만약", "이고", "이면", "그만", "반복"
-]
-
-const PRESERVEDS = [...OPERATORS, ...EXPRESSIONS, ...KEYWORDS]
-const PRESERVEDS_HEAD = PRESERVEDS.map(preserved => preserved[0])
+function isValidKeywordChar(char: string) {
+    if ("가" <= char && char <= "힣") return true
+    if ("0" <= char && char <= "9") return true
+    if ("A" <= char && char <= "z") return true
+    if (char === "_") return true
+}
 
 export function tokenizer(code: string) {
-    let tokens: string[] = []
-    let lineNumber = 1
+    const tokens: Piece<unknown>[] = []
+    const chars = [...code]
 
-    for (let i = 0; i < code.length; i++) {
-        let char = code[i]
+    while (chars.length) {
+        const char = chars.shift()
 
-        // Try parse newline
-        if (char === "\n") {
-            lineNumber++
-            if (tokens[tokens.length - 1] === "\n") continue
-            tokens.push("\n")
+        if (char === undefined) break
+        if (char === ' ') {
+            if (!(tokens[tokens.length - 1] instanceof EOLPiece)) continue
+
+            let spaces = 1
+            while (chars[0] === ' ') {
+                chars.shift()
+                spaces++
+            }
+
+
+            if (spaces % 4) throw new YaksokError("INDENT_IS_NOT_MULTIPLE_OF_4")
+
+            tokens.push(new KeywordPiece('\t'.repeat(spaces / 4)))
             continue
         }
 
-        // Try parse string
-        if (char === '"') {
-            let string = '"'
-
-            while (code[++i] !== '"') {
-                string += code[i]
-            }
-
-            string += '"'
-
-            tokens.push(string)
+        if (char === '\n') {
+            tokens.push(new EOLPiece())
             continue
         }
 
-        // Try parse spaces
-        if (char === " ") {
-            let length = 1
-
-            while (true) {
-                if (code[i + 1] === " ") {
-                    length++
-                    i++
-                } else {
-                    break
-                }
-            }
-
-            if (tokens[tokens.length - 1] !== "\n") continue
-
-            if (length % 4 !== 0) {
-                throw new YaksokError(
-                    "INDENT_NOT_DIVIDED_BY_4",
-                    {
-                        line: lineNumber,
-                        column: i + 1
-                    }
-                )
-            }
-
-            tokens.push("\t".repeat(
-                length / 4
-            ))
-            continue
-        }
-
-        // Try parse keywords
-        if ("가" <= char && char <= "힣") {
-            let token = char
-
-            while (true) {
-                if ("가" <= code[i + 1] && code[i + 1] <= "힣") {
-                    token += code[++i]
-                } else {
-                    break
-                }
-            }
-
-            tokens.push(token)
-            continue
-        }
-
-        // Try parse preserveds
-        if (PRESERVEDS_HEAD.includes(char)) {
-            let token = char
-
-            while (true) {
-                const matched = PRESERVEDS.filter(preserved => preserved.startsWith(token))
-
-                if (matched.length === 0) {
-                    throw new YaksokError(
-                        "UNKNOWN_TOKEN",
-                        {
-                            line: lineNumber,
-                            column: i + 1
-                        }
-                    )
-                }
-
-                if (matched.length === 1) {
-                    if (matched[0] === token) {
-                        break
-                    }
-
-                    token += code[++i]
-                    continue
-                }
-
-                if (matched.length > 1) {
-                    token += code[++i]
-                    continue
-                }
-            }
-
-            tokens.push(token)
-            continue
-        }
-
-        // Try parse numbers
         if ("0" <= char && char <= "9") {
             let number = char
-            let integer = true
+            let isInt = true
 
             while (true) {
-                if ("0" <= code[i + 1] && code[i + 1] <= "9") {
-                    number += code[++i]
-                } else if (integer && code[i + 1] === ".") {
-                    number += code[++i]
-                    integer = false
-                } else {
-                    break
-                }
+                const isNum = chars.length && "0" <= chars[0] && chars[0] <= "9"
+                const isAllowedDot = chars.length && chars[0] === "." && isInt
+
+                if (!isNum && !isAllowedDot) break
+                if (isAllowedDot) isInt = false
+
+                number += chars.shift()
             }
 
-            tokens.push(number)
+            tokens.push(new NumberPiece(parseInt(number)))
+
             continue
         }
 
-        throw new YaksokError(
-            "UNKNOWN_TOKEN",
-            {
-                line: lineNumber,
-                column: i + 1
+        if (char === '"') {
+            let word = ""
+
+            while (true) {
+                const nextChar = chars.shift()
+
+                if (nextChar === undefined) throw new YaksokError("UNEXPECTED_END_OF_CODE")
+                if (nextChar === '"') break
+
+                word += nextChar
             }
-        )
+
+            tokens.push(new StringPiece(word))
+
+            continue
+        }
+
+        if (isValidKeywordChar(char)) {
+            let word = char
+
+            if (chars.length === 0) throw new YaksokError("UNEXPECTED_END_OF_CODE")
+
+            while (isValidKeywordChar(chars[0])) {
+                word += chars.shift()
+            }
+
+            tokens.push(new KeywordPiece(word))
+
+            continue
+        }
+
+        if (['+', '-', '*', '/', '(', ')', '{', '}', ':', ">", "=", "<"].includes(char)) {
+            tokens.push(new KeywordPiece(char))
+            continue
+        }
+
+        throw new YaksokError("UNEXPECTED_CHAR", undefined, {
+            token: char,
+        })
     }
 
     return tokens

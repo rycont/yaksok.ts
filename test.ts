@@ -1,7 +1,7 @@
-import { Yaksok } from "./index.ts"
+import { Yaksok } from './index.ts'
 
 const runtime = new Yaksok()
-runtime.run(`
+const TOTAL_TEST = `
 반지름:10
 원주율:3.14159265358979
 구의부피:4/3*원주율*반지름*반지름*반지름
@@ -12,7 +12,14 @@ runtime.run(`
     출력한횟수:0
     반복
         "다시는 교실에서 비행기를 날리지 않겠습니다." 보여주기
-        출력한횟수:이전 출력한횟수 + 1
+        출력한횟수: 출력한횟수 + 1
         만약 출력한횟수 >= 500 이면
             반복 그만
-`.trim())
+
+약속 "안녕 세계하기"
+    "안녕 세계" 보여주기
+
+안녕 세계하기
+`.trim()
+
+runtime.run(TOTAL_TEST)
