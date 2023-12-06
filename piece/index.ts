@@ -2,11 +2,12 @@ import { YaksokError } from '../errors.ts'
 import { Scope } from '../scope.ts'
 
 function log(...args: unknown[]) {
-    // console.log('[DEBUG]', ...args)
+    console.log('[DEBUG]', ...args)
 }
 
 export class Piece<JSType> {
     content: JSType
+    config?: Record<string, unknown>
 
     constructor(value: JSType) {
         this.content = value
@@ -22,8 +23,6 @@ export class Piece<JSType> {
 
 export class ExecutablePiece<ContentType> extends Piece<ContentType> {
     execute(scope: Scope): void {
-        log("Error in 'execute' method")
-        log(this)
         throw new Error('This ExecutablePiece has no execute method')
     }
 }
@@ -32,9 +31,9 @@ export class EvaluatablePiece<
     EvaluatedType,
     InternallySavedType,
 > extends ExecutablePiece<InternallySavedType> {
-    execute(scope: Scope): ValuePiece<EvaluatedType> {
-        log("Error in 'execute' method")
-        log(this)
+    execute(
+        scope: Scope,
+    ): Promise<ValuePiece<EvaluatedType>> | ValuePiece<EvaluatedType> {
         throw new Error('This EvaluatablePiece has no execute method')
     }
 }
@@ -64,14 +63,14 @@ export class ValuePiece<T = string | number | boolean> extends EvaluatablePiece<
     }
 }
 
-export class NumberPiece extends ValuePiece<number> {}
-export class StringPiece extends ValuePiece<string> {}
-export class BooleanPiece extends ValuePiece<boolean> {}
+export class NumberPiece extends ValuePiece<number> { }
+export class StringPiece extends ValuePiece<string> { }
+export class BooleanPiece extends ValuePiece<boolean> { }
 
-export class KeywordPiece extends Piece<string> {}
+export class KeywordPiece extends Piece<string> { }
 
 export class OperatorPiece extends Piece<string> {
-    call(left: ValuePiece, right: ValuePiece): ValuePiece {
+    call(...operands: ValuePiece[]): ValuePiece {
         throw new Error('This OperatorPiece has no calc method')
     }
 }
@@ -80,7 +79,13 @@ export class PlusOperatorPiece extends OperatorPiece {
     constructor() {
         super('+')
     }
-    call(left: ValuePiece, right: ValuePiece) {
+    call(...operands: ValuePiece[]) {
+        if (operands.length !== 2) {
+            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+        }
+
+        const [left, right] = operands
+
         if (left instanceof NumberPiece && right instanceof NumberPiece) {
             return new NumberPiece(left.content + right.content)
         }
@@ -105,7 +110,12 @@ export class MinusOperatorPiece extends OperatorPiece {
     constructor() {
         super('-')
     }
-    call(left: ValuePiece, right: ValuePiece) {
+    call(...operands: ValuePiece[]) {
+        if (operands.length !== 2) {
+            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+        }
+
+        const [left, right] = operands
         if (left instanceof NumberPiece && right instanceof NumberPiece) {
             return new NumberPiece(left.content - right.content)
         }
@@ -118,7 +128,12 @@ export class MultiplyOperatorPiece extends OperatorPiece {
     constructor() {
         super('*')
     }
-    call(left: ValuePiece, right: ValuePiece) {
+    call(...operands: ValuePiece[]) {
+        if (operands.length !== 2) {
+            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+        }
+
+        const [left, right] = operands
         if (left instanceof NumberPiece && right instanceof NumberPiece) {
             return new NumberPiece(left.content * right.content)
         }
@@ -136,7 +151,13 @@ export class DivideOperatorPiece extends OperatorPiece {
         super('/')
     }
 
-    call(left: ValuePiece, right: ValuePiece) {
+    call(...operands: ValuePiece[]) {
+        if (operands.length !== 2) {
+            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+        }
+
+        const [left, right] = operands
+
         if (left instanceof NumberPiece && right instanceof NumberPiece) {
             return new NumberPiece(left.content / right.content)
         }
@@ -150,31 +171,77 @@ export class EqualOperatorPiece extends OperatorPiece {
         super('=')
     }
 
-    call(left: ValuePiece, right: ValuePiece) {
-        return new ValuePiece(left.content === right.content)
+    call(...operands: ValuePiece[]) {
+        if (operands.length !== 2) {
+            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+        }
+
+        const [left, right] = operands
+
+        return new BooleanPiece(left.content === right.content)
     }
 }
 
-interface CalculationPieceContent {
+export class AndOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('이고')
+    }
+
+    call(...operands: ValuePiece[]) {
+        if (operands.length !== 2) {
+            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+        }
+
+        const [left, right] = operands
+
+        if (
+            !(left instanceof BooleanPiece) ||
+            !(right instanceof BooleanPiece)
+        ) {
+            throw new YaksokError('INVALID_TYPE_FOR_AND_OPERATOR')
+        }
+
+        return new BooleanPiece(left.content && right.content)
+    }
+}
+
+interface BinaryCalculationPieceContent {
     left: EvaluatablePiece<number, number>
     right: EvaluatablePiece<number, number>
     operator: OperatorPiece
 }
 
-export class CalculationPiece extends EvaluatablePiece<
+export class BinaryCalculationPiece extends EvaluatablePiece<
     number | string | boolean,
-    CalculationPieceContent
+    BinaryCalculationPieceContent
 > {
-    constructor(props: CalculationPieceContent) {
+    constructor(props: BinaryCalculationPieceContent) {
         super(props)
     }
-    execute(scope) {
+    async execute(scope) {
         const { left, right, operator } = this.content
-        log(left)
-        const leftValue = left.execute(scope)
-        const rightValue = right.execute(scope)
 
+        const leftValue = await left.execute(scope)
+        const rightValue = await right.execute(scope)
+
+        // console.log({ left, right })
         return operator.call(leftValue, rightValue)
+    }
+}
+
+interface UnaryCalculationPieceContent {
+    operand: EvaluatablePiece<number, number>
+    operator: OperatorPiece
+}
+
+export class ValueGroupPiece extends EvaluatablePiece<
+    unknown,
+    {
+        value: EvaluatablePiece<unknown, unknown>
+    }
+> {
+    execute(scope: Scope) {
+        return this.content.value.execute(scope)
     }
 }
 
@@ -189,27 +256,38 @@ export class DeclareVariablePiece<
     constructor(content: DeclareVariablePieceContent<T>) {
         super(content)
     }
-    execute(scope: Scope): ValuePiece<T> {
+    async execute(scope: Scope): Promise<ValuePiece<T>> {
         const { name, content } = this.content
-        const value = content.execute(scope)
+        const value = await content.execute(scope)
 
-        scope.setVariable(name.content.name.content, value)
+        scope.setVariable.bind(scope)(name.content.name.content, value)
         return value
     }
 }
 
-export class PlaceholderPiece extends Piece<null> {}
+export class PlaceholderPiece extends Piece<null> { }
+
+export class ReturnPiece extends ExecutablePiece<{
+    value: EvaluatablePiece<unknown, unknown>
+}> {
+    execute(scope: Scope) {
+        return this.content.value.execute(scope)
+    }
+}
 
 export class BlockPiece extends ExecutablePiece<Piece<unknown>[]> {
-    async execute(scope: Scope, tries = 0) {
+    async execute(scope: Scope) {
         for (let i = 0; i < this.content.length; i++) {
             const piece = this.content[i]
+            if (piece instanceof ReturnPiece) {
+                return await piece.execute(scope)
+            }
             if (piece instanceof ExecutablePiece) {
                 await piece.execute(scope)
             } else if (piece instanceof EOLPiece) {
                 continue
             } else {
-                log(piece)
+                // console.log(this.content)
                 throw new YaksokError(
                     'CANNOT_PARSE',
                     {},
@@ -228,11 +306,11 @@ interface ConditionPieceContent {
 }
 
 export class ConditionPiece extends ExecutablePiece<ConditionPieceContent> {
-    execute(scope: Scope) {
+    async execute(scope: Scope) {
         const { condition, body } = this.content
 
-        if (condition.execute(scope).content) {
-            body.execute(scope)
+        if ((await condition.execute(scope)).content) {
+            await body.execute(scope)
         }
     }
 }
@@ -240,10 +318,11 @@ export class ConditionPiece extends ExecutablePiece<ConditionPieceContent> {
 export class PrintPiece extends ExecutablePiece<{
     expression: EvaluatablePiece<unknown, unknown>
 }> {
-    execute(scope: Scope) {
-        log('내용', this.content.expression)
-        log('결과', this.content.expression.execute(scope))
-        console.log('STDOUT', this.content.expression.execute(scope).content)
+    async execute(scope: Scope) {
+        console.log(
+            'STDOUT',
+            (await this.content.expression.execute(scope)).content,
+        )
     }
 }
 
@@ -254,6 +333,50 @@ export class VariablePiece extends EvaluatablePiece<
     }
 > {
     execute(scope: Scope) {
-        return scope.getVariable(this.content.name.content)
+        return scope.getVariable.bind(scope)(this.content.name.content)
+    }
+}
+
+export class FunctionDeclarationPiece extends ExecutablePiece<{
+    body: BlockPiece
+}> {
+    execute(scope: Scope) {
+        const name = this.config?.name
+
+        if (!name || typeof name !== 'string') {
+            throw new YaksokError('FUNCTION_MUST_HAVE_NAME')
+        }
+
+        scope.setFunction.bind(scope)(name, this.content.body)
+    }
+}
+
+export class FunctionInvokePiece extends EvaluatablePiece<
+    unknown,
+    {
+        name: KeywordPiece
+    }
+> {
+    async execute(scope: Scope) {
+        const name = this.config?.name
+
+        if (!name || typeof name !== 'string') {
+            throw new YaksokError('FUNCTION_MUST_HAVE_NAME')
+        }
+
+
+        const args = {}
+
+        for (const key in this.content) {
+            const value = this.content[key]
+            if (value instanceof EvaluatablePiece) {
+                args[key] = await value.execute(scope)
+            } else {
+                throw new YaksokError('NOT_EVALUABLE_EXPRESSION', {}, { piece: JSON.stringify(value) })
+            }
+        }
+
+        const result = await scope.invokeFunction(name, args)
+        return result || new ValuePiece(0)
     }
 }

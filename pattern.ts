@@ -6,7 +6,7 @@ import {
     EOLPiece,
     DivideOperatorPiece,
     MultiplyOperatorPiece,
-    CalculationPiece,
+    BinaryCalculationPiece,
     OperatorPiece,
     ConditionPiece,
     BlockPiece,
@@ -15,6 +15,8 @@ import {
     PlusOperatorPiece,
     MinusOperatorPiece,
     EqualOperatorPiece,
+    ValueGroupPiece,
+    AndOperatorPiece,
 } from './piece/index.ts'
 
 export interface Pattern {
@@ -24,6 +26,7 @@ export interface Pattern {
         content?: Record<string, unknown> | string | number
         as?: string
     }[]
+    config?: Record<string, unknown>
 }
 
 export const internalPatterns: Pattern[] = [
@@ -93,27 +96,19 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: CalculationPiece,
+        wrapper: AndOperatorPiece,
         units: [
             {
-                type: EvaluatablePiece,
-                as: 'left',
-            },
-            {
-                type: OperatorPiece,
-                as: 'operator',
-            },
-            {
-                type: EvaluatablePiece,
-                as: 'right',
+                type: KeywordPiece,
+                content: '이고',
             },
         ],
     },
     {
-        wrapper: CalculationPiece,
+        wrapper: BinaryCalculationPiece,
         units: [
             {
-                type: KeywordPiece,
+                type: EvaluatablePiece,
                 as: 'left',
             },
             {
@@ -121,7 +116,7 @@ export const internalPatterns: Pattern[] = [
                 as: 'operator',
             },
             {
-                type: KeywordPiece,
+                type: EvaluatablePiece,
                 as: 'right',
             },
         ],
@@ -160,6 +155,23 @@ export const internalPatterns: Pattern[] = [
             {
                 type: KeywordPiece,
                 content: '보여주기',
+            },
+        ],
+    },
+    {
+        wrapper: ValueGroupPiece,
+        units: [
+            {
+                type: KeywordPiece,
+                content: '(',
+            },
+            {
+                type: EvaluatablePiece,
+                as: 'value',
+            },
+            {
+                type: KeywordPiece,
+                content: ')',
             },
         ],
     },

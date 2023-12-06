@@ -6,10 +6,11 @@ import {
     EOLPiece,
     Piece,
     KeywordPiece,
-    ExecutablePiece,
     EvaluatablePiece,
-    DeclareVariablePiece,
     VariablePiece,
+    StringPiece,
+    FunctionDeclarationPiece,
+    FunctionInvokePiece,
 } from './piece/index.ts'
 
 const dynamicPatternDetector = [
@@ -58,6 +59,132 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
     const patterns: Pattern[] = []
 
     while (true) {
+        if (tokens[end] instanceof EOLPiece) {
+            let start = end - 1
+
+            while (start > 0) {
+                const current = tokens[start]
+
+                if (
+                    current instanceof KeywordPiece &&
+                    current.content === '약속'
+                ) {
+                    const subtokens = tokens.slice(start + 1, end)
+
+                    const declarationTemplate = subtokens.map((t) => {
+                        if (t instanceof KeywordPiece)
+                            return {
+                                type: VariablePiece,
+                                as: t.content,
+                            }
+
+                        if (t instanceof StringPiece)
+                            return {
+                                type: StringPiece,
+                                content: t.content,
+                            }
+
+                        throw new YaksokError(
+                            'UNEXPECTED_TOKEN',
+                            {},
+                            {
+                                token: JSON.stringify(t),
+                            },
+                        )
+                    })
+
+                    const name = subtokens.map((t) => t.content).join('')
+
+                    for (let i = 0; i < subtokens.length; i++) {
+                        // If string piece has space, it will be splitted.
+                        const piece = subtokens[i]
+                        if (piece instanceof StringPiece) {
+                            const splitted = piece.content.split(' ')
+                            subtokens.splice(
+                                i,
+                                1,
+                                ...splitted.map((s) => new StringPiece(s)),
+                            )
+                        }
+                    }
+
+                    for (const arg of subtokens
+                        .filter(
+                            (t): t is KeywordPiece => t instanceof KeywordPiece,
+                        )
+                        .map((t) => t.content)) {
+                        patterns.push({
+                            wrapper: VariablePiece,
+                            units: [
+                                {
+                                    type: KeywordPiece,
+                                    content: arg,
+                                    as: 'name',
+                                },
+                            ],
+                        })
+                    }
+
+                    const invokeTemplate = subtokens.map((t) => {
+                        if (t instanceof KeywordPiece)
+                            return {
+                                type: EvaluatablePiece,
+                                as: t.content,
+                            }
+
+                        if (t instanceof StringPiece)
+                            return {
+                                type: KeywordPiece,
+                                content: t.content,
+                            }
+
+                        throw new YaksokError(
+                            'UNEXPECTED_TOKEN',
+                            {},
+                            {
+                                token: JSON.stringify(t),
+                            },
+                        )
+                    })
+
+                    patterns.push({
+                        wrapper: FunctionDeclarationPiece,
+                        units: [
+                            {
+                                type: KeywordPiece,
+                                content: '약속',
+                            },
+                            ...declarationTemplate,
+                            {
+                                type: EOLPiece,
+                            },
+                            {
+                                type: BlockPiece,
+                                as: 'body',
+                            },
+                        ],
+                        config: {
+                            name,
+                        },
+                    })
+
+                    patterns.push({
+                        wrapper: FunctionInvokePiece,
+                        units: invokeTemplate,
+                        config: {
+                            name,
+                        },
+                    })
+
+                    break
+                }
+
+                if (current instanceof EOLPiece) break
+
+                start--
+            }
+        }
+
         for (const pattern of dynamicPatternDetector) {
             if (end < pattern.units.length) continue
             const substack = tokens.slice(end - pattern.units.length, end)
@@ -186,6 +313,10 @@ export function inplaceParser(tokens: Piece<unknown>[], _patterns: Pattern[]) {
                 }
 
                 const wrapper = new Wrapper(content)
+
+                if (pattern.config) {
+                    wrapper.config = pattern.config
+                }
 
                 tokens.splice(
                     end - pattern.units.length,
