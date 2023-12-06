@@ -1,33 +1,24 @@
 import { YaksokError } from './errors.ts'
+import { Pattern, internalPatterns } from './pattern.ts'
 import {
-    MultiplyOperatorPiece,
-    DeclareVariablePiece,
-    DivideOperatorPiece,
-    CalculationPiece,
-    EvaluatablePiece,
-    ConditionPiece,
-    OperatorPiece,
-    KeywordPiece,
     IndentPiece,
     BlockPiece,
-    PrintPiece,
     EOLPiece,
     Piece,
+    KeywordPiece,
+    ExecutablePiece,
+    EvaluatablePiece,
+    DeclareVariablePiece,
+    VariablePiece,
 } from './piece/index.ts'
 
-interface Pattern {
-    wrapper: typeof Piece<unknown>
-    units: {
-        type: typeof Piece<unknown>
-        content?: Record<string, unknown> | string | number
-        as?: string
-    }[]
-}
-
-const patterns: Pattern[] = [
+const dynamicPatternDetector = [
     {
-        wrapper: DeclareVariablePiece,
+        name: 'variable' as const,
         units: [
+            {
+                type: IndentPiece,
+            },
             {
                 type: KeywordPiece,
                 as: 'name',
@@ -38,136 +29,69 @@ const patterns: Pattern[] = [
             },
             {
                 type: EvaluatablePiece,
-                as: 'content',
-            },
-            {
-                type: EOLPiece,
             },
         ],
     },
     {
-        wrapper: DivideOperatorPiece,
+        name: 'variable' as const,
         units: [
-            {
-                type: KeywordPiece,
-                content: '/',
-            },
-        ],
-    },
-    {
-        wrapper: MultiplyOperatorPiece,
-        units: [
-            {
-                type: KeywordPiece,
-                content: '*',
-            },
-        ],
-    },
-    {
-        wrapper: CalculationPiece,
-        units: [
-            {
-                type: EvaluatablePiece,
-                as: 'left',
-            },
-            {
-                type: OperatorPiece,
-                as: 'operator',
-            },
-            {
-                type: EvaluatablePiece,
-                as: 'right',
-            },
-        ],
-    },
-    {
-        wrapper: CalculationPiece,
-        units: [
-            {
-                type: KeywordPiece,
-                as: 'left',
-            },
-            {
-                type: OperatorPiece,
-                as: 'operator',
-            },
-            {
-                type: KeywordPiece,
-                as: 'right',
-            },
-        ],
-    },
-    {
-        wrapper: ConditionPiece,
-        units: [
-            {
-                type: KeywordPiece,
-                content: '만약',
-            },
-            {
-                type: EvaluatablePiece,
-                as: 'condition',
-            },
-            {
-                type: KeywordPiece,
-                content: '이면',
-            },
             {
                 type: EOLPiece,
             },
             {
-                type: BlockPiece,
-                as: 'body',
-            },
-        ],
-    },
-    {
-        wrapper: PrintPiece,
-        units: [
-            {
-                type: EvaluatablePiece,
-                as: 'expression',
+                type: KeywordPiece,
+                as: 'name',
             },
             {
                 type: KeywordPiece,
-                content: '보여주기',
+                content: ':',
+            },
+            {
+                type: EvaluatablePiece,
             },
         ],
     },
 ]
 
-// 반지름: 10
-// 만약 (반지름 > 5) 이면
-//     "반지름이 5보다 크다" 보여주기
+export function createDynamicPattern(tokens: Piece<unknown>[]) {
+    let end = 0
+    const patterns: Pattern[] = []
 
-// make that code to
+    while (true) {
+        for (const pattern of dynamicPatternDetector) {
+            if (end < pattern.units.length) continue
+            const substack = tokens.slice(end - pattern.units.length, end)
 
-// BlockPiece {
-//     content: [
-//         KeywordPiece { content: '반지름' },
-//         KeywordPiece { content: ':' },
-//         NumberPiece { content: 10 },
-//         EOLPiece {},
-//         KeywordPiece { content: '만약' },
-//         KeywordPiece { content: '(' },
-//         KeywordPiece { content: '반지름' },
-//         OperatorPiece { content: '>' },
-//         NumberPiece { content: 5 },
-//         KeywordPiece { content: ')' },
-//         KeywordPiece { content: '이면' },
-//         EOLPiece {},
-//         BlockPiece {
-//             content: [
-//                 StringPiece { content: '반지름이 5보다 크다' },
-//                 KeywordPiece { content: '보여주기' },
-//                 EOLPiece {}
-//             ]
-//         },
-//         EOLPiece {}
-//     ]
-// }
+            if (!checkPattern(substack, pattern)) continue
 
-export function parse(_tokens: Piece<unknown>[], indent: number = 0) {
+            if (pattern.name === 'variable') {
+                if (typeof substack[1].content !== 'string') continue
+
+                patterns.push({
+                    wrapper: VariablePiece,
+                    units: [
+                        {
+                            type: KeywordPiece,
+                            content: substack[1].content,
+                            as: 'name',
+                        },
+                    ],
+                })
+            }
+        }
+
+        end++
+        if (end > tokens.length) break
+    }
+
+    return patterns
+}
+
+export function parse(
+    _tokens: Piece<unknown>[],
+    indent: number = 0,
+    pattern = createDynamicPattern(_tokens),
+) {
     const groups: Piece<unknown>[] = []
     const tokens = [..._tokens]
 
@@ -206,18 +130,21 @@ export function parse(_tokens: Piece<unknown>[], indent: number = 0) {
                 }
             }
 
-            const blockContent = parse(blockTokens, indent + 1)
-            groups.push(new BlockPiece(blockContent))
+            const blockContent = parse(blockTokens, indent + 1, pattern)
+            groups.push(blockContent)
         } else {
             groups.push(token)
         }
     }
 
-    const parsed = flatParser(groups)
-    return parsed
+    inplaceParser(groups, pattern)
+    return new BlockPiece(groups)
 }
 
-function checkPattern(tokens: Piece<unknown>[], pattern: (typeof patterns)[0]) {
+function checkPattern(
+    tokens: Piece<unknown>[],
+    pattern: Omit<Pattern, 'wrapper'>,
+) {
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
         const unit = pattern.units[i]
@@ -237,70 +164,41 @@ function checkPattern(tokens: Piece<unknown>[], pattern: (typeof patterns)[0]) {
     return true
 }
 
-export function flatParser(_tokens: Piece<unknown>[]): Piece<unknown>[] {
-    const tokens = [..._tokens]
-    const stack: typeof tokens = []
+export function inplaceParser(tokens: Piece<unknown>[], _patterns: Pattern[]) {
+    const patterns = [...internalPatterns, ..._patterns]
+    let end = 0
 
-    while (tokens.length) {
-        const token = tokens.shift()
+    while (true) {
+        for (const pattern of patterns) {
+            if (end < pattern.units.length) continue
+            const substack = tokens.slice(end - pattern.units.length, end)
 
-        if (!token) {
-            if (stack.length === 1) return stack
+            if (checkPattern(substack, pattern)) {
+                const Wrapper = pattern.wrapper
 
-            console.log('Stack is not empty!')
-            console.log(stack)
+                const content: Record<string, unknown> = {}
 
-            break
-        }
+                for (let i = 0; i < pattern.units.length; i++) {
+                    const unit = pattern.units[i]
+                    const token = substack[i]
 
-        stack.push(token)
-
-        let patternHash = stack.map((token) => token.constructor.name)
-
-        while (true) {
-            for (const pattern of patterns) {
-                if (stack.length < pattern.units.length) continue
-
-                const substack = stack.slice(
-                    stack.length - pattern.units.length,
-                    stack.length,
-                )
-
-                if (checkPattern(substack, pattern)) {
-                    const Wrapper = pattern.wrapper
-
-                    const content: Record<string, unknown> = {}
-
-                    for (let i = 0; i < pattern.units.length; i++) {
-                        const unit = pattern.units[i]
-                        const token = substack[i]
-
-                        if (unit.as) content[unit.as] = token
-                    }
-
-                    const wrapper = new Wrapper(content)
-
-                    stack.splice(
-                        stack.length - pattern.units.length,
-                        pattern.units.length,
-                        wrapper,
-                    )
+                    if (unit.as) content[unit.as] = token
                 }
-            }
 
-            const newPatternHash = stack.map((token) => token.constructor.name)
+                const wrapper = new Wrapper(content)
 
-            if (
-                newPatternHash.length === patternHash.length &&
-                newPatternHash.every(
-                    (token, index) => token === patternHash[index],
+                tokens.splice(
+                    end - pattern.units.length,
+                    pattern.units.length,
+                    wrapper,
                 )
-            )
-                break
 
-            patternHash = newPatternHash
+                end -= pattern.units.length
+            }
         }
-    }
 
-    return stack
+        end++
+
+        if (end > tokens.length) break
+    }
 }

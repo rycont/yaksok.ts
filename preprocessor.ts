@@ -1,3 +1,3 @@
 export function preprocessor(code: string) {
-    return code.trim() + '\n'
+    return '\n' + code.trim() + '\n'
 }
