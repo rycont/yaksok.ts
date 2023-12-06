@@ -1,15 +1,15 @@
+import { preprocessor } from './preprocessor.ts'
 import { tokenizer } from './tokenizer.ts'
-// import { parser } from './parser.ts'
+import { parse } from './parser.ts'
 
 export class Yaksok {
-    // preprocessor = new Preprocessor()
+    preprocessor = preprocessor
     tokenizer = tokenizer
-    // parser = parser
+    parser = parse
 
     run(code: string) {
-        const tokens = this.tokenizer(code)
-        console.log(tokens)
-        // const ast = this.parser(tokens)
-        // console.log(JSON.stringify(ast, null, 2))
+        const tokens = this.tokenizer(this.preprocessor(code))
+        const ast = this.parser(tokens)
+        console.log(ast)
     }
 }

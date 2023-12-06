@@ -2,6 +2,7 @@ const ERRORS = [
     "UNEXPECTED_CHAR",
     "UNEXPECTED_END_OF_CODE",
     "INDENT_IS_NOT_MULTIPLE_OF_4",
+    "CANNOT_PARSE"
 ] as const
 
 interface ErrorOccurrence {

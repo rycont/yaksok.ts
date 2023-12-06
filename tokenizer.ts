@@ -2,7 +2,7 @@
 // 내_나이 = 10
 
 import { YaksokError } from './errors.ts'
-import { EOLPiece, KeywordPiece, NumberPiece, Piece, StringPiece } from './piece/index.tsx'
+import { EOLPiece, IndentPiece, KeywordPiece, NumberPiece, Piece, StringPiece } from './piece/index.ts'
 
 function isValidKeywordChar(char: string) {
     if ("가" <= char && char <= "힣") return true
@@ -31,11 +31,12 @@ export function tokenizer(code: string) {
 
             if (spaces % 4) throw new YaksokError("INDENT_IS_NOT_MULTIPLE_OF_4")
 
-            tokens.push(new KeywordPiece('\t'.repeat(spaces / 4)))
+            tokens.push(new IndentPiece(spaces / 4))
             continue
         }
 
         if (char === '\n') {
+            if (tokens[tokens.length - 1] instanceof EOLPiece) continue
             tokens.push(new EOLPiece())
             continue
         }

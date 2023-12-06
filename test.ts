@@ -22,4 +22,18 @@ const TOTAL_TEST = `
 안녕 세계하기
 `.trim()
 
-runtime.run(TOTAL_TEST)
+const TEST_OPERATOR = `
+반지름:10
+원주율:3.14159265358979
+구의부피:4/3*원주율*반지름*반지름*반지름`
+
+const TEST_IF = `
+만약 5 이면
+    "반지름이 5보다 크다" 보여주기
+    만약 그렇다 이면
+        "괜찮다" 보여주기
+    "아쉽다" 보여주기
+"그럴 리가 없다" 보여주기
+`
+
+runtime.run(TEST_IF)
