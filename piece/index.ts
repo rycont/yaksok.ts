@@ -21,9 +21,28 @@ export class Piece<JSType> {
     }
 }
 
+class CallFrame {
+    parent: CallFrame | undefined
+    event: Record<string, (...args: any[]) => void> = {}
+
+    constructor(piece: Piece<unknown>, parent?: CallFrame) {
+        this.parent = parent
+    }
+
+    invokeEvent(name: string, ...args: unknown[]) {
+        if (this.event[name]) {
+            this.event[name](...args)
+        } else if (this.parent) {
+            this.parent.invokeEvent(name, ...args)
+        } else {
+            throw new YaksokError('EVENT_NOT_FOUND', {}, { name })
+        }
+    }
+}
+
 export class ExecutablePiece<ContentType> extends Piece<ContentType> {
-    execute(scope: Scope): void {
-        throw new Error('This ExecutablePiece has no execute method')
+    execute(scope: Scope, callFrame: CallFrame): void {
+        throw new Error(`${this.constructor.name} has no execute method`)
     }
 }
 
@@ -33,6 +52,7 @@ export class EvaluatablePiece<
 > extends ExecutablePiece<InternallySavedType> {
     execute(
         scope: Scope,
+        callFrame: CallFrame,
     ): Promise<ValuePiece<EvaluatedType>> | ValuePiece<EvaluatedType> {
         throw new Error('This EvaluatablePiece has no execute method')
     }
@@ -63,11 +83,11 @@ export class ValuePiece<T = string | number | boolean> extends EvaluatablePiece<
     }
 }
 
-export class NumberPiece extends ValuePiece<number> { }
-export class StringPiece extends ValuePiece<string> { }
-export class BooleanPiece extends ValuePiece<boolean> { }
+export class NumberPiece extends ValuePiece<number> {}
+export class StringPiece extends ValuePiece<string> {}
+export class BooleanPiece extends ValuePiece<boolean> {}
 
-export class KeywordPiece extends Piece<string> { }
+export class KeywordPiece extends Piece<string> {}
 
 export class OperatorPiece extends Piece<string> {
     call(...operands: ValuePiece[]): ValuePiece {
@@ -205,9 +225,89 @@ export class AndOperatorPiece extends OperatorPiece {
     }
 }
 
+export class GreaterThanOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('>')
+    }
+
+    call(...operands: ValuePiece[]) {
+        if (operands.length !== 2) {
+            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+        }
+
+        const [left, right] = operands
+
+        if (left instanceof NumberPiece && right instanceof NumberPiece) {
+            return new BooleanPiece(left.content > right.content)
+        }
+
+        throw new YaksokError('INVALID_TYPE_FOR_GREATER_THAN_OPERATOR')
+    }
+}
+
+export class LessThanOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('<')
+    }
+
+    call(...operands: ValuePiece[]) {
+        if (operands.length !== 2) {
+            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+        }
+
+        const [left, right] = operands
+
+        if (left instanceof NumberPiece && right instanceof NumberPiece) {
+            return new BooleanPiece(left.content < right.content)
+        }
+
+        throw new YaksokError('INVALID_TYPE_FOR_LESS_THAN_OPERATOR')
+    }
+}
+
+export class GreaterThanOrEqualOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('>=')
+    }
+
+    call(...operands: ValuePiece[]) {
+        if (operands.length !== 2) {
+            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+        }
+
+        const [left, right] = operands
+
+        if (left instanceof NumberPiece && right instanceof NumberPiece) {
+            return new BooleanPiece(left.content >= right.content)
+        }
+
+        throw new YaksokError('INVALID_TYPE_FOR_GREATER_THAN_OPERATOR')
+    }
+}
+
+export class LessThanOrEqualOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('<=')
+    }
+
+    call(...operands: ValuePiece[]) {
+        if (operands.length !== 2) {
+            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+        }
+
+        const [left, right] = operands
+
+        if (left instanceof NumberPiece && right instanceof NumberPiece) {
+            return new BooleanPiece(left.content <= right.content)
+        }
+
+        throw new YaksokError('INVALID_TYPE_FOR_LESS_THAN_OPERATOR')
+    }
+}
+
 interface BinaryCalculationPieceContent {
-    left: EvaluatablePiece<number, number>
-    right: EvaluatablePiece<number, number>
+    left: EvaluatablePiece<number | string, number | string | unknown>
+    right: EvaluatablePiece<number | string, number | string | unknown>
     operator: OperatorPiece
 }
 
@@ -218,13 +318,13 @@ export class BinaryCalculationPiece extends EvaluatablePiece<
     constructor(props: BinaryCalculationPieceContent) {
         super(props)
     }
-    async execute(scope) {
+    async execute(scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
         const { left, right, operator } = this.content
 
-        const leftValue = await left.execute(scope)
-        const rightValue = await right.execute(scope)
+        const leftValue = await left.execute(scope, callFrame)
+        const rightValue = await right.execute(scope, callFrame)
 
-        // console.log({ left, right })
         return operator.call(leftValue, rightValue)
     }
 }
@@ -240,8 +340,9 @@ export class ValueGroupPiece extends EvaluatablePiece<
         value: EvaluatablePiece<unknown, unknown>
     }
 > {
-    execute(scope: Scope) {
-        return this.content.value.execute(scope)
+    execute(scope: Scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
+        return this.content.value.execute(scope, callFrame)
     }
 }
 
@@ -253,37 +354,47 @@ interface DeclareVariablePieceContent<T extends string | number> {
 export class DeclareVariablePiece<
     T extends string | number,
 > extends EvaluatablePiece<T, DeclareVariablePieceContent<T>> {
-    constructor(content: DeclareVariablePieceContent<T>) {
-        super(content)
-    }
-    async execute(scope: Scope): Promise<ValuePiece<T>> {
-        const { name, content } = this.content
-        const value = await content.execute(scope)
+    async execute(scope: Scope, _callFrame: CallFrame): Promise<ValuePiece<T>> {
+        const callFrame = new CallFrame(this, _callFrame)
 
-        scope.setVariable.bind(scope)(name.content.name.content, value)
+        const { name, content } = this.content
+        const value = await content.execute(scope, callFrame)
+
+        console.log(name.content.name)
+
+        if (name.content.name === '결과') {
+            callFrame.invokeEvent('returnValue', value)
+
+            return value
+        }
+
+        scope.setVariable(name.content.name, value)
         return value
     }
 }
 
-export class PlaceholderPiece extends Piece<null> { }
+export class PlaceholderPiece extends Piece<null> {}
 
-export class ReturnPiece extends ExecutablePiece<{
-    value: EvaluatablePiece<unknown, unknown>
-}> {
-    execute(scope: Scope) {
-        return this.content.value.execute(scope)
-    }
-}
+// export class ReturnPiece extends ExecutablePiece<{
+//     value: EvaluatablePiece<unknown, unknown>
+// }> {
+//     execute(scope: Scope, _callFrame: CallFrame) {
+//         const callFrame = new CallFrame(this, _callFrame)
+//         const value = this.content.value.execute(scope, callFrame)
+//         console.log(value)
+
+//         callFrame.invokeEvent('returnValue', value)
+//     }
+// }
 
 export class BlockPiece extends ExecutablePiece<Piece<unknown>[]> {
-    async execute(scope: Scope) {
+    async execute(scope: Scope, _callFrame?: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
+
         for (let i = 0; i < this.content.length; i++) {
             const piece = this.content[i]
-            if (piece instanceof ReturnPiece) {
-                return await piece.execute(scope)
-            }
             if (piece instanceof ExecutablePiece) {
-                await piece.execute(scope)
+                await piece.execute(scope, callFrame)
             } else if (piece instanceof EOLPiece) {
                 continue
             } else {
@@ -306,11 +417,12 @@ interface ConditionPieceContent {
 }
 
 export class ConditionPiece extends ExecutablePiece<ConditionPieceContent> {
-    async execute(scope: Scope) {
+    async execute(scope: Scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
         const { condition, body } = this.content
 
-        if ((await condition.execute(scope)).content) {
-            await body.execute(scope)
+        if ((await condition.execute(scope, callFrame)).content) {
+            await body.execute(scope, callFrame)
         }
     }
 }
@@ -318,10 +430,10 @@ export class ConditionPiece extends ExecutablePiece<ConditionPieceContent> {
 export class PrintPiece extends ExecutablePiece<{
     expression: EvaluatablePiece<unknown, unknown>
 }> {
-    async execute(scope: Scope) {
+    async execute(scope: Scope, _callFrame: CallFrame) {
         console.log(
             'STDOUT',
-            (await this.content.expression.execute(scope)).content,
+            (await this.content.expression.execute(scope, _callFrame)).content,
         )
     }
 }
@@ -329,17 +441,23 @@ export class PrintPiece extends ExecutablePiece<{
 export class VariablePiece extends EvaluatablePiece<
     string | number | boolean,
     {
-        name: KeywordPiece
+        name: string
     }
 > {
-    execute(scope: Scope) {
-        return scope.getVariable.bind(scope)(this.content.name.content)
+    constructor(args: { name: KeywordPiece }) {
+        super({ name: args.name.content })
+    }
+    execute(scope: Scope, callFrame) {
+        return scope.getVariable(this.content.name)
     }
 }
 
 export class FunctionDeclarationPiece extends ExecutablePiece<{
     body: BlockPiece
 }> {
+    constructor(props: { body: BlockPiece }) {
+        super(props)
+    }
     execute(scope: Scope) {
         const name = this.config?.name
 
@@ -347,7 +465,21 @@ export class FunctionDeclarationPiece extends ExecutablePiece<{
             throw new YaksokError('FUNCTION_MUST_HAVE_NAME')
         }
 
-        scope.setFunction.bind(scope)(name, this.content.body)
+        scope.setFunction(name, this)
+    }
+
+    async run(scope: Scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
+
+        let returnValue: ValuePiece
+
+        callFrame.event.returnValue = (value: ValuePiece) => {
+            returnValue = value
+        }
+
+        await this.content.body.execute(scope, callFrame)
+
+        return returnValue!
     }
 }
 
@@ -357,26 +489,60 @@ export class FunctionInvokePiece extends EvaluatablePiece<
         name: KeywordPiece
     }
 > {
-    async execute(scope: Scope) {
+    async execute(scope: Scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
         const name = this.config?.name
 
         if (!name || typeof name !== 'string') {
             throw new YaksokError('FUNCTION_MUST_HAVE_NAME')
         }
 
-
         const args = {}
 
         for (const key in this.content) {
             const value = this.content[key]
             if (value instanceof EvaluatablePiece) {
-                args[key] = await value.execute(scope)
+                args[key] = await value.execute(scope, callFrame)
             } else {
-                throw new YaksokError('NOT_EVALUABLE_EXPRESSION', {}, { piece: JSON.stringify(value) })
+                throw new YaksokError(
+                    'NOT_EVALUABLE_EXPRESSION',
+                    {},
+                    { piece: JSON.stringify(value) },
+                )
             }
         }
 
-        const result = await scope.invokeFunction(name, args)
+        const func = scope.getFunction(name)
+
+        const childScope = new Scope(scope, args)
+        const result = await func.run(childScope, callFrame)
+
         return result || new ValuePiece(0)
+    }
+}
+
+export class BreakPiece extends ExecutablePiece<null> {
+    execute(scope: Scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
+        callFrame.invokeEvent('break')
+    }
+}
+
+export class RepeatPiece extends ExecutablePiece<{
+    body: BlockPiece
+}> {
+    async execute(scope: Scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
+
+        let running = true
+
+        callFrame.event.break = () => {
+            running = false
+        }
+
+        while (true) {
+            if (!running) break
+            await this.content.body.execute(scope, callFrame)
+        }
     }
 }

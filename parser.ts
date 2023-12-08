@@ -13,13 +13,72 @@ import {
     FunctionInvokePiece,
 } from './piece/index.ts'
 
+export function tokenPreprocessor(tokens: Piece<unknown>[]) {
+    const stack: Piece<unknown>[] = []
+
+    while (tokens.length) {
+        const token = tokens.shift()
+        if (!token) break
+
+        if (token instanceof KeywordPiece && token.content === '약속') {
+            stack.push(token)
+            const paramaters: string[] = []
+
+            while (true) {
+                const token = tokens.shift()
+                if (!token) break
+
+                if (token instanceof KeywordPiece) {
+                    paramaters.push(token.content)
+                    stack.push(
+                        new VariablePiece({
+                            name: token,
+                        }),
+                    )
+                    continue
+                }
+
+                if (token instanceof EOLPiece) {
+                    stack.push(token)
+                    break
+                }
+
+                stack.push(token)
+            }
+
+            while (true) {
+                const token = tokens.shift()
+                if (!token) break
+
+                if (
+                    token instanceof EOLPiece &&
+                    !(tokens[0] instanceof IndentPiece)
+                ) {
+                    stack.push(token)
+                    break
+                }
+
+                if (
+                    token instanceof KeywordPiece &&
+                    paramaters.includes(token.content)
+                ) {
+                    stack.push(new VariablePiece({ name: token }))
+                    continue
+                }
+                stack.push(token)
+            }
+        } else {
+            stack.push(token)
+        }
+    }
+
+    return stack
+}
+
 const dynamicPatternDetector = [
     {
         name: 'variable' as const,
         units: [
-            {
-                type: IndentPiece,
-            },
             {
                 type: KeywordPiece,
                 as: 'name',
@@ -37,9 +96,6 @@ const dynamicPatternDetector = [
         name: 'variable' as const,
         units: [
             {
-                type: EOLPiece,
-            },
-            {
                 type: KeywordPiece,
                 as: 'name',
             },
@@ -48,7 +104,7 @@ const dynamicPatternDetector = [
                 content: ':',
             },
             {
-                type: EvaluatablePiece,
+                type: KeywordPiece,
             },
         ],
     },
@@ -62,7 +118,7 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
         if (tokens[end] instanceof EOLPiece) {
             let start = end - 1
 
-            while (start > 0) {
+            while (start >= 0) {
                 const current = tokens[start]
 
                 if (
@@ -72,17 +128,19 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
                     const subtokens = tokens.slice(start + 1, end)
 
                     const declarationTemplate = subtokens.map((t) => {
-                        if (t instanceof KeywordPiece)
+                        if (t instanceof VariablePiece) {
                             return {
                                 type: VariablePiece,
-                                as: t.content,
+                                as: t.content.name,
                             }
+                        }
 
-                        if (t instanceof StringPiece)
+                        if (t instanceof StringPiece) {
                             return {
                                 type: StringPiece,
                                 content: t.content,
                             }
+                        }
 
                         throw new YaksokError(
                             'UNEXPECTED_TOKEN',
@@ -93,7 +151,13 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
                         )
                     })
 
-                    const name = subtokens.map((t) => t.content).join('')
+                    const name = subtokens
+                        .map((t) => {
+                            if (t instanceof VariablePiece)
+                                return t.content.name
+                            if (t instanceof StringPiece) return t.content
+                        })
+                        .join(' ')
 
                     for (let i = 0; i < subtokens.length; i++) {
                         // If string piece has space, it will be splitted.
@@ -108,28 +172,11 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
                         }
                     }
 
-                    for (const arg of subtokens
-                        .filter(
-                            (t): t is KeywordPiece => t instanceof KeywordPiece,
-                        )
-                        .map((t) => t.content)) {
-                        patterns.push({
-                            wrapper: VariablePiece,
-                            units: [
-                                {
-                                    type: KeywordPiece,
-                                    content: arg,
-                                    as: 'name',
-                                },
-                            ],
-                        })
-                    }
-
                     const invokeTemplate = subtokens.map((t) => {
-                        if (t instanceof KeywordPiece)
+                        if (t instanceof VariablePiece)
                             return {
                                 type: EvaluatablePiece,
-                                as: t.content,
+                                as: t.content.name,
                             }
 
                         if (t instanceof StringPiece)
@@ -192,14 +239,14 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
             if (!checkPattern(substack, pattern)) continue
 
             if (pattern.name === 'variable') {
-                if (typeof substack[1].content !== 'string') continue
+                if (typeof substack[0].content !== 'string') continue
 
                 patterns.push({
                     wrapper: VariablePiece,
                     units: [
                         {
                             type: KeywordPiece,
-                            content: substack[1].content,
+                            content: substack[0].content,
                             as: 'name',
                         },
                     ],
@@ -214,10 +261,10 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
     return patterns
 }
 
-export function parse(
+export function _parse(
     _tokens: Piece<unknown>[],
-    indent: number = 0,
-    pattern = createDynamicPattern(_tokens),
+    indent: number,
+    pattern: Pattern[],
 ) {
     const groups: Piece<unknown>[] = []
     const tokens = [..._tokens]
@@ -257,7 +304,9 @@ export function parse(
                 }
             }
 
-            const blockContent = parse(blockTokens, indent + 1, pattern)
+            blockTokens.push(new EOLPiece())
+
+            const blockContent = _parse(blockTokens, indent + 1, pattern)
             groups.push(blockContent)
         } else {
             groups.push(token)
@@ -265,7 +314,16 @@ export function parse(
     }
 
     inplaceParser(groups, pattern)
+    groups.push(new EOLPiece())
     return new BlockPiece(groups)
+}
+
+export function parse(_tokens: Piece<unknown>[]) {
+    const tokens = tokenPreprocessor(_tokens)
+    const dynamicPatterns = createDynamicPattern(tokens)
+    const ast = _parse(tokens, 0, dynamicPatterns)
+
+    return ast
 }
 
 function checkPattern(

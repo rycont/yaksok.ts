@@ -2,13 +2,20 @@
 // 내_나이 = 10
 
 import { YaksokError } from './errors.ts'
-import { EOLPiece, IndentPiece, KeywordPiece, NumberPiece, Piece, StringPiece } from './piece/index.ts'
+import {
+    EOLPiece,
+    IndentPiece,
+    KeywordPiece,
+    NumberPiece,
+    Piece,
+    StringPiece,
+} from './piece/index.ts'
 
 function isValidKeywordChar(char: string) {
-    if ("가" <= char && char <= "힣") return true
-    if ("0" <= char && char <= "9") return true
-    if ("A" <= char && char <= "z") return true
-    if (char === "_") return true
+    if ('가' <= char && char <= '힣') return true
+    if ('0' <= char && char <= '9') return true
+    if ('A' <= char && char <= 'z') return true
+    if (char === '_') return true
 }
 
 export function tokenizer(code: string) {
@@ -28,8 +35,7 @@ export function tokenizer(code: string) {
                 spaces++
             }
 
-
-            if (spaces % 4) throw new YaksokError("INDENT_IS_NOT_MULTIPLE_OF_4")
+            if (spaces % 4) throw new YaksokError('INDENT_IS_NOT_MULTIPLE_OF_4')
 
             tokens.push(new IndentPiece(spaces / 4))
             continue
@@ -41,32 +47,33 @@ export function tokenizer(code: string) {
             continue
         }
 
-        if ("0" <= char && char <= "9") {
+        if ('0' <= char && char <= '9') {
             let number = char
-            let isInt = true
+            let hasDot = false
 
             while (true) {
-                const isNum = chars.length && "0" <= chars[0] && chars[0] <= "9"
-                const isAllowedDot = chars.length && chars[0] === "." && isInt
+                const isNum = chars.length && '0' <= chars[0] && chars[0] <= '9'
+                const isAllowedDot = chars.length && chars[0] === '.' && !hasDot
 
                 if (!isNum && !isAllowedDot) break
-                if (isAllowedDot) isInt = false
+                if (isAllowedDot) hasDot = true
 
                 number += chars.shift()
             }
 
-            tokens.push(new NumberPiece(parseInt(number)))
+            tokens.push(new NumberPiece(parseFloat(number)))
 
             continue
         }
 
         if (char === '"') {
-            let word = ""
+            let word = ''
 
             while (true) {
                 const nextChar = chars.shift()
 
-                if (nextChar === undefined) throw new YaksokError("UNEXPECTED_END_OF_CODE")
+                if (nextChar === undefined)
+                    throw new YaksokError('UNEXPECTED_END_OF_CODE')
                 if (nextChar === '"') break
 
                 word += nextChar
@@ -80,7 +87,8 @@ export function tokenizer(code: string) {
         if (isValidKeywordChar(char)) {
             let word = char
 
-            if (chars.length === 0) throw new YaksokError("UNEXPECTED_END_OF_CODE")
+            if (chars.length === 0)
+                throw new YaksokError('UNEXPECTED_END_OF_CODE')
 
             while (isValidKeywordChar(chars[0])) {
                 word += chars.shift()
@@ -91,12 +99,27 @@ export function tokenizer(code: string) {
             continue
         }
 
-        if (['+', '-', '*', '/', '(', ')', '{', '}', ':', ">", "=", "<"].includes(char)) {
+        if (
+            [
+                '+',
+                '-',
+                '*',
+                '/',
+                '(',
+                ')',
+                '{',
+                '}',
+                ':',
+                '>',
+                '=',
+                '<',
+            ].includes(char)
+        ) {
             tokens.push(new KeywordPiece(char))
             continue
         }
 
-        throw new YaksokError("UNEXPECTED_CHAR", undefined, {
+        throw new YaksokError('UNEXPECTED_CHAR', undefined, {
             token: char,
         })
     }

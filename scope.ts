@@ -1,9 +1,13 @@
 import { YaksokError } from './errors.ts'
-import { BlockPiece, ValuePiece } from './piece/index.ts'
+import {
+    BlockPiece,
+    FunctionDeclarationPiece,
+    ValuePiece,
+} from './piece/index.ts'
 
 export class Scope {
     variables: Record<string, ValuePiece>
-    functions: Record<string, BlockPiece> = {}
+    functions: Record<string, FunctionDeclarationPiece> = {}
     parent: Scope | undefined
 
     constructor(parent?: Scope, initialVariable = {}) {
@@ -39,17 +43,11 @@ export class Scope {
         throw new YaksokError('NOT_DEFINED_VARIABLE', {}, { name })
     }
 
-    setFunction(name: string, pattern: BlockPiece) {
+    setFunction(name: string, pattern: FunctionDeclarationPiece) {
         this.functions[name] = pattern
     }
 
     getFunction(name: string) {
         return this.functions[name]
-    }
-
-    invokeFunction(name: string, args: Record<string, ValuePiece>) {
-        console.log(args)
-        const childScope = new Scope(this, args)
-        return this.functions[name].execute(childScope)
     }
 }

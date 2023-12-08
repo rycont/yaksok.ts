@@ -17,6 +17,10 @@ import {
     EqualOperatorPiece,
     ValueGroupPiece,
     AndOperatorPiece,
+    RepeatPiece,
+    GreaterThanOperatorPiece,
+    GreaterThanOrEqualOperatorPiece,
+    BreakPiece,
 } from './piece/index.ts'
 
 export interface Pattern {
@@ -26,10 +30,43 @@ export interface Pattern {
         content?: Record<string, unknown> | string | number
         as?: string
     }[]
+    setMode?: string
     config?: Record<string, unknown>
 }
 
 export const internalPatterns: Pattern[] = [
+    {
+        wrapper: GreaterThanOperatorPiece,
+        units: [
+            {
+                type: KeywordPiece,
+                content: '>',
+            },
+        ],
+    },
+    {
+        wrapper: GreaterThanOrEqualOperatorPiece,
+        units: [
+            {
+                type: GreaterThanOperatorPiece,
+                content: '>',
+            },
+            {
+                type: KeywordPiece,
+                content: '=',
+            },
+        ],
+    },
+    // {
+    //     wrapper: ReturnPiece,
+    //     units: [
+    //         {
+    //             type: KeywordPiece,
+    //             content: '결과',
+    //             as: 'name',
+    //         },
+    //     ],
+    // },
     {
         wrapper: DeclareVariablePiece,
         units: [
@@ -122,6 +159,57 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
+        wrapper: BinaryCalculationPiece,
+        units: [
+            {
+                type: KeywordPiece,
+                as: 'left',
+            },
+            {
+                type: OperatorPiece,
+                as: 'operator',
+            },
+            {
+                type: KeywordPiece,
+                as: 'right',
+            },
+        ],
+    },
+    {
+        wrapper: BinaryCalculationPiece,
+        units: [
+            {
+                type: KeywordPiece,
+                as: 'left',
+            },
+            {
+                type: OperatorPiece,
+                as: 'operator',
+            },
+            {
+                type: EvaluatablePiece,
+                as: 'right',
+            },
+        ],
+    },
+    {
+        wrapper: BinaryCalculationPiece,
+        units: [
+            {
+                type: EvaluatablePiece,
+                as: 'left',
+            },
+            {
+                type: OperatorPiece,
+                as: 'operator',
+            },
+            {
+                type: KeywordPiece,
+                as: 'right',
+            },
+        ],
+    },
+    {
         wrapper: ConditionPiece,
         units: [
             {
@@ -172,6 +260,35 @@ export const internalPatterns: Pattern[] = [
             {
                 type: KeywordPiece,
                 content: ')',
+            },
+        ],
+    },
+    {
+        wrapper: RepeatPiece,
+        units: [
+            {
+                type: KeywordPiece,
+                content: '반복',
+            },
+            {
+                type: EOLPiece,
+            },
+            {
+                type: BlockPiece,
+                as: 'body',
+            },
+        ],
+    },
+    {
+        wrapper: BreakPiece,
+        units: [
+            {
+                type: KeywordPiece,
+                content: '반복',
+            },
+            {
+                type: KeywordPiece,
+                content: '그만',
             },
         ],
     },
