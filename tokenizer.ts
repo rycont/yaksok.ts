@@ -4,9 +4,11 @@
 import { YaksokError } from './errors.ts'
 import {
     EOLPiece,
+    ExpressionPiece,
     IndentPiece,
     KeywordPiece,
     NumberPiece,
+    OperatorPiece,
     Piece,
     StringPiece,
 } from './piece/index.ts'
@@ -14,8 +16,10 @@ import {
 function isValidKeywordChar(char: string) {
     if ('가' <= char && char <= '힣') return true
     if ('0' <= char && char <= '9') return true
-    if ('A' <= char && char <= 'z') return true
+    if ('a' <= char && char <= 'Z') return true
     if (char === '_') return true
+
+    return false
 }
 
 export function tokenizer(code: string) {
@@ -99,23 +103,13 @@ export function tokenizer(code: string) {
             continue
         }
 
-        if (
-            [
-                '+',
-                '-',
-                '*',
-                '/',
-                '(',
-                ')',
-                '{',
-                '}',
-                ':',
-                '>',
-                '=',
-                '<',
-            ].includes(char)
-        ) {
-            tokens.push(new KeywordPiece(char))
+        if (['+', '-', '*', '/', '(', ')', '>', '=', '<', ','].includes(char)) {
+            tokens.push(new OperatorPiece(char))
+            continue
+        }
+
+        if (['{', '}', ':', '[', ']'].includes(char)) {
+            tokens.push(new ExpressionPiece(char))
             continue
         }
 

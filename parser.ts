@@ -11,6 +11,7 @@ import {
     StringPiece,
     FunctionDeclarationPiece,
     FunctionInvokePiece,
+    ExpressionPiece,
 } from './piece/index.ts'
 
 export function tokenPreprocessor(tokens: Piece<unknown>[]) {
@@ -84,7 +85,7 @@ const dynamicPatternDetector = [
                 as: 'name',
             },
             {
-                type: KeywordPiece,
+                type: ExpressionPiece,
                 content: ':',
             },
             {
@@ -100,11 +101,11 @@ const dynamicPatternDetector = [
                 as: 'name',
             },
             {
-                type: KeywordPiece,
+                type: ExpressionPiece,
                 content: ':',
             },
             {
-                type: KeywordPiece,
+                type: ExpressionPiece,
             },
         ],
     },

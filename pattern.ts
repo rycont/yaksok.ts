@@ -23,6 +23,12 @@ import {
     BreakPiece,
     LessThanOperatorPiece,
     LessThanOrEqualOperatorPiece,
+    EvaluatableSequencePiece,
+    ListPiece,
+    IndexingPiece,
+    IndexFetchPiece,
+    SetToIndexPiece,
+    ExpressionPiece,
 } from './piece/index.ts'
 
 export interface Pattern {
@@ -41,8 +47,89 @@ export const internalPatterns: Pattern[] = [
         wrapper: EqualOperatorPiece,
         units: [
             {
-                type: KeywordPiece,
+                type: OperatorPiece,
                 content: '=',
+            },
+        ],
+    },
+    {
+        wrapper: EvaluatableSequencePiece,
+        units: [
+            {
+                type: EvaluatablePiece,
+                as: 'a',
+            },
+            {
+                type: OperatorPiece,
+                content: ',',
+            },
+            {
+                type: EvaluatablePiece,
+                as: 'b',
+            },
+        ],
+    },
+    {
+        wrapper: ListPiece,
+        units: [
+            {
+                type: ExpressionPiece,
+                content: '[',
+            },
+            {
+                type: EvaluatableSequencePiece,
+                as: 'content',
+            },
+            {
+                type: ExpressionPiece,
+                content: ']',
+            },
+        ],
+    },
+    {
+        wrapper: IndexingPiece,
+        units: [
+            {
+                type: ExpressionPiece,
+                content: '[',
+            },
+            {
+                type: EvaluatablePiece,
+                as: 'index',
+            },
+            {
+                type: ExpressionPiece,
+                content: ']',
+            },
+        ],
+    },
+    {
+        wrapper: IndexFetchPiece,
+        units: [
+            {
+                type: EvaluatablePiece,
+                as: 'target',
+            },
+            {
+                type: IndexingPiece,
+                as: 'index',
+            },
+        ],
+    },
+    {
+        wrapper: SetToIndexPiece,
+        units: [
+            {
+                type: IndexFetchPiece,
+                as: 'target',
+            },
+            {
+                type: ExpressionPiece,
+                content: ':',
+            },
+            {
+                type: EvaluatablePiece,
+                as: 'value',
             },
         ],
     },
@@ -50,7 +137,7 @@ export const internalPatterns: Pattern[] = [
         wrapper: ValueGroupPiece,
         units: [
             {
-                type: KeywordPiece,
+                type: OperatorPiece,
                 content: '(',
             },
             {
@@ -58,7 +145,7 @@ export const internalPatterns: Pattern[] = [
                 as: 'value',
             },
             {
-                type: KeywordPiece,
+                type: OperatorPiece,
                 content: ')',
             },
         ],
@@ -67,7 +154,7 @@ export const internalPatterns: Pattern[] = [
         wrapper: GreaterThanOperatorPiece,
         units: [
             {
-                type: KeywordPiece,
+                type: OperatorPiece,
                 content: '>',
             },
         ],
@@ -89,7 +176,7 @@ export const internalPatterns: Pattern[] = [
         wrapper: LessThanOperatorPiece,
         units: [
             {
-                type: KeywordPiece,
+                type: OperatorPiece,
                 content: '<',
             },
         ],
@@ -116,7 +203,7 @@ export const internalPatterns: Pattern[] = [
                 as: 'name',
             },
             {
-                type: KeywordPiece,
+                type: ExpressionPiece,
                 content: ':',
             },
             {
@@ -132,7 +219,7 @@ export const internalPatterns: Pattern[] = [
         wrapper: DivideOperatorPiece,
         units: [
             {
-                type: KeywordPiece,
+                type: OperatorPiece,
                 content: '/',
             },
         ],
@@ -141,7 +228,7 @@ export const internalPatterns: Pattern[] = [
         wrapper: MultiplyOperatorPiece,
         units: [
             {
-                type: KeywordPiece,
+                type: OperatorPiece,
                 content: '*',
             },
         ],
@@ -150,7 +237,7 @@ export const internalPatterns: Pattern[] = [
         wrapper: PlusOperatorPiece,
         units: [
             {
-                type: KeywordPiece,
+                type: OperatorPiece,
                 content: '+',
             },
         ],
@@ -159,7 +246,7 @@ export const internalPatterns: Pattern[] = [
         wrapper: MinusOperatorPiece,
         units: [
             {
-                type: KeywordPiece,
+                type: OperatorPiece,
                 content: '-',
             },
         ],

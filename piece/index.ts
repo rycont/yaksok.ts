@@ -70,15 +70,14 @@ export class IndentPiece extends Piece<number> {
     }
 }
 
-export class ValuePiece<T = string | number | boolean> extends EvaluatablePiece<
-    T,
-    T
-> {
+export class ValuePiece<
+    T = string | number | boolean | string[] | number[] | boolean[],
+> extends EvaluatablePiece<T, T> {
     constructor(content: T) {
         super(content)
         this.content = content
     }
-    execute(): ValuePiece<T> {
+    execute(scope: Scope, _callFrame: CallFrame): ValuePiece<T> {
         return this
     }
 }
@@ -94,6 +93,8 @@ export class OperatorPiece extends Piece<string> {
         throw new Error('This OperatorPiece has no calc method')
     }
 }
+
+export class ExpressionPiece extends Piece<string> {}
 
 export class PlusOperatorPiece extends OperatorPiece {
     constructor() {
@@ -312,7 +313,7 @@ interface BinaryCalculationPieceContent {
 }
 
 export class BinaryCalculationPiece extends EvaluatablePiece<
-    number | string | boolean,
+    number | string | boolean | string[] | number[] | boolean[],
     BinaryCalculationPieceContent
 > {
     constructor(props: BinaryCalculationPieceContent) {
@@ -372,18 +373,6 @@ export class DeclareVariablePiece<
 }
 
 export class PlaceholderPiece extends Piece<null> {}
-
-// export class ReturnPiece extends ExecutablePiece<{
-//     value: EvaluatablePiece<unknown, unknown>
-// }> {
-//     execute(scope: Scope, _callFrame: CallFrame) {
-//         const callFrame = new CallFrame(this, _callFrame)
-//         const value = this.content.value.execute(scope, callFrame)
-//         console.log(value)
-
-//         callFrame.invokeEvent('returnValue', value)
-//     }
-// }
 
 export class BlockPiece extends ExecutablePiece<Piece<unknown>[]> {
     async execute(scope: Scope, _callFrame?: CallFrame) {
@@ -542,5 +531,205 @@ export class RepeatPiece extends ExecutablePiece<{
             if (!running) break
             await this.content.body.execute(scope, callFrame)
         }
+    }
+}
+
+export class EvaluatableSequencePiece extends EvaluatablePiece<
+    unknown,
+    {
+        items: EvaluatablePiece<unknown, unknown>[]
+    }
+> {
+    constructor(props: {
+        a: EvaluatablePiece<unknown, unknown> | EvaluatableSequencePiece
+        b: EvaluatablePiece<unknown, unknown> | EvaluatableSequencePiece
+    }) {
+        const { a, b } = props
+
+        if (
+            a instanceof EvaluatableSequencePiece &&
+            b instanceof EvaluatablePiece
+        ) {
+            super({
+                items: [...a.content.items, b],
+            })
+        } else if (
+            a instanceof EvaluatablePiece &&
+            b instanceof EvaluatableSequencePiece
+        ) {
+            super({
+                items: [a, ...b.content.items],
+            })
+        } else if (
+            a instanceof EvaluatablePiece &&
+            b instanceof EvaluatablePiece
+        ) {
+            super({
+                items: [a, b],
+            })
+        } else if (
+            a instanceof EvaluatableSequencePiece &&
+            b instanceof EvaluatableSequencePiece
+        ) {
+            super({
+                items: [...a.content.items, ...b.content.items],
+            })
+        } else {
+            throw new YaksokError('INVALID_TYPE_FOR_EVALUATABLE_SEQUENCE')
+        }
+    }
+
+    async execute(scope: Scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
+
+        const result = await this.content.items[
+            this.content.items.length - 1
+        ].execute(scope, callFrame)
+
+        return result
+    }
+}
+
+export class IndexablePiece<
+    EvaluatedType,
+    SavedType,
+> extends ValuePiece<SavedType> {
+    getIndex(
+        scope: Scope,
+        callFrame: CallFrame,
+        index: ValuePiece<unknown>,
+    ): ValuePiece | Promise<ValuePiece> {
+        throw new Error(`${this.constructor.name} has no getIndex method`)
+    }
+}
+
+export class SettableIndexablePiece<
+    EvaluatedType,
+    SavedType,
+> extends IndexablePiece<EvaluatedType, SavedType> {
+    setValueOfIndex(
+        scope: Scope,
+        callFrame: CallFrame,
+        index: ValuePiece<unknown>,
+        value: ValuePiece<unknown>,
+    ): ValuePiece | Promise<ValuePiece> {
+        throw new Error(`${this.constructor.name} has no setIndex method`)
+    }
+}
+
+export class ListPiece extends SettableIndexablePiece<
+    ValuePiece[],
+    {
+        content: EvaluatableSequencePiece
+    }
+> {
+    async getIndex(
+        scope: Scope,
+        _callFrame: CallFrame,
+        index: ValuePiece<unknown>,
+    ) {
+        const callFrame = new CallFrame(this, _callFrame)
+
+        if (!(index instanceof NumberPiece)) {
+            throw new YaksokError('LIST_INDEX_MUST_BE_NUMBER')
+        }
+        const indexValue = index.content - 1
+
+        if (indexValue < 0)
+            throw new YaksokError('LIST_INDEX_MUST_BE_GREATER_THAN_0')
+
+        const list = await Promise.all(
+            this.content.content.content.items.map((item) =>
+                item.execute(scope, callFrame),
+            ),
+        )
+
+        return list[indexValue] as ValuePiece
+    }
+    async setValueOfIndex(
+        scope: Scope,
+        callFrame: CallFrame,
+        index: ValuePiece<unknown>,
+        value: ValuePiece<unknown>,
+    ) {
+        if (!(index instanceof NumberPiece)) {
+            throw new YaksokError('LIST_INDEX_MUST_BE_NUMBER')
+        }
+
+        const indexValue = index.content - 1
+
+        if (indexValue < 0)
+            throw new YaksokError('LIST_INDEX_MUST_BE_GREATER_THAN_0')
+
+        this.content.content.content.items[indexValue] = value
+
+        return value as ValuePiece
+    }
+}
+
+export class IndexingPiece extends EvaluatablePiece<
+    unknown,
+    {
+        index: EvaluatablePiece<number, number>
+    }
+> {
+    execute(
+        scope: Scope,
+        callFrame: CallFrame,
+    ): ValuePiece<unknown> | Promise<ValuePiece<unknown>> {
+        return this.content.index.execute(scope, callFrame)
+    }
+}
+
+export class IndexFetchPiece extends EvaluatablePiece<
+    unknown,
+    {
+        target: IndexablePiece<unknown, unknown>
+        index: IndexingPiece
+    }
+> {
+    async execute(scope: Scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
+
+        const index = await this.content.index.execute(scope, callFrame)
+        const target = await this.content.target.execute(scope, callFrame)
+
+        if (!(target instanceof IndexablePiece)) {
+            throw new YaksokError('INVALID_TYPE_FOR_INDEX_FETCH')
+        }
+
+        const value = target.getIndex(scope, callFrame, index)
+
+        return value
+    }
+}
+
+export class SetToIndexPiece extends ExecutablePiece<{
+    target: IndexFetchPiece
+    value: EvaluatablePiece<unknown, unknown>
+}> {
+    async execute(scope: Scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
+
+        const value = await this.content.value.execute(scope, callFrame)
+        const targetSequence = await this.content.target.content.target.execute(
+            scope,
+            callFrame,
+        )
+        const targetIndex = await this.content.target.content.index.execute(
+            scope,
+            callFrame,
+        )
+
+        if (!(targetSequence instanceof SettableIndexablePiece)) {
+            throw new YaksokError('INVALID_SEQUENCE_TYPE_FOR_INDEX_FETCH')
+        }
+
+        await targetSequence.setValueOfIndex(
+            scope,
+            callFrame,
+            targetIndex,
+            value,
+        )
     }
 }
