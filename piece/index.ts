@@ -360,8 +360,6 @@ export class DeclareVariablePiece<
         const { name, content } = this.content
         const value = await content.execute(scope, callFrame)
 
-        console.log(name.content.name)
-
         if (name.content.name === '결과') {
             callFrame.invokeEvent('returnValue', value)
 

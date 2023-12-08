@@ -350,7 +350,8 @@ function checkPattern(
 }
 
 export function inplaceParser(tokens: Piece<unknown>[], _patterns: Pattern[]) {
-    const patterns = [...internalPatterns, ..._patterns]
+    const patterns = [..._patterns, ...internalPatterns]
+
     let end = 0
 
     while (true) {

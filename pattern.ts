@@ -21,6 +21,8 @@ import {
     GreaterThanOperatorPiece,
     GreaterThanOrEqualOperatorPiece,
     BreakPiece,
+    LessThanOperatorPiece,
+    LessThanOrEqualOperatorPiece,
 } from './piece/index.ts'
 
 export interface Pattern {
@@ -35,6 +37,32 @@ export interface Pattern {
 }
 
 export const internalPatterns: Pattern[] = [
+    {
+        wrapper: EqualOperatorPiece,
+        units: [
+            {
+                type: KeywordPiece,
+                content: '=',
+            },
+        ],
+    },
+    {
+        wrapper: ValueGroupPiece,
+        units: [
+            {
+                type: KeywordPiece,
+                content: '(',
+            },
+            {
+                type: EvaluatablePiece,
+                as: 'value',
+            },
+            {
+                type: KeywordPiece,
+                content: ')',
+            },
+        ],
+    },
     {
         wrapper: GreaterThanOperatorPiece,
         units: [
@@ -52,21 +80,34 @@ export const internalPatterns: Pattern[] = [
                 content: '>',
             },
             {
-                type: KeywordPiece,
+                type: EqualOperatorPiece,
                 content: '=',
             },
         ],
     },
-    // {
-    //     wrapper: ReturnPiece,
-    //     units: [
-    //         {
-    //             type: KeywordPiece,
-    //             content: '결과',
-    //             as: 'name',
-    //         },
-    //     ],
-    // },
+    {
+        wrapper: LessThanOperatorPiece,
+        units: [
+            {
+                type: KeywordPiece,
+                content: '<',
+            },
+        ],
+    },
+    {
+        wrapper: LessThanOrEqualOperatorPiece,
+        units: [
+            {
+                type: LessThanOperatorPiece,
+                content: '<',
+            },
+            {
+                type: EqualOperatorPiece,
+                content: '=',
+            },
+        ],
+    },
+
     {
         wrapper: DeclareVariablePiece,
         units: [
@@ -124,15 +165,6 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: EqualOperatorPiece,
-        units: [
-            {
-                type: KeywordPiece,
-                content: '=',
-            },
-        ],
-    },
-    {
         wrapper: AndOperatorPiece,
         units: [
             {
@@ -154,57 +186,6 @@ export const internalPatterns: Pattern[] = [
             },
             {
                 type: EvaluatablePiece,
-                as: 'right',
-            },
-        ],
-    },
-    {
-        wrapper: BinaryCalculationPiece,
-        units: [
-            {
-                type: KeywordPiece,
-                as: 'left',
-            },
-            {
-                type: OperatorPiece,
-                as: 'operator',
-            },
-            {
-                type: KeywordPiece,
-                as: 'right',
-            },
-        ],
-    },
-    {
-        wrapper: BinaryCalculationPiece,
-        units: [
-            {
-                type: KeywordPiece,
-                as: 'left',
-            },
-            {
-                type: OperatorPiece,
-                as: 'operator',
-            },
-            {
-                type: EvaluatablePiece,
-                as: 'right',
-            },
-        ],
-    },
-    {
-        wrapper: BinaryCalculationPiece,
-        units: [
-            {
-                type: EvaluatablePiece,
-                as: 'left',
-            },
-            {
-                type: OperatorPiece,
-                as: 'operator',
-            },
-            {
-                type: KeywordPiece,
                 as: 'right',
             },
         ],
@@ -243,23 +224,6 @@ export const internalPatterns: Pattern[] = [
             {
                 type: KeywordPiece,
                 content: '보여주기',
-            },
-        ],
-    },
-    {
-        wrapper: ValueGroupPiece,
-        units: [
-            {
-                type: KeywordPiece,
-                content: '(',
-            },
-            {
-                type: EvaluatablePiece,
-                as: 'value',
-            },
-            {
-                type: KeywordPiece,
-                content: ')',
             },
         ],
     },
