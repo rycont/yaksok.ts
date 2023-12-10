@@ -21,7 +21,7 @@ function isValidKeywordChar(char: string) {
 }
 
 export function tokenizer(code: string) {
-    const tokens: Piece<unknown>[] = []
+    const tokens: Piece[] = []
     const chars = [...code]
 
     while (chars.length) {
@@ -29,15 +29,15 @@ export function tokenizer(code: string) {
 
         if (char === undefined) break
 
-        if(char === "#") {
-            let comment = ""
+        if (char === '#') {
+            let comment = ''
 
-            while(chars[0] !== '\n') {
+            while (chars[0] !== '\n') {
                 comment += chars.shift()
             }
 
-            tokens.push(new CommentPiece(comment))
-            
+            tokens.push(new CommentPiece(comment.trim()))
+
             continue
         }
 
@@ -62,7 +62,7 @@ export function tokenizer(code: string) {
             continue
         }
 
-        if ('0' <= char && char <= '9') {
+        if (('0' <= char && char <= '9') || char === '-') {
             let number = char
             let hasDot = false
 
@@ -114,12 +114,12 @@ export function tokenizer(code: string) {
             continue
         }
 
-        if (['+', '-', '*', '/', '(', ')', '>', '=', '<', ','].includes(char)) {
+        if (['+', '-', '*', '/', '(', ')', '>', '=', '<', '~'].includes(char)) {
             tokens.push(new OperatorPiece(char))
             continue
         }
 
-        if (['{', '}', ':', '[', ']'].includes(char)) {
+        if (['{', '}', ':', '[', ']', ','].includes(char)) {
             tokens.push(new ExpressionPiece(char))
             continue
         }

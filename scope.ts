@@ -2,11 +2,11 @@ import { YaksokError } from './errors.ts'
 import {
     BlockPiece,
     FunctionDeclarationPiece,
-    ValuePiece,
+    PrimitiveValuePiece,
 } from './piece/index.ts'
 
 export class Scope {
-    variables: Record<string, ValuePiece>
+    variables: Record<string, PrimitiveValuePiece>
     functions: Record<string, FunctionDeclarationPiece> = {}
     parent: Scope | undefined
 
@@ -15,13 +15,13 @@ export class Scope {
         this.parent = parent
     }
 
-    setVariable(name: string, value: ValuePiece) {
+    setVariable(name: string, value: PrimitiveValuePiece) {
         if (this.parent?.askSetVariable(name, value)) return
 
         this.variables[name] = value
     }
 
-    askSetVariable(name: string, value: ValuePiece) {
+    askSetVariable(name: string, value: PrimitiveValuePiece) {
         if (name in this.variables) {
             this.variables[name] = value
             return true
@@ -34,10 +34,10 @@ export class Scope {
 
     getVariable(name: string) {
         if (name in this.variables) {
-            return this.variables[name] as ValuePiece
+            return this.variables[name] as PrimitiveValuePiece
         }
         if (this.parent) {
-            return this.parent.getVariable(name) as ValuePiece
+            return this.parent.getVariable(name) as PrimitiveValuePiece
         }
 
         throw new YaksokError('NOT_DEFINED_VARIABLE', {}, { name })

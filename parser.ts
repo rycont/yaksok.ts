@@ -12,16 +12,17 @@ import {
     FunctionDeclarationPiece,
     FunctionInvokePiece,
     ExpressionPiece,
+    DeclareVariablePiece,
 } from './piece/index.ts'
 
-export function tokenPreprocessor(tokens: Piece<unknown>[]) {
-    const stack: Piece<unknown>[] = []
+export function tokenPreprocessor(tokens: Piece[]) {
+    const stack: Piece[] = []
 
     while (tokens.length) {
         const token = tokens.shift()
         if (!token) break
 
-        if (token instanceof KeywordPiece && token.content === '약속') {
+        if (token instanceof KeywordPiece && token.value === '약속') {
             stack.push(token)
             const paramaters: string[] = []
 
@@ -30,7 +31,7 @@ export function tokenPreprocessor(tokens: Piece<unknown>[]) {
                 if (!token) break
 
                 if (token instanceof KeywordPiece) {
-                    paramaters.push(token.content)
+                    paramaters.push(token.value)
                     stack.push(
                         new VariablePiece({
                             name: token,
@@ -61,7 +62,7 @@ export function tokenPreprocessor(tokens: Piece<unknown>[]) {
 
                 if (
                     token instanceof KeywordPiece &&
-                    paramaters.includes(token.content)
+                    paramaters.includes(token.value)
                 ) {
                     stack.push(new VariablePiece({ name: token }))
                     continue
@@ -109,9 +110,25 @@ const dynamicPatternDetector = [
             },
         ],
     },
+    {
+        name: 'variable' as const,
+        units: [
+            {
+                type: KeywordPiece,
+                as: 'name',
+            },
+            {
+                type: ExpressionPiece,
+                content: ':',
+            },
+            {
+                type: KeywordPiece,
+            },
+        ],
+    },
 ]
 
-export function createDynamicPattern(tokens: Piece<unknown>[]) {
+export function createDynamicPattern(tokens: Piece[]) {
     let end = 0
     const patterns: Pattern[] = []
 
@@ -124,7 +141,7 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
 
                 if (
                     current instanceof KeywordPiece &&
-                    current.content === '약속'
+                    current.value === '약속'
                 ) {
                     const subtokens = tokens.slice(start + 1, end)
 
@@ -132,14 +149,14 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
                         if (t instanceof VariablePiece) {
                             return {
                                 type: VariablePiece,
-                                as: t.content.name,
+                                as: t.name,
                             }
                         }
 
                         if (t instanceof StringPiece) {
                             return {
                                 type: StringPiece,
-                                content: t.content,
+                                value: t.value,
                             }
                         }
 
@@ -154,9 +171,8 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
 
                     const name = subtokens
                         .map((t) => {
-                            if (t instanceof VariablePiece)
-                                return t.content.name
-                            if (t instanceof StringPiece) return t.content
+                            if (t instanceof VariablePiece) return t.name
+                            if (t instanceof StringPiece) return t.value
                         })
                         .join(' ')
 
@@ -164,7 +180,7 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
                         // If string piece has space, it will be splitted.
                         const piece = subtokens[i]
                         if (piece instanceof StringPiece) {
-                            const splitted = piece.content.split(' ')
+                            const splitted = piece.value.split(' ')
                             subtokens.splice(
                                 i,
                                 1,
@@ -177,13 +193,13 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
                         if (t instanceof VariablePiece)
                             return {
                                 type: EvaluatablePiece,
-                                as: t.content.name,
+                                as: t.name,
                             }
 
                         if (t instanceof StringPiece)
                             return {
                                 type: KeywordPiece,
-                                content: t.content,
+                                content: t.value,
                             }
 
                         throw new YaksokError(
@@ -200,7 +216,7 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
                         units: [
                             {
                                 type: KeywordPiece,
-                                content: '약속',
+                                value: '약속',
                             },
                             ...declarationTemplate,
                             {
@@ -240,14 +256,18 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
             if (!checkPattern(substack, pattern)) continue
 
             if (pattern.name === 'variable') {
-                if (typeof substack[0].content !== 'string') continue
+                if (
+                    !(substack[0] instanceof KeywordPiece) ||
+                    !substack[0].value
+                )
+                    continue
 
                 patterns.push({
                     wrapper: VariablePiece,
                     units: [
                         {
                             type: KeywordPiece,
-                            content: substack[0].content,
+                            value: substack[0].value,
                             as: 'name',
                         },
                     ],
@@ -262,12 +282,8 @@ export function createDynamicPattern(tokens: Piece<unknown>[]) {
     return patterns
 }
 
-export function _parse(
-    _tokens: Piece<unknown>[],
-    indent: number,
-    pattern: Pattern[],
-) {
-    const groups: Piece<unknown>[] = []
+export function _parse(_tokens: Piece[], indent: number, pattern: Pattern[]) {
+    const groups: Piece[] = []
     const tokens = [..._tokens]
 
     while (tokens.length) {
@@ -275,11 +291,11 @@ export function _parse(
         if (!token) break
 
         if (token instanceof IndentPiece) {
-            if (token.content !== indent + 1) {
+            if (token.size !== indent + 1) {
                 continue
             }
 
-            let blockTokens: Piece<unknown>[] = []
+            let blockTokens: Piece[] = []
 
             while (tokens.length) {
                 const currentToken = tokens.shift()
@@ -291,7 +307,7 @@ export function _parse(
                     // 첫 토큰이 들여쓰기면
                     if (tokens[0] instanceof IndentPiece) {
                         // 들여쓰기가 같거나 더 깊으면
-                        if (tokens[0].content >= token.content) {
+                        if (tokens[0].size >= token.size) {
                             blockTokens.push(currentToken)
                             continue
                         } else {
@@ -319,7 +335,7 @@ export function _parse(
     return new BlockPiece(groups)
 }
 
-export function parse(_tokens: Piece<unknown>[]) {
+export function parse(_tokens: Piece[]) {
     const tokens = tokenPreprocessor(_tokens)
     const dynamicPatterns = createDynamicPattern(tokens)
     const ast = _parse(tokens, 0, dynamicPatterns)
@@ -327,30 +343,28 @@ export function parse(_tokens: Piece<unknown>[]) {
     return ast
 }
 
-function checkPattern(
-    tokens: Piece<unknown>[],
-    pattern: Omit<Pattern, 'wrapper'>,
-) {
+function checkPattern(tokens: Piece[], pattern: Omit<Pattern, 'wrapper'>) {
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
         const unit = pattern.units[i]
 
         if (!(token instanceof unit.type)) return false
-        if (unit.content) {
-            if (typeof unit.content === 'object') {
-                for (const key in unit.content) {
-                    if (unit.content[key] !== token.content?.[key]) return false
+
+        if (unit.value) {
+            if (typeof unit.value === 'object') {
+                for (const key in unit.value) {
+                    if (unit.value[key] !== token?.[key]) return false
                 }
             }
 
-            if (unit.content !== token.content) return false
+            if (unit.value !== token.value) return false
         }
     }
 
     return true
 }
 
-export function patternMatcher(tokens: Piece<unknown>[], _patterns: Pattern[]) {
+export function patternMatcher(tokens: Piece[], _patterns: Pattern[]) {
     const patterns = [..._patterns, ...internalPatterns]
 
     let end = 0
@@ -370,7 +384,7 @@ export function patternMatcher(tokens: Piece<unknown>[], _patterns: Pattern[]) {
                     continue
                 }
 
-                const content: Record<string, unknown> = {}
+                let content: Record<string, unknown> = {}
 
                 for (let i = 0; i < pattern.units.length; i++) {
                     const unit = pattern.units[i]
@@ -379,11 +393,14 @@ export function patternMatcher(tokens: Piece<unknown>[], _patterns: Pattern[]) {
                     if (unit.as) content[unit.as] = token
                 }
 
-                const wrapper = new Wrapper(content)
-
                 if (pattern.config) {
-                    wrapper.config = pattern.config
+                    content = {
+                        ...content,
+                        ...pattern.config,
+                    }
                 }
+
+                const wrapper = new Wrapper(content)
 
                 tokens.splice(
                     end - pattern.units.length,

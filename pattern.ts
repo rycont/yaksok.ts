@@ -23,22 +23,26 @@ import {
     BreakPiece,
     LessThanOperatorPiece,
     LessThanOrEqualOperatorPiece,
-    EvaluatableSequencePiece,
+    SequencePiece,
     ListPiece,
     IndexingPiece,
     IndexFetchPiece,
     SetToIndexPiece,
     ExpressionPiece,
+    RangeOperatorPiece,
 } from './piece/index.ts'
 
 export interface Pattern {
-    wrapper: typeof Piece<unknown>
+    wrapper: {
+        new (...args: any[]): Piece
+    }
     units: {
-        type: typeof Piece<unknown>
-        content?: Record<string, unknown> | string | number
+        type: {
+            new (...args: any[]): Piece
+        }
+        value?: Record<string, unknown> | string | number
         as?: string
     }[]
-    setMode?: string
     config?: Record<string, unknown>
 }
 
@@ -48,20 +52,20 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: OperatorPiece,
-                content: '=',
+                value: '=',
             },
         ],
     },
     {
-        wrapper: EvaluatableSequencePiece,
+        wrapper: SequencePiece,
         units: [
             {
                 type: EvaluatablePiece,
                 as: 'a',
             },
             {
-                type: OperatorPiece,
-                content: ',',
+                type: ExpressionPiece,
+                value: ',',
             },
             {
                 type: EvaluatablePiece,
@@ -74,15 +78,15 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: ExpressionPiece,
-                content: '[',
+                value: '[',
             },
             {
-                type: EvaluatableSequencePiece,
-                as: 'content',
+                type: SequencePiece,
+                as: 'sequence',
             },
             {
                 type: ExpressionPiece,
-                content: ']',
+                value: ']',
             },
         ],
     },
@@ -91,7 +95,7 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: ExpressionPiece,
-                content: '[',
+                value: '[',
             },
             {
                 type: EvaluatablePiece,
@@ -99,7 +103,7 @@ export const internalPatterns: Pattern[] = [
             },
             {
                 type: ExpressionPiece,
-                content: ']',
+                value: ']',
             },
         ],
     },
@@ -125,7 +129,7 @@ export const internalPatterns: Pattern[] = [
             },
             {
                 type: ExpressionPiece,
-                content: ':',
+                value: ':',
             },
             {
                 type: EvaluatablePiece,
@@ -138,7 +142,7 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: OperatorPiece,
-                content: '(',
+                value: '(',
             },
             {
                 type: EvaluatablePiece,
@@ -146,7 +150,7 @@ export const internalPatterns: Pattern[] = [
             },
             {
                 type: OperatorPiece,
-                content: ')',
+                value: ')',
             },
         ],
     },
@@ -155,7 +159,7 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: OperatorPiece,
-                content: '>',
+                value: '>',
             },
         ],
     },
@@ -164,11 +168,9 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: GreaterThanOperatorPiece,
-                content: '>',
             },
             {
                 type: EqualOperatorPiece,
-                content: '=',
             },
         ],
     },
@@ -177,7 +179,7 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: OperatorPiece,
-                content: '<',
+                value: '<',
             },
         ],
     },
@@ -186,11 +188,9 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: LessThanOperatorPiece,
-                content: '<',
             },
             {
                 type: EqualOperatorPiece,
-                content: '=',
             },
         ],
     },
@@ -204,11 +204,11 @@ export const internalPatterns: Pattern[] = [
             },
             {
                 type: ExpressionPiece,
-                content: ':',
+                value: ':',
             },
             {
                 type: EvaluatablePiece,
-                as: 'content',
+                as: 'value',
             },
             {
                 type: EOLPiece,
@@ -220,7 +220,7 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: OperatorPiece,
-                content: '/',
+                value: '/',
             },
         ],
     },
@@ -229,7 +229,7 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: OperatorPiece,
-                content: '*',
+                value: '*',
             },
         ],
     },
@@ -238,7 +238,7 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: OperatorPiece,
-                content: '+',
+                value: '+',
             },
         ],
     },
@@ -247,7 +247,7 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: OperatorPiece,
-                content: '-',
+                value: '-',
             },
         ],
     },
@@ -256,7 +256,16 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: KeywordPiece,
-                content: '이고',
+                value: '이고',
+            },
+        ],
+    },
+    {
+        wrapper: RangeOperatorPiece,
+        units: [
+            {
+                type: OperatorPiece,
+                value: '~',
             },
         ],
     },
@@ -282,7 +291,7 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: KeywordPiece,
-                content: '만약',
+                value: '만약',
             },
             {
                 type: EvaluatablePiece,
@@ -290,7 +299,7 @@ export const internalPatterns: Pattern[] = [
             },
             {
                 type: KeywordPiece,
-                content: '이면',
+                value: '이면',
             },
             {
                 type: EOLPiece,
@@ -302,15 +311,35 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
+        wrapper: ConditionPiece,
+        units: [
+            {
+                type: ConditionPiece,
+                as: 'ifBody',
+            },
+            {
+                type: KeywordPiece,
+                value: '아니면',
+            },
+            {
+                type: EOLPiece,
+            },
+            {
+                type: BlockPiece,
+                as: 'elseBody',
+            },
+        ],
+    },
+    {
         wrapper: PrintPiece,
         units: [
             {
                 type: EvaluatablePiece,
-                as: 'expression',
+                as: 'value',
             },
             {
                 type: KeywordPiece,
-                content: '보여주기',
+                value: '보여주기',
             },
         ],
     },
@@ -319,7 +348,7 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: KeywordPiece,
-                content: '반복',
+                value: '반복',
             },
             {
                 type: EOLPiece,
@@ -335,11 +364,11 @@ export const internalPatterns: Pattern[] = [
         units: [
             {
                 type: KeywordPiece,
-                content: '반복',
+                value: '반복',
             },
             {
                 type: KeywordPiece,
-                content: '그만',
+                value: '그만',
             },
         ],
     },
