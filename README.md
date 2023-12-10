@@ -1,6 +1,6 @@
 # yaksok.ts
 
-Zero dependency yaksok interpreter written in TypeScript.
+타입스크립트로 구현한 [약속 프로그래밍 언어](http://yaksok.org/)의 인터프리터(zero dependency / runtime agnostic)
 
 ## 왜 만들었나요?
 
