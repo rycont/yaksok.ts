@@ -48,6 +48,13 @@ export class Scope {
     }
 
     getFunction(name: string) {
-        return this.functions[name]
+        const fetched = this.functions[name]
+        if (fetched) return fetched
+
+        if (this.parent) {
+            return this.parent.getFunction(name)
+        }
+
+        throw new YaksokError('NOT_DEFINED_FUNCTION')
     }
 }

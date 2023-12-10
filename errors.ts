@@ -22,6 +22,7 @@ const ERRORS = [
     'INVALID_TYPE_FOR_INDEX_FETCH',
     'LIST_INDEX_MUST_BE_GREATER_THAN_0',
     'INVALID_SEQUENCE_TYPE_FOR_INDEX_FETCH',
+    'NOT_DEFINED_FUNCTION',
 ] as const
 
 interface ErrorOccurrence {

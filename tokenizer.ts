@@ -1,16 +1,14 @@
-// ## Code example:
-// 내_나이 = 10
-
 import { YaksokError } from './errors.ts'
 import {
-    EOLPiece,
     ExpressionPiece,
-    IndentPiece,
-    KeywordPiece,
-    NumberPiece,
     OperatorPiece,
-    Piece,
+    KeywordPiece,
+    CommentPiece,
+    IndentPiece,
     StringPiece,
+    NumberPiece,
+    EOLPiece,
+    Piece,
 } from './piece/index.ts'
 
 function isValidKeywordChar(char: string) {
@@ -30,6 +28,19 @@ export function tokenizer(code: string) {
         const char = chars.shift()
 
         if (char === undefined) break
+
+        if(char === "#") {
+            let comment = ""
+
+            while(chars[0] !== '\n') {
+                comment += chars.shift()
+            }
+
+            tokens.push(new CommentPiece(comment))
+            
+            continue
+        }
+
         if (char === ' ') {
             if (!(tokens[tokens.length - 1] instanceof EOLPiece)) continue
 

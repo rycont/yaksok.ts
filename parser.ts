@@ -314,7 +314,7 @@ export function _parse(
         }
     }
 
-    inplaceParser(groups, pattern)
+    patternMatcher(groups, pattern)
     groups.push(new EOLPiece())
     return new BlockPiece(groups)
 }
@@ -350,7 +350,7 @@ function checkPattern(
     return true
 }
 
-export function inplaceParser(tokens: Piece<unknown>[], _patterns: Pattern[]) {
+export function patternMatcher(tokens: Piece<unknown>[], _patterns: Pattern[]) {
     const patterns = [..._patterns, ...internalPatterns]
 
     let end = 0
@@ -362,6 +362,13 @@ export function inplaceParser(tokens: Piece<unknown>[], _patterns: Pattern[]) {
 
             if (checkPattern(substack, pattern)) {
                 const Wrapper = pattern.wrapper
+
+                if (
+                    substack.length === 1 &&
+                    substack[0].constructor === Wrapper
+                ) {
+                    continue
+                }
 
                 const content: Record<string, unknown> = {}
 

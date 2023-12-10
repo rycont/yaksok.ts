@@ -44,6 +44,14 @@ export class ExecutablePiece<ContentType> extends Piece<ContentType> {
     execute(scope: Scope, callFrame: CallFrame): void {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
+    toPrint(): string {
+        throw new Error(`${this.constructor.name} has no toPrint method`)
+    }
+}
+
+export class CommentPiece extends Piece<string> {
+    execute() {}
+    toPrint() {}
 }
 
 export class EvaluatablePiece<
@@ -82,9 +90,21 @@ export class ValuePiece<
     }
 }
 
-export class NumberPiece extends ValuePiece<number> {}
-export class StringPiece extends ValuePiece<string> {}
-export class BooleanPiece extends ValuePiece<boolean> {}
+export class NumberPiece extends ValuePiece<number> {
+    toPrint() {
+        return this.content.toString()
+    }
+}
+export class StringPiece extends ValuePiece<string> {
+    toPrint() {
+        return this.content
+    }
+}
+export class BooleanPiece extends ValuePiece<boolean> {
+    toPrint() {
+        return this.content.toString()
+    }
+}
 
 export class KeywordPiece extends Piece<string> {}
 
@@ -372,8 +392,6 @@ export class DeclareVariablePiece<
     }
 }
 
-export class PlaceholderPiece extends Piece<null> {}
-
 export class BlockPiece extends ExecutablePiece<Piece<unknown>[]> {
     async execute(scope: Scope, _callFrame?: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
@@ -419,8 +437,9 @@ export class PrintPiece extends ExecutablePiece<{
 }> {
     async execute(scope: Scope, _callFrame: CallFrame) {
         console.log(
-            'STDOUT',
-            (await this.content.expression.execute(scope, _callFrame)).content,
+            (
+                await this.content.expression.execute(scope, _callFrame)
+            ).toPrint(),
         )
     }
 }
@@ -588,6 +607,14 @@ export class EvaluatableSequencePiece extends EvaluatablePiece<
 
         return result
     }
+
+    toPrint() {
+        return (
+            '[ ' +
+            this.content.items.map((item) => item.toPrint()).join(' ') +
+            ' ]'
+        )
+    }
 }
 
 export class IndexablePiece<
@@ -664,6 +691,15 @@ export class ListPiece extends SettableIndexablePiece<
         this.content.content.content.items[indexValue] = value
 
         return value as ValuePiece
+    }
+    toPrint(): string {
+        return (
+            '[ ' +
+            this.content.content.content.items
+                .map((item) => item.toPrint())
+                .join(' ') +
+            ' ]'
+        )
     }
 }
 
