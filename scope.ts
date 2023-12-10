@@ -1,10 +1,6 @@
 import { YaksokError } from './errors.ts'
 import { Piece } from './piece/basement.ts'
-import {
-    FunctionDeclarationPiece,
-    PrimitiveValuePiece,
-    ValueTypes,
-} from './piece/index.ts'
+import { FunctionDeclarationPiece, ValueTypes } from './piece/index.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>
@@ -63,7 +59,7 @@ export class CallFrame {
     parent: CallFrame | undefined
     event: Record<string, (...args: any[]) => void> = {}
 
-    constructor(piece: Piece, parent?: CallFrame) {
+    constructor(_piece: Piece, parent?: CallFrame) {
         this.parent = parent
     }
 

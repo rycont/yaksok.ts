@@ -8,6 +8,7 @@ import {
 } from './primitive.ts'
 
 export class Piece {
+    [key: string]: unknown
     toJSON() {
         return {
             type: this.constructor.name,

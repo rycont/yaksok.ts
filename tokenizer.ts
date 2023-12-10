@@ -29,6 +29,7 @@ export function tokenizer(code: string) {
 
         if (char === undefined) break
 
+        // Comment
         if (char === '#') {
             let comment = ''
 
@@ -41,6 +42,7 @@ export function tokenizer(code: string) {
             continue
         }
 
+        // Indent and Whitespace
         if (char === ' ') {
             if (!(tokens[tokens.length - 1] instanceof EOLPiece)) continue
 
@@ -56,12 +58,14 @@ export function tokenizer(code: string) {
             continue
         }
 
+        // EOL
         if (char === '\n') {
             if (tokens[tokens.length - 1] instanceof EOLPiece) continue
             tokens.push(new EOLPiece())
             continue
         }
 
+        // Number
         if (
             ('0' <= char && char <= '9') ||
             (char === '-' &&
@@ -87,6 +91,7 @@ export function tokenizer(code: string) {
             continue
         }
 
+        // String
         if (char === '"') {
             let word = ''
 
@@ -105,6 +110,7 @@ export function tokenizer(code: string) {
             continue
         }
 
+        // Keyword
         if (isValidKeywordChar(char)) {
             let word = char
 
@@ -120,11 +126,13 @@ export function tokenizer(code: string) {
             continue
         }
 
+        // Operator
         if (['+', '-', '*', '/', '(', ')', '>', '=', '<', '~'].includes(char)) {
             tokens.push(new OperatorPiece(char))
             continue
         }
 
+        // Expression
         if (['{', '}', ':', '[', ']', ','].includes(char)) {
             tokens.push(new ExpressionPiece(char))
             continue

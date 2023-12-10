@@ -18,7 +18,7 @@ export class BinaryCalculationPiece extends EvaluatablePiece {
         this.operator = props.operator
     }
 
-    execute(scope, _callFrame: CallFrame) {
+    execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
         const { left, right, operator } = this
 

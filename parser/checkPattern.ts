@@ -14,11 +14,12 @@ export function checkPattern(
         if (unit.value) {
             if (typeof unit.value === 'object') {
                 for (const key in unit.value) {
-                    if (unit.value[key] !== token?.[key]) return false
+                    if (!(key in token)) return false
+                    if (unit.value[key] !== token[key]) return false
                 }
             }
 
-            if (unit.value !== token.value) return false
+            if (!('value' in token) || unit.value !== token.value) return false
         }
     }
 

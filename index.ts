@@ -3,15 +3,9 @@ import { tokenizer } from './tokenizer.ts'
 import { parse } from './parser.ts'
 import { run } from './runtime.ts'
 
-export class Yaksok {
-    preprocessor = preprocessor
-    tokenizer = tokenizer
-    parser = parse
+export function yaksok(code: string) {
+    const tokens = tokenizer(preprocessor(code))
+    const ast = parse(tokens)
 
-    run(code: string) {
-        const tokens = this.tokenizer(this.preprocessor(code))
-        const ast = this.parser(tokens)
-
-        run(ast)
-    }
+    return run(ast)
 }
