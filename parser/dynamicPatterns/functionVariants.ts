@@ -144,7 +144,7 @@ function createFunctionInvokePattern(name: string, subtokens: Piece[]) {
         if (t instanceof StringPiece)
             return {
                 type: KeywordPiece,
-                content: t.value,
+                value: t.value,
             }
 
         throw new YaksokError(
@@ -177,6 +177,6 @@ export function createFunctionPattern(subtokens: Piece[]) {
 
     return [
         createFunctionDeclarePattern(name, subtokens),
-        variants.map((v) => createFunctionInvokePattern(name, v)),
-    ].flat()
+        ...variants.map((v) => createFunctionInvokePattern(name, v)),
+    ]
 }

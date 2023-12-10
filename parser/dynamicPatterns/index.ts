@@ -1,19 +1,14 @@
-import { YaksokError } from '../../errors.ts'
 import { Pattern } from '../../pattern.ts'
 import {
     Piece,
     EOLPiece,
     KeywordPiece,
-    StringPiece,
     VariablePiece,
     EvaluatablePiece,
-    FunctionDeclarationPiece,
-    BlockPiece,
-    FunctionInvokePiece,
     ExpressionPiece,
 } from '../../piece/index.ts'
 import { checkPattern } from '../checkPattern.ts'
-import { createFunctionPattern, getVariants } from './functionVariants.ts'
+import { createFunctionPattern } from './functionVariants.ts'
 
 export function createDynamicPattern(tokens: Piece[]) {
     let end = 0

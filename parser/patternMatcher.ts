@@ -1,6 +1,6 @@
 import { Pattern, internalPatterns } from '../pattern.ts'
-import { Piece } from '../piece/index.ts'
 import { checkPattern } from './checkPattern.ts'
+import { Piece } from '../piece/index.ts'
 
 export function patternMatcher(tokens: Piece[], _patterns: Pattern[]) {
     const patterns = [..._patterns, ...internalPatterns]

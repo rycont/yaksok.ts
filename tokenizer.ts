@@ -62,7 +62,13 @@ export function tokenizer(code: string) {
             continue
         }
 
-        if (('0' <= char && char <= '9') || char === '-') {
+        if (
+            ('0' <= char && char <= '9') ||
+            (char === '-' &&
+                chars.length > 2 &&
+                '0' <= chars[0] &&
+                chars[0] <= '9')
+        ) {
             let number = char
             let hasDot = false
 

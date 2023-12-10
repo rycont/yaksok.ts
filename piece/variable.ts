@@ -33,9 +33,9 @@ export class DeclareVariablePiece extends EvaluatablePiece {
         if (name === '결과') {
             callFrame.invokeEvent('returnValue', result)
             return result
+        } else {
+            scope.setVariable(name, result)
+            return result
         }
-
-        scope.setVariable(name, result)
-        return result
     }
 }

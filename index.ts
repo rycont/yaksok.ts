@@ -12,8 +12,6 @@ export class Yaksok {
         const tokens = this.tokenizer(this.preprocessor(code))
         const ast = this.parser(tokens)
 
-        console.log(ast.content)
-
         run(ast)
     }
 }
