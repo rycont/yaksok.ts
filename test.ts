@@ -86,7 +86,7 @@ const FIBONACCI = `
 약속 "피보나치" 수
     만약 수 < 3 이면
         결과: 1
-    만약 수 > 2 이면
+    아니면
         결과: (피보나치 (수 - 1)) + (피보나치 (수 - 2))
 
 횟수: 1
@@ -99,7 +99,7 @@ const FIBONACCI = `
         반복 그만
 `
 
-// runtime.run(FIBONACCI)
+runtime.run(FIBONACCI)
 
 runtime.run(`
 약속 과일"을/를 멋있는 " 사람 "와/과 먹기"

@@ -73,7 +73,6 @@ export function* getVariants(subtokens: Piece[]) {
             )
         }
 
-        console.log(newTokens)
         yield newTokens
     }
 }

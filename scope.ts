@@ -1,12 +1,13 @@
 import { YaksokError } from './errors.ts'
+import { Piece } from './piece/basement.ts'
 import {
-    BlockPiece,
     FunctionDeclarationPiece,
     PrimitiveValuePiece,
+    ValueTypes,
 } from './piece/index.ts'
 
 export class Scope {
-    variables: Record<string, PrimitiveValuePiece>
+    variables: Record<string, ValueTypes>
     functions: Record<string, FunctionDeclarationPiece> = {}
     parent: Scope | undefined
 
@@ -15,29 +16,28 @@ export class Scope {
         this.parent = parent
     }
 
-    setVariable(name: string, value: PrimitiveValuePiece) {
+    setVariable(name: string, value: ValueTypes) {
         if (this.parent?.askSetVariable(name, value)) return
 
         this.variables[name] = value
     }
 
-    askSetVariable(name: string, value: PrimitiveValuePiece) {
+    askSetVariable(name: string, value: ValueTypes): boolean {
         if (name in this.variables) {
             this.variables[name] = value
             return true
         }
 
         if (this.parent) return this.parent.askSetVariable(name, value)
-
         return false
     }
 
-    getVariable(name: string) {
+    getVariable(name: string): ValueTypes {
         if (name in this.variables) {
-            return this.variables[name] as PrimitiveValuePiece
+            return this.variables[name]
         }
         if (this.parent) {
-            return this.parent.getVariable(name) as PrimitiveValuePiece
+            return this.parent.getVariable(name)
         }
 
         throw new YaksokError('NOT_DEFINED_VARIABLE', {}, { name })
@@ -47,7 +47,7 @@ export class Scope {
         this.functions[name] = pattern
     }
 
-    getFunction(name: string) {
+    getFunction(name: string): FunctionDeclarationPiece {
         const fetched = this.functions[name]
         if (fetched) return fetched
 
@@ -56,5 +56,24 @@ export class Scope {
         }
 
         throw new YaksokError('NOT_DEFINED_FUNCTION')
+    }
+}
+
+export class CallFrame {
+    parent: CallFrame | undefined
+    event: Record<string, (...args: any[]) => void> = {}
+
+    constructor(piece: Piece, parent?: CallFrame) {
+        this.parent = parent
+    }
+
+    invokeEvent(name: string, ...args: unknown[]) {
+        if (this.event[name]) {
+            this.event[name](...args)
+        } else if (this.parent) {
+            this.parent.invokeEvent(name, ...args)
+        } else {
+            throw new YaksokError('EVENT_NOT_FOUND', {}, { name })
+        }
     }
 }
