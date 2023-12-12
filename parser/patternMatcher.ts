@@ -23,12 +23,16 @@ export function patternMatcher(tokens: Piece[], _patterns: Pattern[]) {
                 }
 
                 let content: Record<string, unknown> = {}
+                let hasContent = false
 
                 for (let i = 0; i < pattern.units.length; i++) {
                     const unit = pattern.units[i]
                     const token = substack[i]
 
-                    if (unit.as) content[unit.as] = token
+                    if (unit.as) {
+                        content[unit.as] = token
+                        hasContent = true
+                    }
                 }
 
                 if (pattern.config) {
@@ -38,7 +42,7 @@ export function patternMatcher(tokens: Piece[], _patterns: Pattern[]) {
                     }
                 }
 
-                const wrapper = new Wrapper(content)
+                const wrapper = new Wrapper(hasContent ? content : undefined)
 
                 tokens.splice(
                     end - pattern.units.length,

@@ -41,9 +41,9 @@ export class KeywordPiece extends Piece {
 }
 
 export class OperatorPiece extends Piece {
-    value: string
+    value?: string
 
-    constructor(char: string) {
+    constructor(char?: string) {
         super()
         this.value = char
     }
