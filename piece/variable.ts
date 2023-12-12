@@ -7,6 +7,7 @@ export class VariablePiece extends EvaluatablePiece {
 
     constructor(args: { name: KeywordPiece | VariablePiece }) {
         super()
+
         if (args.name instanceof KeywordPiece) {
             this.name = args.name.value
         } else {
@@ -19,7 +20,7 @@ export class VariablePiece extends EvaluatablePiece {
     }
 }
 
-export const BannedVariableNames = [
+export const RESERVED_WORDS = [
     '약속',
     '만약',
     '이고',
@@ -53,13 +54,11 @@ export class DeclareVariablePiece extends EvaluatablePiece {
                 callFrame.invokeEvent('returnValue', result)
             else
                 throw new YaksokError(
-                    'RESULT_CANT_BE_SET_OUTSIDE_OF_FUNCTION',
-                    {},
-                    {},
+                    'CANNOT_RETURN_OUTSIDE_FUNCTION'
                 )
             return result
-        } else if (BannedVariableNames.includes(name)) {
-            throw new YaksokError('CANNOT_USE_BANNED_NAME', {}, { name })
+        } else if (RESERVED_WORDS.includes(name)) {
+            throw new YaksokError('CANNOT_USE_RESERVED_WORD_FOR_VARIABLE_NAME', {}, { name })
         } else {
             scope.setVariable(name, result)
             return result

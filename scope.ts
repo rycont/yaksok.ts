@@ -66,6 +66,7 @@ export class CallFrame {
     hasEvent(name: string): boolean {
         if (this.event[name]) return true
         if (this.parent) return this.parent.hasEvent(name)
+
         return false
     }
 
