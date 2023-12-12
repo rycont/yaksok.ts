@@ -5,9 +5,13 @@ import { EvaluatablePiece, KeywordPiece, ValueTypes } from './index.ts'
 export class VariablePiece extends EvaluatablePiece {
     name: string
 
-    constructor(args: { name: KeywordPiece }) {
+    constructor(args: { name: KeywordPiece | VariablePiece }) {
         super()
-        this.name = args.name.value
+        if (args.name instanceof KeywordPiece) {
+            this.name = args.name.value
+        } else {
+            this.name = args.name.name
+        }
     }
 
     execute(scope: Scope) {
