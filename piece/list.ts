@@ -26,18 +26,9 @@ export class SequencePiece extends EvaluatablePiece {
             items = [...a.items, b]
         } else if (
             a instanceof EvaluatablePiece &&
-            b instanceof SequencePiece
-        ) {
-            items = [a, ...b.items]
-        } else if (
-            a instanceof EvaluatablePiece &&
             b instanceof EvaluatablePiece
         ) {
             items = [a, b]
-        } else if (a instanceof SequencePiece && b instanceof SequencePiece) {
-            items = [...a.items, ...b.items]
-        } else {
-            throw new YaksokError('INVALID_TYPE_FOR_EVALUATABLE_SEQUENCE')
         }
 
         this.items = items
@@ -94,11 +85,14 @@ export class ListPiece extends IndexedValuePiece {
             const indexValue = index.value - 1
 
             if (indexValue < 0)
-                throw new YaksokError('LIST_INDEX_MUST_BE_GREATER_THAN_0')
+                throw new YaksokError('LIST_INDEX_MUST_BE_GREATER_THAN_1')
 
             const list = this.execute(scope, callFrame).items!.map((item) =>
                 item.execute(scope, callFrame),
             )
+
+            if (list.length <= indexValue)
+                throw new YaksokError('LIST_INDEX_OUT_OF_RANGE')
 
             return list[indexValue]
         }
@@ -113,7 +107,9 @@ export class ListPiece extends IndexedValuePiece {
             return new ListPiece({
                 items: indexValue.map((index) => {
                     if (!(index instanceof NumberPiece)) {
-                        throw new YaksokError('LIST_INDEX_MUST_BE_NUMBER')
+                        throw new YaksokError(
+                            'LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST',
+                        )
                     }
 
                     return list[index.value - 1]
@@ -131,15 +127,16 @@ export class ListPiece extends IndexedValuePiece {
         callFrame: CallFrame,
     ) {
         if (!(index instanceof NumberPiece)) {
-            throw new YaksokError('LIST_INDEX_MUST_BE_NUMBER')
+            throw new YaksokError('LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST')
         }
 
         const indexValue = index.value - 1
 
         if (indexValue < 0)
-            throw new YaksokError('LIST_INDEX_MUST_BE_GREATER_THAN_0')
+            throw new YaksokError('LIST_INDEX_MUST_BE_GREATER_THAN_1')
 
-        this.execute(scope, callFrame).items![indexValue] = value
+        const content = this.execute(scope, callFrame).items!
+        content[indexValue] = value
 
         return value
     }
