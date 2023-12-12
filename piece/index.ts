@@ -1,7 +1,6 @@
 export * from './basement.ts'
 export * from './block.ts'
 export * from './calculation.ts'
-export * from './comment.ts'
 export * from './condition.ts'
 export * from './function.ts'
 export * from './indexed.ts'
