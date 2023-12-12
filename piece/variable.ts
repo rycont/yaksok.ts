@@ -1,3 +1,4 @@
+import { YaksokError } from '../errors.ts'
 import { Scope, CallFrame } from '../scope.ts'
 import { EvaluatablePiece, KeywordPiece, ValueTypes } from './index.ts'
 
@@ -31,7 +32,14 @@ export class DeclareVariablePiece extends EvaluatablePiece {
         const result = value.execute(scope, callFrame)
 
         if (name === '결과') {
-            callFrame.invokeEvent('returnValue', result)
+            if (callFrame.hasEvent('returnValue'))
+                callFrame.invokeEvent('returnValue', result)
+            else
+                throw new YaksokError(
+                    'RESULT_CANT_BE_SET_OUTSIDE_OF_FUNCTION',
+                    {},
+                    {},
+                )
             return result
         } else {
             scope.setVariable(name, result)
