@@ -185,6 +185,6 @@ export class LessThanOrEqualOperatorPiece extends OperatorPiece {
             return new BooleanPiece(left.value <= right.value)
         }
 
-        throw new YaksokError('INVALID_TYPE_FOR_LESS_THAN_OPERATOR')
+        throw new YaksokError('INVALID_TYPE_FOR_LESS_OR_EQUAL_OPERATOR')
     }
 }
