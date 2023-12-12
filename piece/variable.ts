@@ -19,6 +19,19 @@ export class VariablePiece extends EvaluatablePiece {
     }
 }
 
+export const BannedVariableNames = [
+    '약속',
+    '만약',
+    '이고',
+    '이면',
+    '보여주기',
+    '반복',
+    '이전',
+    '의',
+    '마다',
+    '훔쳐오기',
+]
+
 export class DeclareVariablePiece extends EvaluatablePiece {
     name: string
     value: EvaluatablePiece
@@ -45,6 +58,8 @@ export class DeclareVariablePiece extends EvaluatablePiece {
                     {},
                 )
             return result
+        } else if (BannedVariableNames.includes(name)) {
+            throw new YaksokError('CANNOT_USE_BANNED_NAME', {}, { name })
         } else {
             scope.setVariable(name, result)
             return result
