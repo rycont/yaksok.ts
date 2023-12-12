@@ -8,6 +8,10 @@ import {
 } from './primitive.ts'
 
 export class PlusOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('+')
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -36,6 +40,10 @@ export class PlusOperatorPiece extends OperatorPiece {
 }
 
 export class MinusOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('-')
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -51,6 +59,10 @@ export class MinusOperatorPiece extends OperatorPiece {
 }
 
 export class MultiplyOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('*')
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -70,6 +82,10 @@ export class MultiplyOperatorPiece extends OperatorPiece {
 }
 
 export class DivideOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('/')
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -86,6 +102,10 @@ export class DivideOperatorPiece extends OperatorPiece {
 }
 
 export class EqualOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('=')
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -126,6 +146,10 @@ export class AndOperatorPiece extends OperatorPiece {
 }
 
 export class GreaterThanOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('>')
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -142,6 +166,10 @@ export class GreaterThanOperatorPiece extends OperatorPiece {
 }
 
 export class LessThanOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('<')
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -158,6 +186,10 @@ export class LessThanOperatorPiece extends OperatorPiece {
 }
 
 export class GreaterThanOrEqualOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('>=')
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -174,6 +206,10 @@ export class GreaterThanOrEqualOperatorPiece extends OperatorPiece {
 }
 
 export class LessThanOrEqualOperatorPiece extends OperatorPiece {
+    constructor() {
+        super('<=')
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
