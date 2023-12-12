@@ -43,7 +43,7 @@ export class FunctionInvokePiece extends EvaluatablePiece {
     #name: string
     props: { [key: string]: EvaluatablePiece }
 
-    constructor(props: { name: string } & Record<string, EvaluatablePiece>) {
+    constructor(props: Record<string, EvaluatablePiece> & { name: string }) {
         super()
 
         this.props = {}
