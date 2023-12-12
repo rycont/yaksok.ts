@@ -1,18 +1,37 @@
+import { YaksokError } from '../errors.ts'
 import { Scope, CallFrame } from '../scope.ts'
 import { EvaluatablePiece, KeywordPiece, ValueTypes } from './index.ts'
 
 export class VariablePiece extends EvaluatablePiece {
     name: string
 
-    constructor(args: { name: KeywordPiece }) {
+    constructor(args: { name: KeywordPiece | VariablePiece }) {
         super()
-        this.name = args.name.value
+
+        if (args.name instanceof KeywordPiece) {
+            this.name = args.name.value
+        } else {
+            this.name = args.name.name
+        }
     }
 
     execute(scope: Scope) {
         return scope.getVariable(this.name)
     }
 }
+
+export const RESERVED_WORDS = [
+    '약속',
+    '만약',
+    '이고',
+    '이면',
+    '보여주기',
+    '반복',
+    '이전',
+    '의',
+    '마다',
+    '훔쳐오기',
+]
 
 export class DeclareVariablePiece extends EvaluatablePiece {
     name: string
@@ -31,8 +50,16 @@ export class DeclareVariablePiece extends EvaluatablePiece {
         const result = value.execute(scope, callFrame)
 
         if (name === '결과') {
-            callFrame.invokeEvent('returnValue', result)
+            if (callFrame.hasEvent('returnValue'))
+                callFrame.invokeEvent('returnValue', result)
+            else throw new YaksokError('CANNOT_RETURN_OUTSIDE_FUNCTION')
             return result
+        } else if (RESERVED_WORDS.includes(name)) {
+            throw new YaksokError(
+                'CANNOT_USE_RESERVED_WORD_FOR_VARIABLE_NAME',
+                {},
+                { name },
+            )
         } else {
             scope.setVariable(name, result)
             return result
