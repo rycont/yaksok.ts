@@ -129,13 +129,13 @@ export function tokenizer(code: string) {
         }
 
         // Operator
-        if (['+', '-', '*', '/', '(', ')', '>', '=', '<', '~'].includes(char)) {
+        if (['+', '-', '*', '/', '>', '=', '<', '~'].includes(char)) {
             tokens.push(new OperatorPiece(char))
             continue
         }
 
         // Expression
-        if (['{', '}', ':', '[', ']', ','].includes(char)) {
+        if (['{', '}', ':', '[', ']', ',', '(', ')'].includes(char)) {
             tokens.push(new ExpressionPiece(char))
             continue
         }

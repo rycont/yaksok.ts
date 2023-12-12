@@ -46,11 +46,11 @@ Deno.test('Parse Binary Calculation with Parentheses', () => {
     const result = tokenizer(code)
 
     assertEquals(result, [
-        new OperatorPiece('('),
+        new ExpressionPiece('('),
         new NumberPiece(1),
         new OperatorPiece('+'),
         new NumberPiece(1),
-        new OperatorPiece(')'),
+        new ExpressionPiece(')'),
         new OperatorPiece('*'),
         new NumberPiece(2),
     ])

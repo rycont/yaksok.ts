@@ -141,7 +141,7 @@ export const internalPatterns: Pattern[] = [
         wrapper: ValueGroupPiece,
         units: [
             {
-                type: OperatorPiece,
+                type: ExpressionPiece,
                 value: '(',
             },
             {
@@ -149,7 +149,7 @@ export const internalPatterns: Pattern[] = [
                 as: 'value',
             },
             {
-                type: OperatorPiece,
+                type: ExpressionPiece,
                 value: ')',
             },
         ],
