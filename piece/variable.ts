@@ -52,13 +52,14 @@ export class DeclareVariablePiece extends EvaluatablePiece {
         if (name === '결과') {
             if (callFrame.hasEvent('returnValue'))
                 callFrame.invokeEvent('returnValue', result)
-            else
-                throw new YaksokError(
-                    'CANNOT_RETURN_OUTSIDE_FUNCTION'
-                )
+            else throw new YaksokError('CANNOT_RETURN_OUTSIDE_FUNCTION')
             return result
         } else if (RESERVED_WORDS.includes(name)) {
-            throw new YaksokError('CANNOT_USE_RESERVED_WORD_FOR_VARIABLE_NAME', {}, { name })
+            throw new YaksokError(
+                'CANNOT_USE_RESERVED_WORD_FOR_VARIABLE_NAME',
+                {},
+                { name },
+            )
         } else {
             scope.setVariable(name, result)
             return result

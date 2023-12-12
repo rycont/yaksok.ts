@@ -194,19 +194,18 @@ export const internalPatterns: Pattern[] = [
             },
         ],
     },
-
     {
-      wrapper: VariablePiece,
-      units: [
-        {
-          type: KeywordPiece,
-          value: '이전',
-        },
-        {
-          type: VariablePiece,
-          as: 'name',
-        }
-      ],
+        wrapper: VariablePiece,
+        units: [
+            {
+                type: KeywordPiece,
+                value: '이전',
+            },
+            {
+                type: VariablePiece,
+                as: 'name',
+            },
+        ],
     },
     {
         wrapper: DeclareVariablePiece,
