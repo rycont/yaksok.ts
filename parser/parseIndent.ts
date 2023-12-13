@@ -1,26 +1,26 @@
-import { Piece, IndentPiece, EOLPiece, BlockPiece } from '../piece/index.ts'
+import { Node, Indent, EOL, Block } from '../nodes/index.ts'
 
-export function parseIndent(_tokens: Piece[], indent: number = 0) {
-    const groups: Piece[] = []
+export function parseIndent(_tokens: Node[], indent: number = 0) {
+    const groups: Node[] = []
     const tokens = [..._tokens]
 
     while (tokens.length) {
         const token = tokens.shift()!
 
-        if (token instanceof IndentPiece) {
+        if (token instanceof Indent) {
             if (token.size !== indent + 1) {
                 continue
             }
 
-            const blockTokens: Piece[] = []
+            const blockTokens: Node[] = []
 
             while (tokens.length) {
                 const currentToken = tokens.shift()!
 
                 // 다음 줄로 넘어갔는데
-                if (currentToken instanceof EOLPiece) {
+                if (currentToken instanceof EOL) {
                     // 첫 토큰이 들여쓰기면
-                    if (tokens[0] instanceof IndentPiece) {
+                    if (tokens[0] instanceof Indent) {
                         // 들여쓰기가 같거나 더 깊으면
                         if (tokens[0].size >= token.size) {
                             blockTokens.push(currentToken)
@@ -37,7 +37,7 @@ export function parseIndent(_tokens: Piece[], indent: number = 0) {
             }
 
             const child = parseIndent(blockTokens, indent + 1)
-            groups.push(new BlockPiece(child))
+            groups.push(new Block(child))
         } else {
             groups.push(token)
         }

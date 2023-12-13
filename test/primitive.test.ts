@@ -3,7 +3,7 @@ import { assertEquals } from 'assert'
 import { tokenize } from '../tokenize/index.ts'
 import { parse } from '../parser/index.ts'
 import { run } from '../runtime/run.ts'
-import { BooleanPiece, NumberPiece, StringPiece } from '../piece/index.ts'
+import { BooleanValue, NumberValue, StringValue } from '../nodes/index.ts'
 
 Deno.test('Number to print', () => {
     const _consoleLog = console.log
@@ -17,7 +17,7 @@ Deno.test('Number to print', () => {
 `
     const result = run(parse(tokenize(code)))
     assertEquals(printed, '20')
-    assertEquals(result.getVariable('나이'), new NumberPiece(20))
+    assertEquals(result.getVariable('나이'), new NumberValue(20))
     assertEquals(result.getVariable('나이').toPrint(), '20')
 
     console.log = _consoleLog
@@ -36,7 +36,7 @@ Deno.test('String to print', () => {
 
     const result = run(parse(tokenize(code)))
     assertEquals(printed, '김철수')
-    assertEquals(result.getVariable('이름'), new StringPiece('김철수'))
+    assertEquals(result.getVariable('이름'), new StringValue('김철수'))
     assertEquals(result.getVariable('이름').toPrint(), '김철수')
 
     console.log = _consoleLog
@@ -60,10 +60,10 @@ Deno.test('Boolean to print', () => {
 
     assertEquals(printed, '거짓참')
 
-    assertEquals(result.getVariable('가짜'), new BooleanPiece(false))
+    assertEquals(result.getVariable('가짜'), new BooleanValue(false))
     assertEquals(result.getVariable('가짜').toPrint(), '거짓')
 
-    assertEquals(result.getVariable('진짜'), new BooleanPiece(true))
+    assertEquals(result.getVariable('진짜'), new BooleanValue(true))
     assertEquals(result.getVariable('진짜').toPrint(), '참')
 
     console.log = _consoleLog

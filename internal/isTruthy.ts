@@ -1,16 +1,16 @@
-import { ValueTypes } from '../piece/basement.ts'
-import { BooleanPiece, NumberPiece, StringPiece } from '../piece/primitive.ts'
+import { ValueTypes } from '../nodes/base.ts'
+import { BooleanValue, NumberValue, StringValue } from '../nodes/primitive.ts'
 
 export function isTruthy(value: ValueTypes) {
-    if (value instanceof BooleanPiece) {
+    if (value instanceof BooleanValue) {
         return value.value
     }
 
-    if (value instanceof NumberPiece) {
+    if (value instanceof NumberValue) {
         return value.value !== 0
     }
 
-    if (value instanceof StringPiece) {
+    if (value instanceof StringValue) {
         return value.value !== ''
     }
 

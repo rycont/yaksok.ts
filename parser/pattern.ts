@@ -1,44 +1,44 @@
 import {
-    Piece,
-    DeclareVariablePiece,
-    KeywordPiece,
-    EvaluatablePiece,
-    EOLPiece,
-    DivideOperatorPiece,
-    MultiplyOperatorPiece,
-    BinaryCalculationPiece,
-    OperatorPiece,
-    ConditionPiece,
-    BlockPiece,
-    PrintPiece,
-    VariablePiece,
-    PlusOperatorPiece,
-    MinusOperatorPiece,
-    EqualOperatorPiece,
-    ValueGroupPiece,
-    AndOperatorPiece,
-    RepeatPiece,
-    GreaterThanOperatorPiece,
-    GreaterThanOrEqualOperatorPiece,
-    BreakPiece,
-    LessThanOperatorPiece,
-    LessThanOrEqualOperatorPiece,
-    SequencePiece,
-    ListPiece,
-    IndexingPiece,
-    IndexFetchPiece,
-    SetToIndexPiece,
-    ExpressionPiece,
-    RangeOperatorPiece,
-} from '../piece/index.ts'
+    Node,
+    SetVariable,
+    Keyword,
+    Evaluable,
+    EOL,
+    DivideOperator,
+    MultiplyOperator,
+    BinaryCalculation,
+    Operator,
+    IfStatement,
+    Block,
+    Print,
+    Variable,
+    PlusOperator,
+    MinusOperator,
+    EqualOperator,
+    ValueGroup,
+    AndOperator,
+    Loop,
+    GreaterThanOperator,
+    GreaterThanOrEqualOperator,
+    Break,
+    LessThanOperator,
+    LessThanOrEqualOperator,
+    Sequence,
+    List,
+    Indexing,
+    IndexFetch,
+    SetToIndex,
+    Expression,
+    RangeOperator,
+} from '../nodes/index.ts'
 
 export interface Pattern {
     wrapper: {
-        new (...args: any[]): Piece
+        new (...args: any[]): Node
     }
     units: {
         type: {
-            new (...args: any[]): Piece
+            new (...args: any[]): Node
         }
         value?: Record<string, unknown> | string | number
         as?: string
@@ -48,351 +48,351 @@ export interface Pattern {
 
 export const internalPatterns: Pattern[] = [
     {
-        wrapper: EqualOperatorPiece,
+        wrapper: EqualOperator,
         units: [
             {
-                type: OperatorPiece,
+                type: Operator,
                 value: '=',
             },
         ],
     },
     {
-        wrapper: SequencePiece,
+        wrapper: Sequence,
         units: [
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'a',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: ',',
             },
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'b',
             },
         ],
     },
     {
-        wrapper: ListPiece,
+        wrapper: List,
         units: [
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: '[',
             },
             {
-                type: SequencePiece,
+                type: Sequence,
                 as: 'sequence',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: ']',
             },
         ],
     },
     {
-        wrapper: ListPiece,
+        wrapper: List,
         units: [
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: '[',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: ']',
             },
         ],
     },
     {
-        wrapper: IndexingPiece,
+        wrapper: Indexing,
         units: [
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: '[',
             },
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'index',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: ']',
             },
         ],
     },
     {
-        wrapper: IndexFetchPiece,
+        wrapper: IndexFetch,
         units: [
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'target',
             },
             {
-                type: IndexingPiece,
+                type: Indexing,
                 as: 'index',
             },
         ],
     },
     {
-        wrapper: SetToIndexPiece,
+        wrapper: SetToIndex,
         units: [
             {
-                type: IndexFetchPiece,
+                type: IndexFetch,
                 as: 'target',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: ':',
             },
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'value',
             },
         ],
     },
     {
-        wrapper: ValueGroupPiece,
+        wrapper: ValueGroup,
         units: [
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: '(',
             },
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'value',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: ')',
             },
         ],
     },
     {
-        wrapper: GreaterThanOperatorPiece,
+        wrapper: GreaterThanOperator,
         units: [
             {
-                type: OperatorPiece,
+                type: Operator,
                 value: '>',
             },
         ],
     },
     {
-        wrapper: GreaterThanOrEqualOperatorPiece,
+        wrapper: GreaterThanOrEqualOperator,
         units: [
             {
-                type: GreaterThanOperatorPiece,
+                type: GreaterThanOperator,
             },
             {
-                type: EqualOperatorPiece,
+                type: EqualOperator,
             },
         ],
     },
     {
-        wrapper: LessThanOperatorPiece,
+        wrapper: LessThanOperator,
         units: [
             {
-                type: OperatorPiece,
+                type: Operator,
                 value: '<',
             },
         ],
     },
     {
-        wrapper: LessThanOrEqualOperatorPiece,
+        wrapper: LessThanOrEqualOperator,
         units: [
             {
-                type: LessThanOperatorPiece,
+                type: LessThanOperator,
             },
             {
-                type: EqualOperatorPiece,
+                type: EqualOperator,
             },
         ],
     },
     {
-        wrapper: VariablePiece,
+        wrapper: Variable,
         units: [
             {
-                type: KeywordPiece,
+                type: Keyword,
                 value: '이전',
             },
             {
-                type: VariablePiece,
+                type: Variable,
                 as: 'name',
             },
         ],
     },
     {
-        wrapper: DeclareVariablePiece,
+        wrapper: SetVariable,
         units: [
             {
-                type: VariablePiece,
+                type: Variable,
                 as: 'name',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: ':',
             },
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'value',
             },
             {
-                type: EOLPiece,
+                type: EOL,
             },
         ],
     },
     {
-        wrapper: DivideOperatorPiece,
+        wrapper: DivideOperator,
         units: [
             {
-                type: OperatorPiece,
+                type: Operator,
                 value: '/',
             },
         ],
     },
     {
-        wrapper: MultiplyOperatorPiece,
+        wrapper: MultiplyOperator,
         units: [
             {
-                type: OperatorPiece,
+                type: Operator,
                 value: '*',
             },
         ],
     },
     {
-        wrapper: PlusOperatorPiece,
+        wrapper: PlusOperator,
         units: [
             {
-                type: OperatorPiece,
+                type: Operator,
                 value: '+',
             },
         ],
     },
     {
-        wrapper: MinusOperatorPiece,
+        wrapper: MinusOperator,
         units: [
             {
-                type: OperatorPiece,
+                type: Operator,
                 value: '-',
             },
         ],
     },
     {
-        wrapper: AndOperatorPiece,
+        wrapper: AndOperator,
         units: [
             {
-                type: KeywordPiece,
+                type: Keyword,
                 value: '이고',
             },
         ],
     },
     {
-        wrapper: RangeOperatorPiece,
+        wrapper: RangeOperator,
         units: [
             {
-                type: OperatorPiece,
+                type: Operator,
                 value: '~',
             },
         ],
     },
     {
-        wrapper: BinaryCalculationPiece,
+        wrapper: BinaryCalculation,
         units: [
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'left',
             },
             {
-                type: OperatorPiece,
+                type: Operator,
                 as: 'operator',
             },
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'right',
             },
         ],
     },
     {
-        wrapper: ConditionPiece,
+        wrapper: IfStatement,
         units: [
             {
-                type: KeywordPiece,
+                type: Keyword,
                 value: '만약',
             },
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'condition',
             },
             {
-                type: KeywordPiece,
+                type: Keyword,
                 value: '이면',
             },
             {
-                type: EOLPiece,
+                type: EOL,
             },
             {
-                type: BlockPiece,
+                type: Block,
                 as: 'body',
             },
         ],
     },
     {
-        wrapper: ConditionPiece,
+        wrapper: IfStatement,
         units: [
             {
-                type: ConditionPiece,
+                type: IfStatement,
                 as: 'ifBody',
             },
             {
-                type: KeywordPiece,
+                type: Keyword,
                 value: '아니면',
             },
             {
-                type: EOLPiece,
+                type: EOL,
             },
             {
-                type: BlockPiece,
+                type: Block,
                 as: 'elseBody',
             },
         ],
     },
     {
-        wrapper: PrintPiece,
+        wrapper: Print,
         units: [
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
                 as: 'value',
             },
             {
-                type: KeywordPiece,
+                type: Keyword,
                 value: '보여주기',
             },
         ],
     },
     {
-        wrapper: RepeatPiece,
+        wrapper: Loop,
         units: [
             {
-                type: KeywordPiece,
+                type: Keyword,
                 value: '반복',
             },
             {
-                type: EOLPiece,
+                type: EOL,
             },
             {
-                type: BlockPiece,
+                type: Block,
                 as: 'body',
             },
         ],
     },
     {
-        wrapper: BreakPiece,
+        wrapper: Break,
         units: [
             {
-                type: KeywordPiece,
+                type: Keyword,
                 value: '반복',
             },
             {
-                type: KeywordPiece,
+                type: Keyword,
                 value: '그만',
             },
         ],

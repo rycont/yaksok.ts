@@ -2,16 +2,16 @@ import { assertEquals } from 'assert'
 import { parse } from '../parser/index.ts'
 
 import { tokenize } from '../tokenize/index.ts'
-import { KeywordPiece } from '../piece/basement.ts'
-import { StringPiece } from '../piece/primitive.ts'
+import { Keyword } from '../nodes/base.ts'
+import { StringValue } from '../nodes/primitive.ts'
 import {
-    BinaryCalculationPiece,
-    BlockPiece,
-    DeclareVariablePiece,
-    EOLPiece,
-    PlusOperatorPiece,
-    VariablePiece,
-} from '../piece/index.ts'
+    BinaryCalculation,
+    Block,
+    SetVariable,
+    EOL,
+    PlusOperator,
+    Variable,
+} from '../nodes/index.ts'
 
 Deno.test('Matching case: Wrapping class inherits from child class', () => {
     const code = `
@@ -22,17 +22,17 @@ Deno.test('Matching case: Wrapping class inherits from child class', () => {
 
     assertEquals(
         result,
-        new BlockPiece([
-            new EOLPiece(),
-            new DeclareVariablePiece({
-                name: new VariablePiece({ name: new KeywordPiece('이름') }),
-                value: new BinaryCalculationPiece({
-                    left: new StringPiece('홍길'),
-                    operator: new PlusOperatorPiece(),
-                    right: new StringPiece('동'),
+        new Block([
+            new EOL(),
+            new SetVariable({
+                name: new Variable({ name: new Keyword('이름') }),
+                value: new BinaryCalculation({
+                    left: new StringValue('홍길'),
+                    operator: new PlusOperator(),
+                    right: new StringValue('동'),
                 }),
             }),
-            new EOLPiece(),
+            new EOL(),
         ]),
     )
 })

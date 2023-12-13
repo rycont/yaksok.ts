@@ -1,75 +1,64 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 
-import {
-    EvaluatablePiece,
-    ExecutablePiece,
-    NumberPiece,
-    OperatorPiece,
-} from '../piece/index.ts'
+import { Evaluable, Executable, NumberValue, Operator } from '../nodes/index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 
 Deno.test('Basement Nodes are not executable', async (context) => {
-    await context.step('ExecutablePiece', () => {
+    await context.step('Executable', () => {
         try {
-            const node = new ExecutablePiece()
+            const node = new Executable()
             node.execute(new Scope(), new CallFrame(node))
             unreachable()
         } catch (error) {
             assertIsError(error)
-            assertEquals(error.message, 'ExecutablePiece has no execute method')
+            assertEquals(error.message, 'Executable has no execute method')
         }
     })
 
-    await context.step('EvaluatablePiece', () => {
+    await context.step('Evaluable', () => {
         try {
-            const node = new EvaluatablePiece()
+            const node = new Evaluable()
             node.execute(new Scope(), new CallFrame(node))
             unreachable()
         } catch (error) {
             assertIsError(error)
-            assertEquals(
-                error.message,
-                'EvaluatablePiece has no execute method',
-            )
+            assertEquals(error.message, 'Evaluable has no execute method')
         }
     })
 })
 
 Deno.test('Basement Nodes are not printable', async (context) => {
-    await context.step('ExecutablePiece', () => {
+    await context.step('Executable', () => {
         try {
-            const node = new ExecutablePiece()
+            const node = new Executable()
             node.toPrint()
             unreachable()
         } catch (error) {
             assertIsError(error)
-            assertEquals(error.message, 'ExecutablePiece has no toPrint method')
+            assertEquals(error.message, 'Executable has no toPrint method')
         }
     })
 
-    await context.step('EvaluatablePiece', () => {
+    await context.step('Evaluable', () => {
         try {
-            const node = new EvaluatablePiece()
+            const node = new Evaluable()
             node.toPrint()
             unreachable()
         } catch (error) {
             assertIsError(error)
-            assertEquals(
-                error.message,
-                'EvaluatablePiece has no toPrint method',
-            )
+            assertEquals(error.message, 'Evaluable has no toPrint method')
         }
     })
 })
 
 Deno.test('Operator base class has no implemented calc method', () => {
     try {
-        const node = new OperatorPiece()
-        node.call(new NumberPiece(1), new NumberPiece(2))
+        const node = new Operator()
+        node.call(new NumberValue(1), new NumberValue(2))
         unreachable()
     } catch (error) {
         assertIsError(error)
-        assertEquals(error.message, 'OperatorPiece has no call method')
+        assertEquals(error.message, 'Operator has no call method')
     }
 })

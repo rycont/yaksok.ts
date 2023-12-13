@@ -1,13 +1,13 @@
 import { YaksokError } from '../errors.ts'
-import { OperatorPiece, ValueTypes } from './index.ts'
+import { Operator, ValueTypes } from './index.ts'
 import {
-    NumberPiece,
-    StringPiece,
-    PrimitiveValuePiece,
-    BooleanPiece,
+    NumberValue,
+    StringValue,
+    PrimitiveValue,
+    BooleanValue,
 } from './primitive.ts'
 
-export class PlusOperatorPiece extends OperatorPiece {
+export class PlusOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -15,61 +15,61 @@ export class PlusOperatorPiece extends OperatorPiece {
 
         const [left, right] = operands
 
-        if (left instanceof NumberPiece && right instanceof NumberPiece) {
-            return new NumberPiece(left.value + right.value)
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new NumberValue(left.value + right.value)
         }
 
-        if (left instanceof StringPiece && right instanceof StringPiece) {
-            return new StringPiece(left.value + right.value)
+        if (left instanceof StringValue && right instanceof StringValue) {
+            return new StringValue(left.value + right.value)
         }
 
-        if (left instanceof StringPiece && right instanceof NumberPiece) {
-            return new StringPiece(left.value + right.value.toString())
+        if (left instanceof StringValue && right instanceof NumberValue) {
+            return new StringValue(left.value + right.value.toString())
         }
 
-        if (left instanceof NumberPiece && right instanceof StringPiece) {
-            return new StringPiece(left.value.toString() + right.value)
+        if (left instanceof NumberValue && right instanceof StringValue) {
+            return new StringValue(left.value.toString() + right.value)
         }
 
         throw new YaksokError('INVALID_TYPE_FOR_PLUS_OPERATOR')
     }
 }
 
-export class MinusOperatorPiece extends OperatorPiece {
+export class MinusOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
         }
 
         const [left, right] = operands
-        if (left instanceof NumberPiece && right instanceof NumberPiece) {
-            return new NumberPiece(left.value - right.value)
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new NumberValue(left.value - right.value)
         }
 
         throw new YaksokError('INVALID_TYPE_FOR_MINUS_OPERATOR')
     }
 }
 
-export class MultiplyOperatorPiece extends OperatorPiece {
+export class MultiplyOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
         }
 
         const [left, right] = operands
-        if (left instanceof NumberPiece && right instanceof NumberPiece) {
-            return new NumberPiece(left.value * right.value)
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new NumberValue(left.value * right.value)
         }
 
-        if (left instanceof StringPiece && right instanceof NumberPiece) {
-            return new StringPiece(left.value.repeat(right.value))
+        if (left instanceof StringValue && right instanceof NumberValue) {
+            return new StringValue(left.value.repeat(right.value))
         }
 
         throw new YaksokError('INVALID_TYPE_FOR_MULTIPLY_OPERATOR')
     }
 }
 
-export class DivideOperatorPiece extends OperatorPiece {
+export class DivideOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -77,15 +77,15 @@ export class DivideOperatorPiece extends OperatorPiece {
 
         const [left, right] = operands
 
-        if (left instanceof NumberPiece && right instanceof NumberPiece) {
-            return new NumberPiece(left.value / right.value)
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new NumberValue(left.value / right.value)
         }
 
         throw new YaksokError('INVALID_TYPE_FOR_DIVIDE_OPERATOR')
     }
 }
 
-export class EqualOperatorPiece extends OperatorPiece {
+export class EqualOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -93,11 +93,8 @@ export class EqualOperatorPiece extends OperatorPiece {
 
         const [left, right] = operands
 
-        if (
-            left instanceof PrimitiveValuePiece &&
-            right instanceof PrimitiveValuePiece
-        ) {
-            return new BooleanPiece(left.value === right.value)
+        if (left instanceof PrimitiveValue && right instanceof PrimitiveValue) {
+            return new BooleanValue(left.value === right.value)
         }
 
         throw new Error(
@@ -106,7 +103,7 @@ export class EqualOperatorPiece extends OperatorPiece {
     }
 }
 
-export class AndOperatorPiece extends OperatorPiece {
+export class AndOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -115,17 +112,17 @@ export class AndOperatorPiece extends OperatorPiece {
         const [left, right] = operands
 
         if (
-            !(left instanceof BooleanPiece) ||
-            !(right instanceof BooleanPiece)
+            !(left instanceof BooleanValue) ||
+            !(right instanceof BooleanValue)
         ) {
             throw new YaksokError('INVALID_TYPE_FOR_AND_OPERATOR')
         }
 
-        return new BooleanPiece(left.value && right.value)
+        return new BooleanValue(left.value && right.value)
     }
 }
 
-export class GreaterThanOperatorPiece extends OperatorPiece {
+export class GreaterThanOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -133,15 +130,15 @@ export class GreaterThanOperatorPiece extends OperatorPiece {
 
         const [left, right] = operands
 
-        if (left instanceof NumberPiece && right instanceof NumberPiece) {
-            return new BooleanPiece(left.value > right.value)
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new BooleanValue(left.value > right.value)
         }
 
         throw new YaksokError('INVALID_TYPE_FOR_GREATER_THAN_OPERATOR')
     }
 }
 
-export class LessThanOperatorPiece extends OperatorPiece {
+export class LessThanOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -149,15 +146,15 @@ export class LessThanOperatorPiece extends OperatorPiece {
 
         const [left, right] = operands
 
-        if (left instanceof NumberPiece && right instanceof NumberPiece) {
-            return new BooleanPiece(left.value < right.value)
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new BooleanValue(left.value < right.value)
         }
 
         throw new YaksokError('INVALID_TYPE_FOR_LESS_THAN_OPERATOR')
     }
 }
 
-export class GreaterThanOrEqualOperatorPiece extends OperatorPiece {
+export class GreaterThanOrEqualOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -165,15 +162,15 @@ export class GreaterThanOrEqualOperatorPiece extends OperatorPiece {
 
         const [left, right] = operands
 
-        if (left instanceof NumberPiece && right instanceof NumberPiece) {
-            return new BooleanPiece(left.value >= right.value)
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new BooleanValue(left.value >= right.value)
         }
 
         throw new YaksokError('INVALID_TYPE_FOR_GREATER_THAN_OR_EQUAL_OPERATOR')
     }
 }
 
-export class LessThanOrEqualOperatorPiece extends OperatorPiece {
+export class LessThanOrEqualOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -181,8 +178,8 @@ export class LessThanOrEqualOperatorPiece extends OperatorPiece {
 
         const [left, right] = operands
 
-        if (left instanceof NumberPiece && right instanceof NumberPiece) {
-            return new BooleanPiece(left.value <= right.value)
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new BooleanValue(left.value <= right.value)
         }
 
         throw new YaksokError('INVALID_TYPE_FOR_LESS_OR_EQUAL_OPERATOR')

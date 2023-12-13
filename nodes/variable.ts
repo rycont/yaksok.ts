@@ -1,15 +1,15 @@
 import { YaksokError } from '../errors.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { EvaluatablePiece, KeywordPiece, ValueTypes } from './index.ts'
+import { Evaluable, Keyword, ValueTypes } from './index.ts'
 
-export class VariablePiece extends EvaluatablePiece {
+export class Variable extends Evaluable {
     name: string
 
-    constructor(args: { name: KeywordPiece | VariablePiece }) {
+    constructor(args: { name: Keyword | Variable }) {
         super()
 
-        if (args.name instanceof KeywordPiece) {
+        if (args.name instanceof Keyword) {
             this.name = args.name.value
         } else {
             this.name = args.name.name
@@ -34,11 +34,11 @@ export const RESERVED_WORDS = [
     '훔쳐오기',
 ]
 
-export class DeclareVariablePiece extends EvaluatablePiece {
+export class SetVariable extends Evaluable {
     name: string
-    value: EvaluatablePiece
+    value: Evaluable
 
-    constructor(props: { name: VariablePiece; value: EvaluatablePiece }) {
+    constructor(props: { name: Variable; value: Evaluable }) {
         super()
 
         this.name = props.name.name

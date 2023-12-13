@@ -1,11 +1,11 @@
 import { YaksokError } from '../errors.ts'
-import { Piece } from '../piece/index.ts'
+import { Node } from '../nodes/index.ts'
 
 export class CallFrame {
     parent: CallFrame | undefined
     event: Record<string, (...args: any[]) => void> = {}
 
-    constructor(_piece: Piece, parent?: CallFrame) {
+    constructor(_node: Node, parent?: CallFrame) {
         this.parent = parent
     }
 

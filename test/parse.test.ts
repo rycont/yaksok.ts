@@ -1,18 +1,13 @@
 import { assertEquals } from 'assert'
 import { parse } from '../parser/index.ts'
-import { BlockPiece } from '../piece/block.ts'
-import { BinaryCalculationPiece } from '../piece/calculation.ts'
-import { EOLPiece } from '../piece/misc.ts'
-import { EqualOperatorPiece } from '../piece/operator.ts'
-import { NumberPiece } from '../piece/primitive.ts'
+import { Block } from '../nodes/block.ts'
+import { BinaryCalculation } from '../nodes/calculation.ts'
+import { EOL } from '../nodes/misc.ts'
+import { EqualOperator } from '../nodes/operator.ts'
+import { NumberValue } from '../nodes/primitive.ts'
 
 import { tokenize } from '../tokenize/index.ts'
-import {
-    ConditionPiece,
-    DeclareVariablePiece,
-    KeywordPiece,
-    VariablePiece,
-} from '../piece/index.ts'
+import { IfStatement, SetVariable, Keyword, Variable } from '../nodes/index.ts'
 
 Deno.test('Parse with indent', () => {
     const code = `
@@ -29,55 +24,55 @@ Deno.test('Parse with indent', () => {
 
     assertEquals(
         result,
-        new BlockPiece([
-            new EOLPiece(),
-            new ConditionPiece({
-                ifBody: new ConditionPiece({
-                    condition: new BinaryCalculationPiece({
-                        left: new NumberPiece(1),
-                        operator: new EqualOperatorPiece(),
-                        right: new NumberPiece(1),
+        new Block([
+            new EOL(),
+            new IfStatement({
+                ifBody: new IfStatement({
+                    condition: new BinaryCalculation({
+                        left: new NumberValue(1),
+                        operator: new EqualOperator(),
+                        right: new NumberValue(1),
                     }),
-                    body: new BlockPiece([
-                        new ConditionPiece({
-                            ifBody: new ConditionPiece({
-                                condition: new BinaryCalculationPiece({
-                                    left: new NumberPiece(2),
-                                    operator: new EqualOperatorPiece(),
-                                    right: new NumberPiece(2),
+                    body: new Block([
+                        new IfStatement({
+                            ifBody: new IfStatement({
+                                condition: new BinaryCalculation({
+                                    left: new NumberValue(2),
+                                    operator: new EqualOperator(),
+                                    right: new NumberValue(2),
                                 }),
-                                body: new BlockPiece([
-                                    new DeclareVariablePiece({
-                                        name: new VariablePiece({
-                                            name: new KeywordPiece('값'),
+                                body: new Block([
+                                    new SetVariable({
+                                        name: new Variable({
+                                            name: new Keyword('값'),
                                         }),
-                                        value: new NumberPiece(5),
+                                        value: new NumberValue(5),
                                     }),
                                 ]),
                             }),
-                            elseBody: new BlockPiece([
-                                new DeclareVariablePiece({
-                                    name: new VariablePiece({
-                                        name: new KeywordPiece('값'),
+                            elseBody: new Block([
+                                new SetVariable({
+                                    name: new Variable({
+                                        name: new Keyword('값'),
                                     }),
-                                    value: new NumberPiece(6),
+                                    value: new NumberValue(6),
                                 }),
                             ]),
                         }),
-                        new EOLPiece(),
+                        new EOL(),
                     ]),
                 }),
 
-                elseBody: new BlockPiece([
-                    new DeclareVariablePiece({
-                        name: new VariablePiece({
-                            name: new KeywordPiece('값'),
+                elseBody: new Block([
+                    new SetVariable({
+                        name: new Variable({
+                            name: new Keyword('값'),
                         }),
-                        value: new NumberPiece(3),
+                        value: new NumberValue(3),
                     }),
                 ]),
             }),
-            new EOLPiece(),
+            new EOL(),
         ]),
     )
 })

@@ -3,13 +3,13 @@ import { tokenize } from '../tokenize/index.ts'
 
 import { parse } from '../parser/index.ts'
 import {
-    BlockPiece,
-    EOLPiece,
-    NumberPiece,
-    PrintPiece,
-    RepeatPiece,
-    StringPiece,
-} from '../piece/index.ts'
+    Block,
+    EOL,
+    NumberValue,
+    Print,
+    Loop,
+    StringValue,
+} from '../nodes/index.ts'
 import { run } from '../runtime/run.ts'
 
 Deno.test('Parse Loop', () => {
@@ -21,17 +21,17 @@ Deno.test('Parse Loop', () => {
 
     assertEquals(
         node,
-        new BlockPiece([
-            new EOLPiece(),
-            new RepeatPiece({
-                body: new BlockPiece([
-                    new PrintPiece({
-                        value: new StringPiece('Hello, World!'),
+        new Block([
+            new EOL(),
+            new Loop({
+                body: new Block([
+                    new Print({
+                        value: new StringValue('Hello, World!'),
                     }),
-                    new EOLPiece(),
+                    new EOL(),
                 ]),
             }),
-            new EOLPiece(),
+            new EOL(),
         ]),
     )
 })
@@ -46,7 +46,7 @@ Deno.test('Run loop', () => {
 `
     try {
         const result = run(parse(tokenize(code)))
-        assertEquals(result.getVariable('횟수'), new NumberPiece(11))
+        assertEquals(result.getVariable('횟수'), new NumberValue(11))
     } catch (_) {
         unreachable()
     }

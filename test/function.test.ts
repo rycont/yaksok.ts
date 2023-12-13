@@ -4,15 +4,15 @@ import { parse } from '../parser/index.ts'
 import { tokenize } from '../tokenize/index.ts'
 
 import {
-    BlockPiece,
-    DeclareVariablePiece,
-    EvaluatablePiece,
-    FunctionDeclarationPiece,
-    FunctionInvokePiece,
-    KeywordPiece,
-    NumberPiece,
-    VariablePiece,
-} from '../piece/index.ts'
+    Block,
+    SetVariable,
+    Evaluable,
+    FunctionDeclaration,
+    FunctionInvoke,
+    Keyword,
+    NumberValue,
+    Variable,
+} from '../nodes/index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { YaksokError } from '../errors.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
@@ -25,7 +25,7 @@ Deno.test('Function that returns value', () => {
 더한결과: 10와 20를 더하기
 `
     const result = run(parse(tokenize(code)))
-    assertEquals(result.getVariable('더한결과'), new NumberPiece(30))
+    assertEquals(result.getVariable('더한결과'), new NumberValue(30))
 })
 
 Deno.test('Function that returns nothing', () => {
@@ -36,27 +36,27 @@ Deno.test('Function that returns nothing', () => {
 더한결과: 10와 20를 더하기
 `
     const result = run(parse(tokenize(code)))
-    assertEquals(result.getVariable('더한결과'), new NumberPiece(0))
+    assertEquals(result.getVariable('더한결과'), new NumberValue(0))
 })
 
 Deno.test('Function invoke argument is not evaluable', async (context) => {
     const scope = new Scope()
 
     await context.step('Create function', () => {
-        const testFunction = new FunctionDeclarationPiece({
+        const testFunction = new FunctionDeclaration({
             name: '주문하기',
-            body: new BlockPiece([
-                new DeclareVariablePiece({
-                    name: new VariablePiece({
-                        name: new KeywordPiece('나이'),
+            body: new Block([
+                new SetVariable({
+                    name: new Variable({
+                        name: new Keyword('나이'),
                     }),
-                    value: new NumberPiece(20),
+                    value: new NumberValue(20),
                 }),
-                new DeclareVariablePiece({
-                    name: new VariablePiece({
-                        name: new KeywordPiece('결과'),
+                new SetVariable({
+                    name: new Variable({
+                        name: new Keyword('결과'),
                     }),
-                    value: new NumberPiece(10),
+                    value: new NumberValue(10),
                 }),
             ]),
         })
@@ -65,10 +65,10 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
     })
 
     await context.step('Invoke function with broken arguments', () => {
-        const functionInvokation = new FunctionInvokePiece({
-            음식: new KeywordPiece('사과') as unknown as EvaluatablePiece,
+        const functionInvokation = new FunctionInvoke({
+            음식: new Keyword('사과') as unknown as Evaluable,
             name: '주문하기',
-        } as unknown as Record<string, EvaluatablePiece> & { name: string })
+        } as unknown as Record<string, Evaluable> & { name: string })
 
         try {
             functionInvokation.execute(scope, new CallFrame(functionInvokation))
@@ -80,9 +80,9 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
     })
 
     await context.step('Invoke function with no name', () => {
-        const functionInvokation = new FunctionInvokePiece({
-            음식: new KeywordPiece('사과') as unknown as EvaluatablePiece,
-        } as unknown as Record<string, EvaluatablePiece> & { name: string })
+        const functionInvokation = new FunctionInvoke({
+            음식: new Keyword('사과') as unknown as Evaluable,
+        } as unknown as Record<string, Evaluable> & { name: string })
 
         try {
             functionInvokation.execute(scope, new CallFrame(functionInvokation))

@@ -1,20 +1,20 @@
 import { isTruthy } from '../internal/isTruthy.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { ExecutablePiece, EvaluatablePiece } from './basement.ts'
-import { BlockPiece } from './block.ts'
+import { Executable, Evaluable } from './base.ts'
+import { Block } from './block.ts'
 
-export class ConditionPiece extends ExecutablePiece {
-    condition: EvaluatablePiece
-    ifBody: BlockPiece
-    elseBody?: BlockPiece
+export class IfStatement extends Executable {
+    condition: Evaluable
+    ifBody: Block
+    elseBody?: Block
 
     constructor(
         props:
-            | { condition: EvaluatablePiece; body: BlockPiece }
+            | { condition: Evaluable; body: Block }
             | {
-                  ifBody: ConditionPiece
-                  elseBody: BlockPiece
+                  ifBody: IfStatement
+                  elseBody: Block
               },
     ) {
         super()

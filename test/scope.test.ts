@@ -7,15 +7,15 @@ import {
 } from 'assert'
 import { Scope } from '../runtime/scope.ts'
 import {
-    BlockPiece,
-    EvaluatablePiece,
-    FunctionDeclarationPiece,
-    FunctionInvokePiece,
-    KeywordPiece,
-    NumberPiece,
-} from '../piece/index.ts'
+    Block,
+    Evaluable,
+    FunctionDeclaration,
+    FunctionInvoke,
+    Keyword,
+    NumberValue,
+} from '../nodes/index.ts'
 import { YaksokError } from '../errors.ts'
-import { DeclareVariablePiece, VariablePiece } from '../piece/variable.ts'
+import { SetVariable, Variable } from '../nodes/variable.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 
 Deno.test('Create Scope', () => {
@@ -28,12 +28,12 @@ Deno.test('Set / Get Variable', async (context) => {
     const scope = new Scope()
 
     await context.step('Set Variable', () => {
-        scope.setVariable('a', new NumberPiece(1))
+        scope.setVariable('a', new NumberValue(1))
         assert('a' in scope.variables)
     })
 
     await context.step('Get Variable', () => {
-        assertEquals(scope.getVariable('a'), new NumberPiece(1))
+        assertEquals(scope.getVariable('a'), new NumberValue(1))
     })
 })
 
@@ -55,18 +55,18 @@ Deno.test('Set / Get Variable from Parent', async (context) => {
     const childScope = new Scope(scope)
 
     await context.step('Create Variable of Parent', () => {
-        scope.setVariable('a', new NumberPiece(1))
+        scope.setVariable('a', new NumberValue(1))
         assert('a' in scope.variables)
     })
 
     await context.step('Set Variable of Parent', () => {
-        assertEquals(childScope.getVariable('a'), new NumberPiece(1))
+        assertEquals(childScope.getVariable('a'), new NumberValue(1))
 
-        childScope.setVariable('a', new NumberPiece(2))
+        childScope.setVariable('a', new NumberValue(2))
 
         assert(!('a' in childScope.variables))
-        assertEquals(childScope.getVariable('a'), new NumberPiece(2))
-        assertEquals(scope.getVariable('a'), new NumberPiece(2))
+        assertEquals(childScope.getVariable('a'), new NumberValue(2))
+        assertEquals(scope.getVariable('a'), new NumberValue(2))
     })
 })
 
@@ -76,32 +76,32 @@ Deno.test('Set / Get Variable from Grandparent', async (context) => {
     const grandChildScope = new Scope(childScope)
 
     await context.step('Create Variable of Parent', () => {
-        scope.setVariable('a', new NumberPiece(1))
+        scope.setVariable('a', new NumberValue(1))
         assert('a' in scope.variables)
     })
 
     await context.step('Set Variable of Parent', () => {
-        assertEquals(grandChildScope.getVariable('a'), new NumberPiece(1))
+        assertEquals(grandChildScope.getVariable('a'), new NumberValue(1))
 
-        grandChildScope.setVariable('a', new NumberPiece(2))
+        grandChildScope.setVariable('a', new NumberValue(2))
 
         assert(!('a' in grandChildScope.variables))
         assert(!('a' in childScope.variables))
         assert('a' in scope.variables)
 
-        assertEquals(grandChildScope.getVariable('a'), new NumberPiece(2))
-        assertEquals(childScope.getVariable('a'), new NumberPiece(2))
-        assertEquals(scope.getVariable('a'), new NumberPiece(2))
+        assertEquals(grandChildScope.getVariable('a'), new NumberValue(2))
+        assertEquals(childScope.getVariable('a'), new NumberValue(2))
+        assertEquals(scope.getVariable('a'), new NumberValue(2))
     })
 
     await context.step('Set not defined variable', () => {
-        grandChildScope.setVariable('b', new NumberPiece(3))
+        grandChildScope.setVariable('b', new NumberValue(3))
 
         assert('b' in grandChildScope.variables)
         assert(!('b' in childScope.variables))
         assert(!('b' in scope.variables))
 
-        assertEquals(grandChildScope.getVariable('b'), new NumberPiece(3))
+        assertEquals(grandChildScope.getVariable('b'), new NumberValue(3))
     })
 })
 
@@ -119,27 +119,27 @@ Deno.test('Get not defined variable', () => {
 })
 
 Deno.test('Set / Invoke Function', async (context) => {
-    const testFunction = new FunctionDeclarationPiece({
+    const testFunction = new FunctionDeclaration({
         name: '주문하기',
-        body: new BlockPiece([
-            new DeclareVariablePiece({
-                name: new VariablePiece({
-                    name: new KeywordPiece('나이'),
+        body: new Block([
+            new SetVariable({
+                name: new Variable({
+                    name: new Keyword('나이'),
                 }),
-                value: new NumberPiece(20),
+                value: new NumberValue(20),
             }),
-            new DeclareVariablePiece({
-                name: new VariablePiece({
-                    name: new KeywordPiece('결과'),
+            new SetVariable({
+                name: new Variable({
+                    name: new Keyword('결과'),
                 }),
-                value: new NumberPiece(10),
+                value: new NumberValue(10),
             }),
         ]),
     })
 
-    const functionInvokation = new FunctionInvokePiece({
+    const functionInvokation = new FunctionInvoke({
         name: '주문하기',
-    } as Record<string, EvaluatablePiece> & { name: string })
+    } as Record<string, Evaluable> & { name: string })
 
     const scope = new Scope()
 
@@ -157,7 +157,7 @@ Deno.test('Set / Invoke Function', async (context) => {
         )
 
         assert(!('나이' in scope.variables))
-        assertEquals(returnValue, new NumberPiece(10))
+        assertEquals(returnValue, new NumberValue(10))
     })
 
     const childScope = new Scope(scope)
@@ -169,7 +169,7 @@ Deno.test('Set / Invoke Function', async (context) => {
         )
 
         assert(!('나이' in childScope.variables))
-        assertEquals(returnValue, new NumberPiece(10))
+        assertEquals(returnValue, new NumberValue(10))
     })
 })
 
@@ -186,9 +186,9 @@ Deno.test('Get Not Defined Function', () => {
 })
 
 Deno.test('Invoke Not Defined Function', () => {
-    const functionInvokation = new FunctionInvokePiece({
+    const functionInvokation = new FunctionInvoke({
         name: '주문하기',
-    } as Record<string, EvaluatablePiece> & { name: string })
+    } as Record<string, Evaluable> & { name: string })
 
     const scope = new Scope()
 
@@ -202,12 +202,12 @@ Deno.test('Invoke Not Defined Function', () => {
 })
 
 Deno.test('Block Return Outside Of Function', async (context) => {
-    const block = new BlockPiece([
-        new DeclareVariablePiece({
-            name: new VariablePiece({
-                name: new KeywordPiece('결과'),
+    const block = new Block([
+        new SetVariable({
+            name: new Variable({
+                name: new Keyword('결과'),
             }),
-            value: new NumberPiece(1),
+            value: new NumberValue(1),
         }),
     ])
 
@@ -223,12 +223,12 @@ Deno.test('Block Return Outside Of Function', async (context) => {
 })
 
 Deno.test('Block Return Outside Of Function', async (context) => {
-    const block = new BlockPiece([
-        new DeclareVariablePiece({
-            name: new VariablePiece({
-                name: new KeywordPiece('결과'),
+    const block = new Block([
+        new SetVariable({
+            name: new Variable({
+                name: new Keyword('결과'),
             }),
-            value: new NumberPiece(1),
+            value: new NumberValue(1),
         }),
     ])
 
@@ -244,12 +244,12 @@ Deno.test('Block Return Outside Of Function', async (context) => {
 })
 
 Deno.test('Get Not Registered Event', async (context) => {
-    const block = new BlockPiece([
-        new DeclareVariablePiece({
-            name: new VariablePiece({
-                name: new KeywordPiece('결과'),
+    const block = new Block([
+        new SetVariable({
+            name: new Variable({
+                name: new Keyword('결과'),
             }),
-            value: new NumberPiece(1),
+            value: new NumberValue(1),
         }),
     ])
 

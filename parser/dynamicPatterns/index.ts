@@ -1,37 +1,34 @@
 import { Pattern } from '../pattern.ts'
 import {
-    Piece,
-    EOLPiece,
-    KeywordPiece,
-    VariablePiece,
-    EvaluatablePiece,
-    ExpressionPiece,
-} from '../../piece/index.ts'
+    Node,
+    EOL,
+    Keyword,
+    Variable,
+    Evaluable,
+    Expression,
+} from '../../nodes/index.ts'
 import { checkPattern } from '../checkPattern.ts'
 import { createFunctionPattern } from './functionVariants.ts'
 
-export function createDynamicPattern(tokens: Piece[]) {
+export function createDynamicPattern(tokens: Node[]) {
     let end = 0
     let patterns: Pattern[] = []
 
     while (true) {
-        if (tokens[end] instanceof EOLPiece) {
+        if (tokens[end] instanceof EOL) {
             let start = end - 1
 
             while (start >= 0) {
                 const current = tokens[start]
 
-                if (
-                    current instanceof KeywordPiece &&
-                    current.value === '약속'
-                ) {
+                if (current instanceof Keyword && current.value === '약속') {
                     const subtokens = tokens.slice(start + 1, end)
                     patterns = patterns.concat(createFunctionPattern(subtokens))
 
                     break
                 }
 
-                if (current instanceof EOLPiece) break
+                if (current instanceof EOL) break
 
                 start--
             }
@@ -45,11 +42,11 @@ export function createDynamicPattern(tokens: Piece[]) {
 
             if (pattern.name === 'variable') {
                 patterns.push({
-                    wrapper: VariablePiece,
+                    wrapper: Variable,
                     units: [
                         {
-                            type: KeywordPiece,
-                            value: (substack[0] as KeywordPiece).value,
+                            type: Keyword,
+                            value: (substack[0] as Keyword).value,
                             as: 'name',
                         },
                     ],
@@ -71,15 +68,15 @@ const dynamicPatternDetector: (Omit<Pattern, 'wrapper'> & {
         name: 'variable' as const,
         units: [
             {
-                type: KeywordPiece,
+                type: Keyword,
                 as: 'name',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: ':',
             },
             {
-                type: EvaluatablePiece,
+                type: Evaluable,
             },
         ],
     },
@@ -87,15 +84,15 @@ const dynamicPatternDetector: (Omit<Pattern, 'wrapper'> & {
         name: 'variable' as const,
         units: [
             {
-                type: KeywordPiece,
+                type: Keyword,
                 as: 'name',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: ':',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
             },
         ],
     },
@@ -103,15 +100,15 @@ const dynamicPatternDetector: (Omit<Pattern, 'wrapper'> & {
         name: 'variable' as const,
         units: [
             {
-                type: KeywordPiece,
+                type: Keyword,
                 as: 'name',
             },
             {
-                type: ExpressionPiece,
+                type: Expression,
                 value: ':',
             },
             {
-                type: KeywordPiece,
+                type: Keyword,
             },
         ],
     },

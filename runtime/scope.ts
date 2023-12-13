@@ -1,10 +1,10 @@
 import { YaksokError } from '../errors.ts'
-import { Piece } from '../piece/basement.ts'
-import { FunctionDeclarationPiece, ValueTypes } from '../piece/index.ts'
+import { Node } from '../nodes/base.ts'
+import { FunctionDeclaration, ValueTypes } from '../nodes/index.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>
-    functions: Record<string, FunctionDeclarationPiece> = {}
+    functions: Record<string, FunctionDeclaration> = {}
     parent: Scope | undefined
 
     constructor(parent?: Scope, initialVariable = {}) {
@@ -39,11 +39,11 @@ export class Scope {
         throw new YaksokError('NOT_DEFINED_VARIABLE', {}, { name })
     }
 
-    setFunction(name: string, pattern: FunctionDeclarationPiece) {
+    setFunction(name: string, pattern: FunctionDeclaration) {
         this.functions[name] = pattern
     }
 
-    getFunction(name: string): FunctionDeclarationPiece {
+    getFunction(name: string): FunctionDeclaration {
         const fetched = this.functions[name]
         if (fetched) return fetched
 

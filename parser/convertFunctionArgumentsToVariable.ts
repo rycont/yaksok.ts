@@ -1,18 +1,12 @@
-import {
-    Piece,
-    KeywordPiece,
-    VariablePiece,
-    EOLPiece,
-    IndentPiece,
-} from '../piece/index.ts'
+import { Node, Keyword, Variable, EOL, Indent } from '../nodes/index.ts'
 
-export function convertFunctionArgumentsToVariable(leftTokens: Piece[]) {
-    const tokenStack: Piece[] = []
+export function convertFunctionArgumentsToVariable(leftTokens: Node[]) {
+    const tokenStack: Node[] = []
 
     while (leftTokens.length) {
         const token = leftTokens.shift()!
 
-        if (token instanceof KeywordPiece && token.value === '약속') {
+        if (token instanceof Keyword && token.value === '약속') {
             tokenStack.push(token)
             const paramaters: string[] = []
 
@@ -21,17 +15,17 @@ export function convertFunctionArgumentsToVariable(leftTokens: Piece[]) {
                 const token = leftTokens.shift()
                 if (!token) break
 
-                if (token instanceof KeywordPiece) {
+                if (token instanceof Keyword) {
                     paramaters.push(token.value)
                     tokenStack.push(
-                        new VariablePiece({
+                        new Variable({
                             name: token,
                         }),
                     )
                     continue
                 }
 
-                if (token instanceof EOLPiece) {
+                if (token instanceof EOL) {
                     tokenStack.push(token)
                     break
                 }
@@ -46,8 +40,8 @@ export function convertFunctionArgumentsToVariable(leftTokens: Piece[]) {
 
                 // 줄바꿈이 됐는데 들여쓰기가 없으면 함수가 끝난 것
                 if (
-                    token instanceof EOLPiece &&
-                    !(leftTokens[0] instanceof IndentPiece)
+                    token instanceof EOL &&
+                    !(leftTokens[0] instanceof Indent)
                 ) {
                     tokenStack.push(token)
                     break
@@ -55,10 +49,10 @@ export function convertFunctionArgumentsToVariable(leftTokens: Piece[]) {
 
                 // 키워드이고 인자에 포함되어 있으면 변수로 바꿔줌
                 if (
-                    token instanceof KeywordPiece &&
+                    token instanceof Keyword &&
                     paramaters.includes(token.value)
                 ) {
-                    tokenStack.push(new VariablePiece({ name: token }))
+                    tokenStack.push(new Variable({ name: token }))
                     continue
                 }
                 tokenStack.push(token)

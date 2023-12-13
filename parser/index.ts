@@ -1,11 +1,11 @@
 import { createDynamicPattern } from './dynamicPatterns/index.ts'
 import { convertFunctionArgumentsToVariable } from './convertFunctionArgumentsToVariable.ts'
 
-import { Piece } from '../piece/index.ts'
+import { Node } from '../nodes/index.ts'
 import { parseIndent } from './parseIndent.ts'
 import { recursivePatternMatcher } from './patternMatcher.ts'
 
-export function parse(_tokens: Piece[]) {
+export function parse(_tokens: Node[]) {
     const tokens = convertFunctionArgumentsToVariable(_tokens)
     const indentedNodes = parseIndent(tokens)
 

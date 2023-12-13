@@ -1,16 +1,16 @@
-import { EvaluatablePiece, OperatorPiece } from './index.ts'
+import { Evaluable, Operator } from './index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 
-export class BinaryCalculationPiece extends EvaluatablePiece {
-    left: EvaluatablePiece
-    right: EvaluatablePiece
-    operator: OperatorPiece
+export class BinaryCalculation extends Evaluable {
+    left: Evaluable
+    right: Evaluable
+    operator: Operator
 
     constructor(props: {
-        left: EvaluatablePiece
-        right: EvaluatablePiece
-        operator: OperatorPiece
+        left: Evaluable
+        right: Evaluable
+        operator: Operator
     }) {
         super()
 
@@ -30,10 +30,10 @@ export class BinaryCalculationPiece extends EvaluatablePiece {
     }
 }
 
-export class ValueGroupPiece extends EvaluatablePiece {
-    value: EvaluatablePiece
+export class ValueGroup extends Evaluable {
+    value: Evaluable
 
-    constructor(props: { value: EvaluatablePiece }) {
+    constructor(props: { value: Evaluable }) {
         super()
         this.value = props.value
     }

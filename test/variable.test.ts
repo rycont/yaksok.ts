@@ -2,15 +2,15 @@ import { assertEquals, assertIsError, unreachable } from 'assert'
 import { tokenize } from '../tokenize/index.ts'
 import { parse } from '../parser/index.ts'
 import {
-    BinaryCalculationPiece,
-    BlockPiece,
-    DeclareVariablePiece,
-    EOLPiece,
-    KeywordPiece,
-    NumberPiece,
-    PlusOperatorPiece,
-    VariablePiece,
-} from '../piece/index.ts'
+    BinaryCalculation,
+    Block,
+    SetVariable,
+    EOL,
+    Keyword,
+    NumberValue,
+    PlusOperator,
+    Variable,
+} from '../nodes/index.ts'
 
 import { run } from '../runtime/run.ts'
 import { YaksokError } from '../errors.ts'
@@ -20,13 +20,13 @@ Deno.test('Parse Variable', () => {
 
     assertEquals(
         node,
-        new BlockPiece([
-            new EOLPiece(),
-            new DeclareVariablePiece({
-                name: new VariablePiece({ name: new KeywordPiece('이름') }),
-                value: new NumberPiece(1),
+        new Block([
+            new EOL(),
+            new SetVariable({
+                name: new Variable({ name: new Keyword('이름') }),
+                value: new NumberValue(1),
             }),
-            new EOLPiece(),
+            new EOL(),
         ]),
     )
 })
@@ -40,21 +40,21 @@ Deno.test('Parse variable with 이전 keyword', () => {
 
     assertEquals(
         node,
-        new BlockPiece([
-            new EOLPiece(),
-            new DeclareVariablePiece({
-                name: new VariablePiece({ name: new KeywordPiece('나이') }),
-                value: new NumberPiece(1),
+        new Block([
+            new EOL(),
+            new SetVariable({
+                name: new Variable({ name: new Keyword('나이') }),
+                value: new NumberValue(1),
             }),
-            new DeclareVariablePiece({
-                name: new VariablePiece({ name: new KeywordPiece('나이') }),
-                value: new BinaryCalculationPiece({
-                    left: new VariablePiece({ name: new KeywordPiece('나이') }),
-                    operator: new PlusOperatorPiece(),
-                    right: new NumberPiece(1),
+            new SetVariable({
+                name: new Variable({ name: new Keyword('나이') }),
+                value: new BinaryCalculation({
+                    left: new Variable({ name: new Keyword('나이') }),
+                    operator: new PlusOperator(),
+                    right: new NumberValue(1),
                 }),
             }),
-            new EOLPiece(),
+            new EOL(),
         ]),
     )
 })
@@ -65,7 +65,7 @@ Deno.test('Evaluate and calculate variable', () => {
 나이: 이전 나이 + 1
 `
     const scope = run(parse(tokenize(code)))
-    assertEquals(scope.getVariable('나이'), new NumberPiece(11))
+    assertEquals(scope.getVariable('나이'), new NumberValue(11))
 })
 
 Deno.test('Reserved word cannot be used as variable name', () => {

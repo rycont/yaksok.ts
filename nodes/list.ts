@@ -1,34 +1,22 @@
 import { YaksokError } from '../errors.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import {
-    EvaluatablePiece,
-    ValueTypes,
-    Piece,
-    ExecutablePiece,
-    OperatorPiece,
-} from './index.ts'
-import { IndexedValuePiece } from './indexed.ts'
-import { NumberPiece, PrimitiveValuePiece } from './primitive.ts'
+import { Evaluable, ValueTypes, Node, Executable, Operator } from './index.ts'
+import { IndexedValue } from './indexed.ts'
+import { NumberValue, PrimitiveValue } from './primitive.ts'
 
-export class SequencePiece extends EvaluatablePiece {
-    items: EvaluatablePiece[]
+export class Sequence extends Evaluable {
+    items: Evaluable[]
 
-    constructor(props: {
-        a: EvaluatablePiece | SequencePiece
-        b: EvaluatablePiece | SequencePiece
-    }) {
+    constructor(props: { a: Evaluable | Sequence; b: Evaluable | Sequence }) {
         super()
 
         const { a, b } = props
-        let items: EvaluatablePiece[] = []
+        let items: Evaluable[] = []
 
-        if (a instanceof SequencePiece && b instanceof EvaluatablePiece) {
+        if (a instanceof Sequence && b instanceof Evaluable) {
             items = [...a.items, b]
-        } else if (
-            a instanceof EvaluatablePiece &&
-            b instanceof EvaluatablePiece
-        ) {
+        } else if (a instanceof Evaluable && b instanceof Evaluable) {
             items = [a, b]
         }
 
@@ -51,11 +39,11 @@ export class SequencePiece extends EvaluatablePiece {
     }
 }
 
-export class ListPiece extends IndexedValuePiece {
-    sequence?: SequencePiece
+export class List extends IndexedValue {
+    sequence?: Sequence
     items?: ValueTypes[]
 
-    constructor(props: { sequence?: SequencePiece; items?: ValueTypes[] }) {
+    constructor(props: { sequence?: Sequence; items?: ValueTypes[] }) {
         super()
 
         this.sequence = props.sequence
@@ -85,7 +73,7 @@ export class ListPiece extends IndexedValuePiece {
     ): ValueTypes {
         const callFrame = new CallFrame(this, _callFrame)
 
-        if (index instanceof NumberPiece) {
+        if (index instanceof NumberValue) {
             const indexValue = index.value - 1
 
             if (indexValue < 0)
@@ -101,16 +89,16 @@ export class ListPiece extends IndexedValuePiece {
             return list[indexValue]
         }
 
-        if (index instanceof ListPiece) {
+        if (index instanceof List) {
             const list = this.execute(scope, callFrame).items!.map((item) =>
                 item.execute(scope, callFrame),
             )
 
             const indexValue = index.execute(scope, callFrame).items!
 
-            return new ListPiece({
+            return new List({
                 items: indexValue.map((index) => {
-                    if (!(index instanceof NumberPiece)) {
+                    if (!(index instanceof NumberValue)) {
                         throw new YaksokError(
                             'LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST',
                         )
@@ -125,12 +113,12 @@ export class ListPiece extends IndexedValuePiece {
     }
 
     setItem(
-        index: PrimitiveValuePiece<unknown>,
-        value: PrimitiveValuePiece<unknown>,
+        index: PrimitiveValue<unknown>,
+        value: PrimitiveValue<unknown>,
         scope: Scope,
         callFrame: CallFrame,
     ) {
-        if (!(index instanceof NumberPiece)) {
+        if (!(index instanceof NumberValue)) {
             throw new YaksokError('LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST')
         }
 
@@ -151,20 +139,20 @@ export class ListPiece extends IndexedValuePiece {
     }
 }
 
-export class IndexingPiece extends Piece {
-    value: EvaluatablePiece
+export class Indexing extends Node {
+    value: Evaluable
 
-    constructor(props: { index: EvaluatablePiece }) {
+    constructor(props: { index: Evaluable }) {
         super()
         this.value = props.index
     }
 }
 
-export class IndexFetchPiece extends EvaluatablePiece {
-    target: EvaluatablePiece
-    index: IndexingPiece
+export class IndexFetch extends Evaluable {
+    target: Evaluable
+    index: Indexing
 
-    constructor(props: { target: EvaluatablePiece; index: IndexingPiece }) {
+    constructor(props: { target: Evaluable; index: Indexing }) {
         super()
 
         this.target = props.target
@@ -177,7 +165,7 @@ export class IndexFetchPiece extends EvaluatablePiece {
         const index = this.index.value.execute(scope, callFrame)
         const target = this.target.execute(scope, callFrame)
 
-        if (!(target instanceof IndexedValuePiece)) {
+        if (!(target instanceof IndexedValue)) {
             throw new YaksokError('INVALID_TYPE_FOR_INDEX_FETCH')
         }
 
@@ -186,11 +174,11 @@ export class IndexFetchPiece extends EvaluatablePiece {
     }
 }
 
-export class SetToIndexPiece extends ExecutablePiece {
-    target: IndexFetchPiece
-    value: EvaluatablePiece
+export class SetToIndex extends Executable {
+    target: IndexFetch
+    value: Evaluable
 
-    constructor(props: { target: IndexFetchPiece; value: EvaluatablePiece }) {
+    constructor(props: { target: IndexFetch; value: Evaluable }) {
         super()
 
         this.target = props.target
@@ -204,7 +192,7 @@ export class SetToIndexPiece extends ExecutablePiece {
         const targetSequence = this.target.target.execute(scope, callFrame)
         const targetIndex = this.target.index.value.execute(scope, callFrame)
 
-        if (!(targetSequence instanceof IndexedValuePiece)) {
+        if (!(targetSequence instanceof IndexedValue)) {
             throw new YaksokError('INVALID_SEQUENCE_TYPE_FOR_INDEX_FETCH')
         }
 
@@ -212,31 +200,31 @@ export class SetToIndexPiece extends ExecutablePiece {
     }
 }
 
-export class RangeOperatorPiece extends OperatorPiece {
-    call(...operands: ValueTypes[]): ListPiece {
+export class RangeOperator extends Operator {
+    call(...operands: ValueTypes[]): List {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
         }
         const [left, right] = operands
 
-        if (!(left instanceof NumberPiece)) {
+        if (!(left instanceof NumberValue)) {
             throw new YaksokError('RANGE_START_MUST_BE_NUMBER')
         }
 
-        if (!(right instanceof NumberPiece)) {
+        if (!(right instanceof NumberValue)) {
             throw new YaksokError('RANGE_END_MUST_BE_NUMBER')
         }
 
         if (left.value > right.value)
             throw new YaksokError('RANGE_START_MUST_BE_LESS_THAN_END')
 
-        const items: NumberPiece[] = []
+        const items: NumberValue[] = []
 
         for (let i = left.value; i <= right.value; i++) {
-            items.push(new NumberPiece(i))
+            items.push(new NumberValue(i))
         }
 
-        return new ListPiece({
+        return new List({
             items,
         })
     }

@@ -1,14 +1,14 @@
 import { YaksokError } from '../errors.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { ExecutablePiece, ValueTypes, EvaluatablePiece } from './basement.ts'
-import { BlockPiece, NumberPiece } from './index.ts'
+import { Executable, ValueTypes, Evaluable } from './base.ts'
+import { Block, NumberValue } from './index.ts'
 
-export class FunctionDeclarationPiece extends ExecutablePiece {
+export class FunctionDeclaration extends Executable {
     name: string
-    body: BlockPiece
+    body: Block
 
-    constructor(props: { body: BlockPiece; name: string }) {
+    constructor(props: { body: Block; name: string }) {
         super()
 
         this.name = props.name
@@ -33,11 +33,11 @@ export class FunctionDeclarationPiece extends ExecutablePiece {
     }
 }
 
-export class FunctionInvokePiece extends EvaluatablePiece {
+export class FunctionInvoke extends Evaluable {
     #name: string
-    props: { [key: string]: EvaluatablePiece }
+    props: { [key: string]: Evaluable }
 
-    constructor(props: Record<string, EvaluatablePiece> & { name: string }) {
+    constructor(props: Record<string, Evaluable> & { name: string }) {
         super()
 
         this.props = {}
@@ -62,13 +62,13 @@ export class FunctionInvokePiece extends EvaluatablePiece {
 
         for (const key in this.props) {
             const value = this.props[key]
-            if (value instanceof EvaluatablePiece) {
+            if (value instanceof Evaluable) {
                 args[key] = value.execute(scope, callFrame)
             } else {
                 throw new YaksokError(
                     'NOT_EVALUABLE_EXPRESSION',
                     {},
-                    { piece: JSON.stringify(value) },
+                    { node: JSON.stringify(value) },
                 )
             }
         }
@@ -78,6 +78,6 @@ export class FunctionInvokePiece extends EvaluatablePiece {
         const childScope = new Scope(scope, args)
         const result = func.run(childScope, callFrame)
 
-        return result || new NumberPiece(0)
+        return result || new NumberValue(0)
     }
 }

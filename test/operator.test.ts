@@ -1,28 +1,28 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { tokenize } from '../tokenize/index.ts'
 import {
-    AndOperatorPiece,
-    BinaryCalculationPiece,
-    BlockPiece,
-    BooleanPiece,
-    DeclareVariablePiece,
-    DivideOperatorPiece,
-    EOLPiece,
-    EqualOperatorPiece,
-    ExpressionPiece,
-    GreaterThanOperatorPiece,
-    GreaterThanOrEqualOperatorPiece,
-    KeywordPiece,
-    LessThanOperatorPiece,
-    LessThanOrEqualOperatorPiece,
-    MinusOperatorPiece,
-    MultiplyOperatorPiece,
-    NumberPiece,
-    PlusOperatorPiece,
-    StringPiece,
-    VariablePiece,
-} from '../piece/index.ts'
-import { OperatorPiece } from '../piece/basement.ts'
+    AndOperator,
+    BinaryCalculation,
+    Block,
+    BooleanValue,
+    SetVariable,
+    DivideOperator,
+    EOL,
+    EqualOperator,
+    Expression,
+    GreaterThanOperator,
+    GreaterThanOrEqualOperator,
+    Keyword,
+    LessThanOperator,
+    LessThanOrEqualOperator,
+    MinusOperator,
+    MultiplyOperator,
+    NumberValue,
+    PlusOperator,
+    StringValue,
+    Variable,
+} from '../nodes/index.ts'
+import { Operator } from '../nodes/base.ts'
 import { parse } from '../parser/index.ts'
 import { run } from '../runtime/run.ts'
 
@@ -34,11 +34,11 @@ Deno.test('Parse Binary Calculation', () => {
     const result = tokenize(code)
 
     assertEquals(result, [
-        new EOLPiece(),
-        new NumberPiece(1),
-        new OperatorPiece('+'),
-        new NumberPiece(1),
-        new EOLPiece(),
+        new EOL(),
+        new NumberValue(1),
+        new Operator('+'),
+        new NumberValue(1),
+        new EOL(),
     ])
 })
 
@@ -48,15 +48,15 @@ Deno.test('Parse Binary Calculation with Parentheses', () => {
     const result = tokenize(code)
 
     assertEquals(result, [
-        new EOLPiece(),
-        new ExpressionPiece('('),
-        new NumberPiece(1),
-        new OperatorPiece('+'),
-        new NumberPiece(1),
-        new ExpressionPiece(')'),
-        new OperatorPiece('*'),
-        new NumberPiece(2),
-        new EOLPiece(),
+        new EOL(),
+        new Expression('('),
+        new NumberValue(1),
+        new Operator('+'),
+        new NumberValue(1),
+        new Expression(')'),
+        new Operator('*'),
+        new NumberValue(2),
+        new EOL(),
     ])
 })
 
@@ -67,36 +67,36 @@ Deno.test('Run Binary Calculation', () => {
 
     const tokens = tokenize(code)
     assertEquals(tokens, [
-        new EOLPiece(),
-        new KeywordPiece('계산'),
-        new ExpressionPiece(':'),
-        new NumberPiece(1),
-        new OperatorPiece('+'),
-        new NumberPiece(1),
-        new EOLPiece(),
+        new EOL(),
+        new Keyword('계산'),
+        new Expression(':'),
+        new NumberValue(1),
+        new Operator('+'),
+        new NumberValue(1),
+        new EOL(),
     ])
 
     const node = parse(tokens)
     assertEquals(
         node,
-        new BlockPiece([
-            new EOLPiece(),
-            new DeclareVariablePiece({
-                name: new VariablePiece({
-                    name: new KeywordPiece('계산'),
+        new Block([
+            new EOL(),
+            new SetVariable({
+                name: new Variable({
+                    name: new Keyword('계산'),
                 }),
-                value: new BinaryCalculationPiece({
-                    left: new NumberPiece(1),
-                    operator: new PlusOperatorPiece(),
-                    right: new NumberPiece(1),
+                value: new BinaryCalculation({
+                    left: new NumberValue(1),
+                    operator: new PlusOperator(),
+                    right: new NumberValue(1),
                 }),
             }),
-            new EOLPiece(),
+            new EOL(),
         ]),
     )
 
     const result = run(node)
-    assertEquals(result.getVariable('계산'), new NumberPiece(2))
+    assertEquals(result.getVariable('계산'), new NumberValue(2))
 })
 
 Deno.test('Operator String and String', async (context) => {
@@ -109,7 +109,7 @@ Deno.test('Operator String and String', async (context) => {
 
         assertEquals(
             result.getVariable('계산'),
-            new StringPiece('Hello World!'),
+            new StringValue('Hello World!'),
         )
     })
 
@@ -172,7 +172,7 @@ Deno.test('Operator String and String', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new BooleanPiece(false))
+        assertEquals(result.getVariable('계산'), new BooleanValue(false))
     })
 
     await context.step('Less', () => {
@@ -238,7 +238,7 @@ Deno.test('Operator Number and Number', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new NumberPiece(6))
+        assertEquals(result.getVariable('계산'), new NumberValue(6))
     })
 
     await context.step('Minus', () => {
@@ -248,7 +248,7 @@ Deno.test('Operator Number and Number', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new NumberPiece(-4))
+        assertEquals(result.getVariable('계산'), new NumberValue(-4))
     })
 
     await context.step('Multiply', () => {
@@ -258,7 +258,7 @@ Deno.test('Operator Number and Number', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new NumberPiece(6))
+        assertEquals(result.getVariable('계산'), new NumberValue(6))
     })
 
     await context.step('Divide', () => {
@@ -268,7 +268,7 @@ Deno.test('Operator Number and Number', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new NumberPiece(1 / 6))
+        assertEquals(result.getVariable('계산'), new NumberValue(1 / 6))
     })
 
     await context.step('Equal', () => {
@@ -278,7 +278,7 @@ Deno.test('Operator Number and Number', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new BooleanPiece(false))
+        assertEquals(result.getVariable('계산'), new BooleanValue(false))
     })
 
     await context.step('Less', () => {
@@ -288,7 +288,7 @@ Deno.test('Operator Number and Number', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new BooleanPiece(true))
+        assertEquals(result.getVariable('계산'), new BooleanValue(true))
     })
 
     await context.step('Less or equal', () => {
@@ -298,7 +298,7 @@ Deno.test('Operator Number and Number', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new BooleanPiece(true))
+        assertEquals(result.getVariable('계산'), new BooleanValue(true))
     })
 
     await context.step('Greater', () => {
@@ -308,7 +308,7 @@ Deno.test('Operator Number and Number', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new BooleanPiece(false))
+        assertEquals(result.getVariable('계산'), new BooleanValue(false))
     })
 
     await context.step('Greater or equal', () => {
@@ -318,7 +318,7 @@ Deno.test('Operator Number and Number', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new BooleanPiece(false))
+        assertEquals(result.getVariable('계산'), new BooleanValue(false))
     })
 })
 
@@ -330,7 +330,7 @@ Deno.test('Operator Number and String', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new StringPiece('1 World'))
+        assertEquals(result.getVariable('계산'), new StringValue('1 World'))
     })
 
     await context.step('Minus', () => {
@@ -381,7 +381,7 @@ Deno.test('Operator String and Number', async (context) => {
 
         const result = run(parse(tokenize(code)))
 
-        assertEquals(result.getVariable('계산'), new StringPiece('Hello1'))
+        assertEquals(result.getVariable('계산'), new StringValue('Hello1'))
     })
 
     await context.step('Minus', () => {
@@ -405,7 +405,7 @@ Deno.test('Operator String and Number', async (context) => {
 
         assertEquals(
             result.getVariable('계산'),
-            new StringPiece('HelloHelloHello'),
+            new StringValue('HelloHelloHello'),
         )
     })
 
@@ -445,16 +445,16 @@ Deno.test('Operator Boolean and Boolean', async (context) => {
     `
 
     const result = run(parse(tokenize(code)))
-    assertEquals(result.getVariable('계산'), new BooleanPiece(true))
+    assertEquals(result.getVariable('계산'), new BooleanValue(true))
 })
 
 Deno.test('Binary operator operand exceedance', async (context) => {
     await context.step('Plus', () => {
         try {
-            new PlusOperatorPiece().call(
-                new NumberPiece(1),
-                new NumberPiece(2),
-                new NumberPiece(3),
+            new PlusOperator().call(
+                new NumberValue(1),
+                new NumberValue(2),
+                new NumberValue(3),
             )
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -464,10 +464,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
     await context.step('Minus', () => {
         try {
-            new MinusOperatorPiece().call(
-                new NumberPiece(1),
-                new NumberPiece(2),
-                new NumberPiece(3),
+            new MinusOperator().call(
+                new NumberValue(1),
+                new NumberValue(2),
+                new NumberValue(3),
             )
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -477,10 +477,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
     await context.step('Multiply', () => {
         try {
-            new MultiplyOperatorPiece().call(
-                new NumberPiece(1),
-                new NumberPiece(2),
-                new NumberPiece(3),
+            new MultiplyOperator().call(
+                new NumberValue(1),
+                new NumberValue(2),
+                new NumberValue(3),
             )
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -490,10 +490,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
     await context.step('Divide', () => {
         try {
-            new DivideOperatorPiece().call(
-                new NumberPiece(1),
-                new NumberPiece(2),
-                new NumberPiece(3),
+            new DivideOperator().call(
+                new NumberValue(1),
+                new NumberValue(2),
+                new NumberValue(3),
             )
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -503,10 +503,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
     await context.step('Equal', () => {
         try {
-            new EqualOperatorPiece().call(
-                new NumberPiece(1),
-                new NumberPiece(2),
-                new NumberPiece(3),
+            new EqualOperator().call(
+                new NumberValue(1),
+                new NumberValue(2),
+                new NumberValue(3),
             )
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -516,10 +516,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
     await context.step('Less', () => {
         try {
-            new LessThanOperatorPiece().call(
-                new NumberPiece(1),
-                new NumberPiece(2),
-                new NumberPiece(3),
+            new LessThanOperator().call(
+                new NumberValue(1),
+                new NumberValue(2),
+                new NumberValue(3),
             )
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -529,10 +529,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
     await context.step('Less or equal', () => {
         try {
-            new LessThanOrEqualOperatorPiece().call(
-                new NumberPiece(1),
-                new NumberPiece(2),
-                new NumberPiece(3),
+            new LessThanOrEqualOperator().call(
+                new NumberValue(1),
+                new NumberValue(2),
+                new NumberValue(3),
             )
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -542,10 +542,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
     await context.step('Greater', () => {
         try {
-            new GreaterThanOperatorPiece().call(
-                new NumberPiece(1),
-                new NumberPiece(2),
-                new NumberPiece(3),
+            new GreaterThanOperator().call(
+                new NumberValue(1),
+                new NumberValue(2),
+                new NumberValue(3),
             )
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -555,10 +555,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
     await context.step('Greater or equal', () => {
         try {
-            new GreaterThanOrEqualOperatorPiece().call(
-                new NumberPiece(1),
-                new NumberPiece(2),
-                new NumberPiece(3),
+            new GreaterThanOrEqualOperator().call(
+                new NumberValue(1),
+                new NumberValue(2),
+                new NumberValue(3),
             )
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -568,10 +568,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
     await context.step('And', () => {
         try {
-            new AndOperatorPiece().call(
-                new NumberPiece(1),
-                new NumberPiece(2),
-                new NumberPiece(3),
+            new AndOperator().call(
+                new NumberValue(1),
+                new NumberValue(2),
+                new NumberValue(3),
             )
         } catch (e) {
             assertIsError(e, YaksokError)

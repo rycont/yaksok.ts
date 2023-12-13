@@ -1,8 +1,8 @@
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { EvaluatablePiece, ValueTypes } from './index.ts'
+import { Evaluable, ValueTypes } from './index.ts'
 
-export abstract class IndexedValuePiece extends EvaluatablePiece {
+export abstract class IndexedValue extends Evaluable {
     abstract getItem(
         index: ValueTypes,
         scope: Scope,

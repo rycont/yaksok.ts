@@ -1,40 +1,35 @@
 import { assertEquals } from 'assert'
-import {
-    KeywordPiece,
-    VariablePiece,
-    EOLPiece,
-    ExpressionPiece,
-} from '../piece/index.ts'
+import { Keyword, Variable, EOL, Expression } from '../nodes/index.ts'
 import { convertFunctionArgumentsToVariable } from '../parser/convertFunctionArgumentsToVariable.ts'
 
 Deno.test('Preprocess tokens', () => {
     const tokens = [
-        new KeywordPiece('약속'),
-        new KeywordPiece('이름'),
-        new KeywordPiece('나이'),
-        new EOLPiece(),
-        new KeywordPiece('약속'),
-        new KeywordPiece('나이'),
-        new EOLPiece(),
+        new Keyword('약속'),
+        new Keyword('이름'),
+        new Keyword('나이'),
+        new EOL(),
+        new Keyword('약속'),
+        new Keyword('나이'),
+        new EOL(),
     ]
 
     const result = convertFunctionArgumentsToVariable(tokens)
 
     assertEquals(result, [
-        new KeywordPiece('약속'),
-        new VariablePiece({ name: new KeywordPiece('이름') }),
-        new VariablePiece({ name: new KeywordPiece('나이') }),
-        new EOLPiece(),
-        new KeywordPiece('약속'),
-        new VariablePiece({ name: new KeywordPiece('나이') }),
-        new EOLPiece(),
+        new Keyword('약속'),
+        new Variable({ name: new Keyword('이름') }),
+        new Variable({ name: new Keyword('나이') }),
+        new EOL(),
+        new Keyword('약속'),
+        new Variable({ name: new Keyword('나이') }),
+        new EOL(),
     ])
 })
 
 Deno.test('Preprocess tokens with broken variable declaration', () => {
-    const tokens = [new KeywordPiece('약속'), new ExpressionPiece(':')]
+    const tokens = [new Keyword('약속'), new Expression(':')]
 
     const result = convertFunctionArgumentsToVariable(tokens)
 
-    assertEquals(result, [new KeywordPiece('약속'), new ExpressionPiece(':')])
+    assertEquals(result, [new Keyword('약속'), new Expression(':')])
 })

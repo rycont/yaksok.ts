@@ -1,8 +1,8 @@
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { EvaluatablePiece } from './index.ts'
+import { Evaluable } from './index.ts'
 
-export class PrimitiveValuePiece<T> extends EvaluatablePiece {
+export class PrimitiveValue<T> extends Evaluable {
     value: T
 
     constructor(content: T) {
@@ -10,24 +10,24 @@ export class PrimitiveValuePiece<T> extends EvaluatablePiece {
         this.value = content
     }
 
-    execute(scope: Scope, _callFrame: CallFrame): PrimitiveValuePiece<T> {
+    execute(scope: Scope, _callFrame: CallFrame): PrimitiveValue<T> {
         return this
     }
 }
 
-export class NumberPiece extends PrimitiveValuePiece<number> {
+export class NumberValue extends PrimitiveValue<number> {
     toPrint() {
         return this.value.toString()
     }
 }
 
-export class StringPiece extends PrimitiveValuePiece<string> {
+export class StringValue extends PrimitiveValue<string> {
     toPrint() {
         return this.value
     }
 }
 
-export class BooleanPiece extends PrimitiveValuePiece<boolean> {
+export class BooleanValue extends PrimitiveValue<boolean> {
     toPrint() {
         return this.value ? '참' : '거짓'
     }

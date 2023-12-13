@@ -1,6 +1,6 @@
 import { assertEquals } from 'assert'
 import { parse } from '../parser/index.ts'
-import { NumberPiece } from '../piece/primitive.ts'
+import { NumberValue } from '../nodes/primitive.ts'
 
 import { run } from '../runtime/run.ts'
 import { tokenize } from '../tokenize/index.ts'
@@ -12,6 +12,6 @@ Deno.test('Calculation with parenthesis', () => {
 `
 
     const result = run(parse(tokenize(code)))
-    assertEquals(result.getVariable('값1'), new NumberPiece(30))
-    assertEquals(result.getVariable('값2'), new NumberPiece(120))
+    assertEquals(result.getVariable('값1'), new NumberValue(30))
+    assertEquals(result.getVariable('값2'), new NumberValue(120))
 })

@@ -1,8 +1,8 @@
 import { Pattern, internalPatterns } from './pattern.ts'
 import { checkPattern } from './checkPattern.ts'
-import { BlockPiece, EOLPiece, Piece } from '../piece/index.ts'
+import { Block, EOL, Node } from '../nodes/index.ts'
 
-export function patternMatcher(_tokens: Piece[], _patterns: Pattern[]) {
+export function patternMatcher(_tokens: Node[], _patterns: Pattern[]) {
     const tokens = [..._tokens]
     const patterns = [..._patterns, ...internalPatterns]
 
@@ -56,18 +56,18 @@ export function patternMatcher(_tokens: Piece[], _patterns: Pattern[]) {
     return tokens
 }
 
-export function recursivePatternMatcher(_tokens: Piece[], patterns: Pattern[]) {
+export function recursivePatternMatcher(_tokens: Node[], patterns: Pattern[]) {
     const tokens = [..._tokens]
 
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
 
-        if (token instanceof BlockPiece) {
-            tokens[i] = recursivePatternMatcher(token.content, patterns)
+        if (token instanceof Block) {
+            tokens[i] = recursivePatternMatcher(token.children, patterns)
         }
     }
 
-    tokens.push(new EOLPiece())
+    tokens.push(new EOL())
     const matchedTokens = patternMatcher(tokens, patterns)
-    return new BlockPiece(matchedTokens)
+    return new Block(matchedTokens)
 }

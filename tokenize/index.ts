@@ -1,14 +1,14 @@
 import { YaksokError } from '../errors.ts'
 import {
-    ExpressionPiece,
-    OperatorPiece,
-    KeywordPiece,
-    IndentPiece,
-    StringPiece,
-    NumberPiece,
-    EOLPiece,
-    Piece,
-} from '../piece/index.ts'
+    Expression,
+    Operator,
+    Keyword,
+    Indent,
+    StringValue,
+    NumberValue,
+    EOL,
+    Node,
+} from '../nodes/index.ts'
 import {
     isValidCharForKeyword,
     isValidFirstCharForKeyword,
@@ -19,7 +19,7 @@ export function preprocessor(code: string) {
 }
 
 export function tokenize(_code: string) {
-    const tokens: Piece[] = []
+    const tokens: Node[] = []
     const code = preprocessor(_code)
     const chars = [...code]
 
@@ -37,7 +37,7 @@ export function tokenize(_code: string) {
 
         // Indent and Whitespace
         if (char === ' ') {
-            if (!(tokens[tokens.length - 1] instanceof EOLPiece)) continue
+            if (!(tokens[tokens.length - 1] instanceof EOL)) continue
 
             let spaces = 1
             while (chars[0] === ' ') {
@@ -47,14 +47,14 @@ export function tokenize(_code: string) {
 
             if (spaces % 4) throw new YaksokError('INDENT_IS_NOT_MULTIPLE_OF_4')
 
-            tokens.push(new IndentPiece(spaces / 4))
+            tokens.push(new Indent(spaces / 4))
             continue
         }
 
         // EOL
         if (char === '\n') {
-            if (tokens[tokens.length - 1] instanceof EOLPiece) continue
-            tokens.push(new EOLPiece())
+            if (tokens[tokens.length - 1] instanceof EOL) continue
+            tokens.push(new EOL())
             continue
         }
 
@@ -79,7 +79,7 @@ export function tokenize(_code: string) {
                 number += chars.shift()
             }
 
-            tokens.push(new NumberPiece(parseFloat(number)))
+            tokens.push(new NumberValue(parseFloat(number)))
 
             continue
         }
@@ -98,7 +98,7 @@ export function tokenize(_code: string) {
                 word += nextChar
             }
 
-            tokens.push(new StringPiece(word))
+            tokens.push(new StringValue(word))
 
             continue
         }
@@ -111,20 +111,20 @@ export function tokenize(_code: string) {
                 word += chars.shift()
             }
 
-            tokens.push(new KeywordPiece(word))
+            tokens.push(new Keyword(word))
 
             continue
         }
 
         // Operator
         if (['+', '-', '*', '/', '>', '=', '<', '~'].includes(char)) {
-            tokens.push(new OperatorPiece(char))
+            tokens.push(new Operator(char))
             continue
         }
 
         // Expression
         if (['{', '}', ':', '[', ']', ',', '(', ')'].includes(char)) {
-            tokens.push(new ExpressionPiece(char))
+            tokens.push(new Expression(char))
             continue
         }
 

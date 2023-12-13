@@ -2,23 +2,23 @@ import { assertEquals, assertIsError, unreachable } from 'assert'
 
 import { tokenize } from '../tokenize/index.ts'
 import {
-    BinaryCalculationPiece,
-    BlockPiece,
-    DeclareVariablePiece,
-    EOLPiece,
-    ExpressionPiece,
-    IndexFetchPiece,
-    IndexingPiece,
-    KeywordPiece,
-    ListPiece,
-    NumberPiece,
-    Piece,
-    PlusOperatorPiece,
-    RangeOperatorPiece,
-    SequencePiece,
-    SetToIndexPiece,
-    VariablePiece,
-} from '../piece/index.ts'
+    BinaryCalculation,
+    Block,
+    SetVariable,
+    EOL,
+    Expression,
+    IndexFetch,
+    Indexing,
+    Keyword,
+    List,
+    NumberValue,
+    Node,
+    PlusOperator,
+    RangeOperator,
+    Sequence,
+    SetToIndex,
+    Variable,
+} from '../nodes/index.ts'
 import { parse } from '../parser/index.ts'
 import { run } from '../runtime/run.ts'
 import { YaksokError } from '../errors.ts'
@@ -29,59 +29,59 @@ Deno.test('Parse list', async (context) => {
     const code = `
 목록: [1, 3, 5, 7, 9]
 `
-    let tokens: Piece[] = []
+    let tokens: Node[] = []
 
     await context.step('Tokenize', () => {
         tokens = tokenize(code)
         assertEquals(tokens, [
-            new EOLPiece(),
-            new KeywordPiece('목록'),
-            new ExpressionPiece(':'),
-            new ExpressionPiece('['),
-            new NumberPiece(1),
-            new ExpressionPiece(','),
-            new NumberPiece(3),
-            new ExpressionPiece(','),
-            new NumberPiece(5),
-            new ExpressionPiece(','),
-            new NumberPiece(7),
-            new ExpressionPiece(','),
-            new NumberPiece(9),
-            new ExpressionPiece(']'),
-            new EOLPiece(),
+            new EOL(),
+            new Keyword('목록'),
+            new Expression(':'),
+            new Expression('['),
+            new NumberValue(1),
+            new Expression(','),
+            new NumberValue(3),
+            new Expression(','),
+            new NumberValue(5),
+            new Expression(','),
+            new NumberValue(7),
+            new Expression(','),
+            new NumberValue(9),
+            new Expression(']'),
+            new EOL(),
         ])
     })
 
-    let parsed: BlockPiece
+    let parsed: Block
 
     await context.step('Parse', () => {
         parsed = parse(tokens)
 
         assertEquals(
             parsed,
-            new BlockPiece([
-                new EOLPiece(),
-                new DeclareVariablePiece({
-                    name: new VariablePiece({
-                        name: new KeywordPiece('목록'),
+            new Block([
+                new EOL(),
+                new SetVariable({
+                    name: new Variable({
+                        name: new Keyword('목록'),
                     }),
-                    value: new ListPiece({
-                        sequence: new SequencePiece({
-                            a: new SequencePiece({
-                                a: new SequencePiece({
-                                    a: new SequencePiece({
-                                        a: new NumberPiece(1),
-                                        b: new NumberPiece(3),
+                    value: new List({
+                        sequence: new Sequence({
+                            a: new Sequence({
+                                a: new Sequence({
+                                    a: new Sequence({
+                                        a: new NumberValue(1),
+                                        b: new NumberValue(3),
                                     }),
-                                    b: new NumberPiece(5),
+                                    b: new NumberValue(5),
                                 }),
-                                b: new NumberPiece(7),
+                                b: new NumberValue(7),
                             }),
-                            b: new NumberPiece(9),
+                            b: new NumberValue(9),
                         }),
                     }),
                 }),
-                new EOLPiece(),
+                new EOL(),
             ]),
         )
     })
@@ -114,8 +114,8 @@ Deno.test('Get list element', () => {
 
     const result = run(parse(tokenize(code)))
 
-    assertEquals(result.getVariable('첫번째'), new NumberPiece(1))
-    assertEquals(result.getVariable('세번째'), new NumberPiece(5))
+    assertEquals(result.getVariable('첫번째'), new NumberValue(1))
+    assertEquals(result.getVariable('세번째'), new NumberValue(5))
 })
 
 Deno.test('Set list element', () => {
@@ -211,10 +211,10 @@ Deno.test('Create range but operands are not number', async (context) => {
 
 Deno.test('Create range but operands are too many', () => {
     try {
-        new RangeOperatorPiece().call(
-            new NumberPiece(1),
-            new NumberPiece(10),
-            new NumberPiece(20),
+        new RangeOperator().call(
+            new NumberValue(1),
+            new NumberValue(10),
+            new NumberValue(20),
         )
         unreachable()
     } catch (error) {
@@ -227,14 +227,14 @@ Deno.test('Index target is not a sequence', () => {
     try {
         const scope = new Scope()
 
-        const node = new SetToIndexPiece({
-            target: new IndexFetchPiece({
-                target: new NumberPiece(1),
-                index: new IndexingPiece({
-                    index: new NumberPiece(1),
+        const node = new SetToIndex({
+            target: new IndexFetch({
+                target: new NumberValue(1),
+                index: new Indexing({
+                    index: new NumberValue(1),
                 }),
             }),
-            value: new NumberPiece(2),
+            value: new NumberValue(2),
         })
 
         node.execute(scope, new CallFrame(node))
@@ -249,11 +249,11 @@ Deno.test('Index fetching target is not IndexedValue', () => {
     try {
         const scope = new Scope()
 
-        const node = new IndexFetchPiece({
+        const node = new IndexFetch({
             // 오류 생성을 위해서.. 어쩔 수 없었어요
-            target: new NumberPiece(1) as unknown as ListPiece,
-            index: new IndexingPiece({
-                index: new NumberPiece(1),
+            target: new NumberValue(1) as unknown as List,
+            index: new Indexing({
+                index: new NumberValue(1),
             }),
         })
 
@@ -267,14 +267,14 @@ Deno.test('Index fetching target is not IndexedValue', () => {
 
 Deno.test('Print list before evaluating', () => {
     try {
-        const node = new ListPiece({
-            sequence: new SequencePiece({
-                a: new BinaryCalculationPiece({
-                    left: new NumberPiece(1),
-                    operator: new PlusOperatorPiece(),
-                    right: new NumberPiece(2),
+        const node = new List({
+            sequence: new Sequence({
+                a: new BinaryCalculation({
+                    left: new NumberValue(1),
+                    operator: new PlusOperator(),
+                    right: new NumberValue(2),
                 }),
-                b: new NumberPiece(2),
+                b: new NumberValue(2),
             }),
         })
 
@@ -377,7 +377,7 @@ Deno.test('List getting index is not number', () => {
 })
 
 Deno.test('List with no data source', () => {
-    const node = new ListPiece({})
+    const node = new List({})
     assertEquals(node.toPrint(), '[  ]')
 })
 
@@ -385,7 +385,7 @@ Deno.test('Sequence toPrint', () => {
     const code = `[1, 3, 5, 7, 9]`
     const tree = parse(tokenize(code))
     assertEquals(
-        (tree.content[1].sequence as SequencePiece).toPrint(),
+        (tree.children[1].sequence as Sequence).toPrint(),
         '( 1 3 5 7 9 )',
     )
 })
@@ -393,8 +393,8 @@ Deno.test('Sequence toPrint', () => {
 Deno.test('Evaluate Sequence', () => {
     const code = `[1, 3, 5, 7, 9]`
     const tree = parse(tokenize(code))
-    const sequence = tree.content[1].sequence as SequencePiece
+    const sequence = tree.children[1].sequence as Sequence
 
     const result = sequence.execute(new Scope(), new CallFrame(sequence))
-    assertEquals(result, new NumberPiece(9))
+    assertEquals(result, new NumberValue(9))
 })

@@ -1,14 +1,14 @@
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { IndexedValuePiece } from './indexed.ts'
+import { IndexedValue } from './indexed.ts'
 import {
-    NumberPiece,
-    StringPiece,
-    BooleanPiece,
-    PrimitiveValuePiece,
+    NumberValue,
+    StringValue,
+    BooleanValue,
+    PrimitiveValue,
 } from './primitive.ts'
 
-export class Piece {
+export class Node {
     [key: string]: unknown
     toJSON() {
         return {
@@ -17,7 +17,7 @@ export class Piece {
         }
     }
 }
-export class ExecutablePiece extends Piece {
+export class Executable extends Node {
     execute(scope: Scope, callFrame: CallFrame) {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
@@ -26,13 +26,13 @@ export class ExecutablePiece extends Piece {
     }
 }
 
-export class EvaluatablePiece extends ExecutablePiece {
+export class Evaluable extends Executable {
     execute(scope: Scope, callFrame: CallFrame): ValueTypes {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
 }
 
-export class KeywordPiece extends Piece {
+export class Keyword extends Node {
     value: string
 
     constructor(value: string) {
@@ -41,7 +41,7 @@ export class KeywordPiece extends Piece {
     }
 }
 
-export class OperatorPiece extends Piece {
+export class Operator extends Node {
     value?: string
 
     constructor(char?: string) {
@@ -54,7 +54,7 @@ export class OperatorPiece extends Piece {
     }
 }
 
-export class ExpressionPiece extends Piece {
+export class Expression extends Node {
     value: string
 
     constructor(value: string) {
@@ -63,5 +63,5 @@ export class ExpressionPiece extends Piece {
     }
 }
 
-export type PrimitiveTypes = NumberPiece | StringPiece | BooleanPiece
-export type ValueTypes = PrimitiveValuePiece<unknown> | IndexedValuePiece
+export type PrimitiveTypes = NumberValue | StringValue | BooleanValue
+export type ValueTypes = PrimitiveValue<unknown> | IndexedValue

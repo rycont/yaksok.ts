@@ -1,10 +1,10 @@
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { Piece, ExecutablePiece, EvaluatablePiece } from './basement.ts'
+import { Node, Executable, Evaluable } from './base.ts'
 
-export class EOLPiece extends Piece {}
+export class EOL extends Node {}
 
-export class IndentPiece extends Piece {
+export class Indent extends Node {
     size: number
     constructor(size: number) {
         super()
@@ -12,10 +12,10 @@ export class IndentPiece extends Piece {
     }
 }
 
-export class PrintPiece extends ExecutablePiece {
-    value: EvaluatablePiece
+export class Print extends Executable {
+    value: Evaluable
 
-    constructor(props: { value: EvaluatablePiece }) {
+    constructor(props: { value: Evaluable }) {
         super()
         this.value = props.value
     }

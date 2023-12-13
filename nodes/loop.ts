@@ -1,11 +1,11 @@
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { BlockPiece } from './block.ts'
-import { ExecutablePiece } from './index.ts'
+import { Block } from './block.ts'
+import { Executable } from './index.ts'
 
-export class RepeatPiece extends ExecutablePiece {
-    body: BlockPiece
-    constructor(props: { body: BlockPiece }) {
+export class Loop extends Executable {
+    body: Block
+    constructor(props: { body: Block }) {
         super()
         this.body = props.body
     }
@@ -26,7 +26,7 @@ export class RepeatPiece extends ExecutablePiece {
     }
 }
 
-export class BreakPiece extends ExecutablePiece {
+export class Break extends Executable {
     execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
         callFrame.invokeEvent('break')

@@ -1,8 +1,8 @@
 import { Pattern } from './pattern.ts'
-import { Piece } from '../piece/index.ts'
+import { Node } from '../nodes/index.ts'
 
 export function checkPattern(
-    tokens: Piece[],
+    tokens: Node[],
     pattern: Omit<Pattern, 'wrapper'>,
 ) {
     for (let i = 0; i < tokens.length; i++) {
