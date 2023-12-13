@@ -376,14 +376,8 @@ Deno.test('List getting index is not number', () => {
 })
 
 Deno.test('List with no data source', () => {
-    try {
-        const ast = new ListPiece({})
-        ast.execute(new Scope(), new CallFrame(ast))
-        unreachable()
-    } catch (error) {
-        assertIsError(error, YaksokError)
-        assertEquals(error.name, 'LIST_NOT_EVALUATED')
-    }
+    const node = new ListPiece({})
+    assertEquals(node.toPrint(), '[  ]')
 })
 
 Deno.test('Sequence toPrint', () => {

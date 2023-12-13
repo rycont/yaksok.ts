@@ -91,6 +91,19 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
+        wrapper: ListPiece,
+        units: [
+            {
+                type: ExpressionPiece,
+                value: '[',
+            },
+            {
+                type: ExpressionPiece,
+                value: ']',
+            },
+        ],
+    },
+    {
         wrapper: IndexingPiece,
         units: [
             {

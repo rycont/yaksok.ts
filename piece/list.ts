@@ -59,13 +59,16 @@ export class ListPiece extends IndexedValuePiece {
 
         this.sequence = props.sequence
         this.items = props.items
+
+        if (!this.sequence && !this.items) {
+            this.items = []
+        }
     }
 
     execute(scope: Scope, callFrame: CallFrame) {
         if (this.items) return this
-        if (!this.sequence) throw new YaksokError('LIST_NOT_EVALUATED')
 
-        const items = this.sequence?.items.map((item) =>
+        const items = this.sequence!.items.map((item) =>
             item.execute(scope, callFrame),
         )
 

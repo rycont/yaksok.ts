@@ -64,7 +64,9 @@ export function createDynamicPattern(tokens: Piece[]) {
     return patterns
 }
 
-const dynamicPatternDetector = [
+const dynamicPatternDetector: (Omit<Pattern, 'wrapper'> & {
+    name: string
+})[] = [
     {
         name: 'variable' as const,
         units: [
@@ -74,7 +76,7 @@ const dynamicPatternDetector = [
             },
             {
                 type: ExpressionPiece,
-                content: ':',
+                value: ':',
             },
             {
                 type: EvaluatablePiece,
@@ -90,7 +92,7 @@ const dynamicPatternDetector = [
             },
             {
                 type: ExpressionPiece,
-                content: ':',
+                value: ':',
             },
             {
                 type: ExpressionPiece,
@@ -106,7 +108,7 @@ const dynamicPatternDetector = [
             },
             {
                 type: ExpressionPiece,
-                content: ':',
+                value: ':',
             },
             {
                 type: KeywordPiece,
