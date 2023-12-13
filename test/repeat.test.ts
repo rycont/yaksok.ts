@@ -1,6 +1,6 @@
 import { assertEquals, unreachable } from 'assert'
-import { tokenizer } from '../tokenizer.ts'
-import { preprocessor } from '../preprocessor.ts'
+import { tokenize } from '../tokenize.ts'
+
 import { parse } from '../parser.ts'
 import {
     BlockPiece,
@@ -17,7 +17,7 @@ Deno.test('Parse Loop', () => {
 반복
     "Hello, World!" 보여주기
 `
-    const ast = parse(tokenizer(preprocessor(code)))
+    const ast = parse(tokenize(code))
 
     assertEquals(
         ast,
@@ -46,7 +46,7 @@ Deno.test('Run loop', () => {
         반복 그만
 `
     try {
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
         assertEquals(result.getVariable('횟수'), new NumberPiece(11))
     } catch (_) {
         unreachable()

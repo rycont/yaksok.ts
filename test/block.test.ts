@@ -1,8 +1,8 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { parse } from '../parser.ts'
-import { preprocessor } from '../preprocessor.ts'
+
 import { run } from '../runtime.ts'
-import { tokenizer } from '../tokenizer.ts'
+import { tokenize } from '../tokenize.ts'
 import { YaksokError } from '../errors.ts'
 
 Deno.test('Broken Blocks', () => {
@@ -12,7 +12,7 @@ Deno.test('Broken Blocks', () => {
 `
 
     try {
-        run(parse(tokenizer(preprocessor(code))))
+        run(parse(tokenize(code)))
         unreachable()
     } catch (e) {
         assertIsError(e, YaksokError)

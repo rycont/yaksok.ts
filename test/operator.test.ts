@@ -1,5 +1,5 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { tokenizer } from '../tokenizer.ts'
+import { tokenize } from '../tokenize.ts'
 import {
     AndOperatorPiece,
     BinaryCalculationPiece,
@@ -25,27 +25,30 @@ import {
 import { OperatorPiece } from '../piece/basement.ts'
 import { parse } from '../parser.ts'
 import { run } from '../runtime.ts'
-import { preprocessor } from '../preprocessor.ts'
+
 import { YaksokError } from '../errors.ts'
 
 Deno.test('Parse Binary Calculation', () => {
     const code = `1 + 1`
 
-    const result = tokenizer(code)
+    const result = tokenize(code)
 
     assertEquals(result, [
+        new EOLPiece(),
         new NumberPiece(1),
         new OperatorPiece('+'),
         new NumberPiece(1),
+        new EOLPiece(),
     ])
 })
 
 Deno.test('Parse Binary Calculation with Parentheses', () => {
     const code = `(1 + 1) * 2`
 
-    const result = tokenizer(code)
+    const result = tokenize(code)
 
     assertEquals(result, [
+        new EOLPiece(),
         new ExpressionPiece('('),
         new NumberPiece(1),
         new OperatorPiece('+'),
@@ -53,6 +56,7 @@ Deno.test('Parse Binary Calculation with Parentheses', () => {
         new ExpressionPiece(')'),
         new OperatorPiece('*'),
         new NumberPiece(2),
+        new EOLPiece(),
     ])
 })
 
@@ -61,7 +65,7 @@ Deno.test('Run Binary Calculation', () => {
 계산: 1 + 1
 `
 
-    const tokens = tokenizer(code)
+    const tokens = tokenize(code)
     assertEquals(tokens, [
         new EOLPiece(),
         new KeywordPiece('계산'),
@@ -101,7 +105,7 @@ Deno.test('Operator String and String', async (context) => {
 계산: "Hello" + " World" + "!"
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(
             result.getVariable('계산'),
@@ -115,7 +119,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
         } catch (e) {
             assertIsError(e, YaksokError)
             assertEquals(e.name, 'INVALID_TYPE_FOR_PLUS_OPERATOR')
@@ -127,7 +131,7 @@ Deno.test('Operator String and String', async (context) => {
             const code = `
 계산: "Hello" - " World" - "!"
             `
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -140,7 +144,7 @@ Deno.test('Operator String and String', async (context) => {
             const code = `
 계산: "Hello" * " World"
             `
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -153,7 +157,7 @@ Deno.test('Operator String and String', async (context) => {
             const code = `
 계산: "Hello" / " World"
             `
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -166,7 +170,7 @@ Deno.test('Operator String and String', async (context) => {
 계산: "Hello" = " World"
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanPiece(false))
     })
@@ -177,7 +181,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
         } catch (e) {
             assertIsError(e, YaksokError)
             assertEquals(e.name, 'INVALID_TYPE_FOR_LESS_THAN_OPERATOR')
@@ -189,7 +193,7 @@ Deno.test('Operator String and String', async (context) => {
 계산: "Hello" <= " World"
         `
         try {
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
         } catch (e) {
             assertIsError(e, YaksokError)
             assertEquals(e.name, 'INVALID_TYPE_FOR_LESS_OR_EQUAL_OPERATOR')
@@ -202,7 +206,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
         } catch (e) {
             assertIsError(e, YaksokError)
             assertEquals(e.name, 'INVALID_TYPE_FOR_GREATER_THAN_OPERATOR')
@@ -215,7 +219,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
         } catch (e) {
             assertIsError(e, YaksokError)
             assertEquals(
@@ -232,7 +236,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 + 2 + 3
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new NumberPiece(6))
     })
@@ -242,7 +246,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 - 2 - 3
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new NumberPiece(-4))
     })
@@ -252,7 +256,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 * 2 * 3
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new NumberPiece(6))
     })
@@ -262,7 +266,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 / 2 / 3
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new NumberPiece(1 / 6))
     })
@@ -272,7 +276,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 = 2
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanPiece(false))
     })
@@ -282,7 +286,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 < 2
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanPiece(true))
     })
@@ -292,7 +296,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 <= 2
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanPiece(true))
     })
@@ -302,7 +306,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 > 2
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanPiece(false))
     })
@@ -312,7 +316,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 >= 2
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanPiece(false))
     })
@@ -324,7 +328,7 @@ Deno.test('Operator Number and String', async (context) => {
         계산: 1 + " World"
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new StringPiece('1 World'))
     })
@@ -334,7 +338,7 @@ Deno.test('Operator Number and String', async (context) => {
             const code = `
             계산: 1 - " World"
             `
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -347,7 +351,7 @@ Deno.test('Operator Number and String', async (context) => {
             const code = `
             계산: 1 * " World"
             `
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -360,7 +364,7 @@ Deno.test('Operator Number and String', async (context) => {
             const code = `
             계산: 1 / " World"
             `
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -375,7 +379,7 @@ Deno.test('Operator String and Number', async (context) => {
         계산: "Hello" + 1
         `
 
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new StringPiece('Hello1'))
     })
@@ -385,7 +389,7 @@ Deno.test('Operator String and Number', async (context) => {
             const code = `
             계산: "Hello" - 1
             `
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -397,7 +401,7 @@ Deno.test('Operator String and Number', async (context) => {
         const code = `
             계산: "Hello" * 3
             `
-        const result = run(parse(tokenizer(preprocessor(code))))
+        const result = run(parse(tokenize(code)))
 
         assertEquals(
             result.getVariable('계산'),
@@ -410,7 +414,7 @@ Deno.test('Operator String and Number', async (context) => {
             const code = `
             계산: "Hello" / 1
             `
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -423,7 +427,7 @@ Deno.test('Operator String and Number', async (context) => {
 계산: "Hello" 이고 1
             `
         try {
-            run(parse(tokenizer(preprocessor(code))))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -440,7 +444,7 @@ Deno.test('Operator Boolean and Boolean', async (context) => {
 계산: 식1 이고 식2
     `
 
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('계산'), new BooleanPiece(true))
 })
 
@@ -585,7 +589,7 @@ Deno.test('Compare equity list and list', async (context) => {
     `
 
     try {
-        run(parse(tokenizer(preprocessor(code))))
+        run(parse(tokenize(code)))
         unreachable()
     } catch (e) {
         assertIsError(e)

@@ -1,8 +1,8 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { run } from '../runtime.ts'
 import { parse } from '../parser.ts'
-import { tokenizer } from '../tokenizer.ts'
-import { preprocessor } from '../preprocessor.ts'
+import { tokenize } from '../tokenize.ts'
+
 import {
     BlockPiece,
     DeclareVariablePiece,
@@ -23,7 +23,7 @@ Deno.test('Function that returns value', () => {
 
 더한결과: 10와 20를 더하기
 `
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('더한결과'), new NumberPiece(30))
 })
 
@@ -34,7 +34,7 @@ Deno.test('Function that returns nothing', () => {
 
 더한결과: 10와 20를 더하기
 `
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('더한결과'), new NumberPiece(0))
 })
 

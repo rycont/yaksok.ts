@@ -31,8 +31,13 @@ export function isValidFirstCharForKeyword(char: string) {
     return false
 }
 
-export function tokenizer(code: string) {
+export function preprocessor(code: string) {
+    return '\n' + code.trim() + '\n'
+}
+
+export function tokenize(_code: string) {
     const tokens: Piece[] = []
+    const code = preprocessor(_code)
     const chars = [...code]
 
     while (chars.length) {

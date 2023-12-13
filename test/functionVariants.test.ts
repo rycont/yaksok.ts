@@ -1,8 +1,8 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { parse } from '../parser.ts'
-import { preprocessor } from '../preprocessor.ts'
+
 import { run } from '../runtime.ts'
-import { tokenizer } from '../tokenizer.ts'
+import { tokenize } from '../tokenize.ts'
 import { YaksokError } from '../errors.ts'
 
 Deno.test('Function Josa Variants', () => {
@@ -16,7 +16,7 @@ Deno.test('Function Josa Variants', () => {
 테스트4: "햄버거"를 "수현"과 먹기
 `
 
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
 
     assertEquals(
         result.getVariable('테스트1').value,
@@ -43,7 +43,7 @@ Deno.test('Broken function declaration', () => {
 `
 
     try {
-        run(parse(tokenizer(preprocessor(code))))
+        run(parse(tokenize(code)))
         unreachable()
     } catch (e) {
         assertIsError(e, YaksokError)

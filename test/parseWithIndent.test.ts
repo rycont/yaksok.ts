@@ -5,8 +5,8 @@ import { BinaryCalculationPiece } from '../piece/calculation.ts'
 import { EOLPiece } from '../piece/misc.ts'
 import { EqualOperatorPiece } from '../piece/operator.ts'
 import { NumberPiece } from '../piece/primitive.ts'
-import { preprocessor } from '../preprocessor.ts'
-import { tokenizer } from '../tokenizer.ts'
+
+import { tokenize } from '../tokenize.ts'
 import {
     ConditionPiece,
     DeclareVariablePiece,
@@ -25,7 +25,7 @@ Deno.test('Parse with indent', () => {
     값: 3
 `
 
-    const result = parse(tokenizer(preprocessor(code)))
+    const result = parse(tokenize(code))
 
     assertEquals(
         result,

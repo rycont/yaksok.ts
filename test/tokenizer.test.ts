@@ -1,9 +1,9 @@
-import { assert, assertEquals, assertIsError, unreachable } from 'assert'
+import { assertEquals, assertIsError, unreachable } from 'assert'
 import {
     isValidCharForKeyword,
     isValidFirstCharForKeyword,
-    tokenizer,
-} from '../tokenizer.ts'
+    tokenize,
+} from '../tokenize.ts'
 import {
     ExpressionPiece,
     KeywordPiece,
@@ -50,22 +50,25 @@ Deno.test('Determine validity as a keyword char of "_"', () => {
 })
 
 Deno.test('Tokenize Number', () => {
-    const tokens = tokenizer('1')
-    assertEquals(tokens, [new NumberPiece(1)])
+    const tokens = tokenize('1')
+    assertEquals(tokens, [new EOLPiece(), new NumberPiece(1), new EOLPiece()])
 })
 
 Deno.test('Tokenize Binary Calculation', () => {
-    const tokens = tokenizer('1 + 2')
+    const tokens = tokenize('1 + 2')
     assertEquals(tokens, [
+        new EOLPiece(),
         new NumberPiece(1),
         new OperatorPiece('+'),
         new NumberPiece(2),
+        new EOLPiece(),
     ])
 })
 
 Deno.test('Tokenize Complex Formula', () => {
-    const tokens = tokenizer('1 + 2 * 3 / 4')
+    const tokens = tokenize('1 + 2 * 3 / 4')
     assertEquals(tokens, [
+        new EOLPiece(),
         new NumberPiece(1),
         new OperatorPiece('+'),
         new NumberPiece(2),
@@ -73,21 +76,24 @@ Deno.test('Tokenize Complex Formula', () => {
         new NumberPiece(3),
         new OperatorPiece('/'),
         new NumberPiece(4),
+        new EOLPiece(),
     ])
 })
 
 Deno.test('Tokenize Formula and Keyword', () => {
-    const tokens = tokenizer('1 + 2 보여주기')
+    const tokens = tokenize('1 + 2 보여주기')
     assertEquals(tokens, [
+        new EOLPiece(),
         new NumberPiece(1),
         new OperatorPiece('+'),
         new NumberPiece(2),
         new KeywordPiece('보여주기'),
+        new EOLPiece(),
     ])
 })
 
 Deno.test('Tokenize Formula and Keyword and EOL', () => {
-    const tokens = tokenizer(`
+    const tokens = tokenize(`
 1 + 2 보여주기
 `)
     assertEquals(tokens, [
@@ -101,64 +107,78 @@ Deno.test('Tokenize Formula and Keyword and EOL', () => {
 })
 
 Deno.test('Tokenize Variable Declaration with Constant', () => {
-    const tokens = tokenizer('이름: "김철수"')
+    const tokens = tokenize('이름: "김철수"')
 
     assertEquals(tokens, [
+        new EOLPiece(),
         new KeywordPiece('이름'),
         new ExpressionPiece(':'),
         new StringPiece('김철수'),
+        new EOLPiece(),
     ])
 })
 
 Deno.test('Tokenize Variable Declaration with Wierd Name', async (context) => {
     await context.step('_이름', () => {
-        const tokens = tokenizer('_이름: "김철수"')
+        const tokens = tokenize('_이름: "김철수"')
 
         assertEquals(tokens, [
+            new EOLPiece(),
             new KeywordPiece('_이름'),
             new ExpressionPiece(':'),
             new StringPiece('김철수'),
+            new EOLPiece(),
         ])
     })
 
     await context.step('이_름', () => {
-        const tokens = tokenizer('이_름: "김철수"')
+        const tokens = tokenize('이_름: "김철수"')
 
         assertEquals(tokens, [
+            new EOLPiece(),
             new KeywordPiece('이_름'),
             new ExpressionPiece(':'),
             new StringPiece('김철수'),
+            new EOLPiece(),
         ])
     })
 
     await context.step('NiceName', () => {
-        const tokens = tokenizer('NiceName: "김철수"')
+        const tokens = tokenize('NiceName: "김철수"')
 
         assertEquals(tokens, [
+            new EOLPiece(),
             new KeywordPiece('NiceName'),
             new ExpressionPiece(':'),
             new StringPiece('김철수'),
+            new EOLPiece(),
         ])
     })
 
     await context.step('what', () => {
-        const tokens = tokenizer('what: "김철수"')
+        const tokens = tokenize('what: "김철수"')
 
         assertEquals(tokens, [
+            new EOLPiece(),
             new KeywordPiece('what'),
             new ExpressionPiece(':'),
             new StringPiece('김철수'),
+            new EOLPiece(),
         ])
     })
 
     await context.step('실0패', () => {
-        const tokens = tokenizer('실0패')
-        assertEquals(tokens, [new KeywordPiece('실0패')])
+        const tokens = tokenize('실0패')
+        assertEquals(tokens, [
+            new EOLPiece(),
+            new KeywordPiece('실0패'),
+            new EOLPiece(),
+        ])
     })
 
     await context.step('실패!', () => {
         try {
-            tokenizer('실패!')
+            tokenize('실패!')
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)
@@ -168,14 +188,16 @@ Deno.test('Tokenize Variable Declaration with Wierd Name', async (context) => {
 })
 
 Deno.test('Tokenize Variable Declaration with Formula', () => {
-    const tokens = tokenizer('이름: "김" + "철수"')
+    const tokens = tokenize('이름: "김" + "철수"')
 
     assertEquals(tokens, [
+        new EOLPiece(),
         new KeywordPiece('이름'),
         new ExpressionPiece(':'),
         new StringPiece('김'),
         new OperatorPiece('+'),
         new StringPiece('철수'),
+        new EOLPiece(),
     ])
 })
 
@@ -185,9 +207,10 @@ Deno.test('Tokenize Variable Declaration with Variable', () => {
 내년_나이: 나이 + 1
 `.trim()
 
-    const tokens = tokenizer(code)
+    const tokens = tokenize(code)
 
     assertEquals(tokens, [
+        new EOLPiece(),
         new KeywordPiece('나이'),
         new ExpressionPiece(':'),
         new NumberPiece(10),
@@ -197,6 +220,7 @@ Deno.test('Tokenize Variable Declaration with Variable', () => {
         new KeywordPiece('나이'),
         new OperatorPiece('+'),
         new NumberPiece(1),
+        new EOLPiece(),
     ])
 })
 
@@ -206,9 +230,10 @@ Deno.test('Tokenize Function Declaration with Multiple Parameter', () => {
     메시지 + ", " + 이름 + "!" 보여주기
 `.trim()
 
-    const tokens = tokenizer(code)
+    const tokens = tokenize(code)
 
     assertEquals(tokens, [
+        new EOLPiece(),
         new KeywordPiece('약속'),
         new KeywordPiece('이름'),
         new StringPiece('에게'),
@@ -225,6 +250,7 @@ Deno.test('Tokenize Function Declaration with Multiple Parameter', () => {
         new OperatorPiece('+'),
         new StringPiece('!'),
         new KeywordPiece('보여주기'),
+        new EOLPiece(),
     ])
 })
 
@@ -234,9 +260,10 @@ Deno.test('Tokenize Comment', () => {
 # 이것도 주석입니다
 `.trim()
 
-    const tokens = tokenizer(code)
+    const tokens = tokenize(code)
 
     assertEquals(tokens, [
+        new EOLPiece(),
         new KeywordPiece('이름'),
         new ExpressionPiece(':'),
         new StringPiece('김철수'),
@@ -250,7 +277,7 @@ Deno.test('Tokenize Broken Indents', () => {
        메시지 + ", " + 이름 + "!" 보여주기
     `.trim()
     try {
-        tokenizer(code)
+        tokenize(code)
         unreachable()
     } catch (e) {
         assertIsError(e, YaksokError)
@@ -267,9 +294,10 @@ Deno.test('Tokenize Consecutive LineBreak', () => {
 내년_나이: 나이 + 1
 `.trim()
 
-    const tokens = tokenizer(code)
+    const tokens = tokenize(code)
 
     assertEquals(tokens, [
+        new EOLPiece(),
         new KeywordPiece('이름'),
         new ExpressionPiece(':'),
         new StringPiece('김수연'),
@@ -283,6 +311,7 @@ Deno.test('Tokenize Consecutive LineBreak', () => {
         new KeywordPiece('나이'),
         new OperatorPiece('+'),
         new NumberPiece(1),
+        new EOLPiece(),
     ])
 })
 
@@ -291,12 +320,14 @@ Deno.test('Tokenize number include dot', () => {
 나이: 10.5
 `.trim()
 
-    const tokens = tokenizer(code)
+    const tokens = tokenize(code)
 
     assertEquals(tokens, [
+        new EOLPiece(),
         new KeywordPiece('나이'),
         new ExpressionPiece(':'),
         new NumberPiece(10.5),
+        new EOLPiece(),
     ])
 })
 
@@ -305,12 +336,14 @@ Deno.test('Tokenize Negative Numbers', () => {
 나이: -10.5
 `.trim()
 
-    const tokens = tokenizer(code)
+    const tokens = tokenize(code)
 
     assertEquals(tokens, [
+        new EOLPiece(),
         new KeywordPiece('나이'),
         new ExpressionPiece(':'),
         new NumberPiece(-10.5),
+        new EOLPiece(),
     ])
 })
 
@@ -318,7 +351,7 @@ Deno.test('Tokenize Uncomplete String', () => {
     const code = `이름: "홍`
 
     try {
-        tokenizer(code)
+        tokenize(code)
         unreachable()
     } catch (e) {
         assertIsError(e, YaksokError)

@@ -1,8 +1,8 @@
 import { assertEquals } from 'https://deno.land/std@0.208.0/assert/assert_equals.ts'
 import { parse } from '../parser.ts'
-import { preprocessor } from '../preprocessor.ts'
+
 import { run } from '../runtime.ts'
-import { tokenizer } from '../tokenizer.ts'
+import { tokenize } from '../tokenize.ts'
 
 Deno.test('isTruthy: Boolean True', () => {
     const code = `
@@ -11,7 +11,7 @@ Deno.test('isTruthy: Boolean True', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('값').value, '참')
 })
 
@@ -22,7 +22,7 @@ Deno.test('isTruthy: Boolean False', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('값').value, '거짓')
 })
 
@@ -33,7 +33,7 @@ Deno.test('isTruthy: Number True', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('값').value, '참')
 })
 
@@ -44,7 +44,7 @@ Deno.test('isTruthy: Number False', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('값').value, '거짓')
 })
 
@@ -55,7 +55,7 @@ Deno.test('isTruthy: String True', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('값').value, '참')
 })
 
@@ -66,7 +66,7 @@ Deno.test('isTruthy: String True', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('값').value, '거짓')
 })
 
@@ -77,7 +77,7 @@ Deno.test('isTruthy: List True', () => {
 아니면
     값: "거짓"
 `
-    console.log(parse(tokenizer(preprocessor(code))))
-    const result = run(parse(tokenizer(preprocessor(code))))
+    console.log(parse(tokenize(code)))
+    const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('값').value, '참')
 })
