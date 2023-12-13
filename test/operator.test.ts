@@ -1,5 +1,5 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { tokenize } from '../tokenize.ts'
+import { tokenize } from '../tokenize/index.ts'
 import {
     AndOperatorPiece,
     BinaryCalculationPiece,

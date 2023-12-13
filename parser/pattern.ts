@@ -30,7 +30,7 @@ import {
     SetToIndexPiece,
     ExpressionPiece,
     RangeOperatorPiece,
-} from './piece/index.ts'
+} from '../piece/index.ts'
 
 export interface Pattern {
     wrapper: {

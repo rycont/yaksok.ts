@@ -1,4 +1,4 @@
-import { Pattern } from '../pattern.ts'
+import { Pattern } from './pattern.ts'
 import { Piece } from '../piece/index.ts'
 
 export function checkPattern(

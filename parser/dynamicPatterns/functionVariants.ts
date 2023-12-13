@@ -1,5 +1,5 @@
 import { YaksokError } from '../../errors.ts'
-import { Pattern } from '../../pattern.ts'
+import { Pattern } from '../pattern.ts'
 import {
     BlockPiece,
     EOLPiece,

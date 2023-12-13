@@ -1,4 +1,4 @@
-import { Pattern } from '../../pattern.ts'
+import { Pattern } from '../pattern.ts'
 import {
     Piece,
     EOLPiece,

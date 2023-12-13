@@ -3,7 +3,7 @@ import {
     isValidCharForKeyword,
     isValidFirstCharForKeyword,
     tokenize,
-} from '../tokenize.ts'
+} from '../tokenize/index.ts'
 import {
     ExpressionPiece,
     KeywordPiece,

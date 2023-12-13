@@ -1,7 +1,7 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { run } from '../runtime.ts'
 import { parse } from '../parser/index.ts'
-import { tokenize } from '../tokenize.ts'
+import { tokenize } from '../tokenize/index.ts'
 
 import {
     BlockPiece,

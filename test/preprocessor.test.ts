@@ -5,7 +5,7 @@ import {
     EOLPiece,
     ExpressionPiece,
 } from '../piece/index.ts'
-import { parserPreprocessor } from '../parser/preprocessor.ts'
+import { convertFunctionArgumentsToVariable } from '../parser/convertFunctionArgumentsToVariable.ts'
 
 Deno.test('Preprocess tokens', () => {
     const tokens = [
@@ -18,7 +18,7 @@ Deno.test('Preprocess tokens', () => {
         new EOLPiece(),
     ]
 
-    const result = parserPreprocessor(tokens)
+    const result = convertFunctionArgumentsToVariable(tokens)
 
     assertEquals(result, [
         new KeywordPiece('약속'),
@@ -34,7 +34,7 @@ Deno.test('Preprocess tokens', () => {
 Deno.test('Preprocess tokens with broken variable declaration', () => {
     const tokens = [new KeywordPiece('약속'), new ExpressionPiece(':')]
 
-    const result = parserPreprocessor(tokens)
+    const result = convertFunctionArgumentsToVariable(tokens)
 
     assertEquals(result, [new KeywordPiece('약속'), new ExpressionPiece(':')])
 })

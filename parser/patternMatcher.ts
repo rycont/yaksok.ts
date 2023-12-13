@@ -1,4 +1,4 @@
-import { Pattern, internalPatterns } from '../pattern.ts'
+import { Pattern, internalPatterns } from './pattern.ts'
 import { checkPattern } from './checkPattern.ts'
 import { BlockPiece, EOLPiece, Piece } from '../piece/index.ts'
 

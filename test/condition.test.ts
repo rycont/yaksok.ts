@@ -3,7 +3,7 @@ import { parse } from '../parser/index.ts'
 import { StringPiece } from '../piece/primitive.ts'
 
 import { run } from '../runtime.ts'
-import { tokenize } from '../tokenize.ts'
+import { tokenize } from '../tokenize/index.ts'
 
 Deno.test('If statement', () => {
     const code = `

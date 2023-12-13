@@ -2,7 +2,7 @@ import { assertEquals, assertIsError, unreachable } from 'assert'
 import { parse } from '../parser/index.ts'
 
 import { run } from '../runtime.ts'
-import { tokenize } from '../tokenize.ts'
+import { tokenize } from '../tokenize/index.ts'
 import { YaksokError } from '../errors.ts'
 
 Deno.test('Function Josa Variants', () => {

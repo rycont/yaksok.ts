@@ -6,7 +6,7 @@ import { EOLPiece } from '../piece/misc.ts'
 import { EqualOperatorPiece } from '../piece/operator.ts'
 import { NumberPiece } from '../piece/primitive.ts'
 
-import { tokenize } from '../tokenize.ts'
+import { tokenize } from '../tokenize/index.ts'
 import {
     ConditionPiece,
     DeclareVariablePiece,

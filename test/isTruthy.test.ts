@@ -2,7 +2,7 @@ import { assertEquals } from 'https://deno.land/std@0.208.0/assert/assert_equals
 import { parse } from '../parser/index.ts'
 
 import { run } from '../runtime.ts'
-import { tokenize } from '../tokenize.ts'
+import { tokenize } from '../tokenize/index.ts'
 
 Deno.test('isTruthy: Boolean True', () => {
     const code = `

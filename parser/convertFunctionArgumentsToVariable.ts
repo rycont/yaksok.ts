@@ -6,23 +6,24 @@ import {
     IndentPiece,
 } from '../piece/index.ts'
 
-export function parserPreprocessor(tokens: Piece[]) {
-    const stack: Piece[] = []
+export function convertFunctionArgumentsToVariable(leftTokens: Piece[]) {
+    const tokenStack: Piece[] = []
 
-    while (tokens.length) {
-        const token = tokens.shift()!
+    while (leftTokens.length) {
+        const token = leftTokens.shift()!
 
         if (token instanceof KeywordPiece && token.value === '약속') {
-            stack.push(token)
+            tokenStack.push(token)
             const paramaters: string[] = []
 
+            // Detect function header and convert arguments to variable
             while (true) {
-                const token = tokens.shift()
+                const token = leftTokens.shift()
                 if (!token) break
 
                 if (token instanceof KeywordPiece) {
                     paramaters.push(token.value)
-                    stack.push(
+                    tokenStack.push(
                         new VariablePiece({
                             name: token,
                         }),
@@ -31,38 +32,41 @@ export function parserPreprocessor(tokens: Piece[]) {
                 }
 
                 if (token instanceof EOLPiece) {
-                    stack.push(token)
+                    tokenStack.push(token)
                     break
                 }
 
-                stack.push(token)
+                tokenStack.push(token)
             }
 
+            // Convert function body to variable
             while (true) {
-                const token = tokens.shift()
+                const token = leftTokens.shift()
                 if (!token) break
 
+                // 줄바꿈이 됐는데 들여쓰기가 없으면 함수가 끝난 것
                 if (
                     token instanceof EOLPiece &&
-                    !(tokens[0] instanceof IndentPiece)
+                    !(leftTokens[0] instanceof IndentPiece)
                 ) {
-                    stack.push(token)
+                    tokenStack.push(token)
                     break
                 }
 
+                // 키워드이고 인자에 포함되어 있으면 변수로 바꿔줌
                 if (
                     token instanceof KeywordPiece &&
                     paramaters.includes(token.value)
                 ) {
-                    stack.push(new VariablePiece({ name: token }))
+                    tokenStack.push(new VariablePiece({ name: token }))
                     continue
                 }
-                stack.push(token)
+                tokenStack.push(token)
             }
         } else {
-            stack.push(token)
+            tokenStack.push(token)
         }
     }
 
-    return stack
+    return tokenStack
 }

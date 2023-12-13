@@ -1,4 +1,4 @@
-import { tokenize } from './tokenize.ts'
+import { tokenize } from './tokenize/index.ts'
 import { parse } from './parser/index.ts'
 import { run } from './runtime.ts'
 
