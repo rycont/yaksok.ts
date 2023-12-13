@@ -27,7 +27,7 @@ export class ExecutablePiece extends Piece {
 
 export class EvaluatablePiece extends ExecutablePiece {
     execute(scope: Scope, callFrame: CallFrame): ValueTypes {
-        throw new Error('This EvaluatablePiece has no execute method')
+        throw new Error(`${this.constructor.name} has no execute method`)
     }
 }
 
@@ -49,7 +49,7 @@ export class OperatorPiece extends Piece {
     }
 
     call(...operands: ValueTypes[]): ValueTypes {
-        throw new Error('This OperatorPiece has no calc method')
+        throw new Error(`${this.constructor.name} has no call method`)
     }
 }
 
