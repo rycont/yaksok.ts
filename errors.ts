@@ -49,7 +49,7 @@ export class YaksokError extends Error {
         resource: Record<string, string | number> = {},
     ) {
         super(JSON.stringify({ errorCode, occursAt, resource }, null, 2))
-        this.name = errorCode || 'YaksokError'
+        this.name = errorCode
         this.occursAt = occursAt
         this.resource = resource
     }
