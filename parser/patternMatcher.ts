@@ -15,13 +15,6 @@ export function patternMatcher(tokens: Piece[], _patterns: Pattern[]) {
             if (checkPattern(substack, pattern)) {
                 const Wrapper = pattern.wrapper
 
-                if (
-                    substack.length === 1 &&
-                    substack[0].constructor === Wrapper
-                ) {
-                    continue
-                }
-
                 let content: Record<string, unknown> = {}
                 let hasContent = false
 
