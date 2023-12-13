@@ -6,12 +6,11 @@ import {
     IndentPiece,
 } from '../piece/index.ts'
 
-export function tokenPreprocessor(tokens: Piece[]) {
+export function parserPreprocessor(tokens: Piece[]) {
     const stack: Piece[] = []
 
     while (tokens.length) {
-        const token = tokens.shift()
-        if (!token) break
+        const token = tokens.shift()!
 
         if (token instanceof KeywordPiece && token.value === '약속') {
             stack.push(token)

@@ -91,6 +91,19 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
+        wrapper: ListPiece,
+        units: [
+            {
+                type: ExpressionPiece,
+                value: '[',
+            },
+            {
+                type: ExpressionPiece,
+                value: ']',
+            },
+        ],
+    },
+    {
         wrapper: IndexingPiece,
         units: [
             {
@@ -141,7 +154,7 @@ export const internalPatterns: Pattern[] = [
         wrapper: ValueGroupPiece,
         units: [
             {
-                type: OperatorPiece,
+                type: ExpressionPiece,
                 value: '(',
             },
             {
@@ -149,7 +162,7 @@ export const internalPatterns: Pattern[] = [
                 as: 'value',
             },
             {
-                type: OperatorPiece,
+                type: ExpressionPiece,
                 value: ')',
             },
         ],

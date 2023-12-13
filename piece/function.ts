@@ -1,8 +1,7 @@
 import { YaksokError } from '../errors.ts'
 import { Scope, CallFrame } from '../scope.ts'
 import { ExecutablePiece, ValueTypes, EvaluatablePiece } from './basement.ts'
-import { BlockPiece } from './index.ts'
-import { PrimitiveValuePiece } from './primitive.ts'
+import { BlockPiece, NumberPiece } from './index.ts'
 
 export class FunctionDeclarationPiece extends ExecutablePiece {
     name: string
@@ -16,13 +15,7 @@ export class FunctionDeclarationPiece extends ExecutablePiece {
     }
 
     execute(scope: Scope) {
-        const name = this.name
-
-        if (!name || typeof name !== 'string') {
-            throw new YaksokError('FUNCTION_MUST_HAVE_NAME')
-        }
-
-        scope.setFunction(name, this)
+        scope.setFunction(this.name, this)
     }
 
     run(scope: Scope, _callFrame: CallFrame) {
@@ -43,7 +36,7 @@ export class FunctionInvokePiece extends EvaluatablePiece {
     #name: string
     props: { [key: string]: EvaluatablePiece }
 
-    constructor(props: { name: string } & Record<string, EvaluatablePiece>) {
+    constructor(props: Record<string, EvaluatablePiece> & { name: string }) {
         super()
 
         this.props = {}
@@ -84,6 +77,6 @@ export class FunctionInvokePiece extends EvaluatablePiece {
         const childScope = new Scope(scope, args)
         const result = func.run(childScope, callFrame)
 
-        return result || new PrimitiveValuePiece(0)
+        return result || new NumberPiece(0)
     }
 }

@@ -3,7 +3,6 @@ import {
     ExpressionPiece,
     OperatorPiece,
     KeywordPiece,
-    CommentPiece,
     IndentPiece,
     StringPiece,
     NumberPiece,
@@ -11,10 +10,22 @@ import {
     Piece,
 } from './piece/index.ts'
 
-function isValidKeywordChar(char: string) {
+export function isValidCharForKeyword(char: string) {
     if ('가' <= char && char <= '힣') return true
+    if ('ㄱ' <= char && char <= 'ㆉ') return true
     if ('0' <= char && char <= '9') return true
-    if ('a' <= char && char <= 'Z') return true
+    if ('A' <= char && char <= 'Z') return true
+    if ('a' <= char && char <= 'z') return true
+    if (char === '_') return true
+
+    return false
+}
+
+export function isValidFirstCharForKeyword(char: string) {
+    if ('가' <= char && char <= '힣') return true
+    if ('ㄱ' <= char && char <= 'ㆉ') return true
+    if ('A' <= char && char <= 'Z') return true
+    if ('a' <= char && char <= 'z') return true
     if (char === '_') return true
 
     return false
@@ -25,19 +36,13 @@ export function tokenizer(code: string) {
     const chars = [...code]
 
     while (chars.length) {
-        const char = chars.shift()
-
-        if (char === undefined) break
+        const char = chars.shift()!
 
         // Comment
         if (char === '#') {
-            let comment = ''
-
-            while (chars[0] !== '\n') {
-                comment += chars.shift()
+            while (chars.length && chars[0] !== '\n') {
+                chars.shift()
             }
-
-            tokens.push(new CommentPiece(comment.trim()))
 
             continue
         }
@@ -111,13 +116,10 @@ export function tokenizer(code: string) {
         }
 
         // Keyword
-        if (isValidKeywordChar(char)) {
+        if (isValidFirstCharForKeyword(char)) {
             let word = char
 
-            if (chars.length === 0)
-                throw new YaksokError('UNEXPECTED_END_OF_CODE')
-
-            while (isValidKeywordChar(chars[0])) {
+            while (chars.length && isValidCharForKeyword(chars[0])) {
                 word += chars.shift()
             }
 
@@ -127,13 +129,13 @@ export function tokenizer(code: string) {
         }
 
         // Operator
-        if (['+', '-', '*', '/', '(', ')', '>', '=', '<', '~'].includes(char)) {
+        if (['+', '-', '*', '/', '>', '=', '<', '~'].includes(char)) {
             tokens.push(new OperatorPiece(char))
             continue
         }
 
         // Expression
-        if (['{', '}', ':', '[', ']', ','].includes(char)) {
+        if (['{', '}', ':', '[', ']', ',', '(', ')'].includes(char)) {
             tokens.push(new ExpressionPiece(char))
             continue
         }

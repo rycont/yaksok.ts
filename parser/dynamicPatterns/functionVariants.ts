@@ -1,4 +1,5 @@
 import { YaksokError } from '../../errors.ts'
+import { Pattern } from '../../pattern.ts'
 import {
     BlockPiece,
     EOLPiece,
@@ -36,7 +37,7 @@ function getCombination<T>(arr: T[][]) {
     return result
 }
 
-export function* getVariants(subtokens: Piece[]) {
+export function* getVariants(subtokens: (VariablePiece | StringPiece)[]) {
     const variants: Variant[] = subtokens
         .map(
             (token, index) =>
@@ -50,7 +51,6 @@ export function* getVariants(subtokens: Piece[]) {
         .map((index) => {
             const token = subtokens[index] as StringPiece
 
-            // const splitted = token.value.split(' ')[0].split('/')
             const [v, postfix] = token.value.split(' ')
             const options = v.split('/')
 
@@ -69,7 +69,9 @@ export function* getVariants(subtokens: Piece[]) {
         for (const [index, optionIndex] of choice.entries()) {
             const { options, postfix } = variants[index]
             newTokens[variants[index].index] = new StringPiece(
-                options[optionIndex] + ' ' + postfix,
+                postfix
+                    ? options[optionIndex] + ' ' + postfix
+                    : options[optionIndex],
             )
         }
 
@@ -77,8 +79,11 @@ export function* getVariants(subtokens: Piece[]) {
     }
 }
 
-function createFunctionDeclarePattern(name: string, subtokens: Piece[]) {
-    const declarationTemplate = subtokens.map((t) => {
+function createFunctionDeclarePattern(
+    name: string,
+    subtokens: (VariablePiece | StringPiece)[],
+): Pattern {
+    const declarationTemplate: Pattern['units'] = subtokens.map((t) => {
         if (t instanceof VariablePiece) {
             return {
                 type: VariablePiece,
@@ -86,20 +91,10 @@ function createFunctionDeclarePattern(name: string, subtokens: Piece[]) {
             }
         }
 
-        if (t instanceof StringPiece) {
-            return {
-                type: StringPiece,
-                value: t.value,
-            }
+        return {
+            type: StringPiece,
+            value: t.value,
         }
-
-        throw new YaksokError(
-            'UNEXPECTED_TOKEN',
-            {},
-            {
-                token: JSON.stringify(t),
-            },
-        )
     })
 
     return {
@@ -124,7 +119,10 @@ function createFunctionDeclarePattern(name: string, subtokens: Piece[]) {
     }
 }
 
-function createFunctionInvokePattern(name: string, subtokens: Piece[]) {
+function createFunctionInvokePattern(
+    name: string,
+    subtokens: (VariablePiece | StringPiece)[],
+): Pattern {
     for (let i = 0; i < subtokens.length; i++) {
         // If string piece has space, it will be splitted.
         const piece = subtokens[i]
@@ -141,19 +139,10 @@ function createFunctionInvokePattern(name: string, subtokens: Piece[]) {
                 as: t.name,
             }
 
-        if (t instanceof StringPiece)
-            return {
-                type: KeywordPiece,
-                value: t.value,
-            }
-
-        throw new YaksokError(
-            'UNEXPECTED_TOKEN',
-            {},
-            {
-                token: JSON.stringify(t),
-            },
-        )
+        return {
+            type: KeywordPiece,
+            value: t.value,
+        }
     })
 
     return {
@@ -165,7 +154,24 @@ function createFunctionInvokePattern(name: string, subtokens: Piece[]) {
     }
 }
 
+function subtokensAreValid(
+    subtokens: Piece[],
+): subtokens is (VariablePiece | StringPiece)[] {
+    return subtokens.every((t) => {
+        if (t instanceof VariablePiece) return true
+        if (t instanceof StringPiece) return true
+        return false
+    })
+}
+
 export function createFunctionPattern(subtokens: Piece[]) {
+    if (!subtokensAreValid(subtokens))
+        throw new YaksokError(
+            'UNEXPECTED_TOKEN',
+            {},
+            { token: JSON.stringify(subtokens) },
+        )
+
     const name = subtokens
         .map((t) => {
             if (t instanceof VariablePiece) return t.name

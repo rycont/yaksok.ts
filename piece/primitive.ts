@@ -19,13 +19,15 @@ export class NumberPiece extends PrimitiveValuePiece<number> {
         return this.value.toString()
     }
 }
+
 export class StringPiece extends PrimitiveValuePiece<string> {
     toPrint() {
         return this.value
     }
 }
+
 export class BooleanPiece extends PrimitiveValuePiece<boolean> {
     toPrint() {
-        return this.value.toString()
+        return this.value ? '참' : '거짓'
     }
 }

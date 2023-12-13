@@ -15,12 +15,12 @@ const ERRORS = [
     'NOT_EVALUABLE_EXPRESSION',
     'INVALID_TYPE_FOR_GREATER_THAN_OPERATOR',
     'INVALID_TYPE_FOR_LESS_THAN_OPERATOR',
+    'INVALID_TYPE_FOR_LESS_OR_EQUAL_OPERATOR',
     'BREAK_NOT_IN_LOOP',
     'EVENT_NOT_FOUND',
     'INVALID_TYPE_FOR_EVALUATABLE_SEQUENCE',
-    'LIST_INDEX_MUST_BE_NUMBER',
     'INVALID_TYPE_FOR_INDEX_FETCH',
-    'LIST_INDEX_MUST_BE_GREATER_THAN_0',
+    'LIST_INDEX_MUST_BE_GREATER_THAN_1',
     'INVALID_SEQUENCE_TYPE_FOR_INDEX_FETCH',
     'NOT_DEFINED_FUNCTION',
     'LIST_NOT_EVALUATED',
@@ -31,6 +31,7 @@ const ERRORS = [
     'LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST',
     'CANNOT_RETURN_OUTSIDE_FUNCTION',
     'CANNOT_USE_RESERVED_WORD_FOR_VARIABLE_NAME',
+    'LIST_INDEX_OUT_OF_RANGE',
 ] as const
 
 interface ErrorOccurrence {
@@ -48,7 +49,7 @@ export class YaksokError extends Error {
         resource: Record<string, string | number> = {},
     ) {
         super(JSON.stringify({ errorCode, occursAt, resource }, null, 2))
-        this.name = errorCode || 'YaksokError'
+        this.name = errorCode
         this.occursAt = occursAt
         this.resource = resource
     }

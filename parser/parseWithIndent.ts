@@ -12,8 +12,7 @@ export function parseWithIndent(
     const tokens = [..._tokens]
 
     while (tokens.length) {
-        const token = tokens.shift()
-        if (!token) break
+        const token = tokens.shift()!
 
         if (token instanceof IndentPiece) {
             if (token.size !== indent + 1) {
@@ -23,9 +22,7 @@ export function parseWithIndent(
             let blockTokens: Piece[] = []
 
             while (tokens.length) {
-                const currentToken = tokens.shift()
-                if (!currentToken)
-                    throw new YaksokError('UNEXPECTED_END_OF_CODE')
+                const currentToken = tokens.shift()!
 
                 // 다음 줄로 넘어갔는데
                 if (currentToken instanceof EOLPiece) {
