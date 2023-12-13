@@ -6,6 +6,7 @@ import {
     NumberValue,
     Operator,
     StringValue,
+    Variable,
 } from '../nodes/index.ts'
 import { EOL, Indent } from '../nodes/misc.ts'
 import { YaksokError } from '../errors.ts'
@@ -222,7 +223,7 @@ Deno.test('Tokenize Variable Declaration with Variable', () => {
 
 Deno.test('Tokenize Function Declaration with Multiple Parameter', () => {
     const code = `
-약속 이름"에게" 메시지"라고" 인사하기
+약속 이름"에게" 메시지"라고 인사하기"
     메시지 + ", " + 이름 + "!" 보여주기
 `.trim()
 
@@ -231,18 +232,17 @@ Deno.test('Tokenize Function Declaration with Multiple Parameter', () => {
     assertEquals(tokens, [
         new EOL(),
         new Keyword('약속'),
-        new Keyword('이름'),
+        new Variable('이름'),
         new StringValue('에게'),
-        new Keyword('메시지'),
-        new StringValue('라고'),
-        new Keyword('인사하기'),
+        new Variable('메시지'),
+        new StringValue('라고 인사하기'),
         new EOL(),
         new Indent(1),
-        new Keyword('메시지'),
+        new Variable('메시지'),
         new Operator('+'),
         new StringValue(', '),
         new Operator('+'),
-        new Keyword('이름'),
+        new Variable('이름'),
         new Operator('+'),
         new StringValue('!'),
         new Keyword('보여주기'),

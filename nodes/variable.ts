@@ -6,14 +6,18 @@ import { Evaluable, Keyword, ValueTypes } from './index.ts'
 export class Variable extends Evaluable {
     name: string
 
-    constructor(args: { name: Keyword | Variable }) {
+    constructor(args: { name: Keyword | Variable } | string) {
         super()
 
-        if (args.name instanceof Keyword) {
+        if (typeof args === 'string') {
+            this.name = args
+            return
+        } else if (args.name instanceof Keyword) {
             this.name = args.name.value
-        } else {
-            this.name = args.name.name
+            return
         }
+
+        this.name = args.name.name
     }
 
     execute(scope: Scope) {

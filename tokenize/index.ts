@@ -9,6 +9,7 @@ import {
     EOL,
     Node,
 } from '../nodes/index.ts'
+import { convertFunctionArgumentsToVariable } from './convertFunctionArgumentsToVariable.ts'
 import {
     isValidCharForKeyword,
     isValidFirstCharForKeyword,
@@ -18,7 +19,7 @@ export function preprocessor(code: string) {
     return '\n' + code.trim() + '\n'
 }
 
-export function tokenize(_code: string) {
+export function tokenize(_code: string): Node[] {
     const tokens: Node[] = []
     const code = preprocessor(_code)
     const chars = [...code]
@@ -133,5 +134,5 @@ export function tokenize(_code: string) {
         })
     }
 
-    return tokens
+    return convertFunctionArgumentsToVariable(tokens)
 }
