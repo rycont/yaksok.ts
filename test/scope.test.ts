@@ -5,7 +5,7 @@ import {
     assertIsError,
     unreachable,
 } from 'assert'
-import { CallFrame, Scope } from '../scope.ts'
+import { Scope } from '../runtime/scope.ts'
 import {
     BlockPiece,
     EvaluatablePiece,
@@ -16,6 +16,7 @@ import {
 } from '../piece/index.ts'
 import { YaksokError } from '../errors.ts'
 import { DeclareVariablePiece, VariablePiece } from '../piece/variable.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 
 Deno.test('Create Scope', () => {
     const scope = new Scope()

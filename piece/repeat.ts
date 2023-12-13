@@ -1,4 +1,5 @@
-import { Scope, CallFrame } from '../scope.ts'
+import { Scope } from '../runtime/scope.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 import { BlockPiece } from './block.ts'
 import { ExecutablePiece } from './index.ts'
 

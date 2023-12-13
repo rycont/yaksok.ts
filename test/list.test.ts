@@ -20,9 +20,10 @@ import {
     VariablePiece,
 } from '../piece/index.ts'
 import { parse } from '../parser/index.ts'
-import { run } from '../runtime.ts'
+import { run } from '../runtime/run.ts'
 import { YaksokError } from '../errors.ts'
-import { CallFrame, Scope } from '../scope.ts'
+import { Scope } from '../runtime/scope.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 
 Deno.test('Parse list', async (context) => {
     const code = `
@@ -226,7 +227,7 @@ Deno.test('Index target is not a sequence', () => {
     try {
         const scope = new Scope()
 
-        const ast = new SetToIndexPiece({
+        const node = new SetToIndexPiece({
             target: new IndexFetchPiece({
                 target: new NumberPiece(1),
                 index: new IndexingPiece({
@@ -236,7 +237,7 @@ Deno.test('Index target is not a sequence', () => {
             value: new NumberPiece(2),
         })
 
-        ast.execute(scope, new CallFrame(ast))
+        node.execute(scope, new CallFrame(node))
         unreachable()
     } catch (error) {
         assertIsError(error, YaksokError)
@@ -248,7 +249,7 @@ Deno.test('Index fetching target is not IndexedValue', () => {
     try {
         const scope = new Scope()
 
-        const ast = new IndexFetchPiece({
+        const node = new IndexFetchPiece({
             // 오류 생성을 위해서.. 어쩔 수 없었어요
             target: new NumberPiece(1) as unknown as ListPiece,
             index: new IndexingPiece({
@@ -256,7 +257,7 @@ Deno.test('Index fetching target is not IndexedValue', () => {
             }),
         })
 
-        ast.execute(scope, new CallFrame(ast))
+        node.execute(scope, new CallFrame(node))
         unreachable()
     } catch (error) {
         assertIsError(error, YaksokError)
@@ -266,7 +267,7 @@ Deno.test('Index fetching target is not IndexedValue', () => {
 
 Deno.test('Print list before evaluating', () => {
     try {
-        const ast = new ListPiece({
+        const node = new ListPiece({
             sequence: new SequencePiece({
                 a: new BinaryCalculationPiece({
                     left: new NumberPiece(1),
@@ -277,7 +278,7 @@ Deno.test('Print list before evaluating', () => {
             }),
         })
 
-        ast.toPrint()
+        node.toPrint()
         unreachable()
     } catch (error) {
         assertIsError(error, YaksokError)

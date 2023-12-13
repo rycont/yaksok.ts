@@ -1,5 +1,6 @@
 import { EvaluatablePiece, OperatorPiece } from './index.ts'
-import { CallFrame, Scope } from '../scope.ts'
+import { Scope } from '../runtime/scope.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 
 export class BinaryCalculationPiece extends EvaluatablePiece {
     left: EvaluatablePiece

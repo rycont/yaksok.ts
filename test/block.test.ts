@@ -1,7 +1,7 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { parse } from '../parser/index.ts'
 
-import { run } from '../runtime.ts'
+import { run } from '../runtime/run.ts'
 import { tokenize } from '../tokenize/index.ts'
 import { YaksokError } from '../errors.ts'
 

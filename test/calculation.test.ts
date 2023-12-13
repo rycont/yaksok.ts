@@ -2,7 +2,7 @@ import { assertEquals } from 'assert'
 import { parse } from '../parser/index.ts'
 import { NumberPiece } from '../piece/primitive.ts'
 
-import { run } from '../runtime.ts'
+import { run } from '../runtime/run.ts'
 import { tokenize } from '../tokenize/index.ts'
 
 Deno.test('Calculation with parenthesis', () => {

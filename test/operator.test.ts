@@ -24,7 +24,7 @@ import {
 } from '../piece/index.ts'
 import { OperatorPiece } from '../piece/basement.ts'
 import { parse } from '../parser/index.ts'
-import { run } from '../runtime.ts'
+import { run } from '../runtime/run.ts'
 
 import { YaksokError } from '../errors.ts'
 
@@ -76,9 +76,9 @@ Deno.test('Run Binary Calculation', () => {
         new EOLPiece(),
     ])
 
-    const ast = parse(tokens)
+    const node = parse(tokens)
     assertEquals(
-        ast,
+        node,
         new BlockPiece([
             new EOLPiece(),
             new DeclareVariablePiece({
@@ -95,7 +95,7 @@ Deno.test('Run Binary Calculation', () => {
         ]),
     )
 
-    const result = run(ast)
+    const result = run(node)
     assertEquals(result.getVariable('계산'), new NumberPiece(2))
 })
 

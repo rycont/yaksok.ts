@@ -1,5 +1,6 @@
 import { isTruthy } from '../internal/isTruthy.ts'
-import { Scope, CallFrame } from '../scope.ts'
+import { Scope } from '../runtime/scope.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 import { ExecutablePiece, EvaluatablePiece } from './basement.ts'
 import { BlockPiece } from './block.ts'
 

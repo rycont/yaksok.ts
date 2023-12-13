@@ -12,7 +12,7 @@ import {
     VariablePiece,
 } from '../piece/index.ts'
 
-import { run } from '../runtime.ts'
+import { run } from '../runtime/run.ts'
 import { YaksokError } from '../errors.ts'
 
 Deno.test('Parse Variable', () => {

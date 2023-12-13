@@ -2,7 +2,7 @@ import { assertEquals } from 'assert'
 
 import { tokenize } from '../tokenize/index.ts'
 import { parse } from '../parser/index.ts'
-import { run } from '../runtime.ts'
+import { run } from '../runtime/run.ts'
 import { BooleanPiece, NumberPiece, StringPiece } from '../piece/index.ts'
 
 Deno.test('Number to print', () => {

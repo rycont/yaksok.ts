@@ -1,6 +1,7 @@
 import { ExecutablePiece, Piece } from './index.ts'
 import { YaksokError } from '../errors.ts'
-import { Scope, CallFrame } from '../scope.ts'
+import { Scope } from '../runtime/scope.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 import { EOLPiece } from './misc.ts'
 
 export class BlockPiece extends ExecutablePiece {

@@ -6,7 +6,8 @@ import {
     NumberPiece,
     OperatorPiece,
 } from '../piece/index.ts'
-import { CallFrame, Scope } from '../scope.ts'
+import { Scope } from '../runtime/scope.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 
 Deno.test('Basement Nodes are not executable', async (context) => {
     await context.step('ExecutablePiece', () => {

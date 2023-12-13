@@ -1,5 +1,5 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { run } from '../runtime.ts'
+import { run } from '../runtime/run.ts'
 import { parse } from '../parser/index.ts'
 import { tokenize } from '../tokenize/index.ts'
 
@@ -13,8 +13,9 @@ import {
     NumberPiece,
     VariablePiece,
 } from '../piece/index.ts'
-import { CallFrame, Scope } from '../scope.ts'
+import { Scope } from '../runtime/scope.ts'
 import { YaksokError } from '../errors.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 
 Deno.test('Function that returns value', () => {
     const code = `

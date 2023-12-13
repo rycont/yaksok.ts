@@ -1,6 +1,6 @@
 import { tokenize } from './tokenize/index.ts'
 import { parse } from './parser/index.ts'
-import { run } from './runtime.ts'
+import { run } from './runtime/run.ts'
 
 export function yaksok(code: string) {
     const tokens = tokenize(code)

@@ -10,17 +10,17 @@ import {
     RepeatPiece,
     StringPiece,
 } from '../piece/index.ts'
-import { run } from '../runtime.ts'
+import { run } from '../runtime/run.ts'
 
 Deno.test('Parse Loop', () => {
     const code = `
 반복
     "Hello, World!" 보여주기
 `
-    const ast = parse(tokenize(code))
+    const node = parse(tokenize(code))
 
     assertEquals(
-        ast,
+        node,
         new BlockPiece([
             new EOLPiece(),
             new RepeatPiece({
