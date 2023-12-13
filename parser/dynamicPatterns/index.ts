@@ -44,18 +44,12 @@ export function createDynamicPattern(tokens: Piece[]) {
             if (!checkPattern(substack, pattern)) continue
 
             if (pattern.name === 'variable') {
-                if (
-                    !(substack[0] instanceof KeywordPiece) ||
-                    !substack[0].value
-                )
-                    continue
-
                 patterns.push({
                     wrapper: VariablePiece,
                     units: [
                         {
                             type: KeywordPiece,
-                            value: substack[0].value,
+                            value: (substack[0] as KeywordPiece).value,
                             as: 'name',
                         },
                     ],
