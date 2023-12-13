@@ -1,5 +1,5 @@
 import { assertEquals } from 'assert'
-import { parse } from '../parser.ts'
+import { parse } from '../parser/index.ts'
 import { StringPiece } from '../piece/primitive.ts'
 
 import { run } from '../runtime.ts'

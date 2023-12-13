@@ -1,13 +1,6 @@
-import { YaksokError } from '../errors.ts'
-import { Pattern } from '../pattern.ts'
 import { Piece, IndentPiece, EOLPiece, BlockPiece } from '../piece/index.ts'
-import { patternMatcher } from './patternMatcher.ts'
 
-export function parseWithIndent(
-    _tokens: Piece[],
-    indent: number,
-    pattern: Pattern[],
-) {
+export function parseIndent(_tokens: Piece[], indent: number = 0) {
     const groups: Piece[] = []
     const tokens = [..._tokens]
 
@@ -19,7 +12,7 @@ export function parseWithIndent(
                 continue
             }
 
-            let blockTokens: Piece[] = []
+            const blockTokens: Piece[] = []
 
             while (tokens.length) {
                 const currentToken = tokens.shift()!
@@ -43,20 +36,12 @@ export function parseWithIndent(
                 }
             }
 
-            blockTokens.push(new EOLPiece())
-
-            const blockContent = parseWithIndent(
-                blockTokens,
-                indent + 1,
-                pattern,
-            )
-            groups.push(blockContent)
+            const child = parseIndent(blockTokens, indent + 1)
+            groups.push(new BlockPiece(child))
         } else {
             groups.push(token)
         }
     }
 
-    patternMatcher(groups, pattern)
-    groups.push(new EOLPiece())
-    return new BlockPiece(groups)
+    return groups
 }

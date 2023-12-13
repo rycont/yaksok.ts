@@ -19,7 +19,7 @@ import {
     SetToIndexPiece,
     VariablePiece,
 } from '../piece/index.ts'
-import { parse } from '../parser.ts'
+import { parse } from '../parser/index.ts'
 import { run } from '../runtime.ts'
 import { YaksokError } from '../errors.ts'
 import { CallFrame, Scope } from '../scope.ts'

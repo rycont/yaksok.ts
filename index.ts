@@ -1,5 +1,5 @@
 import { tokenize } from './tokenize.ts'
-import { parse } from './parser.ts'
+import { parse } from './parser/index.ts'
 import { run } from './runtime.ts'
 
 export function yaksok(code: string) {

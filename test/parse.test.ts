@@ -1,5 +1,5 @@
 import { assertEquals } from 'assert'
-import { parse } from '../parser.ts'
+import { parse } from '../parser/index.ts'
 import { BlockPiece } from '../piece/block.ts'
 import { BinaryCalculationPiece } from '../piece/calculation.ts'
 import { EOLPiece } from '../piece/misc.ts'
@@ -53,7 +53,6 @@ Deno.test('Parse with indent', () => {
                                         }),
                                         value: new NumberPiece(5),
                                     }),
-                                    new EOLPiece(),
                                 ]),
                             }),
                             elseBody: new BlockPiece([
@@ -63,7 +62,6 @@ Deno.test('Parse with indent', () => {
                                     }),
                                     value: new NumberPiece(6),
                                 }),
-                                new EOLPiece(),
                             ]),
                         }),
                         new EOLPiece(),
@@ -77,7 +75,6 @@ Deno.test('Parse with indent', () => {
                         }),
                         value: new NumberPiece(3),
                     }),
-                    new EOLPiece(),
                 ]),
             }),
             new EOLPiece(),

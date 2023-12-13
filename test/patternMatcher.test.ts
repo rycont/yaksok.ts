@@ -1,5 +1,5 @@
 import { assertEquals } from 'assert'
-import { parse } from '../parser.ts'
+import { parse } from '../parser/index.ts'
 
 import { tokenize } from '../tokenize.ts'
 import { KeywordPiece } from '../piece/basement.ts'

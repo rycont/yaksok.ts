@@ -1,5 +1,5 @@
 import { assertEquals } from 'https://deno.land/std@0.208.0/assert/assert_equals.ts'
-import { parse } from '../parser.ts'
+import { parse } from '../parser/index.ts'
 
 import { run } from '../runtime.ts'
 import { tokenize } from '../tokenize.ts'

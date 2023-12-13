@@ -1,7 +1,7 @@
 import { assertEquals, unreachable } from 'assert'
 import { tokenize } from '../tokenize.ts'
 
-import { parse } from '../parser.ts'
+import { parse } from '../parser/index.ts'
 import {
     BlockPiece,
     EOLPiece,
@@ -28,7 +28,6 @@ Deno.test('Parse Loop', () => {
                     new PrintPiece({
                         value: new StringPiece('Hello, World!'),
                     }),
-                    new EOLPiece(),
                     new EOLPiece(),
                 ]),
             }),

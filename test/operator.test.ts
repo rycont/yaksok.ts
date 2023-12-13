@@ -23,7 +23,7 @@ import {
     VariablePiece,
 } from '../piece/index.ts'
 import { OperatorPiece } from '../piece/basement.ts'
-import { parse } from '../parser.ts'
+import { parse } from '../parser/index.ts'
 import { run } from '../runtime.ts'
 
 import { YaksokError } from '../errors.ts'
