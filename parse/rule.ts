@@ -30,11 +30,11 @@ import {
     SetToIndex,
     Expression,
     RangeOperator,
-} from '../nodes/index.ts'
+} from '../node/index.ts'
 
 export interface PatternUnit {
     type: {
-        new(...args: any[]): Node
+        new (...args: any[]): Node
     }
     value?: Record<string, unknown> | string | number
     as?: string
@@ -42,7 +42,7 @@ export interface PatternUnit {
 
 export interface Rule {
     to: {
-        new(...args: any[]): Node
+        new (...args: any[]): Node
     }
     pattern: PatternUnit[]
     config?: Record<string, unknown>

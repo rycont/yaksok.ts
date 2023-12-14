@@ -1,8 +1,8 @@
 import { Rule, internalPatterns } from './rule.ts'
-import { Block, EOL, Node } from '../nodes/index.ts'
-import { satisfiesPattern } from "./satisfiesPattern.ts";
+import { Block, EOL, Node } from '../node/index.ts'
+import { satisfiesPattern } from './satisfiesPattern.ts'
 
-export function srParse(tokens: Node[], patterns: Rule[]) {
+export function _SRParse(tokens: Node[], patterns: Rule[]) {
     const stack: Node[] = []
     const rules = [...internalPatterns, ...patterns]
 
@@ -39,18 +39,18 @@ export function srParse(tokens: Node[], patterns: Rule[]) {
     return stack
 }
 
-export function recursiveSRParse(_tokens: Node[], patterns: Rule[]) {
+export function SRParse(_tokens: Node[], patterns: Rule[]) {
     const tokens = [..._tokens]
 
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
 
         if (token instanceof Block) {
-            tokens[i] = recursiveSRParse(token.children, patterns)
+            tokens[i] = SRParse(token.children, patterns)
         }
     }
 
     tokens.push(new EOL())
-    const matchedTokens = srParse(tokens, patterns)
+    const matchedTokens = _SRParse(tokens, patterns)
     return new Block(matchedTokens)
 }

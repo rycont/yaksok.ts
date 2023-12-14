@@ -1,5 +1,5 @@
 import { assertEquals } from 'assert'
-import { Keyword, Variable, EOL, Expression } from '../nodes/index.ts'
+import { Keyword, Variable, EOL, Expression } from '../node/index.ts'
 import { convertFunctionArgumentsToVariable } from '../tokenize/convertFunctionArgumentsToVariable.ts'
 
 Deno.test('Preprocess tokens', () => {

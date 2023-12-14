@@ -13,9 +13,9 @@ import {
     FunctionInvoke,
     Keyword,
     NumberValue,
-} from '../nodes/index.ts'
+} from '../node/index.ts'
 import { YaksokError } from '../errors.ts'
-import { SetVariable, Variable } from '../nodes/variable.ts'
+import { SetVariable, Variable } from '../node/variable.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 
 Deno.test('Create Scope', () => {

@@ -7,8 +7,8 @@ import {
     Operator,
     StringValue,
     Variable,
-} from '../nodes/index.ts'
-import { EOL, Indent } from '../nodes/misc.ts'
+} from '../node/index.ts'
+import { EOL, Indent } from '../node/misc.ts'
 import { YaksokError } from '../errors.ts'
 import {
     isValidFirstCharForKeyword,

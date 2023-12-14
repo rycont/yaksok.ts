@@ -1,6 +1,6 @@
 import { YaksokError } from '../errors.ts'
-import { Node } from '../nodes/base.ts'
-import { FunctionDeclaration, ValueTypes } from '../nodes/index.ts'
+import { Node } from '../node/base.ts'
+import { FunctionDeclaration, ValueTypes } from '../node/index.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>

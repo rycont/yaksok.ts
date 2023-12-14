@@ -21,9 +21,9 @@ import {
     PlusOperator,
     StringValue,
     Variable,
-} from '../nodes/index.ts'
-import { Operator } from '../nodes/base.ts'
-import { parse } from '../parser/index.ts'
+} from '../node/index.ts'
+import { Operator } from '../node/base.ts'
+import { parse } from '../parse/index.ts'
 import { run } from '../runtime/run.ts'
 
 import { YaksokError } from '../errors.ts'

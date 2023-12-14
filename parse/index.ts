@@ -1,14 +1,13 @@
 import { createDynamicRule } from './dynamicRule/index.ts'
-
-import { Node } from '../nodes/index.ts'
+import { SRParse } from './srParse.ts'
 import { parseIndent } from './parseIndent.ts'
-import { recursiveSRParse } from './srParse.ts'
+import { Node } from '../node/index.ts'
 
 export function parse(tokens: Node[]) {
-    const indentedNodes = parseIndent(tokens)
-
     const dynamicRules = createDynamicRule(tokens)
-    const ast = recursiveSRParse(indentedNodes, dynamicRules)
+
+    const indentedNodes = parseIndent(tokens)
+    const ast = SRParse(indentedNodes, dynamicRules)
 
     return ast
 }

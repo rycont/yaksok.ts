@@ -18,8 +18,8 @@ import {
     Sequence,
     SetToIndex,
     Variable,
-} from '../nodes/index.ts'
-import { parse } from '../parser/index.ts'
+} from '../node/index.ts'
+import { parse } from '../parse/index.ts'
 import { run } from '../runtime/run.ts'
 import { YaksokError } from '../errors.ts'
 import { Scope } from '../runtime/scope.ts'

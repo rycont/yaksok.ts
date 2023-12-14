@@ -6,7 +6,7 @@ import {
     Variable,
     Evaluable,
     Expression,
-} from '../../nodes/index.ts'
+} from '../../node/index.ts'
 import { satisfiesPattern } from '../satisfiesPattern.ts'
 import { createFunctionPattern } from './functionVariants.ts'
 
@@ -64,52 +64,52 @@ export function createDynamicRule(tokens: Node[]) {
 const dynamicPatternDetector: (Omit<Rule, 'to'> & {
     name: string
 })[] = [
-        {
-            name: 'variable' as const,
-            pattern: [
-                {
-                    type: Keyword,
-                    as: 'name',
-                },
-                {
-                    type: Expression,
-                    value: ':',
-                },
-                {
-                    type: Evaluable,
-                },
-            ],
-        },
-        {
-            name: 'variable' as const,
-            pattern: [
-                {
-                    type: Keyword,
-                    as: 'name',
-                },
-                {
-                    type: Expression,
-                    value: ':',
-                },
-                {
-                    type: Expression,
-                },
-            ],
-        },
-        {
-            name: 'variable' as const,
-            pattern: [
-                {
-                    type: Keyword,
-                    as: 'name',
-                },
-                {
-                    type: Expression,
-                    value: ':',
-                },
-                {
-                    type: Keyword,
-                },
-            ],
-        },
-    ]
+    {
+        name: 'variable' as const,
+        pattern: [
+            {
+                type: Keyword,
+                as: 'name',
+            },
+            {
+                type: Expression,
+                value: ':',
+            },
+            {
+                type: Evaluable,
+            },
+        ],
+    },
+    {
+        name: 'variable' as const,
+        pattern: [
+            {
+                type: Keyword,
+                as: 'name',
+            },
+            {
+                type: Expression,
+                value: ':',
+            },
+            {
+                type: Expression,
+            },
+        ],
+    },
+    {
+        name: 'variable' as const,
+        pattern: [
+            {
+                type: Keyword,
+                as: 'name',
+            },
+            {
+                type: Expression,
+                value: ':',
+            },
+            {
+                type: Keyword,
+            },
+        ],
+    },
+]

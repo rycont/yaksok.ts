@@ -8,16 +8,12 @@ import {
     NumberValue,
     EOL,
     Node,
-} from '../nodes/index.ts'
+} from '../node/index.ts'
 import { convertFunctionArgumentsToVariable } from './convertFunctionArgumentsToVariable.ts'
 import {
     isValidCharForKeyword,
     isValidFirstCharForKeyword,
 } from './isValidCharForKeyword.ts'
-
-export function preprocessor(code: string) {
-    return '\n' + code.trim() + '\n'
-}
 
 export function tokenize(_code: string): Node[] {
     const tokens: Node[] = []
@@ -134,5 +130,13 @@ export function tokenize(_code: string): Node[] {
         })
     }
 
+    return postprocessor(tokens)
+}
+
+export function preprocessor(code: string) {
+    return '\n' + code.trim() + '\n'
+}
+
+export function postprocessor(tokens: Node[]) {
     return convertFunctionArgumentsToVariable(tokens)
 }

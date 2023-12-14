@@ -1,13 +1,13 @@
 import { assertEquals } from 'assert'
-import { parse } from '../parser/index.ts'
-import { Block } from '../nodes/block.ts'
-import { BinaryOperation } from '../nodes/operation.ts'
-import { EOL } from '../nodes/misc.ts'
-import { EqualOperator } from '../nodes/operator.ts'
-import { NumberValue } from '../nodes/primitive.ts'
+import { parse } from '../parse/index.ts'
+import { Block } from '../node/block.ts'
+import { BinaryOperation } from '../node/operation.ts'
+import { EOL } from '../node/misc.ts'
+import { EqualOperator } from '../node/operator.ts'
+import { NumberValue } from '../node/primitive.ts'
 
 import { tokenize } from '../tokenize/index.ts'
-import { IfStatement, SetVariable, Keyword, Variable } from '../nodes/index.ts'
+import { IfStatement, SetVariable, Keyword, Variable } from '../node/index.ts'
 
 Deno.test('Parse with indent', () => {
     const code = `

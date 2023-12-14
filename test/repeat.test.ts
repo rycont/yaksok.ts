@@ -1,7 +1,7 @@
 import { assertEquals, unreachable } from 'assert'
 import { tokenize } from '../tokenize/index.ts'
 
-import { parse } from '../parser/index.ts'
+import { parse } from '../parse/index.ts'
 import {
     Block,
     EOL,
@@ -9,7 +9,7 @@ import {
     Print,
     Loop,
     StringValue,
-} from '../nodes/index.ts'
+} from '../node/index.ts'
 import { run } from '../runtime/run.ts'
 
 Deno.test('Parse Loop', () => {

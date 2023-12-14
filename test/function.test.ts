@@ -1,6 +1,6 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { run } from '../runtime/run.ts'
-import { parse } from '../parser/index.ts'
+import { parse } from '../parse/index.ts'
 import { tokenize } from '../tokenize/index.ts'
 
 import {
@@ -12,7 +12,7 @@ import {
     Keyword,
     NumberValue,
     Variable,
-} from '../nodes/index.ts'
+} from '../node/index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { YaksokError } from '../errors.ts'
 import { CallFrame } from '../runtime/callFrame.ts'

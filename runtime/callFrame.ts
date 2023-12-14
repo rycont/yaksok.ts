@@ -1,5 +1,5 @@
 import { YaksokError } from '../errors.ts'
-import { Node } from '../nodes/index.ts'
+import { Node } from '../node/index.ts'
 
 export class CallFrame {
     parent: CallFrame | undefined

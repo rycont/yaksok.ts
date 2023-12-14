@@ -10,7 +10,7 @@ import {
     Node,
     StringValue,
     Variable,
-} from '../../nodes/index.ts'
+} from '../../node/index.ts'
 
 interface Variant {
     index: number
