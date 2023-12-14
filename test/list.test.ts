@@ -279,8 +279,6 @@ Deno.test('Print list before evaluating', () => {
         node.toPrint()
         unreachable()
     } catch (error) {
-        console.log(error)
-
         assertIsError(error, YaksokError)
         assertEquals(error.name, 'LIST_NOT_EVALUATED')
     }

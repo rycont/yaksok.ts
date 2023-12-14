@@ -77,7 +77,7 @@ Deno.test('isTruthy: List True', () => {
 아니면
     값: "거짓"
 `
-    console.log(parse(tokenize(code)))
+
     const result = run(parse(tokenize(code)))
     assertEquals(result.getVariable('값').value, '참')
 })
