@@ -40,29 +40,33 @@ export class Sequence extends Evaluable {
 }
 
 export class List extends IndexedValue {
-    sequence?: Sequence
-    items?: ValueTypes[]
+    items?: Evaluable[]
+    evaluatedItems?: ValueTypes[]
 
-    constructor(props: { sequence?: Sequence; items?: ValueTypes[] }) {
+    constructor(props: { sequence?: Sequence; evaluatedItems?: ValueTypes[] }) {
         super()
 
-        this.sequence = props.sequence
-        this.items = props.items
+        if (props.evaluatedItems) {
+            this.evaluatedItems = props.evaluatedItems
+            this.items = props.evaluatedItems
 
-        if (!this.sequence && !this.items) {
-            this.items = []
+            return
         }
+
+        if (props.sequence) {
+            this.items = props.sequence.items
+            return
+        }
+
+        this.evaluatedItems = []
     }
 
     execute(scope: Scope, callFrame: CallFrame) {
-        if (this.items) return this
+        if (this.evaluatedItems) return this
 
-        const items = this.sequence!.items.map((item) =>
-            item.execute(scope, callFrame),
-        )
+        const items = this.items!.map((item) => item.execute(scope, callFrame))
 
-        this.items = items
-
+        this.evaluatedItems = items
         return this
     }
 
@@ -79,8 +83,8 @@ export class List extends IndexedValue {
             if (indexValue < 0)
                 throw new YaksokError('LIST_INDEX_MUST_BE_GREATER_THAN_1')
 
-            const list = this.execute(scope, callFrame).items!.map((item) =>
-                item.execute(scope, callFrame),
+            const list = this.execute(scope, callFrame).evaluatedItems!.map(
+                (item) => item.execute(scope, callFrame),
             )
 
             if (list.length <= indexValue)
@@ -90,14 +94,14 @@ export class List extends IndexedValue {
         }
 
         if (index instanceof List) {
-            const list = this.execute(scope, callFrame).items!.map((item) =>
-                item.execute(scope, callFrame),
+            const list = this.execute(scope, callFrame).evaluatedItems!.map(
+                (item) => item.execute(scope, callFrame),
             )
 
-            const indexValue = index.execute(scope, callFrame).items!
+            const indexValue = index.execute(scope, callFrame).evaluatedItems!
 
             return new List({
-                items: indexValue.map((index) => {
+                evaluatedItems: indexValue.map((index) => {
                     if (!(index instanceof NumberValue)) {
                         throw new YaksokError(
                             'LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST',
@@ -127,15 +131,19 @@ export class List extends IndexedValue {
         if (indexValue < 0)
             throw new YaksokError('LIST_INDEX_MUST_BE_GREATER_THAN_1')
 
-        const content = this.execute(scope, callFrame).items!
+        const content = this.execute(scope, callFrame).evaluatedItems!
         content[indexValue] = value
 
         return value
     }
 
     toPrint(): string {
-        if (!this.items) throw new YaksokError('LIST_NOT_EVALUATED')
-        return '[ ' + this.items.map((item) => item.toPrint()).join(' ') + ' ]'
+        if (!this.evaluatedItems) throw new YaksokError('LIST_NOT_EVALUATED')
+        return (
+            '[ ' +
+            this.evaluatedItems.map((item) => item.toPrint()).join(' ') +
+            ' ]'
+        )
     }
 }
 
@@ -218,14 +226,14 @@ export class RangeOperator extends Operator {
         if (left.value > right.value)
             throw new YaksokError('RANGE_START_MUST_BE_LESS_THAN_END')
 
-        const items: NumberValue[] = []
+        const evaluatedItems: NumberValue[] = []
 
         for (let i = left.value; i <= right.value; i++) {
-            items.push(new NumberValue(i))
+            evaluatedItems.push(new NumberValue(i))
         }
 
         return new List({
-            items,
+            evaluatedItems,
         })
     }
 }

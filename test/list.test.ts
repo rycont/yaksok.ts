@@ -279,6 +279,8 @@ Deno.test('Print list before evaluating', () => {
         node.toPrint()
         unreachable()
     } catch (error) {
+        console.log(error)
+
         assertIsError(error, YaksokError)
         assertEquals(error.name, 'LIST_NOT_EVALUATED')
     }
@@ -380,18 +382,16 @@ Deno.test('List with no data source', () => {
 })
 
 Deno.test('Sequence toPrint', () => {
-    const code = `[1, 3, 5, 7, 9]`
+    const code = `1, 3, 5, 7, 9`
     const tree = parse(tokenize(code))
-    assertEquals(
-        (tree.children[1].sequence as Sequence).toPrint(),
-        '( 1 3 5 7 9 )',
-    )
+
+    assertEquals((tree.children[1] as Sequence).toPrint(), '( 1 3 5 7 9 )')
 })
 
 Deno.test('Evaluate Sequence', () => {
-    const code = `[1, 3, 5, 7, 9]`
+    const code = `1, 3, 5, 7, 9`
     const tree = parse(tokenize(code))
-    const sequence = tree.children[1].sequence as Sequence
+    const sequence = tree.children[1] as Sequence
 
     const result = sequence.execute(new Scope(), new CallFrame(sequence))
     assertEquals(result, new NumberValue(9))
