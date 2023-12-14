@@ -9,7 +9,7 @@ import {
     EOL,
     Node,
 } from '../node/index.ts'
-import { convertFunctionArgumentsToVariable } from './convertFunctionArgumentsToVariable.ts'
+import { convertKeywordToVariable } from './convertKeywordToVariable.ts'
 import {
     isValidCharForKeyword,
     isValidFirstCharForKeyword,
@@ -179,7 +179,7 @@ export class Tokenizer {
     }
 
     postprocess() {
-        const { functionHeaders, tokens } = convertFunctionArgumentsToVariable(
+        const { functionHeaders, tokens } = convertKeywordToVariable(
             this.tokens,
         )
 

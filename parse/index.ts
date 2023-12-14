@@ -1,8 +1,8 @@
 import { createDynamicRule } from './dynamicRule/index.ts'
 import { parseIndent } from './parseIndent.ts'
-import { SRParse } from './srParse.ts'
+import { callParseRecursively } from './srParse.ts'
 import { Node } from '../node/index.ts'
-import { convertFunctionArgumentsToVariable } from '../tokenize/convertFunctionArgumentsToVariable.ts'
+import { convertKeywordToVariable } from '../tokenize/convertKeywordToVariable.ts'
 
 interface ParseProps {
     tokens: Node[]
@@ -14,13 +14,13 @@ export function parse(_props: ParseProps) {
         ..._props,
         functionHeaders:
             _props.functionHeaders ||
-            convertFunctionArgumentsToVariable(_props.tokens).functionHeaders,
+            convertKeywordToVariable(_props.tokens).functionHeaders,
     }
 
     const dynamicRules = createDynamicRule(props)
     const indentedNodes = parseIndent(props.tokens)
 
-    const ast = SRParse(indentedNodes, dynamicRules)
+    const ast = callParseRecursively(indentedNodes, dynamicRules)
 
     return ast
 }

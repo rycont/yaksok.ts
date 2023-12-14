@@ -16,7 +16,7 @@ export class Yaksok {
         const tokens = tokenize(code)
         const ast = parse(tokens)
 
-        return run(ast)
+        return run(ast, this.scope)
     }
 }
 

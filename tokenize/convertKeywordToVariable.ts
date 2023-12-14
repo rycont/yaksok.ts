@@ -1,6 +1,6 @@
 import { Node, Keyword, Variable, EOL, Indent } from '../node/index.ts'
 
-export function convertFunctionArgumentsToVariable(tokens: Node[]) {
+export function convertKeywordToVariable(tokens: Node[]) {
     const leftTokens = [...tokens]
     const tokenStack: Node[] = []
     const functionHeaders: Node[][] = []
