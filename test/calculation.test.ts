@@ -5,7 +5,7 @@ import { NumberValue } from '../nodes/primitive.ts'
 import { run } from '../runtime/run.ts'
 import { tokenize } from '../tokenize/index.ts'
 
-Deno.test('Calculation with parenthesis', () => {
+Deno.test('Operation with parenthesis', () => {
     const code = `
 값1: (10 * 2) + 10
 값2: 10 * (2 + 10)

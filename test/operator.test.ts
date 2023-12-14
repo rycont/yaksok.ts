@@ -2,7 +2,7 @@ import { assertEquals, assertIsError, unreachable } from 'assert'
 import { tokenize } from '../tokenize/index.ts'
 import {
     AndOperator,
-    BinaryCalculation,
+    BinaryOperation,
     Block,
     BooleanValue,
     SetVariable,
@@ -28,7 +28,7 @@ import { run } from '../runtime/run.ts'
 
 import { YaksokError } from '../errors.ts'
 
-Deno.test('Parse Binary Calculation', () => {
+Deno.test('Parse Binary Operation', () => {
     const code = `1 + 1`
 
     const result = tokenize(code)
@@ -42,7 +42,7 @@ Deno.test('Parse Binary Calculation', () => {
     ])
 })
 
-Deno.test('Parse Binary Calculation with Parentheses', () => {
+Deno.test('Parse Binary Operation with Parentheses', () => {
     const code = `(1 + 1) * 2`
 
     const result = tokenize(code)
@@ -60,7 +60,7 @@ Deno.test('Parse Binary Calculation with Parentheses', () => {
     ])
 })
 
-Deno.test('Run Binary Calculation', () => {
+Deno.test('Run Binary Operation', () => {
     const code = `
 계산: 1 + 1
 `
@@ -85,7 +85,7 @@ Deno.test('Run Binary Calculation', () => {
                 name: new Variable({
                     name: new Keyword('계산'),
                 }),
-                value: new BinaryCalculation({
+                value: new BinaryOperation({
                     left: new NumberValue(1),
                     operator: new PlusOperator(),
                     right: new NumberValue(1),

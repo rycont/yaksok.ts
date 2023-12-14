@@ -2,7 +2,7 @@ import { assertEquals, assertIsError, unreachable } from 'assert'
 import { tokenize } from '../tokenize/index.ts'
 import { parse } from '../parser/index.ts'
 import {
-    BinaryCalculation,
+    BinaryOperation,
     Block,
     SetVariable,
     EOL,
@@ -48,7 +48,7 @@ Deno.test('Parse variable with 이전 keyword', () => {
             }),
             new SetVariable({
                 name: new Variable({ name: new Keyword('나이') }),
-                value: new BinaryCalculation({
+                value: new BinaryOperation({
                     left: new Variable({ name: new Keyword('나이') }),
                     operator: new PlusOperator(),
                     right: new NumberValue(1),

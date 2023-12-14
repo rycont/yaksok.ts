@@ -2,7 +2,7 @@ import { assertEquals, assertIsError, unreachable } from 'assert'
 
 import { tokenize } from '../tokenize/index.ts'
 import {
-    BinaryCalculation,
+    BinaryOperation,
     Block,
     SetVariable,
     EOL,
@@ -269,7 +269,7 @@ Deno.test('Print list before evaluating', () => {
     try {
         const node = new List({
             sequence: new Sequence({
-                a: new BinaryCalculation({
+                a: new BinaryOperation({
                     left: new NumberValue(1),
                     operator: new PlusOperator(),
                     right: new NumberValue(2),

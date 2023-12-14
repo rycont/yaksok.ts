@@ -6,7 +6,7 @@ import {
     EOL,
     DivideOperator,
     MultiplyOperator,
-    BinaryCalculation,
+    BinaryOperation,
     Operator,
     IfStatement,
     Block,
@@ -297,7 +297,7 @@ export const internalPatterns: Rule[] = [
         ],
     },
     {
-        to: BinaryCalculation,
+        to: BinaryOperation,
         pattern: [
             {
                 type: Evaluable,

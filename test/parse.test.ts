@@ -1,7 +1,7 @@
 import { assertEquals } from 'assert'
 import { parse } from '../parser/index.ts'
 import { Block } from '../nodes/block.ts'
-import { BinaryCalculation } from '../nodes/calculation.ts'
+import { BinaryOperation } from '../nodes/operation.ts'
 import { EOL } from '../nodes/misc.ts'
 import { EqualOperator } from '../nodes/operator.ts'
 import { NumberValue } from '../nodes/primitive.ts'
@@ -28,7 +28,7 @@ Deno.test('Parse with indent', () => {
             new EOL(),
             new IfStatement({
                 ifBody: new IfStatement({
-                    condition: new BinaryCalculation({
+                    condition: new BinaryOperation({
                         left: new NumberValue(1),
                         operator: new EqualOperator(),
                         right: new NumberValue(1),
@@ -36,7 +36,7 @@ Deno.test('Parse with indent', () => {
                     body: new Block([
                         new IfStatement({
                             ifBody: new IfStatement({
-                                condition: new BinaryCalculation({
+                                condition: new BinaryOperation({
                                     left: new NumberValue(2),
                                     operator: new EqualOperator(),
                                     right: new NumberValue(2),

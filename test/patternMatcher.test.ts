@@ -5,7 +5,7 @@ import { tokenize } from '../tokenize/index.ts'
 import { Keyword } from '../nodes/base.ts'
 import { StringValue } from '../nodes/primitive.ts'
 import {
-    BinaryCalculation,
+    BinaryOperation,
     Block,
     SetVariable,
     EOL,
@@ -26,7 +26,7 @@ Deno.test('Matching case: Wrapping class inherits from child class', () => {
             new EOL(),
             new SetVariable({
                 name: new Variable({ name: new Keyword('이름') }),
-                value: new BinaryCalculation({
+                value: new BinaryOperation({
                     left: new StringValue('홍길'),
                     operator: new PlusOperator(),
                     right: new StringValue('동'),

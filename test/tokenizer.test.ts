@@ -55,7 +55,7 @@ Deno.test('Tokenize Number', () => {
     assertEquals(tokens, [new EOL(), new NumberValue(1), new EOL()])
 })
 
-Deno.test('Tokenize Binary Calculation', () => {
+Deno.test('Tokenize Binary Operation', () => {
     const tokens = tokenize('1 + 2')
     assertEquals(tokens, [
         new EOL(),
