@@ -179,22 +179,21 @@ export class Tokenizer {
     }
 
     postprocess() {
-        const { functionHeaders, tokenStack } =
-            convertFunctionArgumentsToVariable(this.tokens)
+        const { functionHeaders, tokens } = convertFunctionArgumentsToVariable(
+            this.tokens,
+        )
 
         this.functionHeaders = functionHeaders
-        this.tokens = tokenStack
+        this.tokens = tokens
 
-        return tokenStack
+        return tokens
     }
-}
-
-export function _tokenize(code: string) {
-    const tokenizer = new Tokenizer(code)
-    return tokenizer.tokens
 }
 
 export function tokenize(code: string) {
     const tokenizer = new Tokenizer(code)
-    return tokenizer
+    return {
+        tokens: tokenizer.tokens,
+        functionHeaders: tokenizer.functionHeaders,
+    }
 }

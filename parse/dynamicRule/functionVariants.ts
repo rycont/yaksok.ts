@@ -1,5 +1,5 @@
 import { YaksokError } from '../../errors.ts'
-import { Rule } from '../rule.ts'
+import { PatternUnit, Rule } from '../rule.ts'
 import {
     Block,
     EOL,
@@ -79,11 +79,11 @@ export function* getVariants(subtokens: (Variable | StringValue)[]) {
     }
 }
 
-function createFunctionDeclarePattern(
+function createFunctionDeclareRule(
     name: string,
     subtokens: (Variable | StringValue)[],
 ): Rule {
-    const declarationTemplate: Rule['pattern'] = subtokens.map((t) => {
+    const declarationTemplate: PatternUnit[] = subtokens.map((t) => {
         if (t instanceof Variable) {
             return {
                 type: Variable,
@@ -119,7 +119,7 @@ function createFunctionDeclarePattern(
     }
 }
 
-function createFunctionInvokePattern(
+function createFunctionInvokeRule(
     name: string,
     _subtokens: (Variable | StringValue)[],
 ): Rule {
@@ -166,7 +166,7 @@ function subtokensAreValid(
     })
 }
 
-export function createFunctionPattern(subtokens: Node[]) {
+export function createFunctionRules(subtokens: Node[]) {
     if (!subtokensAreValid(subtokens))
         throw new YaksokError(
             'UNEXPECTED_TOKEN',
@@ -184,7 +184,7 @@ export function createFunctionPattern(subtokens: Node[]) {
     const variants = [...getVariants(subtokens)]
 
     return [
-        createFunctionDeclarePattern(name, subtokens),
-        ...variants.map((v) => createFunctionInvokePattern(name, v)),
+        createFunctionDeclareRule(name, subtokens),
+        ...variants.map((v) => createFunctionInvokeRule(name, v)),
     ]
 }

@@ -1,4 +1,3 @@
-import { Yaksok } from '../index.ts'
 import { Node, Keyword, Variable, EOL, Indent } from '../node/index.ts'
 
 export function convertFunctionArgumentsToVariable(tokens: Node[]) {
@@ -19,15 +18,13 @@ export function convertFunctionArgumentsToVariable(tokens: Node[]) {
                 const token = leftTokens.shift()
                 if (!token) break
 
-                functionHeader.push(token)
-
                 if (token instanceof Keyword) {
                     paramaters.push(token.value)
-                    tokenStack.push(
-                        new Variable({
-                            name: token,
-                        }),
-                    )
+                    const variable = new Variable({ name: token })
+
+                    tokenStack.push(variable)
+                    functionHeader.push(variable)
+
                     continue
                 }
 
@@ -36,6 +33,7 @@ export function convertFunctionArgumentsToVariable(tokens: Node[]) {
                     break
                 }
 
+                functionHeader.push(token)
                 tokenStack.push(token)
             }
 
@@ -71,7 +69,7 @@ export function convertFunctionArgumentsToVariable(tokens: Node[]) {
     }
 
     return {
-        tokenStack,
+        tokens: tokenStack,
         functionHeaders,
     }
 }

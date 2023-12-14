@@ -2,11 +2,23 @@ import { createDynamicRule } from './dynamicRule/index.ts'
 import { parseIndent } from './parseIndent.ts'
 import { SRParse } from './srParse.ts'
 import { Node } from '../node/index.ts'
-import { Yaksok } from '../index.ts'
+import { convertFunctionArgumentsToVariable } from '../tokenize/convertFunctionArgumentsToVariable.ts'
 
-export function parse(this: Yaksok | unknown, tokens: Node[]) {
-    const dynamicRules = createDynamicRule(tokens)
-    const indentedNodes = parseIndent(tokens)
+interface ParseProps {
+    tokens: Node[]
+    functionHeaders?: Node[][]
+}
+
+export function parse(_props: ParseProps) {
+    const props = {
+        ..._props,
+        functionHeaders:
+            _props.functionHeaders ||
+            convertFunctionArgumentsToVariable(_props.tokens).functionHeaders,
+    }
+
+    const dynamicRules = createDynamicRule(props)
+    const indentedNodes = parseIndent(props.tokens)
 
     const ast = SRParse(indentedNodes, dynamicRules)
 

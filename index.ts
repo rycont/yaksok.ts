@@ -2,7 +2,7 @@ import { parse } from './parse/index.ts'
 import { run } from './runtime/run.ts'
 import { Node } from './node/index.ts'
 import { Scope } from './runtime/scope.ts'
-import { _tokenize } from './tokenize/index.ts'
+import { tokenize } from './tokenize/index.ts'
 
 export class Yaksok {
     functionDeclaration: Node[][] = []
@@ -13,7 +13,7 @@ export class Yaksok {
     }
 
     run(code: string) {
-        const tokens = _tokenize(code)
+        const tokens = tokenize(code)
         const ast = parse(tokens)
 
         return run(ast)

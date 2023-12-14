@@ -6,7 +6,7 @@ import { EOL } from '../node/misc.ts'
 import { EqualOperator } from '../node/operator.ts'
 import { NumberValue } from '../node/primitive.ts'
 
-import { _tokenize } from '../tokenize/index.ts'
+import { tokenize } from '../tokenize/index.ts'
 import { IfStatement, SetVariable, Keyword, Variable } from '../node/index.ts'
 
 Deno.test('Parse with indent', () => {
@@ -20,7 +20,7 @@ Deno.test('Parse with indent', () => {
     값: 3
 `
 
-    const result = parse(_tokenize(code))
+    const result = parse(tokenize(code))
 
     assertEquals(
         result,

@@ -1,5 +1,5 @@
 import { assertEquals, unreachable } from 'assert'
-import { _tokenize } from '../tokenize/index.ts'
+import { tokenize } from '../tokenize/index.ts'
 
 import { parse } from '../parse/index.ts'
 import {
@@ -17,7 +17,7 @@ Deno.test('Parse Loop', () => {
 반복
     "Hello, World!" 보여주기
 `
-    const node = parse(_tokenize(code))
+    const node = parse(tokenize(code))
 
     assertEquals(
         node,
@@ -45,7 +45,7 @@ Deno.test('Run loop', () => {
         반복 그만
 `
     try {
-        const result = run(parse(_tokenize(code)))
+        const result = run(parse(tokenize(code)))
         assertEquals(result.getVariable('횟수'), new NumberValue(11))
     } catch (_) {
         unreachable()

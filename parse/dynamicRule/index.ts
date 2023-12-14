@@ -1,39 +1,27 @@
 import { Rule } from '../rule.ts'
 import {
-    Node,
-    EOL,
-    Keyword,
-    Variable,
-    Evaluable,
     Expression,
+    Evaluable,
+    Variable,
+    Keyword,
+    Node,
 } from '../../node/index.ts'
 import { satisfiesPattern } from '../satisfiesPattern.ts'
-import { createFunctionPattern } from './functionVariants.ts'
+import { createFunctionRules } from './functionVariants.ts'
 
-export function createDynamicRule(tokens: Node[]) {
+interface CreateDynamicRuleProps {
+    tokens: Node[]
+    functionHeaders: Node[][]
+}
+
+export function createDynamicRule({
+    tokens,
+    functionHeaders,
+}: CreateDynamicRuleProps) {
     let end = 0
-    let patterns: Rule[] = []
+    const patterns: Rule[] = functionHeaders.flatMap(createFunctionRules)
 
     while (true) {
-        if (tokens[end] instanceof EOL) {
-            let start = end - 1
-
-            while (start >= 0) {
-                const current = tokens[start]
-
-                if (current instanceof Keyword && current.value === '약속') {
-                    const subtokens = tokens.slice(start + 1, end)
-                    patterns = patterns.concat(createFunctionPattern(subtokens))
-
-                    break
-                }
-
-                if (current instanceof EOL) break
-
-                start--
-            }
-        }
-
         for (const rule of dynamicPatternDetector) {
             if (end < rule.pattern.length) continue
             const substack = tokens.slice(end - rule.pattern.length, end)

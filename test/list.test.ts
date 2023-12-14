@@ -1,6 +1,6 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 
-import { _tokenize } from '../tokenize/index.ts'
+import { tokenize } from '../tokenize/index.ts'
 import {
     BinaryOperation,
     Block,
@@ -29,11 +29,10 @@ Deno.test('Parse list', async (context) => {
     const code = `
 목록: [1, 3, 5, 7, 9]
 `
-    let tokens: Node[] = []
+    let result = tokenize(code)
 
     await context.step('Tokenize', () => {
-        tokens = _tokenize(code)
-        assertEquals(tokens, [
+        assertEquals(result.tokens, [
             new EOL(),
             new Keyword('목록'),
             new Expression(':'),
@@ -55,7 +54,7 @@ Deno.test('Parse list', async (context) => {
     let parsed: Block
 
     await context.step('Parse', () => {
-        parsed = parse(tokens)
+        parsed = parse(result)
 
         assertEquals(
             parsed,
@@ -98,7 +97,7 @@ Deno.test('Print list', () => {
 
     console.log = (...items) => (printed += items.join(' '))
 
-    run(parse(_tokenize(code)))
+    run(parse(tokenize(code)))
 
     assertEquals(printed, '[ 1 3 5 7 9 ]')
     console.log = _consoleLog
@@ -112,7 +111,7 @@ Deno.test('Get list element', () => {
 세번째: 목록[번째]
 `
 
-    const result = run(parse(_tokenize(code)))
+    const result = run(parse(tokenize(code)))
 
     assertEquals(result.getVariable('첫번째'), new NumberValue(1))
     assertEquals(result.getVariable('세번째'), new NumberValue(5))
@@ -124,7 +123,7 @@ Deno.test('Set list element', () => {
 목록[1]: 2
 `
 
-    const tree = parse(_tokenize(code))
+    const tree = parse(tokenize(code))
     const result = run(tree)
     assertEquals(result.getVariable('목록').toPrint(), '[ 2 3 5 7 9 ]')
 })
@@ -135,7 +134,7 @@ Deno.test('Get list element by indexes list', () => {
 값: 목록[1~3]
 `
 
-    const tree = parse(_tokenize(code))
+    const tree = parse(tokenize(code))
     const result = run(tree)
     assertEquals(result.getVariable('값').toPrint(), '[ 1 3 5 ]')
 })
@@ -146,7 +145,7 @@ Deno.test('Create range but start is greater than end', () => {
 `
 
     try {
-        run(parse(_tokenize(code)))
+        run(parse(tokenize(code)))
         unreachable()
     } catch (error) {
         assertIsError(error, YaksokError)
@@ -160,7 +159,7 @@ Deno.test('Create range but operands are not number', async (context) => {
 목록: "a" ~ "b"
 `
         try {
-            run(parse(_tokenize(code)))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
             assertIsError(error, YaksokError)
@@ -174,7 +173,7 @@ Deno.test('Create range but operands are not number', async (context) => {
 `
 
         try {
-            run(parse(_tokenize(code)))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
             assertIsError(error, YaksokError)
@@ -188,7 +187,7 @@ Deno.test('Create range but operands are not number', async (context) => {
 `
 
         try {
-            run(parse(_tokenize(code)))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
             assertIsError(error, YaksokError)
@@ -201,7 +200,7 @@ Deno.test('Create range but operands are not number', async (context) => {
 목록: 1 ~ 10
 `
 
-        const result = run(parse(_tokenize(code)))
+        const result = run(parse(tokenize(code)))
         assertEquals(
             result.getVariable('목록').toPrint(),
             '[ 1 2 3 4 5 6 7 8 9 10 ]',
@@ -293,7 +292,7 @@ Deno.test('List out of range', async (context) => {
 목록[0]: 2
 `
         try {
-            run(parse(_tokenize(code)))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
             assertIsError(error, YaksokError)
@@ -307,7 +306,7 @@ Deno.test('List out of range', async (context) => {
 목록[6] + 7
 `
         try {
-            run(parse(_tokenize(code)))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
             assertIsError(error, YaksokError)
@@ -321,7 +320,7 @@ Deno.test('List out of range', async (context) => {
 목록[0] + 7
 `
         try {
-            run(parse(_tokenize(code)))
+            run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
             assertIsError(error, YaksokError)
@@ -336,7 +335,7 @@ Deno.test('List setting index is not number', () => {
 목록["a"]: 2
 `
     try {
-        run(parse(_tokenize(code)))
+        run(parse(tokenize(code)))
         unreachable()
     } catch (error) {
         assertIsError(error, YaksokError)
@@ -352,7 +351,7 @@ Deno.test('List getting indexes list is not number', () => {
 목록[인덱스] 보여주기
 `
     try {
-        run(parse(_tokenize(code)))
+        run(parse(tokenize(code)))
         unreachable()
     } catch (error) {
         assertIsError(error, YaksokError)
@@ -368,7 +367,7 @@ Deno.test('List getting index is not number', () => {
 목록[인덱스] 보여주기
 `
     try {
-        run(parse(_tokenize(code)))
+        run(parse(tokenize(code)))
         unreachable()
     } catch (error) {
         assertIsError(error, YaksokError)
@@ -383,7 +382,7 @@ Deno.test('List with no data source', () => {
 
 Deno.test('Sequence toPrint', () => {
     const code = `[1, 3, 5, 7, 9]`
-    const tree = parse(_tokenize(code))
+    const tree = parse(tokenize(code))
     assertEquals(
         (tree.children[1].sequence as Sequence).toPrint(),
         '( 1 3 5 7 9 )',
@@ -392,7 +391,7 @@ Deno.test('Sequence toPrint', () => {
 
 Deno.test('Evaluate Sequence', () => {
     const code = `[1, 3, 5, 7, 9]`
-    const tree = parse(_tokenize(code))
+    const tree = parse(tokenize(code))
     const sequence = tree.children[1].sequence as Sequence
 
     const result = sequence.execute(new Scope(), new CallFrame(sequence))
