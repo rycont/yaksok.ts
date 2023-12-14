@@ -1,14 +1,14 @@
-import { createDynamicPattern } from './dynamicPatterns/index.ts'
+import { createDynamicRule } from './dynamicRule/index.ts'
 
 import { Node } from '../nodes/index.ts'
 import { parseIndent } from './parseIndent.ts'
-import { recursivePatternMatcher } from './patternMatcher.ts'
+import { recursiveSRParse } from './srParse.ts'
 
 export function parse(tokens: Node[]) {
     const indentedNodes = parseIndent(tokens)
 
-    const dynamicPatterns = createDynamicPattern(tokens)
-    const ast = recursivePatternMatcher(indentedNodes, dynamicPatterns)
+    const dynamicRules = createDynamicRule(tokens)
+    const ast = recursiveSRParse(indentedNodes, dynamicRules)
 
     return ast
 }

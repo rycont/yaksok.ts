@@ -39,8 +39,8 @@ export class Scope {
         throw new YaksokError('NOT_DEFINED_VARIABLE', {}, { name })
     }
 
-    setFunction(name: string, pattern: FunctionDeclaration) {
-        this.functions[name] = pattern
+    setFunction(name: string, functionBody: FunctionDeclaration) {
+        this.functions[name] = functionBody
     }
 
     getFunction(name: string): FunctionDeclaration {

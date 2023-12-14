@@ -32,24 +32,26 @@ import {
     RangeOperator,
 } from '../nodes/index.ts'
 
-export interface Pattern {
-    wrapper: {
-        new (...args: any[]): Node
+export interface PatternUnit {
+    type: {
+        new(...args: any[]): Node
     }
-    units: {
-        type: {
-            new (...args: any[]): Node
-        }
-        value?: Record<string, unknown> | string | number
-        as?: string
-    }[]
+    value?: Record<string, unknown> | string | number
+    as?: string
+}
+
+export interface Rule {
+    to: {
+        new(...args: any[]): Node
+    }
+    pattern: PatternUnit[]
     config?: Record<string, unknown>
 }
 
-export const internalPatterns: Pattern[] = [
+export const internalPatterns: Rule[] = [
     {
-        wrapper: EqualOperator,
-        units: [
+        to: EqualOperator,
+        pattern: [
             {
                 type: Operator,
                 value: '=',
@@ -57,8 +59,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: Sequence,
-        units: [
+        to: Sequence,
+        pattern: [
             {
                 type: Evaluable,
                 as: 'a',
@@ -74,8 +76,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: List,
-        units: [
+        to: List,
+        pattern: [
             {
                 type: Expression,
                 value: '[',
@@ -91,8 +93,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: List,
-        units: [
+        to: List,
+        pattern: [
             {
                 type: Expression,
                 value: '[',
@@ -104,8 +106,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: Indexing,
-        units: [
+        to: Indexing,
+        pattern: [
             {
                 type: Expression,
                 value: '[',
@@ -121,8 +123,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: IndexFetch,
-        units: [
+        to: IndexFetch,
+        pattern: [
             {
                 type: Evaluable,
                 as: 'target',
@@ -134,8 +136,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: SetToIndex,
-        units: [
+        to: SetToIndex,
+        pattern: [
             {
                 type: IndexFetch,
                 as: 'target',
@@ -151,8 +153,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: ValueGroup,
-        units: [
+        to: ValueGroup,
+        pattern: [
             {
                 type: Expression,
                 value: '(',
@@ -168,8 +170,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: GreaterThanOperator,
-        units: [
+        to: GreaterThanOperator,
+        pattern: [
             {
                 type: Operator,
                 value: '>',
@@ -177,8 +179,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: GreaterThanOrEqualOperator,
-        units: [
+        to: GreaterThanOrEqualOperator,
+        pattern: [
             {
                 type: GreaterThanOperator,
             },
@@ -188,8 +190,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: LessThanOperator,
-        units: [
+        to: LessThanOperator,
+        pattern: [
             {
                 type: Operator,
                 value: '<',
@@ -197,8 +199,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: LessThanOrEqualOperator,
-        units: [
+        to: LessThanOrEqualOperator,
+        pattern: [
             {
                 type: LessThanOperator,
             },
@@ -208,8 +210,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: Variable,
-        units: [
+        to: Variable,
+        pattern: [
             {
                 type: Keyword,
                 value: '이전',
@@ -221,8 +223,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: SetVariable,
-        units: [
+        to: SetVariable,
+        pattern: [
             {
                 type: Variable,
                 as: 'name',
@@ -241,8 +243,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: DivideOperator,
-        units: [
+        to: DivideOperator,
+        pattern: [
             {
                 type: Operator,
                 value: '/',
@@ -250,8 +252,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: MultiplyOperator,
-        units: [
+        to: MultiplyOperator,
+        pattern: [
             {
                 type: Operator,
                 value: '*',
@@ -259,8 +261,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: PlusOperator,
-        units: [
+        to: PlusOperator,
+        pattern: [
             {
                 type: Operator,
                 value: '+',
@@ -268,8 +270,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: MinusOperator,
-        units: [
+        to: MinusOperator,
+        pattern: [
             {
                 type: Operator,
                 value: '-',
@@ -277,8 +279,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: AndOperator,
-        units: [
+        to: AndOperator,
+        pattern: [
             {
                 type: Keyword,
                 value: '이고',
@@ -286,8 +288,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: RangeOperator,
-        units: [
+        to: RangeOperator,
+        pattern: [
             {
                 type: Operator,
                 value: '~',
@@ -295,8 +297,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: BinaryCalculation,
-        units: [
+        to: BinaryCalculation,
+        pattern: [
             {
                 type: Evaluable,
                 as: 'left',
@@ -312,8 +314,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: IfStatement,
-        units: [
+        to: IfStatement,
+        pattern: [
             {
                 type: Keyword,
                 value: '만약',
@@ -336,8 +338,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: IfStatement,
-        units: [
+        to: IfStatement,
+        pattern: [
             {
                 type: IfStatement,
                 as: 'ifBody',
@@ -356,8 +358,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: Print,
-        units: [
+        to: Print,
+        pattern: [
             {
                 type: Evaluable,
                 as: 'value',
@@ -369,8 +371,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: Loop,
-        units: [
+        to: Loop,
+        pattern: [
             {
                 type: Keyword,
                 value: '반복',
@@ -385,8 +387,8 @@ export const internalPatterns: Pattern[] = [
         ],
     },
     {
-        wrapper: Break,
-        units: [
+        to: Break,
+        pattern: [
             {
                 type: Keyword,
                 value: '반복',

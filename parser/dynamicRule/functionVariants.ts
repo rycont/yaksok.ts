@@ -1,5 +1,5 @@
 import { YaksokError } from '../../errors.ts'
-import { Pattern } from '../pattern.ts'
+import { Rule } from '../rule.ts'
 import {
     Block,
     EOL,
@@ -82,8 +82,8 @@ export function* getVariants(subtokens: (Variable | StringValue)[]) {
 function createFunctionDeclarePattern(
     name: string,
     subtokens: (Variable | StringValue)[],
-): Pattern {
-    const declarationTemplate: Pattern['units'] = subtokens.map((t) => {
+): Rule {
+    const declarationTemplate: Rule['pattern'] = subtokens.map((t) => {
         if (t instanceof Variable) {
             return {
                 type: Variable,
@@ -98,8 +98,8 @@ function createFunctionDeclarePattern(
     })
 
     return {
-        wrapper: FunctionDeclaration,
-        units: [
+        to: FunctionDeclaration,
+        pattern: [
             {
                 type: Keyword,
                 value: '약속',
@@ -122,7 +122,7 @@ function createFunctionDeclarePattern(
 function createFunctionInvokePattern(
     name: string,
     _subtokens: (Variable | StringValue)[],
-): Pattern {
+): Rule {
     const subtokens = [..._subtokens]
 
     for (let i = 0; i < subtokens.length; i++) {
@@ -148,8 +148,8 @@ function createFunctionInvokePattern(
     })
 
     return {
-        wrapper: FunctionInvoke,
-        units: invokeTemplate,
+        to: FunctionInvoke,
+        pattern: invokeTemplate,
         config: {
             name,
         },
