@@ -15,128 +15,186 @@ import {
     isValidFirstCharForKeyword,
 } from './isValidCharForKeyword.ts'
 
-export function tokenize(_code: string): Node[] {
-    const tokens: Node[] = []
-    const code = preprocessor(_code)
-    const chars = [...code]
+export class Tokenizer {
+    functionHeaders: Node[][] | undefined = undefined
+    tokens: Node[] = []
+    chars: string[]
 
-    while (chars.length) {
-        const char = chars.shift()!
+    static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~']
+    static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')']
 
-        // Comment
-        if (char === '#') {
-            while (chars.length && chars[0] !== '\n') {
-                chars.shift()
-            }
-
-            continue
-        }
-
-        // Indent and Whitespace
-        if (char === ' ') {
-            if (!(tokens[tokens.length - 1] instanceof EOL)) continue
-
-            let spaces = 1
-            while (chars[0] === ' ') {
-                chars.shift()
-                spaces++
-            }
-
-            if (spaces % 4) throw new YaksokError('INDENT_IS_NOT_MULTIPLE_OF_4')
-
-            tokens.push(new Indent(spaces / 4))
-            continue
-        }
-
-        // EOL
-        if (char === '\n') {
-            if (tokens[tokens.length - 1] instanceof EOL) continue
-            tokens.push(new EOL())
-            continue
-        }
-
-        // Number
-        if (
-            ('0' <= char && char <= '9') ||
-            (char === '-' &&
-                chars.length > 2 &&
-                '0' <= chars[0] &&
-                chars[0] <= '9')
-        ) {
-            let number = char
-            let hasDot = false
-
-            while (true) {
-                const isNum = chars.length && '0' <= chars[0] && chars[0] <= '9'
-                const isAllowedDot = chars.length && chars[0] === '.' && !hasDot
-
-                if (!isNum && !isAllowedDot) break
-                if (isAllowedDot) hasDot = true
-
-                number += chars.shift()
-            }
-
-            tokens.push(new NumberValue(parseFloat(number)))
-
-            continue
-        }
-
-        // String
-        if (char === '"') {
-            let word = ''
-
-            while (true) {
-                const nextChar = chars.shift()
-
-                if (nextChar === undefined)
-                    throw new YaksokError('UNEXPECTED_END_OF_CODE')
-                if (nextChar === '"') break
-
-                word += nextChar
-            }
-
-            tokens.push(new StringValue(word))
-
-            continue
-        }
-
-        // Keyword
-        if (isValidFirstCharForKeyword(char)) {
-            let word = char
-
-            while (chars.length && isValidCharForKeyword(chars[0])) {
-                word += chars.shift()
-            }
-
-            tokens.push(new Keyword(word))
-
-            continue
-        }
-
-        // Operator
-        if (['+', '-', '*', '/', '>', '=', '<', '~'].includes(char)) {
-            tokens.push(new Operator(char))
-            continue
-        }
-
-        // Expression
-        if (['{', '}', ':', '[', ']', ',', '(', ')'].includes(char)) {
-            tokens.push(new Expression(char))
-            continue
-        }
-
-        throw new YaksokError('UNEXPECTED_CHAR', undefined, {
-            token: char,
-        })
+    constructor(code: string) {
+        this.chars = this.preprocess(code)
+        this.tokenize()
+        this.postprocess()
     }
 
-    return postprocessor(tokens)
+    tokenize() {
+        while (this.chars.length) {
+            const char = this.chars[0]
+
+            if (char === '#') {
+                this.comment()
+                continue
+            }
+
+            if (char === ' ') {
+                this.indent()
+                continue
+            }
+
+            if (char === '\n') {
+                this.EOL()
+                continue
+            }
+
+            if (this.canBeFisrtCharOfNumber(char)) {
+                this.number()
+                continue
+            }
+
+            if (char === '"') {
+                this.string()
+                continue
+            }
+
+            if (isValidFirstCharForKeyword(char)) {
+                this.keyword()
+                continue
+            }
+
+            if (Tokenizer.OPERATORS.includes(char)) {
+                this.operator()
+                continue
+            }
+
+            if (Tokenizer.EXPRESSIONS.includes(char)) {
+                this.expression()
+                continue
+            }
+
+            throw new YaksokError('UNEXPECTED_CHAR', undefined, {
+                token: char,
+            })
+        }
+    }
+
+    canBeFisrtCharOfNumber(char: string) {
+        return (
+            ('0' <= char && char <= '9') ||
+            (char === '-' &&
+                this.chars.length > 1 &&
+                '0' <= this.chars[1] &&
+                this.chars[1] <= '9')
+        )
+    }
+
+    comment() {
+        while (this.chars.length && this.chars[0] !== '\n') {
+            this.chars.shift()
+        }
+    }
+
+    indent() {
+        let spaces = 0
+        while (this.chars[0] === ' ') {
+            this.chars.shift()
+            spaces++
+        }
+
+        if (!(this.tokens[this.tokens.length - 1] instanceof EOL)) {
+            return
+        }
+
+        if (spaces % 4) throw new YaksokError('INDENT_IS_NOT_MULTIPLE_OF_4')
+        this.tokens.push(new Indent(spaces / 4))
+    }
+
+    EOL() {
+        this.chars.shift()
+        if (!(this.tokens[this.tokens.length - 1] instanceof EOL))
+            this.tokens.push(new EOL())
+    }
+
+    number() {
+        let number = this.chars.shift()!
+        let hasDot = false
+
+        while (true) {
+            const isNum =
+                this.chars.length &&
+                '0' <= this.chars[0] &&
+                this.chars[0] <= '9'
+            const isAllowedDot =
+                this.chars.length && this.chars[0] === '.' && !hasDot
+
+            if (!isNum && !isAllowedDot) break
+            if (isAllowedDot) hasDot = true
+
+            number += this.chars.shift()
+        }
+
+        this.tokens.push(new NumberValue(parseFloat(number)))
+    }
+
+    string() {
+        this.chars.shift()
+        let word = ''
+
+        while (true) {
+            const nextChar = this.chars.shift()
+
+            if (nextChar === '"') break
+            if (!nextChar) throw new YaksokError('UNEXPECTED_END_OF_CODE')
+
+            word += nextChar
+        }
+
+        this.tokens.push(new StringValue(word))
+    }
+
+    keyword() {
+        let word = ''
+
+        while (this.chars.length && isValidCharForKeyword(this.chars[0])) {
+            word += this.chars.shift()
+        }
+
+        this.tokens.push(new Keyword(word))
+    }
+
+    operator() {
+        const char = this.chars.shift()!
+        this.tokens.push(new Operator(char))
+    }
+
+    expression() {
+        const char = this.chars.shift()!
+        this.tokens.push(new Expression(char))
+    }
+
+    preprocess(code: string) {
+        const trimmed = '\n' + code.trim() + '\n'
+        return [...trimmed]
+    }
+
+    postprocess() {
+        const { functionHeaders, tokenStack } =
+            convertFunctionArgumentsToVariable(this.tokens)
+
+        this.functionHeaders = functionHeaders
+        this.tokens = tokenStack
+
+        return tokenStack
+    }
 }
 
-export function preprocessor(code: string) {
-    return '\n' + code.trim() + '\n'
+export function _tokenize(code: string) {
+    const tokenizer = new Tokenizer(code)
+    return tokenizer.tokens
 }
 
-export function postprocessor(tokens: Node[]) {
-    return convertFunctionArgumentsToVariable(tokens)
+export function tokenize(code: string) {
+    const tokenizer = new Tokenizer(code)
+    return tokenizer
 }

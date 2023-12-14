@@ -1,5 +1,5 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { tokenize } from '../tokenize/index.ts'
+import { _tokenize } from '../tokenize/index.ts'
 import { parse } from '../parse/index.ts'
 import {
     BinaryOperation,
@@ -16,7 +16,7 @@ import { run } from '../runtime/run.ts'
 import { YaksokError } from '../errors.ts'
 
 Deno.test('Parse Variable', () => {
-    const node = parse(tokenize('이름: 1'))
+    const node = parse(_tokenize('이름: 1'))
 
     assertEquals(
         node,
@@ -36,7 +36,7 @@ Deno.test('Parse variable with 이전 keyword', () => {
 나이: 1
 나이: 이전 나이 + 1    
 `
-    const node = parse(tokenize(code))
+    const node = parse(_tokenize(code))
 
     assertEquals(
         node,
@@ -64,7 +64,7 @@ Deno.test('Evaluate and calculate variable', () => {
 나이: 10
 나이: 이전 나이 + 1
 `
-    const scope = run(parse(tokenize(code)))
+    const scope = run(parse(_tokenize(code)))
     assertEquals(scope.getVariable('나이'), new NumberValue(11))
 })
 
@@ -72,7 +72,7 @@ Deno.test('Reserved word cannot be used as variable name', () => {
     const code = `만약: 10`
 
     try {
-        run(parse(tokenize(code)))
+        run(parse(_tokenize(code)))
         unreachable()
     } catch (e) {
         assertIsError(e, YaksokError)
