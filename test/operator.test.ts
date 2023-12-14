@@ -1,5 +1,5 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { tokenize } from '../tokenize/index.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 import {
     AndOperator,
     BinaryOperation,
@@ -23,7 +23,7 @@ import {
     Variable,
 } from '../node/index.ts'
 import { Operator } from '../node/base.ts'
-import { parse } from '../parse/index.ts'
+import { parse } from '../prepare/parse/index.ts'
 import { run } from '../runtime/run.ts'
 
 import { YaksokError } from '../errors.ts'

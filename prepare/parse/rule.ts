@@ -30,7 +30,7 @@ import {
     SetToIndex,
     Expression,
     RangeOperator,
-} from '../node/index.ts'
+} from '../../node/index.ts'
 
 export interface PatternUnit {
     type: {

@@ -1,6 +1,6 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { tokenize } from '../tokenize/index.ts'
-import { parse } from '../parse/index.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
+import { parse } from '../prepare/parse/index.ts'
 import {
     BinaryOperation,
     Block,

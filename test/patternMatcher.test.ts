@@ -1,9 +1,9 @@
 import { assertEquals } from 'assert'
-import { parse } from '../parse/index.ts'
 
-import { tokenize } from '../tokenize/index.ts'
-import { Keyword } from '../node/base.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 import { StringValue } from '../node/primitive.ts'
+import { parse } from '../prepare/parse/index.ts'
+import { Keyword } from '../node/base.ts'
 import {
     BinaryOperation,
     Block,

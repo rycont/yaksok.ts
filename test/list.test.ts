@@ -1,6 +1,6 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 
-import { tokenize } from '../tokenize/index.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 import {
     BinaryOperation,
     Block,
@@ -12,14 +12,13 @@ import {
     Keyword,
     List,
     NumberValue,
-    Node,
     PlusOperator,
     RangeOperator,
     Sequence,
     SetToIndex,
     Variable,
 } from '../node/index.ts'
-import { parse } from '../parse/index.ts'
+import { parse } from '../prepare/parse/index.ts'
 import { run } from '../runtime/run.ts'
 import { YaksokError } from '../errors.ts'
 import { Scope } from '../runtime/scope.ts'

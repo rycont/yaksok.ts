@@ -1,4 +1,4 @@
-import { Node, Keyword, Variable, EOL, Indent } from '../node/index.ts'
+import { Node, Keyword, Variable, EOL, Indent } from '../../node/index.ts'
 
 export function convertKeywordToVariable(tokens: Node[]) {
     const leftTokens = [...tokens]

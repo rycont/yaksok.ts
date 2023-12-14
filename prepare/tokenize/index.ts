@@ -1,4 +1,4 @@
-import { YaksokError } from '../errors.ts'
+import { YaksokError } from '../../errors.ts'
 import {
     Expression,
     Operator,
@@ -8,7 +8,7 @@ import {
     NumberValue,
     EOL,
     Node,
-} from '../node/index.ts'
+} from '../../node/index.ts'
 import { convertKeywordToVariable } from './convertKeywordToVariable.ts'
 import {
     isValidCharForKeyword,

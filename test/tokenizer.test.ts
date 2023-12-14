@@ -1,5 +1,5 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { tokenize } from '../tokenize/index.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 import {
     Expression,
     Keyword,
@@ -13,7 +13,7 @@ import { YaksokError } from '../errors.ts'
 import {
     isValidFirstCharForKeyword,
     isValidCharForKeyword,
-} from '../tokenize/isValidCharForKeyword.ts'
+} from '../prepare/tokenize/isValidCharForKeyword.ts'
 
 Deno.test('Determine validity as a keyword char of "a"', () => {
     assertEquals(

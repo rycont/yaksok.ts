@@ -1,4 +1,4 @@
-import { YaksokError } from '../../errors.ts'
+import { YaksokError } from '../../../errors.ts'
 import { PatternUnit, Rule } from '../rule.ts'
 import {
     Block,
@@ -10,7 +10,7 @@ import {
     Node,
     StringValue,
     Variable,
-} from '../../node/index.ts'
+} from '../../../node/index.ts'
 
 interface Variant {
     index: number

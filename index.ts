@@ -1,8 +1,8 @@
-import { parse } from './parse/index.ts'
+import { parse } from './prepare/parse/index.ts'
 import { run } from './runtime/run.ts'
 import { Node } from './node/index.ts'
 import { Scope } from './runtime/scope.ts'
-import { tokenize } from './tokenize/index.ts'
+import { tokenize } from './prepare/tokenize/index.ts'
 
 export class Yaksok {
     functionDeclaration: Node[][] = []

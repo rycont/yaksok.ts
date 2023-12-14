@@ -1,5 +1,5 @@
 import { Rule, internalPatterns } from './rule.ts'
-import { Block, EOL, Node } from '../node/index.ts'
+import { Block, EOL, Node } from '../../node/index.ts'
 import { satisfiesPattern } from './satisfiesPattern.ts'
 
 export function SRParse(tokens: Node[], patterns: Rule[]) {

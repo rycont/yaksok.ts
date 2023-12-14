@@ -1,7 +1,7 @@
-import { isTruthy } from '../internal/isTruthy.ts'
-import { Scope } from '../runtime/scope.ts'
+import { isTruthy } from '../runtime/internal/isTruthy.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Executable, Evaluable } from './base.ts'
+import { Scope } from '../runtime/scope.ts'
 import { Block } from './block.ts'
 
 export class IfStatement extends Executable {

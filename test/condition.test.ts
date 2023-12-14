@@ -1,9 +1,9 @@
 import { assertEquals } from 'assert'
-import { parse } from '../parse/index.ts'
+import { parse } from '../prepare/parse/index.ts'
 import { StringValue } from '../node/primitive.ts'
 
 import { run } from '../runtime/run.ts'
-import { tokenize } from '../tokenize/index.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 
 Deno.test('If statement', () => {
     const code = `

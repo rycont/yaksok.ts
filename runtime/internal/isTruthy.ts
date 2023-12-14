@@ -1,5 +1,5 @@
-import { ValueTypes } from '../node/base.ts'
-import { BooleanValue, NumberValue, StringValue } from '../node/primitive.ts'
+import { ValueTypes } from '../../node/base.ts'
+import { BooleanValue, NumberValue, StringValue } from '../../node/primitive.ts'
 
 export function isTruthy(value: ValueTypes) {
     if (value instanceof BooleanValue) {

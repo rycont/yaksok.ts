@@ -1,7 +1,7 @@
 import { createDynamicRule } from './dynamicRule/index.ts'
 import { parseIndent } from './parseIndent.ts'
 import { callParseRecursively } from './srParse.ts'
-import { Node } from '../node/index.ts'
+import { Node } from '../../node/index.ts'
 import { convertKeywordToVariable } from '../tokenize/convertKeywordToVariable.ts'
 
 interface ParseProps {

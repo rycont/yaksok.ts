@@ -5,7 +5,7 @@ import {
     Variable,
     Keyword,
     Node,
-} from '../../node/index.ts'
+} from '../../../node/index.ts'
 import { satisfiesPattern } from '../satisfiesPattern.ts'
 import { createFunctionRules } from './functionVariants.ts'
 
