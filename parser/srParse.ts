@@ -1,6 +1,6 @@
 import { Rule, internalPatterns } from './rule.ts'
 import { Block, EOL, Node } from '../nodes/index.ts'
-import { checkPattern } from "./checkPattern.ts";
+import { satisfiesPattern } from "./satisfiesPattern.ts";
 
 export function srParse(tokens: Node[], patterns: Rule[]) {
     const stack: Node[] = []
@@ -11,7 +11,7 @@ export function srParse(tokens: Node[], patterns: Rule[]) {
             if (stack.length < rule.pattern.length) continue
 
             const stackSlice = stack.slice(-rule.pattern.length)
-            const isSatisfies = checkPattern(stackSlice, rule.pattern)
+            const isSatisfies = satisfiesPattern(stackSlice, rule.pattern)
 
             if (isSatisfies) {
                 const args: Record<string, unknown> = rule.config || {}

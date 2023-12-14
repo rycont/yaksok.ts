@@ -7,7 +7,7 @@ import {
     Evaluable,
     Expression,
 } from '../../nodes/index.ts'
-import { checkPattern } from '../checkPattern.ts'
+import { satisfiesPattern } from '../satisfiesPattern.ts'
 import { createFunctionPattern } from './functionVariants.ts'
 
 export function createDynamicRule(tokens: Node[]) {
@@ -38,7 +38,7 @@ export function createDynamicRule(tokens: Node[]) {
             if (end < rule.pattern.length) continue
             const substack = tokens.slice(end - rule.pattern.length, end)
 
-            if (!checkPattern(substack, rule.pattern)) continue
+            if (!satisfiesPattern(substack, rule.pattern)) continue
 
             if (rule.name === 'variable') {
                 patterns.push({
