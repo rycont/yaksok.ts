@@ -1,9 +1,9 @@
 import { assertEquals } from 'assert'
-import { parse } from '../parser.ts'
-import { StringPiece } from '../piece/primitive.ts'
-import { preprocessor } from '../preprocessor.ts'
-import { run } from '../runtime.ts'
-import { tokenizer } from '../tokenizer.ts'
+import { parse } from '../prepare/parse/index.ts'
+import { StringValue } from '../node/primitive.ts'
+
+import { run } from '../runtime/run.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 
 Deno.test('If statement', () => {
     const code = `
@@ -12,8 +12,8 @@ Deno.test('If statement', () => {
     비교값: "같음"
 `
 
-    const result = run(parse(tokenizer(preprocessor(code))))
-    assertEquals(result.getVariable('비교값'), new StringPiece('같음'))
+    const result = run(parse(tokenize(code)))
+    assertEquals(result.getVariable('비교값'), new StringValue('같음'))
 })
 
 Deno.test('If-else statement', () => {
@@ -25,6 +25,6 @@ Deno.test('If-else statement', () => {
     비교값: "여전히 다름"
 `
 
-    const result = run(parse(tokenizer(preprocessor(code))))
-    assertEquals(result.getVariable('비교값'), new StringPiece('여전히 다름'))
+    const result = run(parse(tokenize(code)))
+    assertEquals(result.getVariable('비교값'), new StringValue('여전히 다름'))
 })

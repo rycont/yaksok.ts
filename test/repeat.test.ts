@@ -1,38 +1,37 @@
 import { assertEquals, unreachable } from 'assert'
-import { tokenizer } from '../tokenizer.ts'
-import { preprocessor } from '../preprocessor.ts'
-import { parse } from '../parser.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
+
+import { parse } from '../prepare/parse/index.ts'
 import {
-    BlockPiece,
-    EOLPiece,
-    NumberPiece,
-    PrintPiece,
-    RepeatPiece,
-    StringPiece,
-} from '../piece/index.ts'
-import { run } from '../runtime.ts'
+    Block,
+    EOL,
+    NumberValue,
+    Print,
+    Loop,
+    StringValue,
+} from '../node/index.ts'
+import { run } from '../runtime/run.ts'
 
 Deno.test('Parse Loop', () => {
     const code = `
 반복
     "Hello, World!" 보여주기
 `
-    const ast = parse(tokenizer(preprocessor(code)))
+    const node = parse(tokenize(code))
 
     assertEquals(
-        ast,
-        new BlockPiece([
-            new EOLPiece(),
-            new RepeatPiece({
-                body: new BlockPiece([
-                    new PrintPiece({
-                        value: new StringPiece('Hello, World!'),
+        node,
+        new Block([
+            new EOL(),
+            new Loop({
+                body: new Block([
+                    new Print({
+                        value: new StringValue('Hello, World!'),
                     }),
-                    new EOLPiece(),
-                    new EOLPiece(),
+                    new EOL(),
                 ]),
             }),
-            new EOLPiece(),
+            new EOL(),
         ]),
     )
 })
@@ -46,8 +45,8 @@ Deno.test('Run loop', () => {
         반복 그만
 `
     try {
-        const result = run(parse(tokenizer(preprocessor(code))))
-        assertEquals(result.getVariable('횟수'), new NumberPiece(11))
+        const result = run(parse(tokenize(code)))
+        assertEquals(result.getVariable('횟수'), new NumberValue(11))
     } catch (_) {
         unreachable()
     }

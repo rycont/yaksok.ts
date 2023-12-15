@@ -1,0 +1,35 @@
+import { Executable, Node } from './index.ts'
+import { EOL } from './misc.ts'
+
+import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
+import { YaksokError } from '../errors.ts'
+
+export class Block extends Executable {
+    children: Node[]
+
+    constructor(content: Node[]) {
+        super()
+        this.children = content
+    }
+
+    execute(scope: Scope, _callFrame?: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
+
+        for (const child of this.children) {
+            if (child instanceof Executable) {
+                child.execute(scope, callFrame)
+            } else if (child instanceof EOL) {
+                continue
+            } else {
+                throw new YaksokError(
+                    'CANNOT_PARSE',
+                    {},
+                    {
+                        child: JSON.stringify(child),
+                    },
+                )
+            }
+        }
+    }
+}

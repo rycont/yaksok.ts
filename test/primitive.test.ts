@@ -1,9 +1,9 @@
 import { assertEquals } from 'assert'
-import { preprocessor } from '../preprocessor.ts'
-import { tokenizer } from '../tokenizer.ts'
-import { parse } from '../parser.ts'
-import { run } from '../runtime.ts'
-import { BooleanPiece, NumberPiece, StringPiece } from '../piece/index.ts'
+
+import { BooleanValue, NumberValue, StringValue } from '../node/index.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
+import { parse } from '../prepare/parse/index.ts'
+import { run } from '../runtime/run.ts'
 
 Deno.test('Number to print', () => {
     const _consoleLog = console.log
@@ -15,9 +15,9 @@ Deno.test('Number to print', () => {
 나이: 20
 나이 보여주기
 `
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(printed, '20')
-    assertEquals(result.getVariable('나이'), new NumberPiece(20))
+    assertEquals(result.getVariable('나이'), new NumberValue(20))
     assertEquals(result.getVariable('나이').toPrint(), '20')
 
     console.log = _consoleLog
@@ -34,9 +34,9 @@ Deno.test('String to print', () => {
 이름 보여주기
 `
 
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
     assertEquals(printed, '김철수')
-    assertEquals(result.getVariable('이름'), new StringPiece('김철수'))
+    assertEquals(result.getVariable('이름'), new StringValue('김철수'))
     assertEquals(result.getVariable('이름').toPrint(), '김철수')
 
     console.log = _consoleLog
@@ -56,14 +56,14 @@ Deno.test('Boolean to print', () => {
 진짜 보여주기
 `
 
-    const result = run(parse(tokenizer(preprocessor(code))))
+    const result = run(parse(tokenize(code)))
 
     assertEquals(printed, '거짓참')
 
-    assertEquals(result.getVariable('가짜'), new BooleanPiece(false))
+    assertEquals(result.getVariable('가짜'), new BooleanValue(false))
     assertEquals(result.getVariable('가짜').toPrint(), '거짓')
 
-    assertEquals(result.getVariable('진짜'), new BooleanPiece(true))
+    assertEquals(result.getVariable('진짜'), new BooleanValue(true))
     assertEquals(result.getVariable('진짜').toPrint(), '참')
 
     console.log = _consoleLog

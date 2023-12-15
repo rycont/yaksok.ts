@@ -1,5 +1,5 @@
 import { assertEquals } from 'assert'
-import { yaksok } from '../../index.ts'
+import { yaksok } from '../index.ts'
 
 Deno.test('Fibonacci', () => {
     const _consoleLog = console.log
