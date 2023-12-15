@@ -1,6 +1,7 @@
+import { Evaluable } from './index.ts'
+
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { Evaluable } from './index.ts'
 
 export class PrimitiveValue<T> extends Evaluable {
     value: T
@@ -10,7 +11,7 @@ export class PrimitiveValue<T> extends Evaluable {
         this.value = content
     }
 
-    execute(scope: Scope, _callFrame: CallFrame): PrimitiveValue<T> {
+    execute(_scope: Scope, _callFrame: CallFrame): PrimitiveValue<T> {
         return this
     }
 }

@@ -1,6 +1,7 @@
-import { Scope } from '../runtime/scope.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
 import { IndexedValue } from './indexed.ts'
+
+import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
 import {
     NumberValue,
     StringValue,
@@ -18,7 +19,7 @@ export class Node {
     }
 }
 export class Executable extends Node {
-    execute(scope: Scope, callFrame: CallFrame) {
+    execute(_scope: Scope, _callFrame: CallFrame) {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
     toPrint(): string {
@@ -27,39 +28,30 @@ export class Executable extends Node {
 }
 
 export class Evaluable extends Executable {
-    execute(scope: Scope, callFrame: CallFrame): ValueTypes {
+    execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
 }
 
 export class Keyword extends Node {
-    value: string
-
-    constructor(value: string) {
+    constructor(public value: string) {
         super()
-        this.value = value
     }
 }
 
 export class Operator extends Node {
-    value?: string
-
-    constructor(char?: string) {
+    constructor(public value?: string) {
         super()
-        this.value = char
     }
 
-    call(...operands: ValueTypes[]): ValueTypes {
+    call(..._operands: ValueTypes[]): ValueTypes {
         throw new Error(`${this.constructor.name} has no call method`)
     }
 }
 
 export class Expression extends Node {
-    value: string
-
-    constructor(value: string) {
+    constructor(public value: string) {
         super()
-        this.value = value
     }
 }
 

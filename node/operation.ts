@@ -1,6 +1,7 @@
 import { Evaluable, Operator } from './index.ts'
-import { Scope } from '../runtime/scope.ts'
+
 import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
 
 export class BinaryOperation extends Evaluable {
     left: Evaluable

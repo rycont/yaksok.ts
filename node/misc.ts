@@ -1,5 +1,6 @@
-import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
+
 import { Node, Executable, Evaluable } from './base.ts'
 
 export class EOL extends Node {}

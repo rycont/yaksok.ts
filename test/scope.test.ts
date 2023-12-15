@@ -9,7 +9,7 @@ import { Scope } from '../runtime/scope.ts'
 import {
     Block,
     Evaluable,
-    FunctionDeclaration,
+    DeclareFunction,
     FunctionInvoke,
     Keyword,
     NumberValue,
@@ -119,7 +119,7 @@ Deno.test('Get not defined variable', () => {
 })
 
 Deno.test('Set / Invoke Function', async (context) => {
-    const testFunction = new FunctionDeclaration({
+    const testFunction = new DeclareFunction({
         name: '주문하기',
         body: new Block([
             new SetVariable({

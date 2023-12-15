@@ -1,9 +1,10 @@
-import { YaksokError } from '../errors.ts'
-import { Scope } from '../runtime/scope.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
 import { Evaluable, ValueTypes, Node, Executable, Operator } from './index.ts'
-import { IndexedValue } from './indexed.ts'
 import { NumberValue, PrimitiveValue } from './primitive.ts'
+import { IndexedValue } from './indexed.ts'
+
+import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
+import { YaksokError } from '../errors.ts'
 
 export class Sequence extends Evaluable {
     items: Evaluable[]

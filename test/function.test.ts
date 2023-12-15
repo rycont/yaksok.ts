@@ -7,7 +7,7 @@ import {
     Block,
     SetVariable,
     Evaluable,
-    FunctionDeclaration,
+    DeclareFunction,
     FunctionInvoke,
     Keyword,
     NumberValue,
@@ -43,7 +43,7 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
     const scope = new Scope()
 
     await context.step('Create function', () => {
-        const testFunction = new FunctionDeclaration({
+        const testFunction = new DeclareFunction({
             name: '주문하기',
             body: new Block([
                 new SetVariable({
@@ -80,12 +80,10 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
     })
 
     await context.step('Invoke function with no name', () => {
-        const functionInvokation = new FunctionInvoke({
-            음식: new Keyword('사과') as unknown as Evaluable,
-        } as unknown as Record<string, Evaluable> & { name: string })
-
         try {
-            functionInvokation.execute(scope, new CallFrame(functionInvokation))
+            const functionInvokation = new FunctionInvoke({
+                음식: new Keyword('사과') as unknown as Evaluable,
+            } as unknown as Record<string, Evaluable> & { name: string })
             unreachable()
         } catch (e) {
             assertIsError(e, YaksokError)

@@ -4,7 +4,7 @@ import {
     Block,
     EOL,
     Evaluable,
-    FunctionDeclaration,
+    DeclareFunction,
     FunctionInvoke,
     Keyword,
     Node,
@@ -98,7 +98,7 @@ function createFunctionDeclareRule(
     })
 
     return {
-        to: FunctionDeclaration,
+        to: DeclareFunction,
         pattern: [
             {
                 type: Keyword,

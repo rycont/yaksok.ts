@@ -1,10 +1,13 @@
-import { YaksokError } from '../errors.ts'
-import { Scope } from '../runtime/scope.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
 import { Executable, ValueTypes, Evaluable } from './base.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 import { Block, NumberValue } from './index.ts'
 
-export class FunctionDeclaration extends Executable {
+import { YaksokError } from '../errors.ts'
+import { Scope } from '../runtime/scope.ts'
+
+const DEFAULT_RETURN_VALUE = new NumberValue(0)
+
+export class DeclareFunction extends Executable {
     name: string
     body: Block
 
@@ -35,33 +38,26 @@ export class FunctionDeclaration extends Executable {
 
 export class FunctionInvoke extends Evaluable {
     #name: string
-    props: { [key: string]: Evaluable }
+    params: { [key: string]: Evaluable }
 
-    constructor(props: Record<string, Evaluable> & { name: string }) {
+    constructor(props: Record<string, Evaluable> & { name?: string }) {
         super()
+        if (!props.name) throw new YaksokError('FUNCTION_MUST_HAVE_NAME')
 
-        this.props = {}
+        this.#name = props.name!
+        delete props['name']
 
-        for (const key in props) {
-            if (key === 'name') continue
-            this.props[key] = props[key]
-        }
-
-        this.#name = props.name
+        this.params = props
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
         const name = this.#name
 
-        if (!name || typeof name !== 'string') {
-            throw new YaksokError('FUNCTION_MUST_HAVE_NAME')
-        }
-
         const args: { [key: string]: ValueTypes } = {}
 
-        for (const key in this.props) {
-            const value = this.props[key]
+        for (const key in this.params) {
+            const value = this.params[key]
             if (value instanceof Evaluable) {
                 args[key] = value.execute(scope, callFrame)
             } else {
@@ -78,6 +74,6 @@ export class FunctionInvoke extends Evaluable {
         const childScope = new Scope(scope, args)
         const result = func.run(childScope, callFrame)
 
-        return result || new NumberValue(0)
+        return result || DEFAULT_RETURN_VALUE
     }
 }

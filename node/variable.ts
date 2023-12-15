@@ -1,7 +1,8 @@
-import { YaksokError } from '../errors.ts'
-import { Scope } from '../runtime/scope.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
 import { Evaluable, Keyword, ValueTypes } from './index.ts'
+
+import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
+import { YaksokError } from '../errors.ts'
 
 export class Variable extends Evaluable {
     name: string

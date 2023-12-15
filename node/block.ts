@@ -1,8 +1,9 @@
 import { Executable, Node } from './index.ts'
-import { YaksokError } from '../errors.ts'
-import { Scope } from '../runtime/scope.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
 import { EOL } from './misc.ts'
+
+import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
+import { YaksokError } from '../errors.ts'
 
 export class Block extends Executable {
     children: Node[]
@@ -15,8 +16,7 @@ export class Block extends Executable {
     execute(scope: Scope, _callFrame?: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
-        for (let i = 0; i < this.children.length; i++) {
-            const child = this.children[i]
+        for (const child of this.children) {
             if (child instanceof Executable) {
                 child.execute(scope, callFrame)
             } else if (child instanceof EOL) {

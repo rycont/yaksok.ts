@@ -1,7 +1,8 @@
-import { Scope } from '../runtime/scope.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
-import { Block } from './block.ts'
 import { Executable } from './index.ts'
+import { Block } from './block.ts'
+
+import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
 
 export class Loop extends Executable {
     body: Block
@@ -27,7 +28,7 @@ export class Loop extends Executable {
 }
 
 export class Break extends Executable {
-    execute(scope: Scope, _callFrame: CallFrame) {
+    execute(_scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
         callFrame.invokeEvent('break')
     }

@@ -1,11 +1,12 @@
-import { YaksokError } from '../errors.ts'
-import { Operator, ValueTypes } from './index.ts'
 import {
-    NumberValue,
-    StringValue,
     PrimitiveValue,
     BooleanValue,
-} from './primitive.ts'
+    StringValue,
+    NumberValue,
+    ValueTypes,
+    Operator,
+} from './index.ts'
+import { YaksokError } from '../errors.ts'
 
 export class PlusOperator extends Operator {
     call(...operands: ValueTypes[]) {
