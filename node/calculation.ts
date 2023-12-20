@@ -1,6 +1,7 @@
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
 import {
+    AndOperator,
     DivideOperator,
     GreaterThanOperator,
     GreaterThanOrEqualOperator,
@@ -12,6 +13,8 @@ import {
 } from './operator.ts'
 import { Evaluable, Operator, ValueTypes } from './base.ts'
 import { EqualOperator } from './index.ts'
+import { YaksokError } from '../errors.ts'
+import { RangeOperator } from './list.ts'
 
 const PRECEDENCE: Array<(typeof Operator)[]> = [
     [], // 0 (safety area)
@@ -21,6 +24,8 @@ const PRECEDENCE: Array<(typeof Operator)[]> = [
         GreaterThanOperator,
         LessThanOrEqualOperator,
         GreaterThanOrEqualOperator,
+        AndOperator,
+        RangeOperator,
     ], // 1
     [MinusOperator, PlusOperator], // 2
     [MultiplyOperator, DivideOperator], // 3
@@ -108,6 +113,19 @@ export class Formula extends Evaluable {
             }
 
             currentPrecedence--
+        }
+
+        if (terms.length !== 1) {
+            throw new YaksokError(
+                'UNKNOWN_OPERAOTR_PRECEDENCE',
+                {},
+                {
+                    operators: terms
+                        .filter((term) => term instanceof Operator)
+                        .map((term) => term.constructor.name)
+                        .join(', '),
+                },
+            )
         }
 
         return terms[0] as ValueTypes
