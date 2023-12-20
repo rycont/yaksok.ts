@@ -1,3 +1,4 @@
+import { Formula } from "../../node/calculation.ts";
 import {
     Node,
     SetVariable,
@@ -6,7 +7,6 @@ import {
     EOL,
     DivideOperator,
     MultiplyOperator,
-    BinaryOperation,
     Operator,
     IfStatement,
     Block,
@@ -34,7 +34,7 @@ import {
 
 export interface PatternUnit {
     type: {
-        new (...args: any[]): Node
+        new(...args: any[]): Node
     }
     value?: Record<string, unknown> | string | number
     as?: string
@@ -42,7 +42,7 @@ export interface PatternUnit {
 
 export interface Rule {
     to: {
-        new (...args: any[]): Node
+        new(...args: any[]): Node
     }
     pattern: PatternUnit[]
     config?: Record<string, unknown>
@@ -297,7 +297,7 @@ export const internalPatterns: Rule[] = [
         ],
     },
     {
-        to: BinaryOperation,
+        to: Formula,
         pattern: [
             {
                 type: Evaluable,

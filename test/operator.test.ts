@@ -2,7 +2,7 @@ import { assertEquals, assertIsError, unreachable } from 'assert'
 import { tokenize } from '../prepare/tokenize/index.ts'
 import {
     AndOperator,
-    BinaryOperation,
+    Formula,
     Block,
     BooleanValue,
     SetVariable,
@@ -78,6 +78,7 @@ Deno.test('Run Binary Operation', () => {
     ])
 
     const node = parse(result)
+
     assertEquals(
         node,
         new Block([
@@ -86,7 +87,7 @@ Deno.test('Run Binary Operation', () => {
                 name: new Variable({
                     name: new Keyword('계산'),
                 }),
-                value: new BinaryOperation({
+                value: new Formula({
                     left: new NumberValue(1),
                     operator: new PlusOperator(),
                     right: new NumberValue(1),

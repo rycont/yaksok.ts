@@ -2,7 +2,6 @@ import { assertEquals, assertIsError, unreachable } from 'assert'
 
 import { tokenize } from '../prepare/tokenize/index.ts'
 import {
-    BinaryOperation,
     Block,
     SetVariable,
     EOL,
@@ -23,6 +22,7 @@ import { run } from '../runtime/run.ts'
 import { YaksokError } from '../errors.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
+import { Formula } from '../node/calculation.ts'
 
 Deno.test('Parse list', async (context) => {
     const code = `
@@ -267,7 +267,7 @@ Deno.test('Print list before evaluating', () => {
     try {
         const node = new List({
             sequence: new Sequence({
-                a: new BinaryOperation({
+                a: new Formula({
                     left: new NumberValue(1),
                     operator: new PlusOperator(),
                     right: new NumberValue(2),

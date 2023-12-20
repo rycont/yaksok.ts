@@ -1,14 +1,13 @@
-import {
-    PrimitiveValue,
-    BooleanValue,
-    StringValue,
-    NumberValue,
-    ValueTypes,
-    Operator,
-} from './index.ts'
+
 import { YaksokError } from '../errors.ts'
+import { Operator, ValueTypes } from "./base.ts";
+import { BooleanValue, NumberValue, PrimitiveValue, StringValue } from "./primitive.ts";
 
 export class PlusOperator extends Operator {
+    toPrint() {
+        return '+'
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -37,6 +36,10 @@ export class PlusOperator extends Operator {
 }
 
 export class MinusOperator extends Operator {
+    toPrint() {
+        return '-'
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -52,6 +55,10 @@ export class MinusOperator extends Operator {
 }
 
 export class MultiplyOperator extends Operator {
+    toPrint() {
+        return '*'
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
@@ -71,6 +78,10 @@ export class MultiplyOperator extends Operator {
 }
 
 export class DivideOperator extends Operator {
+    toPrint() {
+        return '/'
+    }
+
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
