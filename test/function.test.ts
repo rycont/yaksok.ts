@@ -91,3 +91,18 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
         }
     })
 })
+
+Deno.test('Return outside function', () => {
+    const code = `
+결과: 10
+약속 그만
+`
+
+    try {
+        run(parse(tokenize(code)))
+        unreachable()
+    } catch (e) {
+        assertIsError(e, YaksokError)
+        assertEquals(e.name, 'CANNOT_RETURN_OUTSIDE_FUNCTION')
+    }
+})
