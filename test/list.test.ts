@@ -28,7 +28,7 @@ Deno.test('Parse list', async (context) => {
     const code = `
 목록: [1, 3, 5, 7, 9]
 `
-    let result = tokenize(code)
+    const result = tokenize(code)
 
     await context.step('Tokenize', () => {
         assertEquals(result.tokens, [

@@ -94,7 +94,7 @@ export class Formula extends Evaluable {
             )
         }
 
-        if (terms.length === 0) return terms[0] as ValueTypes
+        if (terms.length === 1) return terms[0] as ValueTypes
 
         throw new YaksokError(
             'UNKNOWN_OPERAOTR_PRECEDENCE',

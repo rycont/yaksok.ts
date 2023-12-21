@@ -582,7 +582,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
     })
 })
 
-Deno.test('Compare equity list and list', async (context) => {
+Deno.test('Compare equity list and list', () => {
     const code = `
 리스트1: [1, 2, 3]
 리스트2: [1, 2, 3]

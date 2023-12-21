@@ -201,7 +201,7 @@ Deno.test('Invoke Not Defined Function', () => {
     }
 })
 
-Deno.test('Block Return Outside Of Function', async (context) => {
+Deno.test('Block Return Outside Of Function', () => {
     const block = new Block([
         new SetVariable({
             name: new Variable({
@@ -222,7 +222,7 @@ Deno.test('Block Return Outside Of Function', async (context) => {
     }
 })
 
-Deno.test('Block Return Outside Of Function', async (context) => {
+Deno.test('Block Return Outside Of Function', () => {
     const block = new Block([
         new SetVariable({
             name: new Variable({
@@ -243,7 +243,7 @@ Deno.test('Block Return Outside Of Function', async (context) => {
     }
 })
 
-Deno.test('Get Not Registered Event', async (context) => {
+Deno.test('Get Not Registered Event', () => {
     const block = new Block([
         new SetVariable({
             name: new Variable({
