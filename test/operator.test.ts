@@ -438,7 +438,7 @@ Deno.test('Operator String and Number', async (context) => {
     })
 })
 
-Deno.test('Operator Boolean and Boolean', async (context) => {
+Deno.test('Operator Boolean and Boolean', () => {
     const code = `
 식1: 10 > 3
 식2: 2 = 2
@@ -600,4 +600,12 @@ Deno.test('Compare equity list and list', async (context) => {
             "Evaluation equality between non-primitive values isn't supported yet.",
         )
     }
+})
+
+Deno.test('Raw Operator toPrint', () => {
+    assertEquals(new Operator().toPrint(), 'unknown')
+    assertEquals(new Operator('+').toPrint(), '+')
+    assertEquals(new Operator('-').toPrint(), '-')
+    assertEquals(new Operator('*').toPrint(), '*')
+    assertEquals(new Operator('/').toPrint(), '/')
 })

@@ -202,7 +202,7 @@ export class Tokenizer {
 export function tokenize(code: string) {
     const tokenizer = new Tokenizer(code)
     return {
-        tokens: tokenizer.tokens,
-        functionHeaders: tokenizer.functionHeaders,
+        tokens: tokenizer.tokens!,
+        functionHeaders: tokenizer.functionHeaders!,
     }
 }

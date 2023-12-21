@@ -1,7 +1,11 @@
-
 import { YaksokError } from '../errors.ts'
-import { Operator, ValueTypes } from "./base.ts";
-import { BooleanValue, NumberValue, PrimitiveValue, StringValue } from "./primitive.ts";
+import { Operator, ValueTypes } from './base.ts'
+import {
+    BooleanValue,
+    NumberValue,
+    PrimitiveValue,
+    StringValue,
+} from './primitive.ts'
 
 export class PlusOperator extends Operator {
     toPrint() {

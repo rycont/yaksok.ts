@@ -16,8 +16,7 @@ import { EqualOperator } from './index.ts'
 import { YaksokError } from '../errors.ts'
 import { RangeOperator } from './list.ts'
 
-const PRECEDENCE: Array<(typeof Operator)[]> = [
-    [], // 0 (safety area)
+const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
     [
         EqualOperator,
         LessThanOperator,
@@ -26,9 +25,9 @@ const PRECEDENCE: Array<(typeof Operator)[]> = [
         GreaterThanOrEqualOperator,
         AndOperator,
         RangeOperator,
-    ], // 1
-    [MinusOperator, PlusOperator], // 2
-    [MultiplyOperator, DivideOperator], // 3
+    ],
+    [MinusOperator, PlusOperator],
+    [MultiplyOperator, DivideOperator],
 ]
 
 export class ValueGroup extends Evaluable {
@@ -80,77 +79,67 @@ export class Formula extends Evaluable {
 
     execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
         const callFrame = new CallFrame(this, _callFrame)
-        let currentPrecedence = PRECEDENCE.length - 1
-
         const terms = [...this.terms]
 
-        while (currentPrecedence > 0) {
-            const currentOperators = PRECEDENCE[currentPrecedence]
-
-            for (let i = 0; i < terms.length; i++) {
-                const term = terms[i]
-                if (
-                    !(term instanceof Operator) ||
-                    !currentOperators.includes(
-                        term.constructor as typeof Operator,
-                    )
-                )
-                    continue
-
-                const left = (terms[i - 1] as Evaluable).execute(
-                    scope,
-                    callFrame,
-                )
-                const right = (terms[i + 1] as Evaluable).execute(
-                    scope,
-                    callFrame,
-                )
-
-                const result = term.call(left, right)
-                terms.splice(i - 1, 3, result)
-
-                i--
-            }
-
+        for (
+            let currentPrecedence = OPERATOR_PRECEDENCES.length - 1;
+            currentPrecedence >= 0;
             currentPrecedence--
-        }
-
-        if (terms.length !== 1) {
-            throw new YaksokError(
-                'UNKNOWN_OPERAOTR_PRECEDENCE',
-                {},
-                {
-                    operators: terms
-                        .filter((term) => term instanceof Operator)
-                        .map((term) => term.constructor.name)
-                        .join(', '),
-                },
+        ) {
+            this.calculateOperatorWithPrecedence(
+                terms,
+                currentPrecedence,
+                scope,
+                callFrame,
             )
         }
 
-        return terms[0] as ValueTypes
+        if (terms.length === 0) return terms[0] as ValueTypes
+
+        throw new YaksokError(
+            'UNKNOWN_OPERAOTR_PRECEDENCE',
+            {},
+            {
+                operators: terms
+                    .filter((term) => term instanceof Operator)
+                    .map((term) => term.constructor.name)
+                    .join(', '),
+            },
+        )
+    }
+
+    calculateOperatorWithPrecedence(
+        terms: (Evaluable | Operator)[],
+        precedence: number,
+        scope: Scope,
+        callFrame: CallFrame,
+    ) {
+        const currentOperators = OPERATOR_PRECEDENCES[precedence]
+
+        for (let i = 0; i < terms.length; i++) {
+            const term = terms[i]
+
+            const isOperator = term instanceof Operator
+            const isCurrentPrecedence = currentOperators.includes(
+                term.constructor as typeof Operator,
+            )
+
+            if (!isOperator || !isCurrentPrecedence) continue
+
+            const leftTerm: Evaluable = terms[i - 1] as Evaluable
+            const rightTerm: Evaluable = terms[i + 1] as Evaluable
+
+            const left = leftTerm.execute(scope, callFrame)
+            const right = rightTerm.execute(scope, callFrame)
+
+            const result = term.call(left, right)
+            terms.splice(i - 1, 3, result)
+
+            i--
+        }
+    }
+
+    toPrint(): string {
+        return this.terms.map((term) => term.toPrint()).join(' ')
     }
 }
-
-// 1 + 2 * 3 / (4 - 5) to be
-/*
-Formula {
-    terms: [
-        NumberValue { value: 1 },
-        PlusOperator {},
-        NumberValue { value: 2 },
-        MultiplyOperator {},
-        NumberValue { value: 3 },
-        DivideOperator {},
-        ValueGroup {
-            value: Formula {
-                terms: [
-                    NumberValue { value: 4 },
-                    MinusOperator {},
-                    NumberValue { value: 5 }
-                ]
-            }
-        }
-    ]
-}
-*/
