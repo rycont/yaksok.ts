@@ -141,9 +141,9 @@ export class List extends IndexedValue {
     toPrint(): string {
         if (!this.evaluatedItems) throw new YaksokError('LIST_NOT_EVALUATED')
         return (
-            '[ ' +
-            this.evaluatedItems.map((item) => item.toPrint()).join(' ') +
-            ' ]'
+            '[' +
+            this.evaluatedItems.map((item) => item.toPrint()).join(', ') +
+            ']'
         )
     }
 }

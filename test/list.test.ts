@@ -98,7 +98,7 @@ Deno.test('Print list', () => {
 
     run(parse(tokenize(code)))
 
-    assertEquals(printed, '[ 1 3 5 7 9 ]')
+    assertEquals(printed, '[1, 3, 5, 7, 9]')
     console.log = _consoleLog
 })
 
@@ -124,7 +124,7 @@ Deno.test('Set list element', () => {
 
     const tree = parse(tokenize(code))
     const result = run(tree)
-    assertEquals(result.getVariable('목록').toPrint(), '[ 2 3 5 7 9 ]')
+    assertEquals(result.getVariable('목록').toPrint(), '[2, 3, 5, 7, 9]')
 })
 
 Deno.test('Get list element by indexes list', () => {
@@ -135,7 +135,7 @@ Deno.test('Get list element by indexes list', () => {
 
     const tree = parse(tokenize(code))
     const result = run(tree)
-    assertEquals(result.getVariable('값').toPrint(), '[ 1 3 5 ]')
+    assertEquals(result.getVariable('값').toPrint(), '[1, 3, 5]')
 })
 
 Deno.test('Create range but start is greater than end', () => {
@@ -202,7 +202,7 @@ Deno.test('Create range but operands are not number', async (context) => {
         const result = run(parse(tokenize(code)))
         assertEquals(
             result.getVariable('목록').toPrint(),
-            '[ 1 2 3 4 5 6 7 8 9 10 ]',
+            '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]',
         )
     })
 })
@@ -376,7 +376,7 @@ Deno.test('List getting index is not number', () => {
 
 Deno.test('List with no data source', () => {
     const node = new List({})
-    assertEquals(node.toPrint(), '[  ]')
+    assertEquals(node.toPrint(), '[]')
 })
 
 Deno.test('Sequence toPrint', () => {
