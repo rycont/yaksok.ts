@@ -4,5 +4,10 @@
     },
     "tasks": {
         "coverage": "rm -rf ./cov && deno test --coverage=cov && deno coverage ./cov && rm -rf ./cov"
+    },
+    "lint": {
+        "rules": {
+            "exclude": ["no-explicit-any"]
+        }
     }
 }
