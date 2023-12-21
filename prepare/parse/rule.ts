@@ -32,6 +32,7 @@ import {
     RangeOperator,
     Return,
 } from '../../node/index.ts'
+import { ListLoop } from '../../node/listLoop.ts'
 
 export interface PatternUnit {
     type: {
@@ -410,6 +411,38 @@ export const internalPatterns: Rule[] = [
             {
                 type: Keyword,
                 value: '그만',
+            },
+        ],
+    },
+    {
+        to: ListLoop,
+        pattern: [
+            {
+                type: Keyword,
+                value: '반복',
+            },
+            {
+                type: Evaluable,
+                as: 'list',
+            },
+            {
+                type: Keyword,
+                value: '의',
+            },
+            {
+                type: Variable,
+                as: 'name',
+            },
+            {
+                type: Keyword,
+                value: '마다',
+            },
+            {
+                type: EOL,
+            },
+            {
+                type: Block,
+                as: 'body',
             },
         ],
     },

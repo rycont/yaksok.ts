@@ -41,7 +41,6 @@ export function createDynamicRule({
                     ],
                 })
             } else if (rule.name === 'list_loop') {
-                console.log(substack)
                 patterns.push({
                     to: Variable,
                     pattern: [
@@ -122,6 +121,33 @@ const dynamicPatternDetector: (Omit<Rule, 'to'> & {
             },
             {
                 type: Keyword,
+            },
+            {
+                type: Keyword,
+                value: '의',
+            },
+            {
+                type: Keyword,
+                as: 'name',
+            },
+            {
+                type: Keyword,
+                value: '마다',
+            },
+            {
+                type: EOL,
+            },
+        ],
+    },
+    {
+        name: 'list_loop' as const,
+        pattern: [
+            {
+                type: Keyword,
+                value: '반복',
+            },
+            {
+                type: Evaluable,
             },
             {
                 type: Keyword,
