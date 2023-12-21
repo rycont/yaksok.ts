@@ -11,7 +11,6 @@ interface ParseProps {
 export function parse(props: ParseProps) {
     const dynamicRules = createDynamicRule(props)
     const indentedNodes = parseIndent(props.tokens)
-
     const ast = callParseRecursively(indentedNodes, dynamicRules)
 
     return ast

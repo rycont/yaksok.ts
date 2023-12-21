@@ -1,9 +1,8 @@
-import { Executable, Node } from './index.ts'
-import { EOL } from './misc.ts'
-
 import { CallFrame } from '../runtime/callFrame.ts'
+import { Executable, Node } from './index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { YaksokError } from '../errors.ts'
+import { EOL } from './misc.ts'
 
 export class Block extends Executable {
     children: Node[]

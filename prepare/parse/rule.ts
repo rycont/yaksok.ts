@@ -30,6 +30,7 @@ import {
     SetToIndex,
     Expression,
     RangeOperator,
+    Return,
 } from '../../node/index.ts'
 
 export interface PatternUnit {
@@ -392,6 +393,19 @@ export const internalPatterns: Rule[] = [
             {
                 type: Keyword,
                 value: '반복',
+            },
+            {
+                type: Keyword,
+                value: '그만',
+            },
+        ],
+    },
+    {
+        to: Return,
+        pattern: [
+            {
+                type: Keyword,
+                value: '약속',
             },
             {
                 type: Keyword,

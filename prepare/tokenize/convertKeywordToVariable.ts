@@ -10,6 +10,12 @@ export function convertKeywordToVariable(tokens: Node[]) {
 
         if (token instanceof Keyword && token.value === '약속') {
             tokenStack.push(token)
+            if (
+                leftTokens[0] instanceof Keyword &&
+                leftTokens[0].value === '그만'
+            )
+                continue
+
             const paramaters: string[] = []
             const functionHeader: Node[] = []
 
