@@ -1,3 +1,4 @@
+import { Formula } from '../../node/calculation.ts'
 import {
     Node,
     SetVariable,
@@ -6,7 +7,6 @@ import {
     EOL,
     DivideOperator,
     MultiplyOperator,
-    BinaryOperation,
     Operator,
     IfStatement,
     Block,
@@ -297,7 +297,7 @@ export const internalPatterns: Rule[] = [
         ],
     },
     {
-        to: BinaryOperation,
+        to: Formula,
         pattern: [
             {
                 type: Evaluable,

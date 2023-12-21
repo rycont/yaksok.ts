@@ -79,14 +79,23 @@ export class Tokenizer {
         }
     }
 
+    isNumeric(char: string) {
+        return '0' <= char && char <= '9'
+    }
+
     canBeFisrtCharOfNumber(char: string) {
-        return (
-            ('0' <= char && char <= '9') ||
-            (char === '-' &&
-                this.chars.length > 1 &&
-                '0' <= this.chars[1] &&
-                this.chars[1] <= '9')
+        if ('0' <= char && char <= '9') return true
+        if (
+            char === '-' &&
+            this.chars.length > 1 &&
+            this.isNumeric(this.chars[1]) &&
+            this.tokens.length &&
+            (this.tokens[this.tokens.length - 1] instanceof Operator ||
+                this.tokens[this.tokens.length - 1] instanceof Expression)
         )
+            return true
+
+        return false
     }
 
     comment() {
@@ -193,7 +202,7 @@ export class Tokenizer {
 export function tokenize(code: string) {
     const tokenizer = new Tokenizer(code)
     return {
-        tokens: tokenizer.tokens,
-        functionHeaders: tokenizer.functionHeaders,
+        tokens: tokenizer.tokens!,
+        functionHeaders: tokenizer.functionHeaders!,
     }
 }

@@ -2,7 +2,7 @@ import { assertEquals, assertIsError, unreachable } from 'assert'
 import { tokenize } from '../prepare/tokenize/index.ts'
 import {
     AndOperator,
-    BinaryOperation,
+    Formula,
     Block,
     BooleanValue,
     SetVariable,
@@ -78,6 +78,7 @@ Deno.test('Run Binary Operation', () => {
     ])
 
     const node = parse(result)
+
     assertEquals(
         node,
         new Block([
@@ -86,7 +87,7 @@ Deno.test('Run Binary Operation', () => {
                 name: new Variable({
                     name: new Keyword('계산'),
                 }),
-                value: new BinaryOperation({
+                value: new Formula({
                     left: new NumberValue(1),
                     operator: new PlusOperator(),
                     right: new NumberValue(1),
@@ -437,7 +438,7 @@ Deno.test('Operator String and Number', async (context) => {
     })
 })
 
-Deno.test('Operator Boolean and Boolean', async (context) => {
+Deno.test('Operator Boolean and Boolean', () => {
     const code = `
 식1: 10 > 3
 식2: 2 = 2
@@ -581,7 +582,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
     })
 })
 
-Deno.test('Compare equity list and list', async (context) => {
+Deno.test('Compare equity list and list', () => {
     const code = `
 리스트1: [1, 2, 3]
 리스트2: [1, 2, 3]
@@ -599,4 +600,12 @@ Deno.test('Compare equity list and list', async (context) => {
             "Evaluation equality between non-primitive values isn't supported yet.",
         )
     }
+})
+
+Deno.test('Raw Operator toPrint', () => {
+    assertEquals(new Operator().toPrint(), 'unknown')
+    assertEquals(new Operator('+').toPrint(), '+')
+    assertEquals(new Operator('-').toPrint(), '-')
+    assertEquals(new Operator('*').toPrint(), '*')
+    assertEquals(new Operator('/').toPrint(), '/')
 })

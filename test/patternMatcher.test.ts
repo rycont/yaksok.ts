@@ -5,7 +5,7 @@ import { StringValue } from '../node/primitive.ts'
 import { parse } from '../prepare/parse/index.ts'
 import { Keyword } from '../node/base.ts'
 import {
-    BinaryOperation,
+    Formula,
     Block,
     SetVariable,
     EOL,
@@ -26,7 +26,7 @@ Deno.test('Matching case: Wrapping class inherits from child class', () => {
             new EOL(),
             new SetVariable({
                 name: new Variable({ name: new Keyword('이름') }),
-                value: new BinaryOperation({
+                value: new Formula({
                     left: new StringValue('홍길'),
                     operator: new PlusOperator(),
                     right: new StringValue('동'),

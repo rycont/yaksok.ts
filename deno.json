@@ -1,5 +1,13 @@
 {
     "imports": {
         "assert": "https://deno.land/std@0.208.0/assert/mod.ts"
+    },
+    "tasks": {
+        "coverage": "rm -rf ./cov && deno test --coverage=cov && deno coverage ./cov && rm -rf ./cov"
+    },
+    "lint": {
+        "rules": {
+            "exclude": ["no-explicit-any"]
+        }
     }
 }

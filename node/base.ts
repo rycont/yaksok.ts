@@ -44,6 +44,10 @@ export class Operator extends Node {
         super()
     }
 
+    toPrint(): string {
+        return this.value ?? 'unknown'
+    }
+
     call(..._operands: ValueTypes[]): ValueTypes {
         throw new Error(`${this.constructor.name} has no call method`)
     }

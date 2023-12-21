@@ -81,7 +81,7 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
 
     await context.step('Invoke function with no name', () => {
         try {
-            const functionInvokation = new FunctionInvoke({
+            new FunctionInvoke({
                 음식: new Keyword('사과') as unknown as Evaluable,
             } as unknown as Record<string, Evaluable> & { name: string })
             unreachable()

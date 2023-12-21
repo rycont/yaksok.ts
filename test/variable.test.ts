@@ -2,7 +2,6 @@ import { assertEquals, assertIsError, unreachable } from 'assert'
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { parse } from '../prepare/parse/index.ts'
 import {
-    BinaryOperation,
     Block,
     SetVariable,
     EOL,
@@ -14,6 +13,7 @@ import {
 
 import { run } from '../runtime/run.ts'
 import { YaksokError } from '../errors.ts'
+import { Formula } from '../node/calculation.ts'
 
 Deno.test('Parse Variable', () => {
     const node = parse(tokenize('이름: 1'))
@@ -48,7 +48,7 @@ Deno.test('Parse variable with 이전 keyword', () => {
             }),
             new SetVariable({
                 name: new Variable({ name: new Keyword('나이') }),
-                value: new BinaryOperation({
+                value: new Formula({
                     left: new Variable({ name: new Keyword('나이') }),
                     operator: new PlusOperator(),
                     right: new NumberValue(1),
