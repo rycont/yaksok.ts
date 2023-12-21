@@ -1,9 +1,11 @@
 import { Executable, ValueTypes, Evaluable } from './base.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { Block, NumberValue } from './index.ts'
 
 import { YaksokError } from '../errors.ts'
 import { Scope } from '../runtime/scope.ts'
+import { NumberValue } from './primitive.ts'
+import { Block } from './block.ts'
+import { RETURN } from '../runtime/signals.ts'
 
 const DEFAULT_RETURN_VALUE = new NumberValue(0)
 
@@ -25,14 +27,31 @@ export class DeclareFunction extends Executable {
     run(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
-        let returnValue: ValueTypes
-
-        callFrame.event.returnValue = (value: ValueTypes) => {
-            returnValue = value
+        try {
+            this.body.execute(scope, callFrame)
+        } catch (e) {
+            if (e !== RETURN) {
+                throw e
+            }
         }
-        this.body.execute(scope, callFrame)
 
-        return returnValue!
+        return this.getReturnValue(scope)
+    }
+
+    getReturnValue(scope: Scope) {
+        try {
+            return scope.getVariable('결과')
+        } catch (e) {
+            if (this.isNotDefinedVariable(e)) {
+                return DEFAULT_RETURN_VALUE
+            }
+
+            throw e
+        }
+    }
+
+    isNotDefinedVariable(e: unknown) {
+        return e instanceof YaksokError && e.name === 'NOT_DEFINED_VARIABLE'
     }
 }
 
