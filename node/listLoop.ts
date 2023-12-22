@@ -40,17 +40,15 @@ export class ListLoop extends Executable {
             throw new YaksokError('LIST_NOT_EVALUATED')
         }
 
-        for (const value of list.items) {
-            const evaluatedValue = value.execute(scope, callFrame)
+        try {
+            for (const value of list.items) {
+                const evaluatedValue = value.execute(scope, callFrame)
+                scope.setVariable(this.name.name, evaluatedValue)
 
-            scope.setVariable(this.name.name, evaluatedValue)
-
-            try {
                 this.body.execute(scope, callFrame)
-            } catch (e) {
-                if (e === BREAK) break
-                throw e
             }
+        } catch (e) {
+            if (e !== BREAK) throw e
         }
     }
 }
