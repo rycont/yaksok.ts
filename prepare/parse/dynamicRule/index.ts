@@ -25,8 +25,8 @@ export function createDynamicRule({
     while (true) {
         for (const rule of dynamicPatternDetector) {
             if (end < rule.pattern.length) continue
-            const substack = tokens.slice(end - rule.pattern.length, end)
 
+            const substack = tokens.slice(end - rule.pattern.length, end)
             if (!satisfiesPattern(substack, rule.pattern)) continue
 
             if (rule.name === 'variable') {
@@ -46,7 +46,7 @@ export function createDynamicRule({
                     pattern: [
                         {
                             type: Keyword,
-                            value: (substack[3] as Keyword).value,
+                            value: (substack[1] as Keyword).value,
                             as: 'name',
                         },
                     ],
@@ -115,40 +115,6 @@ const dynamicPatternDetector: (Omit<Rule, 'to'> & {
     {
         name: 'list_loop' as const,
         pattern: [
-            {
-                type: Keyword,
-                value: '반복',
-            },
-            {
-                type: Keyword,
-            },
-            {
-                type: Keyword,
-                value: '의',
-            },
-            {
-                type: Keyword,
-                as: 'name',
-            },
-            {
-                type: Keyword,
-                value: '마다',
-            },
-            {
-                type: EOL,
-            },
-        ],
-    },
-    {
-        name: 'list_loop' as const,
-        pattern: [
-            {
-                type: Keyword,
-                value: '반복',
-            },
-            {
-                type: Evaluable,
-            },
             {
                 type: Keyword,
                 value: '의',
