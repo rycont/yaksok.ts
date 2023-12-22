@@ -1,6 +1,6 @@
 import { assertEquals } from 'assert'
 import { Keyword, Variable, EOL, Expression } from '../node/index.ts'
-import { convertKeywordToVariable } from '../prepare/tokenize/convertKeywordToVariable.ts'
+import { lexFunctionArgument } from '../prepare/tokenize/lexFunctionArgument.ts'
 
 Deno.test('Preprocess tokens', () => {
     const tokens = [
@@ -13,7 +13,7 @@ Deno.test('Preprocess tokens', () => {
         new EOL(),
     ]
 
-    const result = convertKeywordToVariable(tokens)
+    const result = lexFunctionArgument(tokens)
 
     assertEquals(result, {
         tokens: [
@@ -37,7 +37,7 @@ Deno.test('Preprocess tokens', () => {
 Deno.test('Preprocess tokens with broken variable declaration', () => {
     const tokens = [new Keyword('약속'), new Expression(':')]
 
-    const result = convertKeywordToVariable(tokens)
+    const result = lexFunctionArgument(tokens)
 
     assertEquals(result, {
         tokens: [new Keyword('약속'), new Expression(':')],

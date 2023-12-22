@@ -32,6 +32,7 @@ import {
     RangeOperator,
     Return,
 } from '../../node/index.ts'
+import { ListLoop } from '../../node/listLoop.ts'
 
 export interface PatternUnit {
     type: {
@@ -49,368 +50,404 @@ export interface Rule {
     config?: Record<string, unknown>
 }
 
-export const internalPatterns: Rule[] = [
-    {
-        to: EqualOperator,
-        pattern: [
-            {
-                type: Operator,
-                value: '=',
-            },
-        ],
-    },
-    {
-        to: Sequence,
-        pattern: [
-            {
-                type: Evaluable,
-                as: 'a',
-            },
-            {
-                type: Expression,
-                value: ',',
-            },
-            {
-                type: Evaluable,
-                as: 'b',
-            },
-        ],
-    },
-    {
-        to: List,
-        pattern: [
-            {
-                type: Expression,
-                value: '[',
-            },
-            {
-                type: Sequence,
-                as: 'sequence',
-            },
-            {
-                type: Expression,
-                value: ']',
-            },
-        ],
-    },
-    {
-        to: List,
-        pattern: [
-            {
-                type: Expression,
-                value: '[',
-            },
-            {
-                type: Expression,
-                value: ']',
-            },
-        ],
-    },
-    {
-        to: Indexing,
-        pattern: [
-            {
-                type: Expression,
-                value: '[',
-            },
-            {
-                type: Evaluable,
-                as: 'index',
-            },
-            {
-                type: Expression,
-                value: ']',
-            },
-        ],
-    },
-    {
-        to: IndexFetch,
-        pattern: [
-            {
-                type: Evaluable,
-                as: 'target',
-            },
-            {
-                type: Indexing,
-                as: 'index',
-            },
-        ],
-    },
-    {
-        to: SetToIndex,
-        pattern: [
-            {
-                type: IndexFetch,
-                as: 'target',
-            },
-            {
-                type: Expression,
-                value: ':',
-            },
-            {
-                type: Evaluable,
-                as: 'value',
-            },
-        ],
-    },
-    {
-        to: ValueGroup,
-        pattern: [
-            {
-                type: Expression,
-                value: '(',
-            },
-            {
-                type: Evaluable,
-                as: 'value',
-            },
-            {
-                type: Expression,
-                value: ')',
-            },
-        ],
-    },
-    {
-        to: GreaterThanOperator,
-        pattern: [
-            {
-                type: Operator,
-                value: '>',
-            },
-        ],
-    },
-    {
-        to: GreaterThanOrEqualOperator,
-        pattern: [
-            {
-                type: GreaterThanOperator,
-            },
-            {
-                type: EqualOperator,
-            },
-        ],
-    },
-    {
-        to: LessThanOperator,
-        pattern: [
-            {
-                type: Operator,
-                value: '<',
-            },
-        ],
-    },
-    {
-        to: LessThanOrEqualOperator,
-        pattern: [
-            {
-                type: LessThanOperator,
-            },
-            {
-                type: EqualOperator,
-            },
-        ],
-    },
-    {
-        to: Variable,
-        pattern: [
-            {
-                type: Keyword,
-                value: '이전',
-            },
-            {
-                type: Variable,
-                as: 'name',
-            },
-        ],
-    },
-    {
-        to: SetVariable,
-        pattern: [
-            {
-                type: Variable,
-                as: 'name',
-            },
-            {
-                type: Expression,
-                value: ':',
-            },
-            {
-                type: Evaluable,
-                as: 'value',
-            },
-            {
-                type: EOL,
-            },
-        ],
-    },
-    {
-        to: DivideOperator,
-        pattern: [
-            {
-                type: Operator,
-                value: '/',
-            },
-        ],
-    },
-    {
-        to: MultiplyOperator,
-        pattern: [
-            {
-                type: Operator,
-                value: '*',
-            },
-        ],
-    },
-    {
-        to: PlusOperator,
-        pattern: [
-            {
-                type: Operator,
-                value: '+',
-            },
-        ],
-    },
-    {
-        to: MinusOperator,
-        pattern: [
-            {
-                type: Operator,
-                value: '-',
-            },
-        ],
-    },
-    {
-        to: AndOperator,
-        pattern: [
-            {
-                type: Keyword,
-                value: '이고',
-            },
-        ],
-    },
-    {
-        to: RangeOperator,
-        pattern: [
-            {
-                type: Operator,
-                value: '~',
-            },
-        ],
-    },
-    {
-        to: Formula,
-        pattern: [
-            {
-                type: Evaluable,
-                as: 'left',
-            },
-            {
-                type: Operator,
-                as: 'operator',
-            },
-            {
-                type: Evaluable,
-                as: 'right',
-            },
-        ],
-    },
-    {
-        to: IfStatement,
-        pattern: [
-            {
-                type: Keyword,
-                value: '만약',
-            },
-            {
-                type: Evaluable,
-                as: 'condition',
-            },
-            {
-                type: Keyword,
-                value: '이면',
-            },
-            {
-                type: EOL,
-            },
-            {
-                type: Block,
-                as: 'body',
-            },
-        ],
-    },
-    {
-        to: IfStatement,
-        pattern: [
-            {
-                type: IfStatement,
-                as: 'ifBody',
-            },
-            {
-                type: Keyword,
-                value: '아니면',
-            },
-            {
-                type: EOL,
-            },
-            {
-                type: Block,
-                as: 'elseBody',
-            },
-        ],
-    },
-    {
-        to: Print,
-        pattern: [
-            {
-                type: Evaluable,
-                as: 'value',
-            },
-            {
-                type: Keyword,
-                value: '보여주기',
-            },
-        ],
-    },
-    {
-        to: Loop,
-        pattern: [
-            {
-                type: Keyword,
-                value: '반복',
-            },
-            {
-                type: EOL,
-            },
-            {
-                type: Block,
-                as: 'body',
-            },
-        ],
-    },
-    {
-        to: Break,
-        pattern: [
-            {
-                type: Keyword,
-                value: '반복',
-            },
-            {
-                type: Keyword,
-                value: '그만',
-            },
-        ],
-    },
-    {
-        to: Return,
-        pattern: [
-            {
-                type: Keyword,
-                value: '약속',
-            },
-            {
-                type: Keyword,
-                value: '그만',
-            },
-        ],
-    },
+export const internalPatternsByLevel: Rule[][] = [
+    [
+        {
+            to: Indexing,
+            pattern: [
+                {
+                    type: Expression,
+                    value: '[',
+                },
+                {
+                    type: Evaluable,
+                    as: 'index',
+                },
+                {
+                    type: Expression,
+                    value: ']',
+                },
+            ],
+        },
+        {
+            to: IndexFetch,
+            pattern: [
+                {
+                    type: Evaluable,
+                    as: 'target',
+                },
+                {
+                    type: Indexing,
+                    as: 'index',
+                },
+            ],
+        },
+    ],
+    [
+        {
+            to: EqualOperator,
+            pattern: [
+                {
+                    type: Operator,
+                    value: '=',
+                },
+            ],
+        },
+        {
+            to: Sequence,
+            pattern: [
+                {
+                    type: Evaluable,
+                    as: 'a',
+                },
+                {
+                    type: Expression,
+                    value: ',',
+                },
+                {
+                    type: Evaluable,
+                    as: 'b',
+                },
+            ],
+        },
+        {
+            to: List,
+            pattern: [
+                {
+                    type: Expression,
+                    value: '[',
+                },
+                {
+                    type: Sequence,
+                    as: 'sequence',
+                },
+                {
+                    type: Expression,
+                    value: ']',
+                },
+            ],
+        },
+        {
+            to: List,
+            pattern: [
+                {
+                    type: Expression,
+                    value: '[',
+                },
+                {
+                    type: Expression,
+                    value: ']',
+                },
+            ],
+        },
+        {
+            to: SetToIndex,
+            pattern: [
+                {
+                    type: IndexFetch,
+                    as: 'target',
+                },
+                {
+                    type: Expression,
+                    value: ':',
+                },
+                {
+                    type: Evaluable,
+                    as: 'value',
+                },
+            ],
+        },
+        {
+            to: ValueGroup,
+            pattern: [
+                {
+                    type: Expression,
+                    value: '(',
+                },
+                {
+                    type: Evaluable,
+                    as: 'value',
+                },
+                {
+                    type: Expression,
+                    value: ')',
+                },
+            ],
+        },
+        {
+            to: GreaterThanOperator,
+            pattern: [
+                {
+                    type: Operator,
+                    value: '>',
+                },
+            ],
+        },
+        {
+            to: GreaterThanOrEqualOperator,
+            pattern: [
+                {
+                    type: GreaterThanOperator,
+                },
+                {
+                    type: EqualOperator,
+                },
+            ],
+        },
+        {
+            to: LessThanOperator,
+            pattern: [
+                {
+                    type: Operator,
+                    value: '<',
+                },
+            ],
+        },
+        {
+            to: LessThanOrEqualOperator,
+            pattern: [
+                {
+                    type: LessThanOperator,
+                },
+                {
+                    type: EqualOperator,
+                },
+            ],
+        },
+        {
+            to: Variable,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '이전',
+                },
+                {
+                    type: Variable,
+                    as: 'name',
+                },
+            ],
+        },
+        {
+            to: SetVariable,
+            pattern: [
+                {
+                    type: Variable,
+                    as: 'name',
+                },
+                {
+                    type: Expression,
+                    value: ':',
+                },
+                {
+                    type: Evaluable,
+                    as: 'value',
+                },
+                {
+                    type: EOL,
+                },
+            ],
+        },
+        {
+            to: DivideOperator,
+            pattern: [
+                {
+                    type: Operator,
+                    value: '/',
+                },
+            ],
+        },
+        {
+            to: MultiplyOperator,
+            pattern: [
+                {
+                    type: Operator,
+                    value: '*',
+                },
+            ],
+        },
+        {
+            to: PlusOperator,
+            pattern: [
+                {
+                    type: Operator,
+                    value: '+',
+                },
+            ],
+        },
+        {
+            to: MinusOperator,
+            pattern: [
+                {
+                    type: Operator,
+                    value: '-',
+                },
+            ],
+        },
+        {
+            to: AndOperator,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '이고',
+                },
+            ],
+        },
+        {
+            to: RangeOperator,
+            pattern: [
+                {
+                    type: Operator,
+                    value: '~',
+                },
+            ],
+        },
+        {
+            to: IfStatement,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '만약',
+                },
+                {
+                    type: Evaluable,
+                    as: 'condition',
+                },
+                {
+                    type: Keyword,
+                    value: '이면',
+                },
+                {
+                    type: EOL,
+                },
+                {
+                    type: Block,
+                    as: 'body',
+                },
+            ],
+        },
+        {
+            to: IfStatement,
+            pattern: [
+                {
+                    type: IfStatement,
+                    as: 'ifBody',
+                },
+                {
+                    type: Keyword,
+                    value: '아니면',
+                },
+                {
+                    type: EOL,
+                },
+                {
+                    type: Block,
+                    as: 'elseBody',
+                },
+            ],
+        },
+        {
+            to: Print,
+            pattern: [
+                {
+                    type: Evaluable,
+                    as: 'value',
+                },
+                {
+                    type: Keyword,
+                    value: '보여주기',
+                },
+            ],
+        },
+        {
+            to: Loop,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '반복',
+                },
+                {
+                    type: EOL,
+                },
+                {
+                    type: Block,
+                    as: 'body',
+                },
+            ],
+        },
+        {
+            to: Break,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '반복',
+                },
+                {
+                    type: Keyword,
+                    value: '그만',
+                },
+            ],
+        },
+        {
+            to: Return,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '약속',
+                },
+                {
+                    type: Keyword,
+                    value: '그만',
+                },
+            ],
+        },
+        {
+            to: ListLoop,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '반복',
+                },
+                {
+                    type: Evaluable,
+                    as: 'list',
+                },
+                {
+                    type: Keyword,
+                    value: '의',
+                },
+                {
+                    type: Variable,
+                    as: 'name',
+                },
+                {
+                    type: Keyword,
+                    value: '마다',
+                },
+                {
+                    type: EOL,
+                },
+                {
+                    type: Block,
+                    as: 'body',
+                },
+            ],
+        },
+        {
+            to: Formula,
+            pattern: [
+                {
+                    type: Evaluable,
+                    as: 'left',
+                },
+                {
+                    type: Operator,
+                    as: 'operator',
+                },
+                {
+                    type: Evaluable,
+                    as: 'right',
+                },
+            ],
+        },
+    ],
 ]

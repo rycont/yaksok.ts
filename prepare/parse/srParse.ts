@@ -1,11 +1,13 @@
 import { satisfiesPattern } from './satisfiesPattern.ts'
-import { Rule, internalPatterns } from './rule.ts'
+import { Rule, internalPatternsByLevel } from './rule.ts'
 
 import { Block, EOL, Node } from '../../node/index.ts'
 
-export function SRParse(tokens: Node[], patterns: Rule[]) {
+export function SRParse(_tokens: Node[], rules: Rule[]) {
+    const tokens = [..._tokens]
     const stack: Node[] = []
-    const rules = [...internalPatterns, ...patterns]
+
+    let changed = false
 
     tokenloop: while (true) {
         for (const rule of rules) {
@@ -14,29 +16,41 @@ export function SRParse(tokens: Node[], patterns: Rule[]) {
             const stackSlice = stack.slice(-rule.pattern.length)
             const isSatisfies = satisfiesPattern(stackSlice, rule.pattern)
 
-            if (isSatisfies) {
-                const args: Record<string, unknown> = { ...rule.config } || {}
-                let hasArgs = rule.config ? true : undefined
-                for (let i = 0; i < rule.pattern.length; i++) {
-                    const pattern = rule.pattern[i]
-                    if (pattern.as) {
-                        args[pattern.as] = stackSlice[i]
-                        hasArgs = true
-                    }
-                }
+            if (!isSatisfies) continue
+            const reduced = reduce(stackSlice, rule)
 
-                stack.splice(-rule.pattern.length, rule.pattern.length)
-                stack.push(new rule.to(hasArgs && args))
+            stack.splice(-rule.pattern.length, rule.pattern.length, reduced)
 
-                continue tokenloop
-            }
+            changed = true
+
+            continue tokenloop
         }
 
         if (tokens.length === 0) break
         stack.push(tokens.shift()!)
     }
 
-    return stack
+    return {
+        changed,
+        tokens: stack,
+    }
+}
+
+export function reduce(tokens: Node[], rule: Rule) {
+    const args: Record<string, unknown> = { ...rule.config } || {}
+    let hasArgs = rule.config ? true : undefined
+
+    for (let i = 0; i < rule.pattern.length; i++) {
+        const pattern = rule.pattern[i]
+
+        if (!pattern.as) continue
+
+        args[pattern.as] = tokens[i]
+        hasArgs = true
+    }
+
+    const reduced = new rule.to(hasArgs && args)
+    return reduced
 }
 
 export function callParseRecursively(_tokens: Node[], patterns: Rule[]) {
@@ -45,12 +59,31 @@ export function callParseRecursively(_tokens: Node[], patterns: Rule[]) {
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
 
-        if (token instanceof Block) {
-            tokens[i] = callParseRecursively(token.children, patterns)
-        }
+        if (!(token instanceof Block)) continue
+        tokens[i] = callParseRecursively(token.children, patterns)
     }
 
     tokens.push(new EOL())
-    const matchedTokens = SRParse(tokens, patterns)
-    return new Block(matchedTokens)
+
+    let parsedTokens: Node[] = tokens
+
+    while (true) {
+        let changed = false
+
+        for (const internalPatterns of internalPatternsByLevel) {
+            const result = SRParse(parsedTokens, [
+                ...internalPatterns,
+                ...patterns,
+            ])
+
+            if (!result.changed) continue
+
+            changed = true
+            parsedTokens = result.tokens
+        }
+
+        if (!changed) break
+    }
+
+    return new Block(parsedTokens)
 }
