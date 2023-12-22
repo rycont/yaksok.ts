@@ -2,6 +2,7 @@ import { Evaluable } from './index.ts'
 
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
+import { Position } from './base.ts'
 
 export class PrimitiveValue<T> extends Evaluable {
     value: T
@@ -17,12 +18,20 @@ export class PrimitiveValue<T> extends Evaluable {
 }
 
 export class NumberValue extends PrimitiveValue<number> {
+    constructor(content: number, public position?: Position) {
+        super(content)
+    }
+
     toPrint() {
         return this.value.toString()
     }
 }
 
 export class StringValue extends PrimitiveValue<string> {
+    constructor(content: string, public position?: Position) {
+        super(content)
+    }
+
     toPrint() {
         return this.value
     }

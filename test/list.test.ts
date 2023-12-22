@@ -28,7 +28,7 @@ Deno.test('Parse list', async (context) => {
     const code = `
 목록: [1, 3, 5, 7, 9]
 `
-    const result = tokenize(code)
+    const result = tokenize(code, true)
 
     await context.step('Tokenize', () => {
         assertEquals(result.tokens, [
@@ -110,7 +110,7 @@ Deno.test('Get list element', () => {
 세번째: 목록[번째]
 `
 
-    const result = run(parse(tokenize(code)))
+    const result = run(parse(tokenize(code, true)))
 
     assertEquals(result.getVariable('첫번째'), new NumberValue(1))
     assertEquals(result.getVariable('세번째'), new NumberValue(5))
@@ -388,7 +388,7 @@ Deno.test('Sequence toPrint', () => {
 
 Deno.test('Evaluate Sequence', () => {
     const code = `1, 3, 5, 7, 9`
-    const tree = parse(tokenize(code))
+    const tree = parse(tokenize(code, true))
     const sequence = tree.children[1] as Sequence
 
     const result = sequence.execute(new Scope(), new CallFrame(sequence))

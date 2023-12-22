@@ -31,7 +31,7 @@ import { YaksokError } from '../errors.ts'
 Deno.test('Parse Binary Operation', () => {
     const code = `1 + 1`
 
-    const { tokens } = tokenize(code)
+    const { tokens } = tokenize(code, true)
 
     assertEquals(tokens, [
         new EOL(),
@@ -45,7 +45,7 @@ Deno.test('Parse Binary Operation', () => {
 Deno.test('Parse Binary Operation with Parentheses', () => {
     const code = `(1 + 1) * 2`
 
-    const { tokens } = tokenize(code)
+    const { tokens } = tokenize(code, true)
 
     assertEquals(tokens, [
         new EOL(),
@@ -65,7 +65,7 @@ Deno.test('Run Binary Operation', () => {
 계산: 1 + 1
 `
 
-    const result = tokenize(code)
+    const result = tokenize(code, true)
 
     assertEquals(result.tokens, [
         new EOL(),

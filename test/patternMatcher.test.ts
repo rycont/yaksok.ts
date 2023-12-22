@@ -18,7 +18,7 @@ Deno.test('Matching case: Wrapping class inherits from child class', () => {
 이름: "홍길" + "동"    
 `
 
-    const result = parse(tokenize(code))
+    const result = parse(tokenize(code, true))
 
     assertEquals(
         result,

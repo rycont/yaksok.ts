@@ -13,7 +13,7 @@ Deno.test('If statement', () => {
 `
 
     const result = run(parse(tokenize(code)))
-    assertEquals(result.getVariable('비교값'), new StringValue('같음'))
+    assertEquals(result.getVariable('비교값').value, '같음')
 })
 
 Deno.test('If-else statement', () => {
@@ -26,5 +26,5 @@ Deno.test('If-else statement', () => {
 `
 
     const result = run(parse(tokenize(code)))
-    assertEquals(result.getVariable('비교값'), new StringValue('여전히 다름'))
+    assertEquals(result.getVariable('비교값').value, '여전히 다름')
 })

@@ -51,12 +51,12 @@ Deno.test('Determine validity as a keyword char of "_"', () => {
 })
 
 Deno.test('Tokenize Number', () => {
-    const { tokens } = tokenize('1')
+    const { tokens } = tokenize('1', true)
     assertEquals(tokens, [new EOL(), new NumberValue(1), new EOL()])
 })
 
 Deno.test('Tokenize Binary Operation', () => {
-    const { tokens } = tokenize('1 + 2')
+    const { tokens } = tokenize('1 + 2', true)
     assertEquals(tokens, [
         new EOL(),
         new NumberValue(1),
@@ -67,7 +67,7 @@ Deno.test('Tokenize Binary Operation', () => {
 })
 
 Deno.test('Tokenize Complex Formula', () => {
-    const { tokens } = tokenize('1 + 2 * 3 / 4')
+    const { tokens } = tokenize('1 + 2 * 3 / 4', true)
     assertEquals(tokens, [
         new EOL(),
         new NumberValue(1),
@@ -82,7 +82,7 @@ Deno.test('Tokenize Complex Formula', () => {
 })
 
 Deno.test('Tokenize Formula and Keyword', () => {
-    const { tokens } = tokenize('1 + 2 보여주기')
+    const { tokens } = tokenize('1 + 2 보여주기', true)
     assertEquals(tokens, [
         new EOL(),
         new NumberValue(1),
@@ -94,9 +94,12 @@ Deno.test('Tokenize Formula and Keyword', () => {
 })
 
 Deno.test('Tokenize Formula and Keyword and EOL', () => {
-    const { tokens } = tokenize(`
+    const { tokens } = tokenize(
+        `
 1 + 2 보여주기
-`)
+`,
+        true,
+    )
     assertEquals(tokens, [
         new EOL(),
         new NumberValue(1),
@@ -108,7 +111,7 @@ Deno.test('Tokenize Formula and Keyword and EOL', () => {
 })
 
 Deno.test('Tokenize Variable Declaration with Constant', () => {
-    const { tokens } = tokenize('이름: "김철수"')
+    const { tokens } = tokenize('이름: "김철수"', true)
 
     assertEquals(tokens, [
         new EOL(),
@@ -121,7 +124,7 @@ Deno.test('Tokenize Variable Declaration with Constant', () => {
 
 Deno.test('Tokenize Variable Declaration with Wierd Name', async (context) => {
     await context.step('_이름', () => {
-        const { tokens } = tokenize('_이름: "김철수"')
+        const { tokens } = tokenize('_이름: "김철수"', true)
 
         assertEquals(tokens, [
             new EOL(),
@@ -133,7 +136,7 @@ Deno.test('Tokenize Variable Declaration with Wierd Name', async (context) => {
     })
 
     await context.step('이_름', () => {
-        const { tokens } = tokenize('이_름: "김철수"')
+        const { tokens } = tokenize('이_름: "김철수"', true)
 
         assertEquals(tokens, [
             new EOL(),
@@ -145,7 +148,7 @@ Deno.test('Tokenize Variable Declaration with Wierd Name', async (context) => {
     })
 
     await context.step('NiceName', () => {
-        const { tokens } = tokenize('NiceName: "김철수"')
+        const { tokens } = tokenize('NiceName: "김철수"', true)
 
         assertEquals(tokens, [
             new EOL(),
@@ -157,7 +160,7 @@ Deno.test('Tokenize Variable Declaration with Wierd Name', async (context) => {
     })
 
     await context.step('what', () => {
-        const { tokens } = tokenize('what: "김철수"')
+        const { tokens } = tokenize('what: "김철수"', true)
 
         assertEquals(tokens, [
             new EOL(),
@@ -169,7 +172,7 @@ Deno.test('Tokenize Variable Declaration with Wierd Name', async (context) => {
     })
 
     await context.step('실0패', () => {
-        const { tokens } = tokenize('실0패')
+        const { tokens } = tokenize('실0패', true)
         assertEquals(tokens, [new EOL(), new Keyword('실0패'), new EOL()])
     })
 
@@ -185,7 +188,7 @@ Deno.test('Tokenize Variable Declaration with Wierd Name', async (context) => {
 })
 
 Deno.test('Tokenize Variable Declaration with Formula', () => {
-    const { tokens } = tokenize('이름: "김" + "철수"')
+    const { tokens } = tokenize('이름: "김" + "철수"', true)
 
     assertEquals(tokens, [
         new EOL(),
@@ -204,7 +207,7 @@ Deno.test('Tokenize Variable Declaration with Variable', () => {
 내년_나이: 나이 + 1
 `.trim()
 
-    const { tokens } = tokenize(code)
+    const { tokens } = tokenize(code, true)
 
     assertEquals(tokens, [
         new EOL(),
@@ -227,7 +230,7 @@ Deno.test('Tokenize Function Declaration with Multiple Parameter', () => {
     메시지 + ", " + 이름 + "!" 보여주기
 `.trim()
 
-    const { tokens } = tokenize(code)
+    const { tokens } = tokenize(code, true)
 
     assertEquals(tokens, [
         new EOL(),
@@ -256,7 +259,7 @@ Deno.test('Tokenize Comment', () => {
 # 이것도 주석입니다
 `.trim()
 
-    const { tokens } = tokenize(code)
+    const { tokens } = tokenize(code, true)
 
     assertEquals(tokens, [
         new EOL(),
@@ -290,7 +293,7 @@ Deno.test('Tokenize Consecutive LineBreak', () => {
 내년_나이: 나이 + 1
 `.trim()
 
-    const { tokens } = tokenize(code)
+    const { tokens } = tokenize(code, true)
 
     assertEquals(tokens, [
         new EOL(),
@@ -316,7 +319,7 @@ Deno.test('Tokenize number include dot', () => {
 나이: 10.5
 `.trim()
 
-    const { tokens } = tokenize(code)
+    const { tokens } = tokenize(code, true)
 
     assertEquals(tokens, [
         new EOL(),
@@ -332,7 +335,7 @@ Deno.test('Tokenize Negative Numbers', () => {
 나이: -10.5
 `.trim()
 
-    const { tokens } = tokenize(code)
+    const { tokens } = tokenize(code, true)
 
     assertEquals(tokens, [
         new EOL(),

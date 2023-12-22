@@ -18,7 +18,7 @@ Deno.test('Parse Loop', () => {
 반복
     "Hello, World!" 보여주기
 `
-    const node = parse(tokenize(code))
+    const node = parse(tokenize(code, true))
 
     assertEquals(
         node,

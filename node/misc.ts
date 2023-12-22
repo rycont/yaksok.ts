@@ -1,22 +1,24 @@
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
 
-import { Node, Executable, Evaluable } from './base.ts'
+import { Node, Executable, Evaluable, Position } from './base.ts'
 
-export class EOL extends Node {}
+export class EOL extends Node {
+    constructor(public position?: Position) {
+        super()
+    }
+}
 
 export class Indent extends Node {
-    size: number
-    constructor(size: number) {
+    constructor(public size: number, public position?: Position) {
         super()
-        this.size = size
     }
 }
 
 export class Print extends Executable {
     value: Evaluable
 
-    constructor(props: { value: Evaluable }) {
+    constructor(props: { value: Evaluable }, public position?: Position) {
         super()
         this.value = props.value
     }

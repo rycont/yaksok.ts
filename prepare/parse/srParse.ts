@@ -50,6 +50,8 @@ export function reduce(tokens: Node[], rule: Rule) {
     }
 
     const reduced = new rule.to(hasArgs && args)
+    reduced.position = tokens[0].position
+
     return reduced
 }
 

@@ -20,7 +20,7 @@ Deno.test('Parse with indent', () => {
     값: 3
 `
 
-    const result = parse(tokenize(code))
+    const result = parse(tokenize(code, true))
 
     assertEquals(
         result,

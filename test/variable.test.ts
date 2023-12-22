@@ -16,7 +16,7 @@ import { YaksokError } from '../errors.ts'
 import { Formula } from '../node/calculation.ts'
 
 Deno.test('Parse Variable', () => {
-    const node = parse(tokenize('이름: 1'))
+    const node = parse(tokenize('이름: 1', true))
 
     assertEquals(
         node,
@@ -36,7 +36,7 @@ Deno.test('Parse variable with 이전 keyword', () => {
 나이: 1
 나이: 이전 나이 + 1    
 `
-    const node = parse(tokenize(code))
+    const node = parse(tokenize(code, true))
 
     assertEquals(
         node,
