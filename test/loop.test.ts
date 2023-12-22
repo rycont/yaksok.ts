@@ -1,4 +1,4 @@
-import { assertEquals, unreachable } from 'assert'
+import { assertEquals, assertIsError, unreachable } from 'assert'
 import { tokenize } from '../prepare/tokenize/index.ts'
 
 import { parse } from '../prepare/parse/index.ts'
@@ -11,6 +11,7 @@ import {
     StringValue,
 } from '../node/index.ts'
 import { run } from '../runtime/run.ts'
+import { YaksokError } from '../errors.ts'
 
 Deno.test('Parse Loop', () => {
     const code = `
@@ -44,10 +45,21 @@ Deno.test('Run loop', () => {
     만약 횟수 = 11 이면
         반복 그만
 `
+    const result = run(parse(tokenize(code)))
+    assertEquals(result.getVariable('횟수'), new NumberValue(11))
+})
+
+Deno.test('Break outside loop', () => {
+    const code = `
+횟수: 500
+반복 그만
+`
+
     try {
-        const result = run(parse(tokenize(code)))
-        assertEquals(result.getVariable('횟수'), new NumberValue(11))
-    } catch (_) {
+        run(parse(tokenize(code)))
         unreachable()
+    } catch (e) {
+        assertIsError(e, YaksokError)
+        assertEquals(e.name, 'BREAK_NOT_IN_LOOP')
     }
 })
