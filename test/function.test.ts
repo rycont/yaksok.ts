@@ -19,7 +19,6 @@ import {
     FunctionMustHaveNameError,
     NotEvaluableParameterError,
 } from '../error/index.ts'
-import { printError } from '../error/printError.ts'
 import { yaksok } from '../index.ts'
 import { CannotParseError } from '../error/prepare.ts'
 
