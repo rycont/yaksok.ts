@@ -1,0 +1,38 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow will install Deno then run `deno lint` and `deno test`.
+# For more information see: https://github.com/denoland/setup-deno
+
+name: Deploy
+
+on:
+    push:
+        tags:
+            - '*'
+
+permissions:
+    contents: read
+
+jobs:
+    Deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Setup repo
+              uses: actions/checkout@v3
+
+            - name: Setup Deno
+              uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31
+              with:
+                  deno-version: v1.x
+
+            - name: Run build
+              run: deno run --allow-read --allow-write --allow-net --allow-env build.ts > yaksok.js
+
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  files: yaksok.js
