@@ -1,11 +1,14 @@
 import { YaksokError } from '../errors.ts'
 import { Block } from '../node/index.ts'
 import { Scope } from '../runtime/scope.ts'
+import { CallFrame } from './callFrame.ts'
 import { BREAK, RETURN } from './signals.ts'
 
-export function run(block: Block, scope = new Scope()) {
+export function run(block: Block, scope = new Scope(), code: string) {
+    const callFrame = new CallFrame(block, undefined, code)
+
     try {
-        block.execute(scope)
+        block.execute(scope, callFrame)
     } catch (e) {
         switch (e) {
             case RETURN:

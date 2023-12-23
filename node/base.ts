@@ -17,11 +17,16 @@ export interface Position {
 export class Node {
     [key: string]: unknown
     position?: Position
+
     toJSON() {
         return {
             type: this.constructor.name,
             ...this,
         }
+    }
+
+    toPrint(): string {
+        throw new Error(`${this.constructor.name} has no toPrint method`)
     }
 }
 export class Executable extends Node {
@@ -42,6 +47,9 @@ export class Evaluable extends Executable {
 export class Keyword extends Node {
     constructor(public value: string, public position?: Position) {
         super()
+    }
+    toPrint() {
+        return this.value
     }
 }
 

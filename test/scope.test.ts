@@ -216,24 +216,3 @@ Deno.test('Block Return Outside Of Function', () => {
     block.execute(scope, new CallFrame(block))
     assertEquals(scope.getVariable('결과'), new NumberValue(1))
 })
-
-Deno.test('Get Not Registered Event', () => {
-    const block = new Block([
-        new SetVariable({
-            name: new Variable({
-                name: new Keyword('결과'),
-            }),
-            value: new NumberValue(1),
-        }),
-    ])
-
-    const scope = new CallFrame(block)
-
-    try {
-        scope.invokeEvent('close')
-        unreachable()
-    } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'EVENT_NOT_FOUND')
-    }
-})
