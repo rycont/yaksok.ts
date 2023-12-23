@@ -30,6 +30,7 @@ import {
     InvalidNumberOfOperandsError,
     InvalidTypeForOperatorError,
 } from '../error/index.ts'
+import { InvalidTypeForCompareError } from '../error/calculation.ts'
 
 Deno.test('Parse Binary Operation', () => {
     const code = `1 + 1`
@@ -184,7 +185,7 @@ Deno.test('Operator String and String', async (context) => {
         try {
             run(parse(tokenize(code)))
         } catch (e) {
-            assertIsError(e, InvalidTypeForOperatorError)
+            assertIsError(e, InvalidTypeForCompareError)
         }
     })
 
@@ -195,7 +196,7 @@ Deno.test('Operator String and String', async (context) => {
         try {
             run(parse(tokenize(code)))
         } catch (e) {
-            assertIsError(e, InvalidTypeForOperatorError)
+            assertIsError(e, InvalidTypeForCompareError)
         }
     })
 
@@ -207,7 +208,7 @@ Deno.test('Operator String and String', async (context) => {
         try {
             run(parse(tokenize(code)))
         } catch (e) {
-            assertIsError(e, InvalidTypeForOperatorError)
+            assertIsError(e, InvalidTypeForCompareError)
         }
     })
 
@@ -219,7 +220,7 @@ Deno.test('Operator String and String', async (context) => {
         try {
             run(parse(tokenize(code)))
         } catch (e) {
-            assertIsError(e, InvalidTypeForOperatorError)
+            assertIsError(e, InvalidTypeForCompareError)
         }
     })
 })

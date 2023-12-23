@@ -169,15 +169,7 @@ export class Tokenizer {
 
         while (true) {
             const nextChar = this.shift()
-
             if (nextChar === '"') break
-            if (!nextChar)
-                throw new UnexpectedEndOfCodeError({
-                    position: this.position,
-                    resource: {
-                        parts: '문자열',
-                    },
-                })
 
             word += nextChar
         }

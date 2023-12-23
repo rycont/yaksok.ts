@@ -19,7 +19,9 @@ import {
     FunctionMustHaveNameError,
     NotEvaluableParameterError,
 } from '../error/index.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
+import { printError } from '../printError.ts'
+import { yaksok } from '../index.ts'
+import { CannotParseError } from '../error/prepare.ts'
 
 Deno.test('Function that returns value', () => {
     const code = `
@@ -75,9 +77,10 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
         } as unknown as Record<string, Evaluable> & { name: string })
 
         try {
-            functionInvokation.execute(scope, new CallFrame(functionInvokation))
+            run(new Block([functionInvokation]), scope)
             unreachable()
         } catch (e) {
+            printError(e)
             assertIsError(e, NotEvaluableParameterError)
         }
     })
@@ -105,5 +108,20 @@ Deno.test('Return outside function', () => {
         unreachable()
     } catch (e) {
         assertIsError(e, CannotReturnOutsideFunctionError)
+    }
+})
+
+Deno.test('Function with broken body', () => {
+    const code = `
+약속 "숫자보여주기"
+    숫자 보여주 기
+    
+숫자보여주기
+        `
+    try {
+        yaksok(code)
+        unreachable()
+    } catch (e) {
+        assertIsError(e, CannotParseError)
     }
 })

@@ -14,6 +14,8 @@ import {
 import { run } from '../runtime/run.ts'
 import { CannotUseReservedWordForVariableNameError } from '../error/index.ts'
 import { Formula } from '../node/calculation.ts'
+import { Print } from '../node/misc.ts'
+import { NotDefinedVariableError } from '../error/variable.ts'
 
 Deno.test('Parse Variable', () => {
     const node = parse(tokenize('이름: 1', true))
@@ -76,5 +78,21 @@ Deno.test('Reserved word cannot be used as variable name', () => {
         unreachable()
     } catch (e) {
         assertIsError(e, CannotUseReservedWordForVariableNameError)
+    }
+})
+
+Deno.test("Get not defined variable's value", () => {
+    const ast = new Block([
+        new Print({
+            value: new Variable({ name: new Keyword('나이') }),
+        }),
+    ])
+
+    try {
+        run(ast)
+        unreachable()
+    } catch (e) {
+        assertIsError(e, NotDefinedVariableError)
+        assertEquals(e.resource?.name, '나이')
     }
 })

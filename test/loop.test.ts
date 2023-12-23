@@ -12,6 +12,8 @@ import {
 } from '../node/index.ts'
 import { run } from '../runtime/run.ts'
 import { BreakNotInLoopError } from '../error/index.ts'
+import { yaksok } from '../index.ts'
+import { CannotParseError } from '../error/prepare.ts'
 
 Deno.test('Parse Loop', () => {
     const code = `
@@ -60,5 +62,18 @@ Deno.test('Break outside loop', () => {
         unreachable()
     } catch (e) {
         assertIsError(e, BreakNotInLoopError)
+    }
+})
+
+Deno.test('Loop with broken body', () => {
+    const code = `
+반복
+    숫자 보여주 기
+        `
+    try {
+        yaksok(code)
+        unreachable()
+    } catch (e) {
+        assertIsError(e, CannotParseError)
     }
 })

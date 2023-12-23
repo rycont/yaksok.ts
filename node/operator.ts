@@ -1,3 +1,4 @@
+import { InvalidTypeForCompareError } from '../error/calculation.ts'
 import {
     InvalidNumberOfOperandsError,
     InvalidTypeForOperatorError,
@@ -236,11 +237,11 @@ export class GreaterThanOperator extends Operator {
             return new BooleanValue(left.value > right.value)
         }
 
-        throw new InvalidTypeForOperatorError({
+        throw new InvalidTypeForCompareError({
             position: this.position,
             resource: {
-                operator: this,
-                operands,
+                left,
+                right,
             },
         })
     }
@@ -265,11 +266,11 @@ export class LessThanOperator extends Operator {
             return new BooleanValue(left.value < right.value)
         }
 
-        throw new InvalidTypeForOperatorError({
+        throw new InvalidTypeForCompareError({
             position: this.position,
             resource: {
-                operator: this,
-                operands,
+                left,
+                right,
             },
         })
     }
@@ -294,11 +295,11 @@ export class GreaterThanOrEqualOperator extends Operator {
             return new BooleanValue(left.value >= right.value)
         }
 
-        throw new InvalidTypeForOperatorError({
+        throw new InvalidTypeForCompareError({
             position: this.position,
             resource: {
-                operator: this,
-                operands,
+                left,
+                right,
             },
         })
     }
@@ -323,11 +324,11 @@ export class LessThanOrEqualOperator extends Operator {
             return new BooleanValue(left.value <= right.value)
         }
 
-        throw new InvalidTypeForOperatorError({
+        throw new InvalidTypeForCompareError({
             position: this.position,
             resource: {
-                operator: this,
-                operands,
+                left,
+                right,
             },
         })
     }

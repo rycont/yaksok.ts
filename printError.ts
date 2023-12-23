@@ -1,7 +1,7 @@
 import { YaksokError, bold } from './error/common.ts'
 import { Position } from './node/base.ts'
 
-export function printError(error: YaksokError, code: string) {
+export function printError(error: YaksokError, code?: string) {
     console.error('─────\n')
     console.error(`🚨  ${bold(`문제가 발생했어요`)}  🚨`)
 
@@ -11,9 +11,9 @@ export function printError(error: YaksokError, code: string) {
         )
     console.error('> ' + error.message + '\n')
 
-    console.error('┌─────')
-    if (!error.position) return
+    if (!code || !error.position) return
 
+    console.error('┌─────')
     printHintCode(error.position, code)
     console.error('└─────')
 }
