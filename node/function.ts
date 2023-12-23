@@ -6,7 +6,7 @@ import {
     NotDefinedFunctionError,
     NotDefinedVariableError,
     NotEvaluableParameterError,
-} from '../errors/index.ts'
+} from '../error/index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { NumberValue } from './primitive.ts'
 import { Block } from './block.ts'

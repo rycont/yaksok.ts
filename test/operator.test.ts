@@ -29,7 +29,7 @@ import { run } from '../runtime/run.ts'
 import {
     InvalidNumberOfOperandsError,
     InvalidTypeForOperatorError,
-} from '../errors/index.ts'
+} from '../error/index.ts'
 
 Deno.test('Parse Binary Operation', () => {
     const code = `1 + 1`

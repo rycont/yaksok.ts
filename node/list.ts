@@ -14,7 +14,7 @@ import {
     RangeStartMustBeLessThanEndError,
     RangeStartMustBeNumberError,
     TargetIsNotIndexedValueError,
-} from '../errors/index.ts'
+} from '../error/index.ts'
 
 export class Sequence extends Evaluable {
     items: Evaluable[]

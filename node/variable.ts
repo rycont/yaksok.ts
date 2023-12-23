@@ -5,7 +5,7 @@ import { Scope } from '../runtime/scope.ts'
 import {
     CannotUseReservedWordForVariableNameError,
     NotDefinedVariableError,
-} from '../errors/index.ts'
+} from '../error/index.ts'
 
 export class Variable extends Evaluable {
     name: string

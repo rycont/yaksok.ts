@@ -2,7 +2,7 @@ import { DeclareFunction, ValueTypes } from '../node/index.ts'
 import {
     NotDefinedFunctionError,
     NotDefinedVariableError,
-} from '../errors/index.ts'
+} from '../error/index.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>

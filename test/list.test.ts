@@ -29,7 +29,7 @@ import {
     RangeStartMustBeLessThanEndError,
     RangeStartMustBeNumberError,
     TargetIsNotIndexedValueError,
-} from '../errors/index.ts'
+} from '../error/index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Formula } from '../node/calculation.ts'

@@ -1,8 +1,7 @@
 import { yaksok } from './index.ts'
 
 yaksok(
-    `
-이름: "재현" / 2
+    `이름: "재현" / 2
 이름 보여주기
 
 목록: [3, 1, 4, 1, 5, 9]

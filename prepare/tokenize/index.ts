@@ -2,7 +2,7 @@ import {
     IndentIsNotMultipleOf4Error,
     UnexpectedCharError,
     UnexpectedEndOfCodeError,
-} from '../../errors/index.ts'
+} from '../../error/index.ts'
 import {
     Expression,
     Operator,
@@ -24,8 +24,8 @@ export class Tokenizer {
     tokens: Node[] = []
     chars: string[]
 
-    line = 1
-    column = 1
+    line = 0
+    column = 0
 
     static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~']
     static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')']
@@ -206,7 +206,7 @@ export class Tokenizer {
     }
 
     preprocess(code: string) {
-        const trimmed = '\n' + code.trim() + '\n'
+        const trimmed = '\n' + code + '\n'
         return [...trimmed]
     }
 

@@ -3,7 +3,7 @@ import { parse } from '../prepare/parse/index.ts'
 
 import { run } from '../runtime/run.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
-import { UnexpectedTokenError } from '../errors/index.ts'
+import { UnexpectedTokenError } from '../error/index.ts'
 
 Deno.test('Function Josa Variants', () => {
     const code = `

@@ -1,4 +1,4 @@
-import { UnexpectedTokenError } from '../../../errors/index.ts'
+import { UnexpectedTokenError } from '../../../error/index.ts'
 import { PatternUnit, Rule } from '../rule.ts'
 import {
     Block,

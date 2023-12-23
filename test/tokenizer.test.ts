@@ -13,7 +13,7 @@ import {
     IndentIsNotMultipleOf4Error,
     UnexpectedCharError,
     UnexpectedEndOfCodeError,
-} from '../errors/index.ts'
+} from '../error/index.ts'
 import {
     isValidFirstCharForKeyword,
     isValidCharForKeyword,

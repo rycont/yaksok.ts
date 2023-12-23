@@ -1,7 +1,7 @@
 import {
     ListNotEvaluatedError,
     NotEnumerableValueForListLoopError,
-} from '../errors/index.ts'
+} from '../error/index.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
 import { BreakSignal } from '../runtime/signals.ts'

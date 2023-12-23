@@ -1,7 +1,7 @@
 import {
     InvalidNumberOfOperandsError,
     InvalidTypeForOperatorError,
-} from '../errors/index.ts'
+} from '../error/index.ts'
 import { Operator, ValueTypes } from './base.ts'
 import {
     BooleanValue,
