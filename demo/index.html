@@ -1,77 +1,94 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Yaksok.ts</title>
-    <meta
-      property="og:description"
-      content="한글 프로그래밍 언어 '약속'의 TypeScript 구현체"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
-    />
-    <style>
-      * {
-          font-family: 'SUIT', sans-serif;
-      }
-      pre code {
-          font-feature-settings: 'tnum';
-          font-variant-numeric: tabular-nums;
-      }
-      .h {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-      }
-    </style>
-  </head>
-  <body>
-    <a href="https://github.com/rycont/yaksok.ts">See also on GitHub!</a>
-    <h1>Yaksok.ts</h1>
-    <p>
-      아직 런타임이 불안정합니다. 실행되지 않는 코드가 있다면
-      <a href="https://github.com/rycont/yaksok.ts/issues"
-        >이슈를 남겨주세요!</a
-      >
-    </p>
-    <h2>직접 짜보기</h2>
-    <textarea id="input" rows="10"></textarea>
-    <button id="run">Run!</button>
-    <h2>출력</h2>
-    <blockquote>코드를 입력하고 실행 버튼을 눌러보세요.</blockquote>
-    <script type="module">
-      import { yaksok } from "../yaksok.js";
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Yaksok.ts</title>
+        <meta
+            property="og:description"
+            content="한글 프로그래밍 언어 '약속'의 TypeScript 구현체"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
+        />
+        <style>
+            *,
+            textarea {
+                font-family: 'SUIT', sans-serif;
+            }
+            pre code {
+                font-feature-settings: 'tnum';
+                font-variant-numeric: tabular-nums;
+            }
+            .h {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <a href="https://github.com/rycont/yaksok.ts">See also on GitHub!</a>
+        <h1>Yaksok.ts</h1>
+        <p>
+            아직 런타임이 불안정합니다. 실행되지 않는 코드가 있다면
+            <a href="https://github.com/rycont/yaksok.ts/issues"
+                >이슈를 남겨주세요!</a
+            >
+        </p>
+        <h2>직접 짜보기</h2>
+        <textarea id="input" rows="10"></textarea>
+        <button id="run">Run!</button>
+        <h2>출력</h2>
+        <blockquote>코드를 입력하고 실행 버튼을 눌러보세요.</blockquote>
+        <script type="module">
+            import { yaksok } from '../yaksok.js'
 
-      const input = document.getElementById("input");
-      let output;
+            const input = document.getElementById('input')
 
-      document.getElementById("run").addEventListener("click", () => {
-        if (output) {
-          output.remove();
-        }
+            input.value = `약속 "피보나치" 수
+    만약 수 < 3 이면
+        결과: 1
+    아니면
+        결과: (피보나치 (수 - 1)) + (피보나치 (수 - 2))
 
-        output = document.createElement("textarea");
+횟수: 1
 
-        output.rows = 10;
-        output.disabled = true;
+반복
+    횟수 + "번째 피보나치 수는 " + (피보나치 횟수) + "입니다" 보여주기
+    횟수: 횟수 + 1
 
-        document.body.appendChild(output);
+    만약 횟수 > 10 이면
+        반복 그만`
 
-        const stdout = (str) => {
-          output.value += str + "\n";
-        };
+            let output
 
-        yaksok(input.value, {
-          stdout,
-          stderr: stdout,
-        });
-      });
-    </script>
-  </body>
+            document.getElementById('run').addEventListener('click', () => {
+                if (output) {
+                    output.remove()
+                }
+
+                output = document.createElement('textarea')
+
+                output.rows = 10
+                output.disabled = true
+
+                document.body.appendChild(output)
+
+                const stdout = (str) => {
+                    output.value += str + '\n'
+                }
+
+                yaksok(input.value, {
+                    stdout,
+                    stderr: stdout,
+                })
+            })
+        </script>
+    </body>
 </html>
