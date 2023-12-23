@@ -38,15 +38,33 @@
         <textarea id="input" rows="10"></textarea>
         <button id="run">Run!</button>
         <h2>출력</h2>
-        <textarea id="output" rows="10" disabled></textarea>
+        <blockquote>코드를 입력하고 실행 버튼을 눌러보세요.</blockquote>
         <script type="module">
             import { yaksok } from '../yaksok.js'
 
             const input = document.getElementById('input')
-            const output = document.getElementById('output')
+            let output
 
             document.getElementById('run').addEventListener('click', () => {
-                output.value = yaksok(input.value)
+                if (output) {
+                    output.remove()
+                }
+
+                output = document.createElement('textarea')
+
+                output.rows = 10
+                output.disabled = true
+
+                document.body.appendChild(output)
+
+                const stdout = (str) => {
+                    output.value += str + '\n'
+                }
+
+                yaksok(input.value, {
+                    stdout,
+                    stderr: stdout,
+                })
             })
         </script>
     </body>
