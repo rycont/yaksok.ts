@@ -12,10 +12,7 @@ import {
 } from '../node/index.ts'
 
 import { run } from '../runtime/run.ts'
-import {
-    CannotUseReservedWordForVariableNameError,
-    YaksokError,
-} from '../errors.ts'
+import { CannotUseReservedWordForVariableNameError } from '../errors/index.ts'
 import { Formula } from '../node/calculation.ts'
 
 Deno.test('Parse Variable', () => {

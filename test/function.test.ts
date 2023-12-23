@@ -18,7 +18,7 @@ import {
     CannotReturnOutsideFunctionError,
     FunctionMustHaveNameError,
     NotEvaluableParameterError,
-} from '../errors.ts'
+} from '../errors/index.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 
 Deno.test('Function that returns value', () => {

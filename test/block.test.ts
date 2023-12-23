@@ -2,7 +2,7 @@ import { assertIsError, unreachable } from 'assert'
 
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { parse } from '../prepare/parse/index.ts'
-import { CannotParseError } from '../errors.ts'
+import { CannotParseError } from '../errors/index.ts'
 import { run } from '../runtime/run.ts'
 
 Deno.test('Broken Blocks', () => {

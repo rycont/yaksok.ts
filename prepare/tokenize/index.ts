@@ -2,8 +2,7 @@ import {
     IndentIsNotMultipleOf4Error,
     UnexpectedCharError,
     UnexpectedEndOfCodeError,
-    YaksokError,
-} from '../../errors.ts'
+} from '../../errors/index.ts'
 import {
     Expression,
     Operator,

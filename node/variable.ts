@@ -5,7 +5,7 @@ import { Scope } from '../runtime/scope.ts'
 import {
     CannotUseReservedWordForVariableNameError,
     NotDefinedVariableError,
-} from '../errors.ts'
+} from '../errors/index.ts'
 
 export class Variable extends Evaluable {
     name: string
@@ -69,7 +69,6 @@ export class SetVariable extends Evaluable {
         if (RESERVED_WORDS.includes(name)) {
             throw new CannotUseReservedWordForVariableNameError({
                 position: this.position,
-                callFrame,
                 resource: {
                     name,
                 },

@@ -6,7 +6,6 @@ import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
 import {
     InvalidNumberOfOperandsError,
-    InvalidTypeForOperatorError,
     ListIndexMustBeGreaterThan1Error,
     ListIndexOutOfRangeError,
     ListIndexTypeError,
@@ -15,7 +14,7 @@ import {
     RangeStartMustBeLessThanEndError,
     RangeStartMustBeNumberError,
     TargetIsNotIndexedValueError,
-} from '../errors.ts'
+} from '../errors/index.ts'
 
 export class Sequence extends Evaluable {
     items: Evaluable[]
@@ -95,7 +94,6 @@ export class List extends IndexedValue {
             if (indexValue < 0)
                 throw new ListIndexMustBeGreaterThan1Error({
                     position: this.position,
-                    callFrame,
                     resource: {
                         index,
                     },
@@ -107,7 +105,6 @@ export class List extends IndexedValue {
 
             if (list.length <= indexValue)
                 throw new ListIndexOutOfRangeError({
-                    callFrame,
                     resource: {
                         index,
                     },
@@ -131,7 +128,6 @@ export class List extends IndexedValue {
                     }
 
                     throw new ListIndexTypeError({
-                        callFrame,
                         position: this.position,
                         resource: {
                             index,
@@ -142,7 +138,6 @@ export class List extends IndexedValue {
         }
 
         throw new ListIndexTypeError({
-            callFrame,
             position: this.position,
             resource: {
                 index,
@@ -158,7 +153,6 @@ export class List extends IndexedValue {
     ) {
         if (!(index instanceof NumberValue)) {
             throw new ListIndexTypeError({
-                callFrame,
                 position: this.position,
                 resource: {
                     index,
@@ -170,7 +164,6 @@ export class List extends IndexedValue {
 
         if (indexValue < 0) {
             throw new ListIndexMustBeGreaterThan1Error({
-                callFrame,
                 position: this.position,
                 resource: {
                     index,
@@ -226,7 +219,6 @@ export class IndexFetch extends Evaluable {
 
         if (!(target instanceof IndexedValue)) {
             throw new TargetIsNotIndexedValueError({
-                callFrame,
                 position: this.position,
                 resource: {
                     target,
@@ -259,7 +251,6 @@ export class SetToIndex extends Executable {
 
         if (!(targetList instanceof IndexedValue)) {
             throw new TargetIsNotIndexedValueError({
-                callFrame,
                 position: this.position,
                 resource: {
                     target: targetList,

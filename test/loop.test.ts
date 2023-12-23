@@ -11,7 +11,7 @@ import {
     StringValue,
 } from '../node/index.ts'
 import { run } from '../runtime/run.ts'
-import { BreakNotInLoopError, YaksokError } from '../errors.ts'
+import { BreakNotInLoopError } from '../errors/index.ts'
 
 Deno.test('Parse Loop', () => {
     const code = `

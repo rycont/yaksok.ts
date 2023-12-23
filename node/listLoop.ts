@@ -1,7 +1,7 @@
 import {
     ListNotEvaluatedError,
     NotEnumerableValueForListLoopError,
-} from '../errors.ts'
+} from '../errors/index.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
 import { BreakSignal } from '../runtime/signals.ts'
@@ -31,7 +31,6 @@ export class ListLoop extends Executable {
 
         if (!(list instanceof List)) {
             throw new NotEnumerableValueForListLoopError({
-                callFrame,
                 resource: {
                     value: list,
                 },

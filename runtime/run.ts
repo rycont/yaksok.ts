@@ -1,7 +1,7 @@
 import {
     BreakNotInLoopError,
     CannotReturnOutsideFunctionError,
-} from '../errors.ts'
+} from '../errors/index.ts'
 import { Block } from '../node/index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from './callFrame.ts'

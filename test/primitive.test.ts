@@ -1,6 +1,6 @@
 import { assertEquals } from 'assert'
 
-import { BooleanValue, NumberValue, StringValue } from '../node/index.ts'
+import { BooleanValue } from '../node/index.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { parse } from '../prepare/parse/index.ts'
 import { run } from '../runtime/run.ts'

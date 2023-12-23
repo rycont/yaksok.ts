@@ -1,6 +1,5 @@
 import { assertEquals } from 'assert'
 import { parse } from '../prepare/parse/index.ts'
-import { StringValue } from '../node/primitive.ts'
 
 import { run } from '../runtime/run.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'

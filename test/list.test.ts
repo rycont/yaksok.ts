@@ -29,8 +29,7 @@ import {
     RangeStartMustBeLessThanEndError,
     RangeStartMustBeNumberError,
     TargetIsNotIndexedValueError,
-    YaksokError,
-} from '../errors.ts'
+} from '../errors/index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Formula } from '../node/calculation.ts'

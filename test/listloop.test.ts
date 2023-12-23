@@ -1,6 +1,6 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { yaksok } from '../index.ts'
-import { NotEnumerableValueForListLoopError } from '../errors.ts'
+import { NotEnumerableValueForListLoopError } from '../errors/index.ts'
 
 Deno.test('Loop for list', () => {
     const _consoleLog = console.log

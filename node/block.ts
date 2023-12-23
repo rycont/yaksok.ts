@@ -1,7 +1,7 @@
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Executable, Node } from './index.ts'
 import { Scope } from '../runtime/scope.ts'
-import { CannotParseError } from '../errors.ts'
+import { CannotParseError } from '../errors/index.ts'
 import { EOL } from './misc.ts'
 
 export class Block extends Executable {
@@ -23,7 +23,6 @@ export class Block extends Executable {
             } else {
                 throw new CannotParseError({
                     position: child.position,
-                    callFrame,
                     resource: {
                         part: child,
                     },

@@ -17,8 +17,7 @@ import {
 import {
     NotDefinedFunctionError,
     NotDefinedVariableError,
-    YaksokError,
-} from '../errors.ts'
+} from '../errors/index.ts'
 import { SetVariable, Variable } from '../node/variable.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 
