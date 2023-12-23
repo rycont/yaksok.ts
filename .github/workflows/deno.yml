@@ -11,11 +11,10 @@ name: Deno
 on:
     push:
         branches: ['main']
+        tags:
+            - '*'
     pull_request:
         branches: ['main']
-    push:
-      tags:
-        - "*"
 
 permissions:
     contents: read
