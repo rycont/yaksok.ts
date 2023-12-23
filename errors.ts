@@ -9,28 +9,52 @@ export class YaksokError extends Error {
     }
 
     show() {
-        console.log('\n-----\n')
+        console.log('─────\n')
         console.log(`🚨  ${bold(`문제가 발생했어요`)}  🚨`)
-        console.log(' > ' + this.message)
-        console.log('\n-----\n')
         console.log(
-            bold('발생한 위치:') +
-            `\t ${this.occursAt.line}번째 줄의 ${this.occursAt.column}번째 글자`,
+            `${this.occursAt.line}번째 줄의 ${this.occursAt.column}번째 글자\n`,
         )
+        console.log('> ' + this.message + '\n')
+        console.log('┌─────')
 
-        // if (!this.callFrame.code) return
+        if (!this.callFrame.code) return
 
-        // let lines = this.callFrame.code.split('\n')
+        this.printHintCode(this.callFrame.code)
 
-        // if(lines.length <= 3) {
-        //     lines.
-        // }
+        console.log('└─────')
+    }
 
-        // let code = this.callFrame.code
-        //     .split('\n')
-        //     .slice(this.occursAt.line - 2, this.occursAt.line + 1)
+    printHintCode(code: string) {
+        let lines = code.split('\n')
 
-        // console.log(code)
+        if (lines.length <= 3) {
+            lines = [...lines, ...Array(3 - lines.length).fill('')]
+        }
+
+        lines = code
+            .split('\n')
+            .slice(this.occursAt.line - 2, this.occursAt.line + 1)
+
+        console.log(
+            '│  \x1b[2m' +
+                (this.occursAt.line - 1) +
+                '  ' +
+                lines[0] +
+                '\x1b[0m',
+        )
+        console.log('│  ' + this.occursAt.line + '  ' + lines[1])
+        console.log(
+            '│      ' +
+                ' '.repeat(this.occursAt.column - 1) +
+                '\x1b[33m^\x1b[0m',
+        )
+        console.log(
+            '│  \x1b[2m' +
+                (this.occursAt.line + 1) +
+                '  ' +
+                lines[2] +
+                '\x1b[0m',
+        )
     }
 }
 
@@ -109,8 +133,9 @@ export class CannotParseError extends YaksokError {
                 '"' + resource.part.toPrint() + '"',
             )}는 실행할 수 있는 코드가 아니에요.`
         } else {
-            this.message = `${'"' + bold(NODE_NAMES[resource.part.constructor.name]) + '"'
-                }는 실행할 수 있는 코드가 아니에요.`
+            this.message = `${
+                '"' + bold(NODE_NAMES[resource.part.constructor.name]) + '"'
+            }는 실행할 수 있는 코드가 아니에요.`
         }
     }
 }
@@ -179,8 +204,9 @@ export class NotEvaluableParameterError extends YaksokError {
             'toPrint' in resource.node &&
             typeof resource.node.toPrint === 'function'
         ) {
-            this.message = `${resource.node.toPrint()}(${resource.node.constructor.name
-                })는 함수의 인자로 사용할 수 없어요.`
+            this.message = `${resource.node.toPrint()}(${
+                resource.node.constructor.name
+            })는 함수의 인자로 사용할 수 없어요.`
         } else {
             this.message = `${resource.node.constructor.name}는 함수의 인자로 사용할 수 없어요.`
         }
@@ -392,7 +418,7 @@ function evaluableToText(evaluable: Evaluable) {
 
     try {
         text = evaluable.toPrint() + `(${text})`
-    } catch { }
+    } catch {}
 
     return text
 }
