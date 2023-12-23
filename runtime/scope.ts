@@ -1,5 +1,8 @@
 import { DeclareFunction, ValueTypes } from '../node/index.ts'
-import { YaksokError } from '../errors.ts'
+import {
+    NotDefinedFunctionError,
+    NotDefinedVariableError,
+} from '../error/index.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>
@@ -34,7 +37,11 @@ export class Scope {
             return this.parent.getVariable(name)
         }
 
-        throw new YaksokError('NOT_DEFINED_VARIABLE', {}, { name })
+        throw new NotDefinedVariableError({
+            resource: {
+                name,
+            },
+        })
     }
 
     setFunction(name: string, functionBody: DeclareFunction) {
@@ -49,6 +56,10 @@ export class Scope {
             return this.parent.getFunction(name)
         }
 
-        throw new YaksokError('NOT_DEFINED_FUNCTION')
+        throw new NotDefinedFunctionError({
+            resource: {
+                name,
+            },
+        })
     }
 }

@@ -19,7 +19,17 @@ import {
 } from '../node/index.ts'
 import { parse } from '../prepare/parse/index.ts'
 import { run } from '../runtime/run.ts'
-import { YaksokError } from '../errors.ts'
+import {
+    InvalidNumberOfOperandsError,
+    ListIndexMustBeGreaterThan1Error,
+    ListIndexOutOfRangeError,
+    ListIndexTypeError,
+    ListNotEvaluatedError,
+    RangeEndMustBeNumberError,
+    RangeStartMustBeLessThanEndError,
+    RangeStartMustBeNumberError,
+    TargetIsNotIndexedValueError,
+} from '../error/index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Formula } from '../node/calculation.ts'
@@ -28,7 +38,7 @@ Deno.test('Parse list', async (context) => {
     const code = `
 목록: [1, 3, 5, 7, 9]
 `
-    const result = tokenize(code)
+    const result = tokenize(code, true)
 
     await context.step('Tokenize', () => {
         assertEquals(result.tokens, [
@@ -110,7 +120,7 @@ Deno.test('Get list element', () => {
 세번째: 목록[번째]
 `
 
-    const result = run(parse(tokenize(code)))
+    const result = run(parse(tokenize(code, true)))
 
     assertEquals(result.getVariable('첫번째'), new NumberValue(1))
     assertEquals(result.getVariable('세번째'), new NumberValue(5))
@@ -147,8 +157,7 @@ Deno.test('Create range but start is greater than end', () => {
         run(parse(tokenize(code)))
         unreachable()
     } catch (error) {
-        assertIsError(error, YaksokError)
-        assertEquals(error.name, 'RANGE_START_MUST_BE_LESS_THAN_END')
+        assertIsError(error, RangeStartMustBeLessThanEndError)
     }
 })
 
@@ -161,8 +170,7 @@ Deno.test('Create range but operands are not number', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
-            assertIsError(error, YaksokError)
-            assertEquals(error.name, 'RANGE_START_MUST_BE_NUMBER')
+            assertIsError(error, RangeStartMustBeNumberError)
         }
     })
 
@@ -175,8 +183,7 @@ Deno.test('Create range but operands are not number', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
-            assertIsError(error, YaksokError)
-            assertEquals(error.name, 'RANGE_START_MUST_BE_NUMBER')
+            assertIsError(error, RangeStartMustBeNumberError)
         }
     })
 
@@ -189,8 +196,7 @@ Deno.test('Create range but operands are not number', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
-            assertIsError(error, YaksokError)
-            assertEquals(error.name, 'RANGE_END_MUST_BE_NUMBER')
+            assertIsError(error, RangeEndMustBeNumberError)
         }
     })
 
@@ -216,8 +222,7 @@ Deno.test('Create range but operands are too many', () => {
         )
         unreachable()
     } catch (error) {
-        assertIsError(error, YaksokError)
-        assertEquals(error.name, 'INVALID_NUMBER_OF_OPERANDS')
+        assertIsError(error, InvalidNumberOfOperandsError)
     }
 })
 
@@ -238,8 +243,7 @@ Deno.test('Index target is not a sequence', () => {
         node.execute(scope, new CallFrame(node))
         unreachable()
     } catch (error) {
-        assertIsError(error, YaksokError)
-        assertEquals(error.name, 'INVALID_SEQUENCE_TYPE_FOR_INDEX_FETCH')
+        assertIsError(error, TargetIsNotIndexedValueError)
     }
 })
 
@@ -258,8 +262,7 @@ Deno.test('Index fetching target is not IndexedValue', () => {
         node.execute(scope, new CallFrame(node))
         unreachable()
     } catch (error) {
-        assertIsError(error, YaksokError)
-        assertEquals(error.name, 'INVALID_TYPE_FOR_INDEX_FETCH')
+        assertIsError(error, TargetIsNotIndexedValueError)
     }
 })
 
@@ -279,8 +282,7 @@ Deno.test('Print list before evaluating', () => {
         node.toPrint()
         unreachable()
     } catch (error) {
-        assertIsError(error, YaksokError)
-        assertEquals(error.name, 'LIST_NOT_EVALUATED')
+        assertIsError(error, ListNotEvaluatedError)
     }
 })
 
@@ -294,8 +296,7 @@ Deno.test('List out of range', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
-            assertIsError(error, YaksokError)
-            assertEquals(error.name, 'LIST_INDEX_MUST_BE_GREATER_THAN_1')
+            assertIsError(error, ListIndexMustBeGreaterThan1Error)
         }
     })
 
@@ -308,8 +309,7 @@ Deno.test('List out of range', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
-            assertIsError(error, YaksokError)
-            assertEquals(error.name, 'LIST_INDEX_OUT_OF_RANGE')
+            assertIsError(error, ListIndexOutOfRangeError)
         }
     })
 
@@ -322,8 +322,7 @@ Deno.test('List out of range', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (error) {
-            assertIsError(error, YaksokError)
-            assertEquals(error.name, 'LIST_INDEX_MUST_BE_GREATER_THAN_1')
+            assertIsError(error, ListIndexMustBeGreaterThan1Error)
         }
     })
 })
@@ -337,8 +336,7 @@ Deno.test('List setting index is not number', () => {
         run(parse(tokenize(code)))
         unreachable()
     } catch (error) {
-        assertIsError(error, YaksokError)
-        assertEquals(error.name, 'LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST')
+        assertIsError(error, ListIndexTypeError)
     }
 })
 
@@ -353,8 +351,7 @@ Deno.test('List getting indexes list is not number', () => {
         run(parse(tokenize(code)))
         unreachable()
     } catch (error) {
-        assertIsError(error, YaksokError)
-        assertEquals(error.name, 'LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST')
+        assertIsError(error, ListIndexTypeError)
     }
 })
 
@@ -369,8 +366,7 @@ Deno.test('List getting index is not number', () => {
         run(parse(tokenize(code)))
         unreachable()
     } catch (error) {
-        assertIsError(error, YaksokError)
-        assertEquals(error.name, 'LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST')
+        assertIsError(error, ListIndexTypeError)
     }
 })
 
@@ -388,7 +384,7 @@ Deno.test('Sequence toPrint', () => {
 
 Deno.test('Evaluate Sequence', () => {
     const code = `1, 3, 5, 7, 9`
-    const tree = parse(tokenize(code))
+    const tree = parse(tokenize(code, true))
     const sequence = tree.children[1] as Sequence
 
     const result = sequence.execute(new Scope(), new CallFrame(sequence))

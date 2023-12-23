@@ -1,6 +1,6 @@
 import { assertEquals } from 'assert'
 
-import { BooleanValue, NumberValue, StringValue } from '../node/index.ts'
+import { BooleanValue } from '../node/index.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { parse } from '../prepare/parse/index.ts'
 import { run } from '../runtime/run.ts'
@@ -17,7 +17,7 @@ Deno.test('Number to print', () => {
 `
     const result = run(parse(tokenize(code)))
     assertEquals(printed, '20')
-    assertEquals(result.getVariable('나이'), new NumberValue(20))
+    assertEquals(result.getVariable('나이').value, 20)
     assertEquals(result.getVariable('나이').toPrint(), '20')
 
     console.log = _consoleLog
@@ -36,7 +36,7 @@ Deno.test('String to print', () => {
 
     const result = run(parse(tokenize(code)))
     assertEquals(printed, '김철수')
-    assertEquals(result.getVariable('이름'), new StringValue('김철수'))
+    assertEquals(result.getVariable('이름').value, '김철수')
     assertEquals(result.getVariable('이름').toPrint(), '김철수')
 
     console.log = _consoleLog

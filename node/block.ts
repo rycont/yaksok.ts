@@ -1,7 +1,7 @@
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Executable, Node } from './index.ts'
 import { Scope } from '../runtime/scope.ts'
-import { YaksokError } from '../errors.ts'
+import { CannotParseError } from '../error/index.ts'
 import { EOL } from './misc.ts'
 
 export class Block extends Executable {
@@ -12,7 +12,7 @@ export class Block extends Executable {
         this.children = content
     }
 
-    execute(scope: Scope, _callFrame?: CallFrame) {
+    execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         for (const child of this.children) {
@@ -21,13 +21,12 @@ export class Block extends Executable {
             } else if (child instanceof EOL) {
                 continue
             } else {
-                throw new YaksokError(
-                    'CANNOT_PARSE',
-                    {},
-                    {
-                        child: JSON.stringify(child),
+                throw new CannotParseError({
+                    position: child.position,
+                    resource: {
+                        part: child,
                     },
-                )
+                })
             }
         }
     }

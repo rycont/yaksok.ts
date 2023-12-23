@@ -1,8 +1,8 @@
 import { CallFrame } from '../runtime/callFrame.ts'
-import { BREAK } from '../runtime/signals.ts'
 import { Scope } from '../runtime/scope.ts'
 import { Executable } from './index.ts'
 import { Block } from './block.ts'
+import { BreakSignal } from '../runtime/signals.ts'
 
 export class Loop extends Executable {
     body: Block
@@ -14,11 +14,12 @@ export class Loop extends Executable {
     execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
-        while (true) {
-            try {
+        try {
+            while (true) {
                 this.body.execute(scope, callFrame)
-            } catch (e) {
-                if (e === BREAK) break
+            }
+        } catch (e) {
+            if (!(e instanceof BreakSignal)) {
                 throw e
             }
         }
@@ -27,6 +28,6 @@ export class Loop extends Executable {
 
 export class Break extends Executable {
     execute(_scope: Scope, _callFrame: CallFrame) {
-        throw BREAK
+        throw new BreakSignal(this.position)
     }
 }

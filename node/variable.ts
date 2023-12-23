@@ -2,7 +2,10 @@ import { Evaluable, Keyword, ValueTypes } from './index.ts'
 
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
-import { YaksokError } from '../errors.ts'
+import {
+    CannotUseReservedWordForVariableNameError,
+    NotDefinedVariableError,
+} from '../error/index.ts'
 
 export class Variable extends Evaluable {
     name: string
@@ -22,7 +25,15 @@ export class Variable extends Evaluable {
     }
 
     execute(scope: Scope) {
-        return scope.getVariable(this.name)
+        try {
+            return scope.getVariable(this.name)
+        } catch (e) {
+            if (e instanceof NotDefinedVariableError) {
+                e.position = this.position
+            }
+
+            throw e
+        }
     }
 }
 
@@ -56,11 +67,12 @@ export class SetVariable extends Evaluable {
         const result = value.execute(scope, callFrame)
 
         if (RESERVED_WORDS.includes(name)) {
-            throw new YaksokError(
-                'CANNOT_USE_RESERVED_WORD_FOR_VARIABLE_NAME',
-                {},
-                { name },
-            )
+            throw new CannotUseReservedWordForVariableNameError({
+                position: this.position,
+                resource: {
+                    name,
+                },
+            })
         } else {
             scope.setVariable(name, result)
             return result

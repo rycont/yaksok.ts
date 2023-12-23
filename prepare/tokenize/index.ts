@@ -1,4 +1,8 @@
-import { YaksokError } from '../../errors.ts'
+import {
+    IndentIsNotMultipleOf4Error,
+    UnexpectedCharError,
+    UnexpectedEndOfCodeError,
+} from '../../error/index.ts'
 import {
     Expression,
     Operator,
@@ -20,10 +24,13 @@ export class Tokenizer {
     tokens: Node[] = []
     chars: string[]
 
+    line = 0
+    column = 0
+
     static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~']
     static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')']
 
-    constructor(code: string) {
+    constructor(code: string, private disablePosition = false) {
         this.chars = this.preprocess(code)
         this.tokenize()
         this.postprocess()
@@ -73,8 +80,12 @@ export class Tokenizer {
                 continue
             }
 
-            throw new YaksokError('UNEXPECTED_CHAR', undefined, {
-                token: char,
+            throw new UnexpectedCharError({
+                position: this.position,
+                resource: {
+                    char,
+                    parts: '코드',
+                },
             })
         }
     }
@@ -100,14 +111,14 @@ export class Tokenizer {
 
     comment() {
         while (this.chars.length && this.chars[0] !== '\n') {
-            this.chars.shift()
+            this.shift()
         }
     }
 
     indent() {
         let spaces = 0
         while (this.chars[0] === ' ') {
-            this.chars.shift()
+            this.shift()
             spaces++
         }
 
@@ -115,18 +126,24 @@ export class Tokenizer {
             return
         }
 
-        if (spaces % 4) throw new YaksokError('INDENT_IS_NOT_MULTIPLE_OF_4')
-        this.tokens.push(new Indent(spaces / 4))
+        if (spaces % 4)
+            throw new IndentIsNotMultipleOf4Error({
+                position: this.position,
+                resource: {
+                    indent: spaces,
+                },
+            })
+        this.tokens.push(new Indent(spaces / 4, this.position))
     }
 
     EOL() {
-        this.chars.shift()
+        this.shift()
         if (!(this.tokens[this.tokens.length - 1] instanceof EOL))
-            this.tokens.push(new EOL())
+            this.tokens.push(new EOL(this.position))
     }
 
     number() {
-        let number = this.chars.shift()!
+        let number = this.shift()!
         let hasDot = false
 
         while (true) {
@@ -140,50 +157,48 @@ export class Tokenizer {
             if (!isNum && !isAllowedDot) break
             if (isAllowedDot) hasDot = true
 
-            number += this.chars.shift()
+            number += this.shift()
         }
 
-        this.tokens.push(new NumberValue(parseFloat(number)))
+        this.tokens.push(new NumberValue(parseFloat(number), this.position))
     }
 
     string() {
-        this.chars.shift()
+        this.shift()
         let word = ''
 
         while (true) {
-            const nextChar = this.chars.shift()
-
+            const nextChar = this.shift()
             if (nextChar === '"') break
-            if (!nextChar) throw new YaksokError('UNEXPECTED_END_OF_CODE')
 
             word += nextChar
         }
 
-        this.tokens.push(new StringValue(word))
+        this.tokens.push(new StringValue(word, this.position))
     }
 
     keyword() {
         let word = ''
 
         while (this.chars.length && isValidCharForKeyword(this.chars[0])) {
-            word += this.chars.shift()
+            word += this.shift()
         }
 
-        this.tokens.push(new Keyword(word))
+        this.tokens.push(new Keyword(word, this.position))
     }
 
     operator() {
-        const char = this.chars.shift()!
-        this.tokens.push(new Operator(char))
+        const char = this.shift()!
+        this.tokens.push(new Operator(char, this.position))
     }
 
     expression() {
-        const char = this.chars.shift()!
-        this.tokens.push(new Expression(char))
+        const char = this.shift()!
+        this.tokens.push(new Expression(char, this.position))
     }
 
     preprocess(code: string) {
-        const trimmed = '\n' + code.trim() + '\n'
+        const trimmed = '\n' + code + '\n'
         return [...trimmed]
     }
 
@@ -195,10 +210,39 @@ export class Tokenizer {
 
         return tokens
     }
+
+    shift() {
+        const char = this.chars.shift()
+        if (!char)
+            throw new UnexpectedEndOfCodeError({
+                position: this.position,
+                resource: {
+                    parts: '코드',
+                },
+            })
+
+        if (char === '\n') {
+            this.line++
+            this.column = 1
+        } else {
+            this.column++
+        }
+
+        return char
+    }
+
+    get position() {
+        if (this.disablePosition) return undefined
+
+        return {
+            line: this.line,
+            column: this.column,
+        }
+    }
 }
 
-export function tokenize(code: string) {
-    const tokenizer = new Tokenizer(code)
+export function tokenize(code: string, disablePosition = false) {
+    const tokenizer = new Tokenizer(code, disablePosition)
     return {
         tokens: tokenizer.tokens!,
         functionHeaders: tokenizer.functionHeaders!,

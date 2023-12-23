@@ -14,7 +14,10 @@ import {
     Keyword,
     NumberValue,
 } from '../node/index.ts'
-import { YaksokError } from '../errors.ts'
+import {
+    NotDefinedFunctionError,
+    NotDefinedVariableError,
+} from '../error/index.ts'
 import { SetVariable, Variable } from '../node/variable.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 
@@ -112,9 +115,8 @@ Deno.test('Get not defined variable', () => {
         scope.getVariable('a')
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'NOT_DEFINED_VARIABLE')
-        assertEquals(e.resource.name, 'a')
+        assertIsError(e, NotDefinedVariableError)
+        assertEquals(e.resource?.name, 'a')
     }
 })
 
@@ -180,8 +182,7 @@ Deno.test('Get Not Defined Function', () => {
         scope.getFunction('주문하기')
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'NOT_DEFINED_FUNCTION')
+        assertIsError(e, NotDefinedFunctionError)
     }
 })
 
@@ -196,8 +197,7 @@ Deno.test('Invoke Not Defined Function', () => {
         functionInvokation.execute(scope, new CallFrame(functionInvokation))
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'NOT_DEFINED_FUNCTION')
+        assertIsError(e, NotDefinedFunctionError)
     }
 })
 
@@ -215,25 +215,4 @@ Deno.test('Block Return Outside Of Function', () => {
 
     block.execute(scope, new CallFrame(block))
     assertEquals(scope.getVariable('결과'), new NumberValue(1))
-})
-
-Deno.test('Get Not Registered Event', () => {
-    const block = new Block([
-        new SetVariable({
-            name: new Variable({
-                name: new Keyword('결과'),
-            }),
-            value: new NumberValue(1),
-        }),
-    ])
-
-    const scope = new CallFrame(block)
-
-    try {
-        scope.invokeEvent('close')
-        unreachable()
-    } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'EVENT_NOT_FOUND')
-    }
 })

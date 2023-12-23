@@ -9,13 +9,24 @@ import {
     PrimitiveValue,
 } from './primitive.ts'
 
+export interface Position {
+    line: number
+    column: number
+}
+
 export class Node {
     [key: string]: unknown
+    position?: Position
+
     toJSON() {
         return {
             type: this.constructor.name,
             ...this,
         }
+    }
+
+    toPrint(): string {
+        throw new Error(`${this.constructor.name} has no toPrint method`)
     }
 }
 export class Executable extends Node {
@@ -34,13 +45,16 @@ export class Evaluable extends Executable {
 }
 
 export class Keyword extends Node {
-    constructor(public value: string) {
+    constructor(public value: string, public position?: Position) {
         super()
+    }
+    toPrint() {
+        return this.value
     }
 }
 
 export class Operator extends Node {
-    constructor(public value?: string) {
+    constructor(public value?: string, public position?: Position) {
         super()
     }
 
@@ -54,7 +68,7 @@ export class Operator extends Node {
 }
 
 export class Expression extends Node {
-    constructor(public value: string) {
+    constructor(public value: string, public position?: Position) {
         super()
     }
 }

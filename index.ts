@@ -3,6 +3,8 @@ import { run } from './runtime/run.ts'
 import { Node } from './node/index.ts'
 import { Scope } from './runtime/scope.ts'
 import { tokenize } from './prepare/tokenize/index.ts'
+import { YaksokError } from './error/common.ts'
+import { printError } from './printError.ts'
 
 export class Yaksok {
     functionDeclaration: Node[][] = []
@@ -16,7 +18,15 @@ export class Yaksok {
         const tokens = tokenize(code)
         const ast = parse(tokens)
 
-        return run(ast, this.scope)
+        try {
+            return run(ast, this.scope, code)
+        } catch (error) {
+            if (error instanceof YaksokError) {
+                printError(error, code)
+            }
+
+            throw error
+        }
     }
 }
 

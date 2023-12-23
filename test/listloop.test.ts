@@ -1,6 +1,7 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { yaksok } from '../index.ts'
-import { YaksokError } from '../errors.ts'
+import { NotEnumerableValueForListLoopError } from '../error/index.ts'
+import { CannotParseError } from '../error/prepare.ts'
 
 Deno.test('Loop for list', () => {
     const _consoleLog = console.log
@@ -35,7 +36,19 @@ Deno.test('Broken loop for not enumerable data', () => {
 `)
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'NOT_ENUMERABLE_VALUE_FOR_LIST_LOOP')
+        assertIsError(e, NotEnumerableValueForListLoopError)
+    }
+})
+
+Deno.test('List Loop with broken body', () => {
+    const code = `
+반복 10 ~ 30 의 숫자 마다
+    숫자 보여주 기
+        `
+    try {
+        yaksok(code)
+        unreachable()
+    } catch (e) {
+        assertIsError(e, CannotParseError)
     }
 })

@@ -13,7 +13,7 @@ import {
 } from './operator.ts'
 import { Evaluable, Operator, ValueTypes } from './base.ts'
 import { EqualOperator } from './index.ts'
-import { YaksokError } from '../errors.ts'
+import { UnknownOperatorPrecedenceError } from '../error/index.ts'
 import { RangeOperator } from './list.ts'
 
 const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
@@ -96,16 +96,16 @@ export class Formula extends Evaluable {
 
         if (terms.length === 1) return terms[0] as ValueTypes
 
-        throw new YaksokError(
-            'UNKNOWN_OPERAOTR_PRECEDENCE',
-            {},
-            {
-                operators: terms
-                    .filter((term) => term instanceof Operator)
-                    .map((term) => term.constructor.name)
-                    .join(', '),
-            },
+        const [operator] = terms.filter(
+            (term): term is Operator => term instanceof Operator,
         )
+
+        throw new UnknownOperatorPrecedenceError({
+            position: operator.position,
+            resource: {
+                operator,
+            },
+        })
     }
 
     calculateOperatorWithPrecedence(
