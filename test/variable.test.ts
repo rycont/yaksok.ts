@@ -12,7 +12,10 @@ import {
 } from '../node/index.ts'
 
 import { run } from '../runtime/run.ts'
-import { YaksokError } from '../errors.ts'
+import {
+    CannotUseReservedWordForVariableNameError,
+    YaksokError,
+} from '../errors.ts'
 import { Formula } from '../node/calculation.ts'
 
 Deno.test('Parse Variable', () => {
@@ -75,7 +78,6 @@ Deno.test('Reserved word cannot be used as variable name', () => {
         run(parse(tokenize(code)))
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'CANNOT_USE_RESERVED_WORD_FOR_VARIABLE_NAME')
+        assertIsError(e, CannotUseReservedWordForVariableNameError)
     }
 })

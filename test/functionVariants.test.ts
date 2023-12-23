@@ -3,7 +3,7 @@ import { parse } from '../prepare/parse/index.ts'
 
 import { run } from '../runtime/run.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
-import { YaksokError } from '../errors.ts'
+import { UnexpectedTokenError, YaksokError } from '../errors.ts'
 
 Deno.test('Function Josa Variants', () => {
     const code = `
@@ -46,7 +46,6 @@ Deno.test('Broken function declaration', () => {
         run(parse(tokenize(code)))
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'UNEXPECTED_TOKEN')
+        assertIsError(e, UnexpectedTokenError)
     }
 })

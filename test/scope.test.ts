@@ -14,7 +14,11 @@ import {
     Keyword,
     NumberValue,
 } from '../node/index.ts'
-import { YaksokError } from '../errors.ts'
+import {
+    NotDefinedFunctionError,
+    NotDefinedVariableError,
+    YaksokError,
+} from '../errors.ts'
 import { SetVariable, Variable } from '../node/variable.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 
@@ -112,9 +116,8 @@ Deno.test('Get not defined variable', () => {
         scope.getVariable('a')
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'NOT_DEFINED_VARIABLE')
-        assertEquals(e.resource.name, 'a')
+        assertIsError(e, NotDefinedVariableError)
+        assertEquals(e.resource?.name, 'a')
     }
 })
 
@@ -180,8 +183,7 @@ Deno.test('Get Not Defined Function', () => {
         scope.getFunction('주문하기')
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'NOT_DEFINED_FUNCTION')
+        assertIsError(e, NotDefinedFunctionError)
     }
 })
 
@@ -196,8 +198,7 @@ Deno.test('Invoke Not Defined Function', () => {
         functionInvokation.execute(scope, new CallFrame(functionInvokation))
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'NOT_DEFINED_FUNCTION')
+        assertIsError(e, NotDefinedFunctionError)
     }
 })
 

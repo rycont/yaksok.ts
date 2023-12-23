@@ -1,6 +1,6 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { yaksok } from '../index.ts'
-import { YaksokError } from '../errors.ts'
+import { NotEnumerableValueForListLoopError } from '../errors.ts'
 
 Deno.test('Loop for list', () => {
     const _consoleLog = console.log
@@ -35,7 +35,6 @@ Deno.test('Broken loop for not enumerable data', () => {
 `)
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'NOT_ENUMERABLE_VALUE_FOR_LIST_LOOP')
+        assertIsError(e, NotEnumerableValueForListLoopError)
     }
 })

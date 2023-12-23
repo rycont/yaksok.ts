@@ -11,7 +11,7 @@ import {
     StringValue,
 } from '../node/index.ts'
 import { run } from '../runtime/run.ts'
-import { YaksokError } from '../errors.ts'
+import { BreakNotInLoopError, YaksokError } from '../errors.ts'
 
 Deno.test('Parse Loop', () => {
     const code = `
@@ -59,7 +59,6 @@ Deno.test('Break outside loop', () => {
         run(parse(tokenize(code)))
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'BREAK_NOT_IN_LOOP')
+        assertIsError(e, BreakNotInLoopError)
     }
 })

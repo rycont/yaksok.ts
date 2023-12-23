@@ -14,7 +14,11 @@ import {
     Variable,
 } from '../node/index.ts'
 import { Scope } from '../runtime/scope.ts'
-import { YaksokError } from '../errors.ts'
+import {
+    CannotReturnOutsideFunctionError,
+    FunctionMustHaveNameError,
+    NotEvaluableParameterError,
+} from '../errors.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 
 Deno.test('Function that returns value', () => {
@@ -74,8 +78,7 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
             functionInvokation.execute(scope, new CallFrame(functionInvokation))
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'NOT_EVALUABLE_EXPRESSION')
+            assertIsError(e, NotEvaluableParameterError)
         }
     })
 
@@ -86,8 +89,7 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
             } as unknown as Record<string, Evaluable> & { name: string })
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'FUNCTION_MUST_HAVE_NAME')
+            assertIsError(e, FunctionMustHaveNameError)
         }
     })
 })
@@ -102,7 +104,6 @@ Deno.test('Return outside function', () => {
         run(parse(tokenize(code)))
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'CANNOT_RETURN_OUTSIDE_FUNCTION')
+        assertIsError(e, CannotReturnOutsideFunctionError)
     }
 })

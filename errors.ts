@@ -3,13 +3,15 @@ import { Operator } from './node/index.ts'
 import { NODE_NAMES } from './nodeNames.ts'
 import { CallFrame } from './runtime/callFrame.ts'
 
-export class YaksokError extends Error {
+export class YaksokError<T = unknown> extends Error {
     position?: Position
+    resource?: T
 
-    constructor(props: { position?: Position }) {
+    constructor(props: { position?: Position; resource?: T }) {
         super()
 
         this.position = props.position
+        this.resource = props.resource
     }
 
     show() {
@@ -22,6 +24,9 @@ export class YaksokError extends Error {
             )
 
         console.log('> ' + this.message + '\n')
+
+        throw this
+
         console.log('┌─────')
 
         // if (!this.callFrame || !this.callFrame.code || !this.position) return
@@ -53,12 +58,14 @@ export class YaksokError extends Error {
     // }
 }
 
-export class UnexpectedCharError extends YaksokError {
+interface UnexpectedCharErrorResource {
+    char: string
+    parts: string
+}
+
+export class UnexpectedCharError extends YaksokError<UnexpectedCharErrorResource> {
     constructor(props: {
-        resource: {
-            char: string
-            parts: string
-        }
+        resource: UnexpectedCharErrorResource
         position?: Position
     }) {
         super(props)
@@ -180,13 +187,14 @@ export class FunctionMustHaveNameError extends YaksokError {
     }
 }
 
-export class NotDefinedVariableError extends YaksokError {
+interface NotDefinedVariableErrorResource {
+    name: string
+}
+
+export class NotDefinedVariableError extends YaksokError<NotDefinedVariableErrorResource> {
     constructor(props: {
         position?: Position
-
-        resource: {
-            name: string
-        }
+        resource: NotDefinedVariableErrorResource
     }) {
         super(props)
         this.message = `${props.resource.name}라는 변수를 찾을 수 없어요`

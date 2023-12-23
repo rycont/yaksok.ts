@@ -9,7 +9,12 @@ import {
     Variable,
 } from '../node/index.ts'
 import { EOL, Indent } from '../node/misc.ts'
-import { YaksokError } from '../errors.ts'
+import {
+    IndentIsNotMultipleOf4Error,
+    UnexpectedCharError,
+    UnexpectedEndOfCodeError,
+    YaksokError,
+} from '../errors.ts'
 import {
     isValidFirstCharForKeyword,
     isValidCharForKeyword,
@@ -181,8 +186,8 @@ Deno.test('Tokenize Variable Declaration with Wierd Name', async (context) => {
             tokenize('실패!')
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.resource.token, '!')
+            assertIsError(e, UnexpectedCharError)
+            assertEquals(e.resource?.char, '!')
         }
     })
 })
@@ -279,8 +284,7 @@ Deno.test('Tokenize Broken Indents', () => {
         tokenize(code)
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'INDENT_IS_NOT_MULTIPLE_OF_4')
+        assertIsError(e, IndentIsNotMultipleOf4Error)
     }
 })
 
@@ -353,8 +357,7 @@ Deno.test('Tokenize Uncomplete String', () => {
         tokenize(code)
         unreachable()
     } catch (e) {
-        assertIsError(e, YaksokError)
-        assertEquals(e.name, 'UNEXPECTED_END_OF_CODE')
+        assertIsError(e, UnexpectedEndOfCodeError)
     }
 })
 

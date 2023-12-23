@@ -26,7 +26,11 @@ import { Operator } from '../node/base.ts'
 import { parse } from '../prepare/parse/index.ts'
 import { run } from '../runtime/run.ts'
 
-import { YaksokError } from '../errors.ts'
+import {
+    InvalidNumberOfOperandsError,
+    InvalidTypeForOperatorError,
+    YaksokError,
+} from '../errors.ts'
 
 Deno.test('Parse Binary Operation', () => {
     const code = `1 + 1`
@@ -123,8 +127,7 @@ Deno.test('Operator String and String', async (context) => {
         try {
             run(parse(tokenize(code)))
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_PLUS_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 
@@ -136,8 +139,7 @@ Deno.test('Operator String and String', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_MINUS_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 
@@ -149,8 +151,7 @@ Deno.test('Operator String and String', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_MULTIPLY_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 
@@ -162,8 +163,7 @@ Deno.test('Operator String and String', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_DIVIDE_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 
@@ -185,8 +185,7 @@ Deno.test('Operator String and String', async (context) => {
         try {
             run(parse(tokenize(code)))
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_LESS_THAN_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 
@@ -197,8 +196,7 @@ Deno.test('Operator String and String', async (context) => {
         try {
             run(parse(tokenize(code)))
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_LESS_OR_EQUAL_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 
@@ -210,8 +208,7 @@ Deno.test('Operator String and String', async (context) => {
         try {
             run(parse(tokenize(code)))
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_GREATER_THAN_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 
@@ -223,11 +220,7 @@ Deno.test('Operator String and String', async (context) => {
         try {
             run(parse(tokenize(code)))
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(
-                e.name,
-                'INVALID_TYPE_FOR_GREATER_THAN_OR_EQUAL_OPERATOR',
-            )
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 })
@@ -343,22 +336,20 @@ Deno.test('Operator Number and String', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_MINUS_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 
     await context.step('Multiply', () => {
-        try {
-            const code = `
-            계산: 1 * " World"
+        const code = `
+            계산: 2 * " World"
             `
-            run(parse(tokenize(code)))
-            unreachable()
-        } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_MULTIPLY_OPERATOR')
-        }
+        const result = run(parse(tokenize(code)))
+
+        assertEquals(
+            result.getVariable('계산'),
+            new StringValue(' World World'),
+        )
     })
 
     await context.step('Divide', () => {
@@ -369,8 +360,7 @@ Deno.test('Operator Number and String', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_DIVIDE_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 })
@@ -394,8 +384,7 @@ Deno.test('Operator String and Number', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_MINUS_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 
@@ -419,8 +408,7 @@ Deno.test('Operator String and Number', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_DIVIDE_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 
@@ -432,8 +420,7 @@ Deno.test('Operator String and Number', async (context) => {
             run(parse(tokenize(code)))
             unreachable()
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_TYPE_FOR_AND_OPERATOR')
+            assertIsError(e, InvalidTypeForOperatorError)
         }
     })
 })
@@ -459,8 +446,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
                 new NumberValue(3),
             )
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_NUMBER_OF_OPERANDS')
+            assertIsError(e, InvalidNumberOfOperandsError)
         }
     })
 
@@ -472,8 +458,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
                 new NumberValue(3),
             )
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_NUMBER_OF_OPERANDS')
+            assertIsError(e, InvalidNumberOfOperandsError)
         }
     })
 
@@ -485,8 +470,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
                 new NumberValue(3),
             )
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_NUMBER_OF_OPERANDS')
+            assertIsError(e, InvalidNumberOfOperandsError)
         }
     })
 
@@ -498,8 +482,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
                 new NumberValue(3),
             )
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_NUMBER_OF_OPERANDS')
+            assertIsError(e, InvalidNumberOfOperandsError)
         }
     })
 
@@ -511,8 +494,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
                 new NumberValue(3),
             )
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_NUMBER_OF_OPERANDS')
+            assertIsError(e, InvalidNumberOfOperandsError)
         }
     })
 
@@ -524,8 +506,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
                 new NumberValue(3),
             )
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_NUMBER_OF_OPERANDS')
+            assertIsError(e, InvalidNumberOfOperandsError)
         }
     })
 
@@ -537,8 +518,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
                 new NumberValue(3),
             )
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_NUMBER_OF_OPERANDS')
+            assertIsError(e, InvalidNumberOfOperandsError)
         }
     })
 
@@ -550,8 +530,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
                 new NumberValue(3),
             )
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_NUMBER_OF_OPERANDS')
+            assertIsError(e, InvalidNumberOfOperandsError)
         }
     })
 
@@ -563,8 +542,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
                 new NumberValue(3),
             )
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_NUMBER_OF_OPERANDS')
+            assertIsError(e, InvalidNumberOfOperandsError)
         }
     })
 
@@ -576,8 +554,7 @@ Deno.test('Binary operator operand exceedance', async (context) => {
                 new NumberValue(3),
             )
         } catch (e) {
-            assertIsError(e, YaksokError)
-            assertEquals(e.name, 'INVALID_NUMBER_OF_OPERANDS')
+            assertIsError(e, InvalidNumberOfOperandsError)
         }
     })
 })
