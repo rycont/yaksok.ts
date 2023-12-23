@@ -20,7 +20,9 @@ export function evaluableToText(evaluable: Evaluable) {
 
     try {
         text = bold(blue(evaluable.toPrint())) + dim(`(${text})`)
-    } catch {}
+    } catch {
+        // If toPrint() is not implemented, ignore
+    }
 
     return text
 }

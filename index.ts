@@ -23,7 +23,6 @@ export class Yaksok {
         } catch (error) {
             if (error instanceof YaksokError) {
                 printError(error, code)
-            } else {
             }
 
             throw error
