@@ -3,15 +3,28 @@ import {
     NotDefinedFunctionError,
     NotDefinedVariableError,
 } from '../error/index.ts'
+import { Yaksok } from '../index.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>
     functions: Record<string, DeclareFunction> = {}
     parent: Scope | undefined
+    runtime?: Yaksok
 
-    constructor(parent?: Scope, initialVariable = {}) {
-        this.variables = initialVariable
-        this.parent = parent
+    constructor(
+        config: {
+            parent?: Scope
+            runtime?: Yaksok
+            initialVariable?: Record<string, ValueTypes>
+        } = {},
+    ) {
+        this.variables = config.initialVariable || {}
+        this.parent = config.parent
+        this.runtime = config.runtime
+
+        if (config.parent?.runtime) {
+            this.runtime = config.parent.runtime
+        }
     }
 
     setVariable(name: string, value: ValueTypes) {

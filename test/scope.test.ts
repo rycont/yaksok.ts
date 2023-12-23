@@ -42,8 +42,12 @@ Deno.test('Set / Get Variable', async (context) => {
 
 Deno.test('Create Scope from Parent', () => {
     const scope = new Scope()
-    const childScope = new Scope(scope)
-    const grandChildScope = new Scope(childScope)
+    const childScope = new Scope({
+        parent: scope,
+    })
+    const grandChildScope = new Scope({
+        parent: childScope,
+    })
 
     assert(scope.parent === undefined)
     assert(childScope.parent === scope)
@@ -55,7 +59,9 @@ Deno.test('Create Scope from Parent', () => {
 
 Deno.test('Set / Get Variable from Parent', async (context) => {
     const scope = new Scope()
-    const childScope = new Scope(scope)
+    const childScope = new Scope({
+        parent: scope,
+    })
 
     await context.step('Create Variable of Parent', () => {
         scope.setVariable('a', new NumberValue(1))
@@ -75,8 +81,10 @@ Deno.test('Set / Get Variable from Parent', async (context) => {
 
 Deno.test('Set / Get Variable from Grandparent', async (context) => {
     const scope = new Scope()
-    const childScope = new Scope(scope)
-    const grandChildScope = new Scope(childScope)
+    const childScope = new Scope({ parent: scope })
+    const grandChildScope = new Scope({
+        parent: childScope,
+    })
 
     await context.step('Create Variable of Parent', () => {
         scope.setVariable('a', new NumberValue(1))
@@ -162,7 +170,9 @@ Deno.test('Set / Invoke Function', async (context) => {
         assertEquals(returnValue, new NumberValue(10))
     })
 
-    const childScope = new Scope(scope)
+    const childScope = new Scope({
+        parent: scope,
+    })
 
     await context.step('Invoke Function from Child Scope', () => {
         const returnValue = functionInvokation.execute(

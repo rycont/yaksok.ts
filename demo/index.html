@@ -39,5 +39,15 @@
         <button id="run">Run!</button>
         <h2>출력</h2>
         <textarea id="output" rows="10" disabled></textarea>
+        <script type="module">
+            import { yaksok } from '../yaksok.js'
+
+            const input = document.getElementById('input')
+            const output = document.getElementById('output')
+
+            document.getElementById('run').addEventListener('click', () => {
+                output.value = yaksok(input.value)
+            })
+        </script>
     </body>
 </html>

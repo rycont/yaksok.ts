@@ -1,6 +1,6 @@
 import { Evaluable, Position } from '../node/base.ts'
 import { Operator } from '../node/index.ts'
-import { NODE_NAMES } from '../nodeNames.ts'
+import { NODE_NAMES } from './nodeNames.ts'
 
 export class YaksokError<T = unknown> extends Error {
     position?: Position

@@ -4,14 +4,27 @@ import { Node } from './node/index.ts'
 import { Scope } from './runtime/scope.ts'
 import { tokenize } from './prepare/tokenize/index.ts'
 import { YaksokError } from './error/common.ts'
-import { printError } from './printError.ts'
+import { printError } from './error/printError.ts'
+
+interface YaksokConfig {
+    stdout?: (message: string) => void
+    stderr?: (message: string) => void
+}
 
 export class Yaksok {
     functionDeclaration: Node[][] = []
     scope: Scope
 
-    constructor() {
-        this.scope = new Scope()
+    stdout = console.log
+    stderr = console.error
+
+    constructor(public config: YaksokConfig = {}) {
+        if (config.stdout) this.stdout = config.stdout
+        if (config.stderr) this.stderr = config.stderr
+
+        this.scope = new Scope({
+            runtime: this,
+        })
     }
 
     run(code: string) {
@@ -22,7 +35,13 @@ export class Yaksok {
             return run(ast, this.scope, code)
         } catch (error) {
             if (error instanceof YaksokError) {
-                printError(error, code)
+                this.stderr(
+                    printError({
+                        error,
+                        code,
+                        runtime: this,
+                    }),
+                )
             }
 
             throw error
@@ -30,7 +49,7 @@ export class Yaksok {
     }
 }
 
-export function yaksok(code: string) {
-    const runtime = new Yaksok()
+export function yaksok(code: string, config: YaksokConfig = {}) {
+    const runtime = new Yaksok(config)
     return runtime.run(code)
 }

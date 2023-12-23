@@ -24,7 +24,9 @@ export class ListLoop extends Executable {
     }
 
     execute(_scope: Scope, _callFrame: CallFrame): void {
-        const scope = new Scope(_scope)
+        const scope = new Scope({
+            parent: _scope,
+        })
         const callFrame = new CallFrame(this, _callFrame)
 
         const list = this.list.execute(scope, callFrame)

@@ -1,5 +1,5 @@
 import { Position, Operator, Evaluable } from '../node/index.ts'
-import { NODE_NAMES } from '../nodeNames.ts'
+import { NODE_NAMES } from './nodeNames.ts'
 import { YaksokError, evaluableToText, operatorToText } from './common.ts'
 
 export class UnknownOperatorPrecedenceError extends YaksokError {
@@ -10,9 +10,8 @@ export class UnknownOperatorPrecedenceError extends YaksokError {
         }
     }) {
         super(props)
-        this.message = `${props.resource.operator.toPrint()}(${
-            NODE_NAMES[props.resource.operator.constructor.name]
-        })는 알 수 없는 연산자에요.`
+        this.message = `${props.resource.operator.toPrint()}(${NODE_NAMES[props.resource.operator.constructor.name]
+            })는 알 수 없는 연산자에요.`
     }
 }
 export class InvalidNumberOfOperandsError extends YaksokError {
@@ -26,11 +25,9 @@ export class InvalidNumberOfOperandsError extends YaksokError {
         }
     }) {
         super(props)
-        this.message = `${props.resource.operator.toPrint()}(${
-            NODE_NAMES[props.resource.operator.constructor.name]
-        })는 ${props.resource.expected}개의 값을 계산할 수 있는데, ${
-            props.resource.actual
-        }개의 값이 주어졌어요.`
+        this.message = `${props.resource.operator.toPrint()}(${NODE_NAMES[props.resource.operator.constructor.name]
+            })는 ${props.resource.expected}개의 값을 계산할 수 있는데, ${props.resource.actual
+            }개의 값이 주어졌어요.`
     }
 }
 export class InvalidTypeForCompareError extends YaksokError {

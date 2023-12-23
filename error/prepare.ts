@@ -1,5 +1,5 @@
 import { Position, Node } from '../node/base.ts'
-import { NODE_NAMES } from '../nodeNames.ts'
+import { NODE_NAMES } from './nodeNames.ts'
 import { YaksokError, bold } from './common.ts'
 
 export class CannotParseError extends YaksokError {
@@ -19,11 +19,10 @@ export class CannotParseError extends YaksokError {
                 '"' + props.resource.part.toPrint() + '"',
             )}는 실행할 수 있는 코드가 아니에요.`
         } else {
-            this.message = `${
-                '"' +
+            this.message = `${'"' +
                 bold(NODE_NAMES[props.resource.part.constructor.name]) +
                 '"'
-            }는 실행할 수 있는 코드가 아니에요.`
+                }는 실행할 수 있는 코드가 아니에요.`
         }
     }
 }
@@ -73,10 +72,8 @@ export class UnexpectedTokenError extends YaksokError {
     }) {
         super(props)
 
-        this.message = `토큰 ${
-            props.resource.node.constructor.name
-        }(${JSON.stringify(props.resource.node)})는 ${
-            props.resource.parts
-        }에 사용할 수 없어요.`
+        this.message = `토큰 ${props.resource.node.constructor.name
+            }(${JSON.stringify(props.resource.node)})는 ${props.resource.parts
+            }에 사용할 수 없어요.`
     }
 }

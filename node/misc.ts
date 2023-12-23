@@ -24,6 +24,7 @@ export class Print extends Executable {
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {
-        console.log(this.value.execute(scope, _callFrame).toPrint())
+        const printFunction = scope.runtime?.stdout || console.log
+        printFunction(this.value.execute(scope, _callFrame).toPrint())
     }
 }

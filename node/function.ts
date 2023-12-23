@@ -96,7 +96,10 @@ export class FunctionInvoke extends Evaluable {
         try {
             const func = scope.getFunction(name)
 
-            const childScope = new Scope(scope, args)
+            const childScope = new Scope({
+                parent: scope,
+                initialVariable: args,
+            })
             const result = func.run(childScope, callFrame)
 
             return result || DEFAULT_RETURN_VALUE

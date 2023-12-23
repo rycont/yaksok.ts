@@ -19,7 +19,7 @@ import {
     FunctionMustHaveNameError,
     NotEvaluableParameterError,
 } from '../error/index.ts'
-import { printError } from '../printError.ts'
+import { printError } from '../error/printError.ts'
 import { yaksok } from '../index.ts'
 import { CannotParseError } from '../error/prepare.ts'
 
@@ -80,7 +80,6 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
             run(new Block([functionInvokation]), scope)
             unreachable()
         } catch (e) {
-            printError(e)
             assertIsError(e, NotEvaluableParameterError)
         }
     })
