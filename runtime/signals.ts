@@ -1,2 +1,8 @@
-export const RETURN = Symbol('RETURN_FUNCTION')
-export const BREAK = Symbol('BREAK_LOOP')
+import { Position } from '../node/index.ts'
+
+export class Signal {
+    constructor(public position?: Position) {}
+}
+
+export class ReturnSignal extends Signal {}
+export class BreakSignal extends Signal {}

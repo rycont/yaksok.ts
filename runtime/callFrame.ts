@@ -1,4 +1,3 @@
-import { YaksokError } from '../errors.ts'
 import { Node } from '../node/index.ts'
 
 export class CallFrame {
@@ -7,7 +6,7 @@ export class CallFrame {
 
     constructor(
         public node: Node,
-        public parent: CallFrame | undefined,
+        public parent?: CallFrame | undefined,
         code?: string,
     ) {
         if (parent?.code) {

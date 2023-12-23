@@ -1,4 +1,4 @@
-import { YaksokError } from '../../../errors.ts'
+import { UnexpectedTokenError, YaksokError } from '../../../errors.ts'
 import { PatternUnit, Rule } from '../rule.ts'
 import {
     Block,
@@ -156,23 +156,25 @@ function createFunctionInvokeRule(
     }
 }
 
-function subtokensAreValid(
+function assertValidFunctionHeader(
     subtokens: Node[],
-): subtokens is (Variable | StringValue)[] {
-    return subtokens.every((t) => {
-        if (t instanceof Variable) return true
-        if (t instanceof StringValue) return true
-        return false
-    })
+): asserts subtokens is (Variable | StringValue)[] {
+    for (const token of subtokens) {
+        if (token instanceof Variable) continue
+        if (token instanceof StringValue) continue
+
+        throw new UnexpectedTokenError({
+            position: subtokens[0].position,
+            resource: {
+                node: token,
+                parts: '',
+            },
+        })
+    }
 }
 
 export function createFunctionRules(subtokens: Node[]) {
-    if (!subtokensAreValid(subtokens))
-        throw new YaksokError(
-            'UNEXPECTED_TOKEN',
-            {},
-            { token: JSON.stringify(subtokens) },
-        )
+    assertValidFunctionHeader(subtokens)
 
     const name = subtokens
         .map((t) => {

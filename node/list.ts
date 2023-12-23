@@ -4,7 +4,18 @@ import { IndexedValue } from './indexed.ts'
 
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
-import { YaksokError } from '../errors.ts'
+import {
+    InvalidNumberOfOperandsError,
+    InvalidTypeForOperatorError,
+    ListIndexMustBeGreaterThan1Error,
+    ListIndexOutOfRangeError,
+    ListIndexTypeError,
+    ListNotEvaluatedError,
+    RangeEndMustBeNumberError,
+    RangeStartMustBeLessThanEndError,
+    RangeStartMustBeNumberError,
+    TargetIsNotIndexedValueError,
+} from '../errors.ts'
 
 export class Sequence extends Evaluable {
     items: Evaluable[]
@@ -82,14 +93,26 @@ export class List extends IndexedValue {
             const indexValue = index.value - 1
 
             if (indexValue < 0)
-                throw new YaksokError('LIST_INDEX_MUST_BE_GREATER_THAN_1')
+                throw new ListIndexMustBeGreaterThan1Error({
+                    position: this.position,
+                    callFrame,
+                    resource: {
+                        index,
+                    },
+                })
 
             const list = this.execute(scope, callFrame).evaluatedItems!.map(
                 (item) => item.execute(scope, callFrame),
             )
 
             if (list.length <= indexValue)
-                throw new YaksokError('LIST_INDEX_OUT_OF_RANGE')
+                throw new ListIndexOutOfRangeError({
+                    callFrame,
+                    resource: {
+                        index,
+                    },
+                    position: this.position,
+                })
 
             return list[indexValue]
         }
@@ -103,18 +126,28 @@ export class List extends IndexedValue {
 
             return new List({
                 evaluatedItems: indexValue.map((index) => {
-                    if (!(index instanceof NumberValue)) {
-                        throw new YaksokError(
-                            'LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST',
-                        )
+                    if (index instanceof NumberValue) {
+                        return list[index.value - 1]
                     }
 
-                    return list[index.value - 1]
+                    throw new ListIndexTypeError({
+                        callFrame,
+                        position: this.position,
+                        resource: {
+                            index,
+                        },
+                    })
                 }),
             })
         }
 
-        throw new YaksokError('LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST')
+        throw new ListIndexTypeError({
+            callFrame,
+            position: this.position,
+            resource: {
+                index,
+            },
+        })
     }
 
     setItem(
@@ -124,13 +157,26 @@ export class List extends IndexedValue {
         callFrame: CallFrame,
     ) {
         if (!(index instanceof NumberValue)) {
-            throw new YaksokError('LIST_INDEX_TYPE_MUST_BE_NUMBER_OR_LIST')
+            throw new ListIndexTypeError({
+                callFrame,
+                position: this.position,
+                resource: {
+                    index,
+                },
+            })
         }
 
         const indexValue = index.value - 1
 
-        if (indexValue < 0)
-            throw new YaksokError('LIST_INDEX_MUST_BE_GREATER_THAN_1')
+        if (indexValue < 0) {
+            throw new ListIndexMustBeGreaterThan1Error({
+                callFrame,
+                position: this.position,
+                resource: {
+                    index,
+                },
+            })
+        }
 
         const content = this.execute(scope, callFrame).evaluatedItems!
         content[indexValue] = value
@@ -139,7 +185,11 @@ export class List extends IndexedValue {
     }
 
     toPrint(): string {
-        if (!this.evaluatedItems) throw new YaksokError('LIST_NOT_EVALUATED')
+        if (!this.evaluatedItems) {
+            throw new ListNotEvaluatedError({
+                position: this.position,
+            })
+        }
         return (
             '[' +
             this.evaluatedItems.map((item) => item.toPrint()).join(', ') +
@@ -175,7 +225,13 @@ export class IndexFetch extends Evaluable {
         const target = this.target.execute(scope, callFrame)
 
         if (!(target instanceof IndexedValue)) {
-            throw new YaksokError('INVALID_TYPE_FOR_INDEX_FETCH')
+            throw new TargetIsNotIndexedValueError({
+                callFrame,
+                position: this.position,
+                resource: {
+                    target,
+                },
+            })
         }
 
         const value = target.getItem(index, scope, callFrame)
@@ -198,38 +254,68 @@ export class SetToIndex extends Executable {
 
         const value = this.value.execute(scope, callFrame)
 
-        const targetSequence = this.target.target.execute(scope, callFrame)
+        const targetList = this.target.target.execute(scope, callFrame)
         const targetIndex = this.target.index.value.execute(scope, callFrame)
 
-        if (!(targetSequence instanceof IndexedValue)) {
-            throw new YaksokError('INVALID_SEQUENCE_TYPE_FOR_INDEX_FETCH')
+        if (!(targetList instanceof IndexedValue)) {
+            throw new TargetIsNotIndexedValueError({
+                callFrame,
+                position: this.position,
+                resource: {
+                    target: targetList,
+                },
+            })
         }
 
-        targetSequence.setItem(targetIndex, value, scope, callFrame)
+        targetList.setItem(targetIndex, value, scope, callFrame)
     }
 }
 
 export class RangeOperator extends Operator {
     call(...operands: ValueTypes[]): List {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    actual: operands.length,
+                    expected: 2,
+                    operator: this,
+                },
+            })
         }
-        const [left, right] = operands
+        const [start, end] = operands
 
-        if (!(left instanceof NumberValue)) {
-            throw new YaksokError('RANGE_START_MUST_BE_NUMBER')
+        if (!(start instanceof NumberValue)) {
+            throw new RangeStartMustBeNumberError({
+                position: this.position,
+                resource: {
+                    start,
+                },
+            })
         }
 
-        if (!(right instanceof NumberValue)) {
-            throw new YaksokError('RANGE_END_MUST_BE_NUMBER')
+        if (!(end instanceof NumberValue)) {
+            throw new RangeEndMustBeNumberError({
+                position: this.position,
+                resource: {
+                    end,
+                },
+            })
         }
 
-        if (left.value > right.value)
-            throw new YaksokError('RANGE_START_MUST_BE_LESS_THAN_END')
+        if (start.value > end.value) {
+            throw new RangeStartMustBeLessThanEndError({
+                position: this.position,
+                resource: {
+                    start: start.value,
+                    end: end.value,
+                },
+            })
+        }
 
         const evaluatedItems: NumberValue[] = []
 
-        for (let i = left.value; i <= right.value; i++) {
+        for (let i = start.value; i <= end.value; i++) {
             evaluatedItems.push(new NumberValue(i))
         }
 

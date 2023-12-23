@@ -1,11 +1,17 @@
 import { Executable, ValueTypes, Evaluable } from './base.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 
-import { YaksokError } from '../errors.ts'
+import {
+    FunctionMustHaveNameError,
+    NotDefinedFunctionError,
+    NotDefinedVariableError,
+    NotEvaluableParameterError,
+} from '../errors.ts'
 import { Scope } from '../runtime/scope.ts'
 import { NumberValue } from './primitive.ts'
 import { Block } from './block.ts'
-import { RETURN } from '../runtime/signals.ts'
+import { Node } from './index.ts'
+import { ReturnSignal } from '../runtime/signals.ts'
 
 const DEFAULT_RETURN_VALUE = new NumberValue(0)
 
@@ -30,7 +36,7 @@ export class DeclareFunction extends Executable {
         try {
             this.body.execute(scope, callFrame)
         } catch (e) {
-            if (e !== RETURN) {
+            if (!(e instanceof ReturnSignal)) {
                 throw e
             }
         }
@@ -42,26 +48,25 @@ export class DeclareFunction extends Executable {
         try {
             return scope.getVariable('결과')
         } catch (e) {
-            if (this.isNotDefinedVariable(e)) {
+            if (e instanceof NotDefinedVariableError) {
                 return DEFAULT_RETURN_VALUE
             }
 
             throw e
         }
     }
-
-    isNotDefinedVariable(e: unknown) {
-        return e instanceof YaksokError && e.name === 'NOT_DEFINED_VARIABLE'
-    }
 }
 
 export class FunctionInvoke extends Evaluable {
     #name: string
-    params: { [key: string]: Evaluable }
+    params: { [key: string]: Node }
 
     constructor(props: Record<string, Evaluable> & { name?: string }) {
         super()
-        if (!props.name) throw new YaksokError('FUNCTION_MUST_HAVE_NAME')
+        if (!props.name)
+            throw new FunctionMustHaveNameError({
+                position: this.position,
+            })
 
         this.#name = props.name!
         delete props['name']
@@ -80,19 +85,28 @@ export class FunctionInvoke extends Evaluable {
             if (value instanceof Evaluable) {
                 args[key] = value.execute(scope, callFrame)
             } else {
-                throw new YaksokError(
-                    'NOT_EVALUABLE_EXPRESSION',
-                    {},
-                    { node: JSON.stringify(value) },
-                )
+                throw new NotEvaluableParameterError({
+                    position: value.position,
+                    callFrame,
+                    resource: {
+                        node: value,
+                    },
+                })
             }
         }
+        try {
+            const func = scope.getFunction(name)
 
-        const func = scope.getFunction(name)
+            const childScope = new Scope(scope, args)
+            const result = func.run(childScope, callFrame)
 
-        const childScope = new Scope(scope, args)
-        const result = func.run(childScope, callFrame)
+            return result || DEFAULT_RETURN_VALUE
+        } catch (e) {
+            if (e instanceof NotDefinedFunctionError) {
+                e.position = this.position
+            }
 
-        return result || DEFAULT_RETURN_VALUE
+            throw e
+        }
     }
 }

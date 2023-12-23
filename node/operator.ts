@@ -1,4 +1,7 @@
-import { YaksokError } from '../errors.ts'
+import {
+    InvalidNumberOfOperandsError,
+    InvalidTypeForOperatorError,
+} from '../errors.ts'
 import { Operator, ValueTypes } from './base.ts'
 import {
     BooleanValue,
@@ -14,7 +17,14 @@ export class PlusOperator extends Operator {
 
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
         }
 
         const [left, right] = operands
@@ -35,7 +45,13 @@ export class PlusOperator extends Operator {
             return new StringValue(left.value.toString() + right.value)
         }
 
-        throw new YaksokError('INVALID_TYPE_FOR_PLUS_OPERATOR')
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
     }
 }
 
@@ -46,7 +62,14 @@ export class MinusOperator extends Operator {
 
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
         }
 
         const [left, right] = operands
@@ -54,7 +77,13 @@ export class MinusOperator extends Operator {
             return new NumberValue(left.value - right.value)
         }
 
-        throw new YaksokError('INVALID_TYPE_FOR_MINUS_OPERATOR')
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
     }
 }
 
@@ -65,7 +94,14 @@ export class MultiplyOperator extends Operator {
 
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
         }
 
         const [left, right] = operands
@@ -77,7 +113,17 @@ export class MultiplyOperator extends Operator {
             return new StringValue(left.value.repeat(right.value))
         }
 
-        throw new YaksokError('INVALID_TYPE_FOR_MULTIPLY_OPERATOR')
+        if (left instanceof NumberValue && right instanceof StringValue) {
+            return new StringValue(right.value.repeat(left.value))
+        }
+
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
     }
 }
 
@@ -88,7 +134,14 @@ export class DivideOperator extends Operator {
 
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
         }
 
         const [left, right] = operands
@@ -97,14 +150,27 @@ export class DivideOperator extends Operator {
             return new NumberValue(left.value / right.value)
         }
 
-        throw new YaksokError('INVALID_TYPE_FOR_DIVIDE_OPERATOR')
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
     }
 }
 
 export class EqualOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
         }
 
         const [left, right] = operands
@@ -122,7 +188,14 @@ export class EqualOperator extends Operator {
 export class AndOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
         }
 
         const [left, right] = operands
@@ -131,7 +204,13 @@ export class AndOperator extends Operator {
             !(left instanceof BooleanValue) ||
             !(right instanceof BooleanValue)
         ) {
-            throw new YaksokError('INVALID_TYPE_FOR_AND_OPERATOR')
+            throw new InvalidTypeForOperatorError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    operands,
+                },
+            })
         }
 
         return new BooleanValue(left.value && right.value)
@@ -141,7 +220,14 @@ export class AndOperator extends Operator {
 export class GreaterThanOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
         }
 
         const [left, right] = operands
@@ -150,14 +236,27 @@ export class GreaterThanOperator extends Operator {
             return new BooleanValue(left.value > right.value)
         }
 
-        throw new YaksokError('INVALID_TYPE_FOR_GREATER_THAN_OPERATOR')
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
     }
 }
 
 export class LessThanOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
         }
 
         const [left, right] = operands
@@ -166,14 +265,27 @@ export class LessThanOperator extends Operator {
             return new BooleanValue(left.value < right.value)
         }
 
-        throw new YaksokError('INVALID_TYPE_FOR_LESS_THAN_OPERATOR')
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
     }
 }
 
 export class GreaterThanOrEqualOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
         }
 
         const [left, right] = operands
@@ -182,14 +294,27 @@ export class GreaterThanOrEqualOperator extends Operator {
             return new BooleanValue(left.value >= right.value)
         }
 
-        throw new YaksokError('INVALID_TYPE_FOR_GREATER_THAN_OR_EQUAL_OPERATOR')
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
     }
 }
 
 export class LessThanOrEqualOperator extends Operator {
     call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
-            throw new YaksokError('INVALID_NUMBER_OF_OPERANDS')
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
         }
 
         const [left, right] = operands
@@ -198,6 +323,12 @@ export class LessThanOrEqualOperator extends Operator {
             return new BooleanValue(left.value <= right.value)
         }
 
-        throw new YaksokError('INVALID_TYPE_FOR_LESS_OR_EQUAL_OPERATOR')
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
     }
 }

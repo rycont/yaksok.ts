@@ -1,4 +1,9 @@
-import { YaksokError } from '../../errors.ts'
+import {
+    IndentIsNotMultipleOf4Error,
+    UnexpectedCharError,
+    UnexpectedEndOfCodeError,
+    YaksokError,
+} from '../../errors.ts'
 import {
     Expression,
     Operator,
@@ -76,8 +81,12 @@ export class Tokenizer {
                 continue
             }
 
-            throw new YaksokError('UNEXPECTED_CHAR', undefined, {
-                token: char,
+            throw new UnexpectedCharError({
+                position: this.position,
+                resource: {
+                    char,
+                    parts: '코드',
+                },
             })
         }
     }
@@ -118,7 +127,13 @@ export class Tokenizer {
             return
         }
 
-        if (spaces % 4) throw new YaksokError('INDENT_IS_NOT_MULTIPLE_OF_4')
+        if (spaces % 4)
+            throw new IndentIsNotMultipleOf4Error({
+                position: this.position,
+                resource: {
+                    indent: spaces,
+                },
+            })
         this.tokens.push(new Indent(spaces / 4, this.position))
     }
 
@@ -157,7 +172,13 @@ export class Tokenizer {
             const nextChar = this.shift()
 
             if (nextChar === '"') break
-            if (!nextChar) throw new YaksokError('UNEXPECTED_END_OF_CODE')
+            if (!nextChar)
+                throw new UnexpectedEndOfCodeError({
+                    position: this.position,
+                    resource: {
+                        parts: '문자열',
+                    },
+                })
 
             word += nextChar
         }
@@ -201,7 +222,13 @@ export class Tokenizer {
 
     shift() {
         const char = this.chars.shift()
-        if (!char) throw new YaksokError('UNEXPECTED_END_OF_CODE')
+        if (!char)
+            throw new UnexpectedEndOfCodeError({
+                position: this.position,
+                resource: {
+                    parts: '코드',
+                },
+            })
 
         if (char === '\n') {
             this.line++

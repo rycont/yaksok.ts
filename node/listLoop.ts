@@ -1,7 +1,10 @@
-import { YaksokError } from '../errors.ts'
+import {
+    ListNotEvaluatedError,
+    NotEnumerableValueForListLoopError,
+} from '../errors.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
-import { BREAK } from '../runtime/signals.ts'
+import { BreakSignal } from '../runtime/signals.ts'
 import { Evaluable, Executable } from './base.ts'
 import { Block } from './block.ts'
 import { List } from './list.ts'
@@ -27,17 +30,19 @@ export class ListLoop extends Executable {
         const list = this.list.execute(scope, callFrame)
 
         if (!(list instanceof List)) {
-            throw new YaksokError(
-                'NOT_ENUMERABLE_VALUE_FOR_LIST_LOOP',
-                {},
-                {
-                    type: list.constructor.name,
+            throw new NotEnumerableValueForListLoopError({
+                callFrame,
+                resource: {
+                    value: list,
                 },
-            )
+                position: this.position,
+            })
         }
 
         if (!list.items) {
-            throw new YaksokError('LIST_NOT_EVALUATED')
+            throw new ListNotEvaluatedError({
+                position: this.position,
+            })
         }
 
         try {
@@ -48,7 +53,7 @@ export class ListLoop extends Executable {
                 this.body.execute(scope, callFrame)
             }
         } catch (e) {
-            if (e !== BREAK) throw e
+            if (!(e instanceof BreakSignal)) throw e
         }
     }
 }

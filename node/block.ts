@@ -1,9 +1,8 @@
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Executable, Node } from './index.ts'
 import { Scope } from '../runtime/scope.ts'
-import { CannotParseError, YaksokError } from '../errors.ts'
+import { CannotParseError } from '../errors.ts'
 import { EOL } from './misc.ts'
-import { NODE_NAMES } from '../nodeNames.ts'
 
 export class Block extends Executable {
     children: Node[]
@@ -22,8 +21,12 @@ export class Block extends Executable {
             } else if (child instanceof EOL) {
                 continue
             } else {
-                throw new CannotParseError(child.position, callFrame, {
-                    part: child,
+                throw new CannotParseError({
+                    position: child.position,
+                    callFrame,
+                    resource: {
+                        part: child,
+                    },
                 })
             }
         }
