@@ -39,7 +39,7 @@ jobs:
               run: deno test --allow-read -A
 
             - name: Run build
-              run: deno run --allow-read --allow-write --allow-net --allow-env build.ts >> yaksok.js
+              run: deno run --allow-read --allow-write --allow-net --allow-env build.ts > yaksok.js
 
             - name: Release
               uses: softprops/action-gh-release@v1
