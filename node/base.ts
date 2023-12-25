@@ -71,6 +71,10 @@ export class Expression extends Node {
     constructor(public value: string, public position?: Position) {
         super()
     }
+
+    toPrint() {
+        return this.value
+    }
 }
 
 export type PrimitiveTypes = NumberValue | StringValue | BooleanValue
