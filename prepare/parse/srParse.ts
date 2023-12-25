@@ -69,22 +69,18 @@ export function callParseRecursively(_tokens: Node[], patterns: Rule[]) {
 
     let parsedTokens: Node[] = tokens
 
-    while (true) {
-        let changed = false
-
+    loop1: while (true) {
         for (const internalPatterns of internalPatternsByLevel) {
             const result = SRParse(parsedTokens, [
                 ...internalPatterns,
                 ...patterns,
             ])
-
-            if (!result.changed) continue
-
-            changed = true
             parsedTokens = result.tokens
+
+            if (result.changed) continue loop1
         }
 
-        if (!changed) break
+        break
     }
 
     return new Block(parsedTokens)
