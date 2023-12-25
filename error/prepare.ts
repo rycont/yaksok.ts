@@ -1,6 +1,6 @@
 import { Position, Node } from '../node/base.ts'
 import { NODE_NAMES } from './nodeNames.ts'
-import { YaksokError, bold } from './common.ts'
+import { YaksokError, bold, dim } from './common.ts'
 
 export class CannotParseError extends YaksokError {
     constructor(props: {
@@ -19,10 +19,11 @@ export class CannotParseError extends YaksokError {
                 '"' + props.resource.part.toPrint() + '"',
             )}는 실행할 수 있는 코드가 아니에요.`
         } else {
-            this.message = `${'"' +
+            this.message = `${
+                '"' +
                 bold(NODE_NAMES[props.resource.part.constructor.name]) +
                 '"'
-                }는 실행할 수 있는 코드가 아니에요.`
+            }는 실행할 수 있는 코드가 아니에요.`
         }
     }
 }
@@ -72,8 +73,29 @@ export class UnexpectedTokenError extends YaksokError {
     }) {
         super(props)
 
-        this.message = `토큰 ${props.resource.node.constructor.name
-            }(${JSON.stringify(props.resource.node)})는 ${props.resource.parts
-            }에 사용할 수 없어요.`
+        this.message = `토큰 ${
+            props.resource.node.constructor.name
+        }(${JSON.stringify(props.resource.node)})는 ${
+            props.resource.parts
+        }에 사용할 수 없어요.`
+    }
+}
+
+export class EntryPointNotExistError extends YaksokError {
+    constructor(props: {
+        resource: {
+            entryPoint: string
+            files: string[]
+        }
+    }) {
+        super(props)
+
+        if (props.resource.files.length === 0) {
+            this.message = '실행할 코드가 없어요.'
+        } else {
+            this.message = `주어진 코드(${dim(
+                props.resource.files.join(', '),
+            )})에서 ${bold(props.resource.entryPoint)} 파일을 찾을 수 없어요. `
+        }
     }
 }

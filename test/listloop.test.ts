@@ -4,19 +4,21 @@ import { NotEnumerableValueForListLoopError } from '../error/index.ts'
 import { CannotParseError } from '../error/prepare.ts'
 
 Deno.test('Loop for list', () => {
-    const _consoleLog = console.log
     let printed = ''
 
-    console.log = (...items) => (printed += items.join(' ') + '\n')
-    yaksok(`
+    yaksok(
+        `
 무지개색:["빨강", "주황", "노랑", "초록", "파랑", "남색", "보라"]
 반복 무지개색 의 색 마다
     # 아래 문장이 무지개색에 속한 색 마다 한번씩 실행됩니다.
     만약 색 = "파랑" 이면
         반복 그만
     색 보여주기    
-`)
-    console.log = _consoleLog
+`,
+        {
+            stdout: (message) => (printed += message + '\n'),
+        },
+    )
 
     assertEquals(
         printed,

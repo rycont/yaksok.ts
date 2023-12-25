@@ -33,6 +33,7 @@ import {
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Formula } from '../node/calculation.ts'
+import { yaksok } from '../index.ts'
 
 Deno.test('Parse list', async (context) => {
     const code = `
@@ -101,15 +102,13 @@ Deno.test('Print list', () => {
 목록 보여주기
 `
 
-    const _consoleLog = console.log
     let printed = ''
 
-    console.log = (...items) => (printed += items.join(' '))
+    yaksok(code, {
+        stdout: (message) => (printed += message + '\n'),
+    })
 
-    run(parse(tokenize(code)))
-
-    assertEquals(printed, '[1, 3, 5, 7, 9]')
-    console.log = _consoleLog
+    assertEquals(printed, '[1, 3, 5, 7, 9]\n')
 })
 
 Deno.test('Get list element', () => {

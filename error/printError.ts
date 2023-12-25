@@ -21,7 +21,7 @@ export function printError({ error, code }: PrintErrorProps) {
 
     output += '> ' + error.message + '\n\n'
 
-    if (!code || !error.position) return
+    if (!code || !error.position) return output
 
     output += '┌─────\n'
     output += getHintCode(error.position, code) + '\n'
@@ -50,4 +50,6 @@ function getHintCode(position: Position, code: string) {
 
         output += '│  \x1b[2m' + lineNum + '  ' + lineText + '\x1b[0m' + '\n'
     }
+
+    return output
 }
