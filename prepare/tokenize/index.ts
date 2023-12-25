@@ -28,7 +28,7 @@ export class Tokenizer {
     column = 0
 
     static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~']
-    static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')']
+    static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')', '@']
 
     constructor(code: string, private disablePosition = false) {
         this.chars = this.preprocess(code)
