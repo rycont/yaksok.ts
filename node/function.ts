@@ -57,11 +57,21 @@ export class DeclareFunction extends Executable {
     }
 }
 
+interface Params {
+    [key: string]: Node
+}
+
 export class FunctionInvoke extends Evaluable {
     #name: string
-    params: { [key: string]: Node }
+    params: Params
+    computedParams?: { [key: string]: ValueTypes }
 
-    constructor(props: Record<string, Evaluable> & { name?: string }) {
+    constructor(
+        props: Record<string, Evaluable> & {
+            name?: string
+            computedParams?: typeof FunctionInvoke.prototype.computedParams
+        },
+    ) {
         super()
         if (!props.name)
             throw new FunctionMustHaveNameError({
@@ -71,6 +81,9 @@ export class FunctionInvoke extends Evaluable {
         this.#name = props.name!
         delete props['name']
 
+        this.computedParams = props.computedParams
+        delete props['computedParams']
+
         this.params = props
     }
 
@@ -78,21 +91,9 @@ export class FunctionInvoke extends Evaluable {
         const callFrame = new CallFrame(this, _callFrame)
         const name = this.#name
 
-        const args: { [key: string]: ValueTypes } = {}
+        const args =
+            this.computedParams || getParams(this.params, scope, callFrame)
 
-        for (const key in this.params) {
-            const value = this.params[key]
-            if (value instanceof Evaluable) {
-                args[key] = value.execute(scope, callFrame)
-            } else {
-                throw new NotEvaluableParameterError({
-                    position: value.position,
-                    resource: {
-                        node: value,
-                    },
-                })
-            }
-        }
         try {
             const func = scope.getFunction(name)
 
@@ -111,4 +112,25 @@ export class FunctionInvoke extends Evaluable {
             throw e
         }
     }
+}
+
+function getParams(params: Params, scope: Scope, callFrame: CallFrame) {
+    const args: { [key: string]: ValueTypes } = {}
+
+    for (const key in params) {
+        const value = params[key]
+
+        if (value instanceof Evaluable) {
+            args[key] = value.execute(scope, callFrame)
+        } else {
+            throw new NotEvaluableParameterError({
+                position: value.position,
+                resource: {
+                    node: value,
+                },
+            })
+        }
+    }
+
+    return args
 }
