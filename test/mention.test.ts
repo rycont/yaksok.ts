@@ -3,7 +3,7 @@ import { Expression, Keyword } from '../node/base.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { Mention } from '../node/index.ts'
 import { EOL } from '../node/misc.ts'
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 
 Deno.test('Parse Mentioning', async (context) => {
     const code = '@아두이노 모델명 보여주기'
@@ -23,7 +23,7 @@ Deno.test('Parse Mentioning', async (context) => {
     })
 
     await context.step('Parse Mentioning', () => {
-        const parsed = parse(tokens)
+        const parsed = _LEGACY__parse(tokens)
 
         assertEquals(parsed.children, [
             new EOL(),
@@ -37,6 +37,18 @@ Deno.test('Parse Mentioning', async (context) => {
         ])
     })
 })
+
+// console.log(
+//     parse(
+//         tokenize(
+//             `
+// 만약 @아두이노 모델명 = "Arduino Uno" 라면
+//     @아두이노 버전 보여주기
+// `,
+//             true,
+//         ),
+//     ),
+// )
 
 // Deno.test('Mentioning', () => {
 //     yaksok({

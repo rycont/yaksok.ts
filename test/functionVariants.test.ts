@@ -1,5 +1,5 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 
 import { run } from '../runtime/run.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
@@ -16,7 +16,7 @@ Deno.test('Function Josa Variants', () => {
 테스트4: "햄버거"를 "수현"과 먹기
 `
 
-    const result = run(parse(tokenize(code)))
+    const result = run(_LEGACY__parse(tokenize(code)))
 
     assertEquals(
         result.getVariable('테스트1').value,
@@ -43,7 +43,7 @@ Deno.test('Broken function declaration', () => {
 `
 
     try {
-        run(parse(tokenize(code)))
+        run(_LEGACY__parse(tokenize(code)))
         unreachable()
     } catch (e) {
         assertIsError(e, UnexpectedTokenError)

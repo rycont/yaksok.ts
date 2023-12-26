@@ -1,9 +1,6 @@
 import { assertEquals } from 'assert'
 
 import { BooleanValue } from '../node/index.ts'
-import { tokenize } from '../prepare/tokenize/index.ts'
-import { parse } from '../prepare/parse/index.ts'
-import { run } from '../runtime/run.ts'
 import { yaksok } from '../index.ts'
 
 Deno.test('Number to print', () => {

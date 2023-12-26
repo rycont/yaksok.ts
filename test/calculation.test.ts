@@ -1,5 +1,5 @@
 import { assertEquals } from 'assert'
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import { NumberValue } from '../node/primitive.ts'
 
 import { run } from '../runtime/run.ts'
@@ -11,7 +11,7 @@ Deno.test('Operation with parenthesis', () => {
 값2: 10 * (2 + 10)
 `
 
-    const result = run(parse(tokenize(code)))
+    const result = run(_LEGACY__parse(tokenize(code)))
     assertEquals(result.getVariable('값1'), new NumberValue(30))
     assertEquals(result.getVariable('값2'), new NumberValue(120))
 })

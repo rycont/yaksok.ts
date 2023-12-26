@@ -12,17 +12,16 @@ export function SRParse(_tokens: Node[], rules: Rule[]) {
     tokenloop: while (true) {
         for (const rule of rules) {
             if (stack.length < rule.pattern.length) continue
-
             const stackSlice = stack.slice(-rule.pattern.length)
-            const isSatisfies = satisfiesPattern(stackSlice, rule.pattern)
 
-            if (!isSatisfies) continue
+            const satisfies = satisfiesPattern(stackSlice, rule.pattern)
+
+            if (!satisfies) continue
             const reduced = reduce(stackSlice, rule)
 
             stack.splice(-rule.pattern.length, rule.pattern.length, reduced)
 
             changed = true
-
             continue tokenloop
         }
 

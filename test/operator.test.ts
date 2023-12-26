@@ -23,7 +23,7 @@ import {
     Variable,
 } from '../node/index.ts'
 import { Operator } from '../node/base.ts'
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import { run } from '../runtime/run.ts'
 
 import {
@@ -81,7 +81,7 @@ Deno.test('Run Binary Operation', () => {
         new EOL(),
     ])
 
-    const node = parse(result)
+    const node = _LEGACY__parse(result)
 
     assertEquals(
         node,
@@ -111,7 +111,7 @@ Deno.test('Operator String and String', async (context) => {
 계산: "Hello" + " World" + "!"
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(
             result.getVariable('계산'),
@@ -125,7 +125,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
         }
@@ -136,7 +136,7 @@ Deno.test('Operator String and String', async (context) => {
             const code = `
 계산: "Hello" - " World" - "!"
             `
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -148,7 +148,7 @@ Deno.test('Operator String and String', async (context) => {
             const code = `
 계산: "Hello" * " World"
             `
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -160,7 +160,7 @@ Deno.test('Operator String and String', async (context) => {
             const code = `
 계산: "Hello" / " World"
             `
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -172,7 +172,7 @@ Deno.test('Operator String and String', async (context) => {
 계산: "Hello" = " World"
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanValue(false))
     })
@@ -183,7 +183,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
         } catch (e) {
             assertIsError(e, InvalidTypeForCompareError)
         }
@@ -194,7 +194,7 @@ Deno.test('Operator String and String', async (context) => {
 계산: "Hello" <= " World"
         `
         try {
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
         } catch (e) {
             assertIsError(e, InvalidTypeForCompareError)
         }
@@ -206,7 +206,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
         } catch (e) {
             assertIsError(e, InvalidTypeForCompareError)
         }
@@ -218,7 +218,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
         } catch (e) {
             assertIsError(e, InvalidTypeForCompareError)
         }
@@ -231,7 +231,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 + 2 + 3
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new NumberValue(6))
     })
@@ -241,7 +241,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 - 2 - 3
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new NumberValue(-4))
     })
@@ -251,7 +251,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 * 2 * 3
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new NumberValue(6))
     })
@@ -261,7 +261,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 / 2 / 3
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new NumberValue(1 / 6))
     })
@@ -271,7 +271,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 = 2
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanValue(false))
     })
@@ -281,7 +281,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 < 2
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanValue(true))
     })
@@ -291,7 +291,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 <= 2
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanValue(true))
     })
@@ -301,7 +301,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 > 2
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanValue(false))
     })
@@ -311,7 +311,7 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 >= 2
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new BooleanValue(false))
     })
@@ -323,7 +323,7 @@ Deno.test('Operator Number and String', async (context) => {
         계산: 1 + " World"
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new StringValue('1 World'))
     })
@@ -333,7 +333,7 @@ Deno.test('Operator Number and String', async (context) => {
             const code = `
             계산: 1 - " World"
             `
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -344,7 +344,7 @@ Deno.test('Operator Number and String', async (context) => {
         const code = `
             계산: 2 * " World"
             `
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(
             result.getVariable('계산'),
@@ -357,7 +357,7 @@ Deno.test('Operator Number and String', async (context) => {
             const code = `
             계산: 1 / " World"
             `
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -371,7 +371,7 @@ Deno.test('Operator String and Number', async (context) => {
         계산: "Hello" + 1
         `
 
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(result.getVariable('계산'), new StringValue('Hello1'))
     })
@@ -381,7 +381,7 @@ Deno.test('Operator String and Number', async (context) => {
             const code = `
             계산: "Hello" - 1
             `
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -392,7 +392,7 @@ Deno.test('Operator String and Number', async (context) => {
         const code = `
             계산: "Hello" * 3
             `
-        const result = run(parse(tokenize(code)))
+        const result = run(_LEGACY__parse(tokenize(code)))
 
         assertEquals(
             result.getVariable('계산'),
@@ -405,7 +405,7 @@ Deno.test('Operator String and Number', async (context) => {
             const code = `
             계산: "Hello" / 1
             `
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -417,7 +417,7 @@ Deno.test('Operator String and Number', async (context) => {
 계산: "Hello" 이고 1
             `
         try {
-            run(parse(tokenize(code)))
+            run(_LEGACY__parse(tokenize(code)))
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -433,7 +433,7 @@ Deno.test('Operator Boolean and Boolean', () => {
 계산: 식1 이고 식2
     `
 
-    const result = run(parse(tokenize(code)))
+    const result = run(_LEGACY__parse(tokenize(code)))
     assertEquals(result.getVariable('계산'), new BooleanValue(true))
 })
 
@@ -568,7 +568,7 @@ Deno.test('Compare equity list and list', () => {
     `
 
     try {
-        run(parse(tokenize(code)))
+        run(_LEGACY__parse(tokenize(code)))
         unreachable()
     } catch (e) {
         assertIsError(e)

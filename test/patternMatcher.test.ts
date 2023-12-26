@@ -2,7 +2,7 @@ import { assertEquals } from 'assert'
 
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { StringValue } from '../node/primitive.ts'
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import { Keyword } from '../node/base.ts'
 import {
     Formula,
@@ -18,7 +18,7 @@ Deno.test('Matching case: Wrapping class inherits from child class', () => {
 이름: "홍길" + "동"    
 `
 
-    const result = parse(tokenize(code, true))
+    const result = _LEGACY__parse(tokenize(code, true))
 
     assertEquals(
         result,

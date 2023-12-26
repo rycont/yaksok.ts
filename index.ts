@@ -1,11 +1,11 @@
-import { parse } from './prepare/parse/index.ts'
+import { _LEGACY__parse, parse } from './prepare/parse/index.ts'
 import { run } from './runtime/run.ts'
-import { Node } from './node/index.ts'
+import { Block, Node } from './node/index.ts'
 import { Scope } from './runtime/scope.ts'
 import { tokenize } from './prepare/tokenize/index.ts'
 import { YaksokError } from './error/common.ts'
 import { printError } from './error/printError.ts'
-import { EntryPointNotExistError } from './error/index.ts'
+import { Rule } from './prepare/parse/rule.ts'
 
 interface YaksokConfig {
     stdout: (message: string) => void
@@ -19,49 +19,33 @@ const defaultConfig: YaksokConfig = {
     entryPoint: 'main',
 }
 
-export class Yaksok {
+export class CodeRunner {
     functionDeclaration: Node[][] = []
     scope: Scope
+    ast: Block
+    exports: Rule[] = []
 
-    stdout: YaksokConfig['stdout']
-    stderr: YaksokConfig['stderr']
-    entryPoint: YaksokConfig['entryPoint']
-
-    constructor(
-        public codes: Record<string, string>,
-        config: Partial<YaksokConfig> = {},
-    ) {
-        const { stdout, stderr, entryPoint } = {
-            ...defaultConfig,
-            ...config,
-        }
-
-        this.stdout = stdout
-        this.stderr = stderr
-        this.entryPoint = entryPoint
-
+    constructor(private code: string, private runtime: Yaksok) {
         this.scope = new Scope({
-            runtime: this,
+            runtime: this.runtime,
         })
+
+        const parseResult = parse(tokenize(code), this.runtime)
+
+        this.ast = parseResult.ast
+        this.exports = parseResult.dynamicRules
     }
 
     run() {
-        this.assertEntryCodeExists()
-
-        const code = this.codes[this.entryPoint]
-
-        const tokens = tokenize(code)
-        const ast = parse(tokens)
-
         try {
-            return run(ast, this.scope, code)
+            return run(this.ast, this.scope, this.code)
         } catch (error) {
             if (error instanceof YaksokError) {
-                this.stderr(
+                this.runtime.stderr(
                     printError({
-                        error,
-                        code,
+                        code: this.code,
                         runtime: this,
+                        error,
                     }),
                 )
             }
@@ -69,18 +53,36 @@ export class Yaksok {
             throw error
         }
     }
+}
 
-    assertEntryCodeExists() {
-        if (this.entryPoint in this.codes) {
-            return
+export class Yaksok implements YaksokConfig {
+    stdout: YaksokConfig['stdout']
+    stderr: YaksokConfig['stderr']
+    entryPoint: YaksokConfig['entryPoint']
+
+    runners: Record<string, CodeRunner> = {}
+
+    constructor(
+        public files: Record<string, string>,
+        config: Partial<YaksokConfig>,
+    ) {
+        this.stdout = config.stdout || defaultConfig.stdout
+        this.stderr = config.stderr || defaultConfig.stderr
+        this.entryPoint = config.entryPoint || defaultConfig.entryPoint
+    }
+
+    getRunner(filename: string) {
+        if (filename in this.runners) {
+            return this.runners[filename]
         }
 
-        throw new EntryPointNotExistError({
-            resource: {
-                entryPoint: this.entryPoint,
-                files: Object.keys(this.codes),
-            },
-        })
+        this.runners[filename] = new CodeRunner(this.files[filename], this)
+        return this.runners[filename]
+    }
+
+    run(filename = this.entryPoint) {
+        const runner = this.getRunner(filename)
+        return runner.run()
     }
 }
 
@@ -88,13 +90,14 @@ export function yaksok(
     code: string | Record<string, string>,
     config: Partial<YaksokConfig> = {},
 ) {
-    const codes: Record<string, string> =
+    const yaksok = new Yaksok(
         typeof code === 'string'
             ? {
                   [defaultConfig.entryPoint]: code,
               }
-            : code
+            : code,
+        config,
+    )
 
-    const runtime = new Yaksok(codes, config)
-    return runtime.run()
+    return yaksok.run()
 }

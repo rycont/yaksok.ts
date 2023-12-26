@@ -1,7 +1,7 @@
 import { assertIsError, unreachable } from 'assert'
 
 import { tokenize } from '../prepare/tokenize/index.ts'
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import { CannotParseError } from '../error/index.ts'
 import { run } from '../runtime/run.ts'
 
@@ -12,7 +12,7 @@ Deno.test('Broken Blocks', () => {
 `
 
     try {
-        run(parse(tokenize(code)))
+        run(_LEGACY__parse(tokenize(code)))
         unreachable()
     } catch (e) {
         assertIsError(e, CannotParseError)

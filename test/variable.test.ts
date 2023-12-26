@@ -1,6 +1,6 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { tokenize } from '../prepare/tokenize/index.ts'
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import {
     Block,
     SetVariable,
@@ -18,7 +18,7 @@ import { Print } from '../node/misc.ts'
 import { NotDefinedVariableError } from '../error/variable.ts'
 
 Deno.test('Parse Variable', () => {
-    const node = parse(tokenize('이름: 1', true))
+    const node = _LEGACY__parse(tokenize('이름: 1', true))
 
     assertEquals(
         node,
@@ -38,7 +38,7 @@ Deno.test('Parse variable with 이전 keyword', () => {
 나이: 1
 나이: 이전 나이 + 1    
 `
-    const node = parse(tokenize(code, true))
+    const node = _LEGACY__parse(tokenize(code, true))
 
     assertEquals(
         node,
@@ -66,7 +66,7 @@ Deno.test('Evaluate and calculate variable', () => {
 나이: 10
 나이: 이전 나이 + 1
 `
-    const scope = run(parse(tokenize(code)))
+    const scope = run(_LEGACY__parse(tokenize(code)))
     assertEquals(scope.getVariable('나이'), new NumberValue(11))
 })
 
@@ -74,7 +74,7 @@ Deno.test('Reserved word cannot be used as variable name', () => {
     const code = `만약: 10`
 
     try {
-        run(parse(tokenize(code)))
+        run(_LEGACY__parse(tokenize(code)))
         unreachable()
     } catch (e) {
         assertIsError(e, CannotUseReservedWordForVariableNameError)

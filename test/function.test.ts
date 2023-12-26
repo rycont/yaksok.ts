@@ -1,6 +1,6 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { run } from '../runtime/run.ts'
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
 
 import {
@@ -29,7 +29,7 @@ Deno.test('Function that returns value', () => {
 
 더한결과: 10와 20를 더하기
 `
-    const result = run(parse(tokenize(code)))
+    const result = run(_LEGACY__parse(tokenize(code)))
     assertEquals(result.getVariable('더한결과'), new NumberValue(30))
 })
 
@@ -40,7 +40,7 @@ Deno.test('Function that returns nothing', () => {
 
 더한결과: 10와 20를 더하기
 `
-    const result = run(parse(tokenize(code)))
+    const result = run(_LEGACY__parse(tokenize(code)))
     assertEquals(result.getVariable('더한결과'), new NumberValue(0))
 })
 
@@ -102,7 +102,7 @@ Deno.test('Return outside function', () => {
 `
 
     try {
-        run(parse(tokenize(code)))
+        run(_LEGACY__parse(tokenize(code)))
         unreachable()
     } catch (e) {
         assertIsError(e, CannotReturnOutsideFunctionError)

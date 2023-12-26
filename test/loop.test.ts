@@ -1,7 +1,7 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { tokenize } from '../prepare/tokenize/index.ts'
 
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import {
     Block,
     EOL,
@@ -20,7 +20,7 @@ Deno.test('Parse Loop', () => {
 반복
     "Hello, World!" 보여주기
 `
-    const node = parse(tokenize(code, true))
+    const node = _LEGACY__parse(tokenize(code, true))
 
     assertEquals(
         node,
@@ -47,7 +47,7 @@ Deno.test('Run loop', () => {
     만약 횟수 = 11 이면
         반복 그만
 `
-    const result = run(parse(tokenize(code)))
+    const result = run(_LEGACY__parse(tokenize(code)))
     assertEquals(result.getVariable('횟수'), new NumberValue(11))
 })
 
@@ -58,7 +58,7 @@ Deno.test('Break outside loop', () => {
 `
 
     try {
-        run(parse(tokenize(code)))
+        run(_LEGACY__parse(tokenize(code)))
         unreachable()
     } catch (e) {
         assertIsError(e, BreakNotInLoopError)

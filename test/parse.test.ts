@@ -1,5 +1,5 @@
 import { assertEquals } from 'assert'
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import { Block } from '../node/block.ts'
 import { Formula } from '../node/calculation.ts'
 import { EOL } from '../node/misc.ts'
@@ -20,7 +20,7 @@ Deno.test('Parse with indent', () => {
     값: 3
 `
 
-    const result = parse(tokenize(code, true))
+    const result = _LEGACY__parse(tokenize(code, true))
 
     assertEquals(
         result,

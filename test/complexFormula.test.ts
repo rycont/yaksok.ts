@@ -2,7 +2,7 @@ import { assertEquals } from 'assert'
 
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { SetVariable } from '../node/variable.ts'
-import { parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import { run } from '../runtime/run.ts'
 
 function createRandomValue(depth = 0): number | (string | number)[] {
@@ -41,7 +41,7 @@ Deno.test('Compute complex formula', () => {
 나이: ${formula}
     `
 
-        const ast = parse(tokenize(code))
+        const ast = _LEGACY__parse(tokenize(code))
         const scope = run(ast)
         assertEquals(scope.getVariable('나이').value, eval(formula))
     }
@@ -52,7 +52,7 @@ Deno.test('Formula to string', () => {
 나이: 10 + 20 / (30 - 40) * 50
 `
 
-    const ast = parse(tokenize(code))
+    const ast = _LEGACY__parse(tokenize(code))
     assertEquals(
         (ast.children[1] as SetVariable).value.toPrint(),
         '10 + 20 / (30 - 40) * 50',
