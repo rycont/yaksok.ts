@@ -1,10 +1,9 @@
-import { NotEvaluableParameterError } from '../error/function.ts'
-import { Rule } from '../prepare/parse/rule.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
-import { Scope } from '../runtime/scope.ts'
+import { assert } from 'assert'
+
 import { Evaluable, Executable, Keyword, ValueTypes } from './base.ts'
-import { FunctionInvoke } from './function.ts'
-import { Node } from './index.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
+import { Rule } from '../prepare/parse/rule.ts'
+import { Scope } from '../runtime/scope.ts'
 
 export class Mention extends Executable {
     value: string
@@ -12,6 +11,10 @@ export class Mention extends Executable {
     constructor(props: { name: Keyword }) {
         super()
         this.value = props.name.value
+    }
+
+    toPrint(): string {
+        return '@' + this.value
     }
 }
 
@@ -36,7 +39,10 @@ export class MentioningScope extends Evaluable {
         this.originRule = originRule
         this.filename = filename
 
-        this.childNode = new originRule.to(rest) as Evaluable
+        const childNode = new originRule.to(rest)
+        assert(childNode instanceof Evaluable)
+
+        this.childNode = childNode
     }
 
     execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
@@ -48,5 +54,9 @@ export class MentioningScope extends Evaluable {
 
         const result = this.childNode.execute(scope, callFrame)
         return result
+    }
+
+    toPrint(): string {
+        return '@' + this.filename + ' ' + this.childNode.toPrint()
     }
 }

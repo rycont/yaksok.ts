@@ -71,10 +71,11 @@ export class FunctionInvoke extends Evaluable {
         },
     ) {
         super()
-        if (!props.name)
+        if (!props.name) {
             throw new FunctionMustHaveNameError({
                 position: this.position,
             })
+        }
 
         this.#name = props.name!
         delete props['name']
@@ -84,19 +85,10 @@ export class FunctionInvoke extends Evaluable {
 
     execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
-        const name = this.#name
-
         const args = getParams(this.params, scope, callFrame)
 
         try {
-            const func = scope.getFunction(name)
-
-            const childScope = new Scope({
-                parent: scope,
-                initialVariable: args,
-            })
-            const result = func.run(childScope, callFrame)
-
+            const result = this.invoke(scope, callFrame, args)
             return result || DEFAULT_RETURN_VALUE
         } catch (e) {
             if (e instanceof NotDefinedFunctionError) {
@@ -105,6 +97,22 @@ export class FunctionInvoke extends Evaluable {
 
             throw e
         }
+    }
+
+    invoke(
+        scope: Scope,
+        callFrame: CallFrame,
+        args: { [key: string]: ValueTypes },
+    ) {
+        const func = scope.getFunction(this.#name)
+        const childScope = new Scope({
+            parent: scope,
+            initialVariable: args,
+        })
+
+        const result = func.run(childScope, callFrame)
+
+        return result
     }
 }
 
