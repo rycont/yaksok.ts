@@ -39,43 +39,14 @@ export class MentioningScope extends Evaluable {
         this.childNode = new originRule.to(rest) as Evaluable
     }
 
-    execute(originScope: Scope, _callFrame: CallFrame): ValueTypes {
-        if (this.childNode instanceof FunctionInvoke) {
-            this.childNode.computedParams = getParamsInOriginScope(
-                this.childNode.params,
-                originScope,
-                _callFrame,
-            )
-        }
+    execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
+        const callFrame = new CallFrame(this, _callFrame)
+        const scope = _scope.createChild()
 
-        const runner = originScope.runtime!.getRunner(this.filename)
-        const mentioningScope = runner.run()
+        const moduleScope = _scope.runtime!.getRunner(this.filename).run()
+        scope.linkModule(moduleScope)
 
-        const result = this.childNode.execute(mentioningScope, _callFrame)
+        const result = this.childNode.execute(scope, callFrame)
         return result
     }
-}
-
-function getParamsInOriginScope(
-    params: { [key: string]: Node },
-    scope: Scope,
-    callFrame: CallFrame,
-) {
-    const computedParams: { [key: string]: ValueTypes } = {}
-
-    for (const key in params) {
-        const node = params[key]
-
-        if (!(node instanceof Evaluable))
-            throw new NotEvaluableParameterError({
-                position: node.position,
-                resource: {
-                    node,
-                },
-            })
-
-        computedParams[key] = node.execute(scope, callFrame)
-    }
-
-    return computedParams
 }

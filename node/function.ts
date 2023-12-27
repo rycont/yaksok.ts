@@ -64,12 +64,10 @@ interface Params {
 export class FunctionInvoke extends Evaluable {
     #name: string
     params: Params
-    computedParams?: { [key: string]: ValueTypes }
 
     constructor(
         props: Record<string, Evaluable> & {
             name?: string
-            computedParams?: typeof FunctionInvoke.prototype.computedParams
         },
     ) {
         super()
@@ -81,9 +79,6 @@ export class FunctionInvoke extends Evaluable {
         this.#name = props.name!
         delete props['name']
 
-        this.computedParams = props.computedParams
-        delete props['computedParams']
-
         this.params = props
     }
 
@@ -91,8 +86,7 @@ export class FunctionInvoke extends Evaluable {
         const callFrame = new CallFrame(this, _callFrame)
         const name = this.#name
 
-        const args =
-            this.computedParams || getParams(this.params, scope, callFrame)
+        const args = getParams(this.params, scope, callFrame)
 
         try {
             const func = scope.getFunction(name)
