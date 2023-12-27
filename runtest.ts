@@ -18,6 +18,8 @@ yaksok({
         아니면
             결과: "UNKNOWN"
 
+    "지민"/2
+
 모델명: "Arduino Uno"
 `,
 })

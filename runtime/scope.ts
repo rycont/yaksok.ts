@@ -76,17 +76,6 @@ export class Scope {
         })
     }
 
-    linkModule(moduleScope: Scope) {
-        this.functions = {
-            ...this.functions,
-            ...moduleScope.functions,
-        }
-        this.variables = {
-            ...this.variables,
-            ...moduleScope.variables,
-        }
-    }
-
     createChild(initialVariable?: Record<string, ValueTypes>) {
         return new Scope({
             parent: this,

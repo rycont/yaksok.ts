@@ -18,7 +18,7 @@ export class Mention extends Executable {
     }
 }
 
-export class MentioningScope extends Evaluable {
+export class MentionScope extends Evaluable {
     originRule: Rule
     filename: string
     childNode: Evaluable
@@ -46,13 +46,23 @@ export class MentioningScope extends Evaluable {
     }
 
     execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
-        const callFrame = new CallFrame(this, _callFrame)
+        if (this.position) {
+            this.childNode.position = {
+                line: this.position.line,
+                column: this.position.column + 1 + this.filename.length,
+            }
+        }
+
         const scope = _scope.createChild()
+        const runner = _scope.runtime!.runOnce(this.filename)
+        const moduleScope = runner.scope
 
-        const moduleScope = _scope.runtime!.getRunner(this.filename).run()
-        scope.linkModule(moduleScope)
+        moduleScope.parent = scope
 
-        const result = this.childNode.execute(scope, callFrame)
+        const result = runner.evaluateFromExtern(this.childNode)
+
+        moduleScope.parent = undefined
+
         return result
     }
 

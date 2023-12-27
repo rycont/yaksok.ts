@@ -35,6 +35,10 @@ export class Variable extends Evaluable {
             throw e
         }
     }
+
+    toPrint(): string {
+        return this.name
+    }
 }
 
 export const RESERVED_WORDS = [

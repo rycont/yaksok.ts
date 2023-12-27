@@ -3,7 +3,10 @@ import { Expression, Keyword } from '../node/base.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { Mention } from '../node/index.ts'
 import { EOL } from '../node/misc.ts'
-import { _LEGACY__parse } from '../prepare/parse/index.ts'
+import { _LEGACY__parse, parse } from '../prepare/parse/index.ts'
+import { yaksok } from '../index.ts'
+import { Formula } from '../node/calculation.ts'
+import { MentionScope } from '../node/mention.ts'
 
 Deno.test('Parse Mentioning', async (context) => {
     const code = '@아두이노 모델명 보여주기'
@@ -38,24 +41,60 @@ Deno.test('Parse Mentioning', async (context) => {
     })
 })
 
-// console.log(
-//     parse(
-//         tokenize(
-//             `
-// 만약 @아두이노 모델명 = "Arduino Uno" 라면
-//     @아두이노 버전 보여주기
-// `,
-//             true,
-//         ),
-//     ),
-// )
+Deno.test('Mentioning', () => {
+    let stdout = ''
+    const result = yaksok(
+        {
+            main: `
+보드_시리얼: "1032"
 
-// Deno.test('Mentioning', () => {
-//     yaksok({
-//         main: `@아두이노 모델명 보여주기
-// `,
-//         아두이노: `
-// 모델명: "Arduino Uno"
-// `,
-//     })
-// })
+만약 @아두이노 모델명 = "Arduino Uno" 이면
+    "아두이노 모델명이 맞습니다." 보여주기
+    @아두이노 보드_시리얼 버전 보여주기
+    `,
+            아두이노: `
+약속 시리얼 "버전"
+    만약 시리얼 = "1032" 이면
+        결과: "1.0.0"
+    아니면
+        만약 시리얼 = "1033" 이면
+            결과: "1.0.1"
+        아니면
+            결과: "UNKNOWN"
+
+모델명: "Arduino Uno"
+    `,
+        },
+        {
+            stdout: (str) => (stdout += str + '\n'),
+        },
+    )
+
+    assertEquals(
+        stdout,
+        `아두이노 모델명이 맞습니다.
+1.0.0
+`,
+    )
+
+    // const toPrint = (
+    //     (result.runtime?.runners.main.ast.children[2].condition as Formula)
+    //         .terms[0] as MentionScope
+    // ).toPrint()
+
+    // assertEquals(toPrint, '@아두이노 모델명')
+})
+
+Deno.test('Mentioning to string', () => {
+    const code = parse(
+        tokenize(
+            `
+@아두이노 모델명 보여주기
+`,
+            true,
+        ),
+    )
+
+    const mentionNode = code.ast.children[1]
+    assertEquals(mentionNode.toPrint(), '@아두이노')
+})

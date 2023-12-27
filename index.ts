@@ -1,11 +1,14 @@
 import { _LEGACY__parse, parse } from './prepare/parse/index.ts'
-import { run } from './runtime/run.ts'
+import { evaluate, run } from './runtime/run.ts'
 import { Block, Node } from './node/index.ts'
 import { Scope } from './runtime/scope.ts'
 import { tokenize } from './prepare/tokenize/index.ts'
 import { YaksokError } from './error/common.ts'
 import { printError } from './error/printError.ts'
 import { Rule } from './prepare/parse/rule.ts'
+import { CallFrame } from './runtime/callFrame.ts'
+import { Evaluable } from './node/base.ts'
+import { ErrorInModuleError } from './error/index.ts'
 
 interface YaksokConfig {
     stdout: (message: string) => void
@@ -25,7 +28,11 @@ export class CodeRunner {
     ast: Block
     exports: Rule[] = []
 
-    constructor(private code: string, private runtime: Yaksok) {
+    constructor(
+        private code: string,
+        private runtime: Yaksok,
+        private filename: string,
+    ) {
         this.scope = new Scope({
             runtime: this.runtime,
         })
@@ -38,7 +45,7 @@ export class CodeRunner {
 
     run() {
         try {
-            return run(this.ast, this.scope, this.code)
+            return run(this.ast, this.scope)
         } catch (error) {
             if (error instanceof YaksokError) {
                 this.runtime.stderr(
@@ -53,6 +60,29 @@ export class CodeRunner {
             throw error
         }
     }
+
+    evaluateFromExtern(node: Evaluable) {
+        try {
+            return evaluate(node, this.scope)
+        } catch (error) {
+            if (error instanceof YaksokError) {
+                this.runtime.stderr(
+                    printError({
+                        code: this.code,
+                        runtime: this,
+                        error,
+                    }),
+                )
+            }
+
+            throw new ErrorInModuleError({
+                resource: {
+                    filename: this.filename,
+                },
+                position: node.position,
+            })
+        }
+    }
 }
 
 export class Yaksok implements YaksokConfig {
@@ -61,6 +91,7 @@ export class Yaksok implements YaksokConfig {
     entryPoint: YaksokConfig['entryPoint']
 
     runners: Record<string, CodeRunner> = {}
+    ran: Record<string, boolean> = {}
 
     constructor(
         public files: Record<string, string>,
@@ -76,13 +107,24 @@ export class Yaksok implements YaksokConfig {
             return this.runners[filename]
         }
 
-        this.runners[filename] = new CodeRunner(this.files[filename], this)
+        this.runners[filename] = new CodeRunner(
+            this.files[filename],
+            this,
+            filename,
+        )
         return this.runners[filename]
     }
 
     run(filename = this.entryPoint) {
         const runner = this.getRunner(filename)
         return runner.run()
+    }
+
+    runOnce(filename = this.entryPoint) {
+        const runner = this.getRunner(filename)
+        if (!(filename in this.ran)) runner.run()
+
+        return runner
     }
 }
 

@@ -1,7 +1,7 @@
 import { Yaksok } from '../../../../index.ts'
 import { Expression, Keyword, Node } from '../../../../node/base.ts'
 import { DeclareFunction } from '../../../../node/function.ts'
-import { Mention, MentioningScope } from '../../../../node/mention.ts'
+import { Mention, MentionScope } from '../../../../node/mention.ts'
 import { Rule } from '../../rule.ts'
 
 export function getMentionedNames(tokens: Node[]) {
@@ -30,7 +30,7 @@ export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {
         const exportedRules = runner.exports
             .filter((rule) => !(rule.to instanceof DeclareFunction))
             .map((rule) => ({
-                to: MentioningScope,
+                to: MentionScope,
                 pattern: [
                     {
                         type: Mention,
