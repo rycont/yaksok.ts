@@ -1,5 +1,3 @@
-import { assert } from 'assert'
-
 import { Evaluable, Executable, Keyword, ValueTypes } from './base.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Rule } from '../prepare/parse/rule.ts'
@@ -39,9 +37,7 @@ export class MentionScope extends Evaluable {
         this.originRule = originRule
         this.filename = filename
 
-        const childNode = new originRule.to(rest)
-        assert(childNode instanceof Evaluable)
-
+        const childNode = new originRule.to(rest) as Evaluable
         this.childNode = childNode
     }
 

@@ -1,5 +1,19 @@
-import { bundle } from 'https://deno.land/x/emit@0.32.0/mod.ts'
-const result = await bundle(new URL('./index.ts', import.meta.url))
+import * as esbuild from 'https://deno.land/x/esbuild@v0.19.10/mod.js'
 
-const { code } = result
-console.log(code)
+const ts = await Deno.readTextFile('./index.ts')
+const result = await esbuild.build({
+    stdin: {
+        contents: ts,
+        loader: 'ts',
+        resolveDir: '.',
+    },
+    bundle: true,
+    write: false,
+    format: 'esm',
+    minify: true,
+    treeShaking: true,
+    keepNames: false,
+})
+
+console.log(result.outputFiles[0].text)
+esbuild.stop()
