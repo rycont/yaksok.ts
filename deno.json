@@ -4,8 +4,8 @@
     },
     "tasks": {
         "coverage": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
-        "build": "deno run --allow-read --allow-env --allow-run ./build.ts > yaksok.js",
-        "build-demo": "deno run --allow-read --allow-env --allow-run ./build.ts > ./demo/yaksok.js"
+        "build": "deno run --allow-net --allow-read --allow-env --allow-run ./build.ts > yaksok.js",
+        "build-demo": "deno run --allow-net --allow-read --allow-env --allow-run ./build.ts > ./demo/yaksok.js"
     },
     "lint": {
         "rules": {
