@@ -16,7 +16,10 @@ export class PrimitiveValue<T> extends Evaluable {
 }
 
 export class NumberValue extends PrimitiveValue<number> {
-    constructor(content: number, public position?: Position) {
+    constructor(
+        content: number,
+        public position?: Position,
+    ) {
         super(content)
     }
 
@@ -26,7 +29,10 @@ export class NumberValue extends PrimitiveValue<number> {
 }
 
 export class StringValue extends PrimitiveValue<string> {
-    constructor(content: string, public position?: Position) {
+    constructor(
+        content: string,
+        public position?: Position,
+    ) {
         super(content)
     }
 

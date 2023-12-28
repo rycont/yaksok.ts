@@ -45,7 +45,10 @@ export class Evaluable extends Executable {
 }
 
 export class Keyword extends Node {
-    constructor(public value: string, public position?: Position) {
+    constructor(
+        public value: string,
+        public position?: Position,
+    ) {
         super()
     }
     toPrint() {
@@ -54,7 +57,10 @@ export class Keyword extends Node {
 }
 
 export class Operator extends Node {
-    constructor(public value?: string, public position?: Position) {
+    constructor(
+        public value?: string,
+        public position?: Position,
+    ) {
         super()
     }
 
@@ -68,7 +74,10 @@ export class Operator extends Node {
 }
 
 export class Expression extends Node {
-    constructor(public value: string, public position?: Position) {
+    constructor(
+        public value: string,
+        public position?: Position,
+    ) {
         super()
     }
 
