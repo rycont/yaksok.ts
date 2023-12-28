@@ -1,6 +1,5 @@
-import { satisfiesPattern } from './satisfiesPattern.ts'
 import { Rule, internalPatternsByLevel } from './rule.ts'
-
+import { satisfiesPattern } from './satisfiesPattern.ts'
 import { Block, EOL, Node } from '../../node/index.ts'
 
 export function SRParse(_tokens: Node[], rules: Rule[]) {
@@ -12,17 +11,16 @@ export function SRParse(_tokens: Node[], rules: Rule[]) {
     tokenloop: while (true) {
         for (const rule of rules) {
             if (stack.length < rule.pattern.length) continue
-
             const stackSlice = stack.slice(-rule.pattern.length)
-            const isSatisfies = satisfiesPattern(stackSlice, rule.pattern)
 
-            if (!isSatisfies) continue
+            const satisfies = satisfiesPattern(stackSlice, rule.pattern)
+
+            if (!satisfies) continue
             const reduced = reduce(stackSlice, rule)
 
             stack.splice(-rule.pattern.length, rule.pattern.length, reduced)
 
             changed = true
-
             continue tokenloop
         }
 
@@ -69,22 +67,18 @@ export function callParseRecursively(_tokens: Node[], patterns: Rule[]) {
 
     let parsedTokens: Node[] = tokens
 
-    while (true) {
-        let changed = false
-
+    loop1: while (true) {
         for (const internalPatterns of internalPatternsByLevel) {
             const result = SRParse(parsedTokens, [
                 ...internalPatterns,
                 ...patterns,
             ])
-
-            if (!result.changed) continue
-
-            changed = true
             parsedTokens = result.tokens
+
+            if (result.changed) continue loop1
         }
 
-        if (!changed) break
+        break
     }
 
     return new Block(parsedTokens)

@@ -1,17 +1,17 @@
 import { createDynamicRule } from './dynamicRule/index.ts'
-import { parseIndent } from './parseIndent.ts'
 import { callParseRecursively } from './srParse.ts'
-import { Node } from '../../node/index.ts'
+import { tokenize } from '../tokenize/index.ts'
+import { parseIndent } from './parseIndent.ts'
+import { Yaksok } from '../../index.ts'
 
-interface ParseProps {
-    tokens: Node[]
-    functionHeaders: Node[][]
-}
+export function parse(
+    tokenized: ReturnType<typeof tokenize>,
+    runtime?: Yaksok,
+) {
+    const dynamicRules = createDynamicRule(tokenized, runtime)
+    const indentedNodes = parseIndent(tokenized.tokens)
 
-export function parse(props: ParseProps) {
-    const dynamicRules = createDynamicRule(props)
-    const indentedNodes = parseIndent(props.tokens)
     const ast = callParseRecursively(indentedNodes, dynamicRules)
 
-    return ast
+    return { ast, dynamicRules }
 }

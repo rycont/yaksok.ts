@@ -1,8 +1,6 @@
-import { Evaluable } from './index.ts'
-
-import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { Position } from './base.ts'
+import { Evaluable, Position } from './base.ts'
+import { Scope } from '../runtime/scope.ts'
 
 export class PrimitiveValue<T> extends Evaluable {
     value: T
@@ -18,7 +16,10 @@ export class PrimitiveValue<T> extends Evaluable {
 }
 
 export class NumberValue extends PrimitiveValue<number> {
-    constructor(content: number, public position?: Position) {
+    constructor(
+        content: number,
+        public position?: Position,
+    ) {
         super(content)
     }
 
@@ -28,7 +29,10 @@ export class NumberValue extends PrimitiveValue<number> {
 }
 
 export class StringValue extends PrimitiveValue<string> {
-    constructor(content: string, public position?: Position) {
+    constructor(
+        content: string,
+        public position?: Position,
+    ) {
         super(content)
     }
 

@@ -31,6 +31,7 @@ import {
     Expression,
     RangeOperator,
     Return,
+    Mention,
 } from '../../node/index.ts'
 import { ListLoop } from '../../node/listLoop.ts'
 
@@ -446,6 +447,19 @@ export const internalPatternsByLevel: Rule[][] = [
                 {
                     type: Evaluable,
                     as: 'right',
+                },
+            ],
+        },
+        {
+            to: Mention,
+            pattern: [
+                {
+                    type: Expression,
+                    value: '@',
+                },
+                {
+                    type: Keyword,
+                    as: 'name',
                 },
             ],
         },

@@ -23,14 +23,19 @@ import {
     Variable,
 } from '../node/index.ts'
 import { Operator } from '../node/base.ts'
-import { parse } from '../prepare/parse/index.ts'
-import { run } from '../runtime/run.ts'
 
 import {
     InvalidNumberOfOperandsError,
     InvalidTypeForOperatorError,
 } from '../error/index.ts'
-import { InvalidTypeForCompareError } from '../error/calculation.ts'
+import {
+    InvalidTypeForCompareError,
+    UnknownOperatorPrecedenceError,
+} from '../error/calculation.ts'
+import { yaksok } from '../index.ts'
+import { parse } from '../prepare/parse/index.ts'
+import { Scope } from '../runtime/scope.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 
 Deno.test('Parse Binary Operation', () => {
     const code = `1 + 1`
@@ -81,10 +86,10 @@ Deno.test('Run Binary Operation', () => {
         new EOL(),
     ])
 
-    const node = parse(result)
+    const { ast } = parse(result)
 
     assertEquals(
-        node,
+        ast,
         new Block([
             new EOL(),
             new SetVariable({
@@ -101,7 +106,7 @@ Deno.test('Run Binary Operation', () => {
         ]),
     )
 
-    const scope = run(node)
+    const { scope } = yaksok(code).getRunner()
     assertEquals(scope.getVariable('계산'), new NumberValue(2))
 })
 
@@ -111,12 +116,9 @@ Deno.test('Operator String and String', async (context) => {
 계산: "Hello" + " World" + "!"
         `
 
-        const result = run(parse(tokenize(code)))
+        const { scope } = yaksok(code).getRunner()
 
-        assertEquals(
-            result.getVariable('계산'),
-            new StringValue('Hello World!'),
-        )
+        assertEquals(scope.getVariable('계산'), new StringValue('Hello World!'))
     })
 
     await context.step('Plus Invalid', () => {
@@ -125,7 +127,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
         }
@@ -136,7 +138,7 @@ Deno.test('Operator String and String', async (context) => {
             const code = `
 계산: "Hello" - " World" - "!"
             `
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -148,7 +150,7 @@ Deno.test('Operator String and String', async (context) => {
             const code = `
 계산: "Hello" * " World"
             `
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -160,7 +162,7 @@ Deno.test('Operator String and String', async (context) => {
             const code = `
 계산: "Hello" / " World"
             `
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -172,9 +174,8 @@ Deno.test('Operator String and String', async (context) => {
 계산: "Hello" = " World"
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new BooleanValue(false))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new BooleanValue(false))
     })
 
     await context.step('Less', () => {
@@ -183,7 +184,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
         } catch (e) {
             assertIsError(e, InvalidTypeForCompareError)
         }
@@ -194,7 +195,7 @@ Deno.test('Operator String and String', async (context) => {
 계산: "Hello" <= " World"
         `
         try {
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
         } catch (e) {
             assertIsError(e, InvalidTypeForCompareError)
         }
@@ -206,7 +207,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
         } catch (e) {
             assertIsError(e, InvalidTypeForCompareError)
         }
@@ -218,7 +219,7 @@ Deno.test('Operator String and String', async (context) => {
         `
 
         try {
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
         } catch (e) {
             assertIsError(e, InvalidTypeForCompareError)
         }
@@ -231,9 +232,8 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 + 2 + 3
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new NumberValue(6))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new NumberValue(6))
     })
 
     await context.step('Minus', () => {
@@ -241,9 +241,8 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 - 2 - 3
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new NumberValue(-4))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new NumberValue(-4))
     })
 
     await context.step('Multiply', () => {
@@ -251,9 +250,8 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 * 2 * 3
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new NumberValue(6))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new NumberValue(6))
     })
 
     await context.step('Divide', () => {
@@ -261,9 +259,8 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 / 2 / 3
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new NumberValue(1 / 6))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new NumberValue(1 / 6))
     })
 
     await context.step('Equal', () => {
@@ -271,9 +268,8 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 = 2
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new BooleanValue(false))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new BooleanValue(false))
     })
 
     await context.step('Less', () => {
@@ -281,9 +277,8 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 < 2
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new BooleanValue(true))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new BooleanValue(true))
     })
 
     await context.step('Less or equal', () => {
@@ -291,9 +286,8 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 <= 2
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new BooleanValue(true))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new BooleanValue(true))
     })
 
     await context.step('Greater', () => {
@@ -301,9 +295,8 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 > 2
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new BooleanValue(false))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new BooleanValue(false))
     })
 
     await context.step('Greater or equal', () => {
@@ -311,9 +304,8 @@ Deno.test('Operator Number and Number', async (context) => {
         계산: 1 >= 2
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new BooleanValue(false))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new BooleanValue(false))
     })
 })
 
@@ -323,9 +315,8 @@ Deno.test('Operator Number and String', async (context) => {
         계산: 1 + " World"
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new StringValue('1 World'))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new StringValue('1 World'))
     })
 
     await context.step('Minus', () => {
@@ -333,7 +324,7 @@ Deno.test('Operator Number and String', async (context) => {
             const code = `
             계산: 1 - " World"
             `
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -344,12 +335,9 @@ Deno.test('Operator Number and String', async (context) => {
         const code = `
             계산: 2 * " World"
             `
-        const result = run(parse(tokenize(code)))
+        const { scope } = yaksok(code).getRunner()
 
-        assertEquals(
-            result.getVariable('계산'),
-            new StringValue(' World World'),
-        )
+        assertEquals(scope.getVariable('계산'), new StringValue(' World World'))
     })
 
     await context.step('Divide', () => {
@@ -357,7 +345,7 @@ Deno.test('Operator Number and String', async (context) => {
             const code = `
             계산: 1 / " World"
             `
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -371,9 +359,8 @@ Deno.test('Operator String and Number', async (context) => {
         계산: "Hello" + 1
         `
 
-        const result = run(parse(tokenize(code)))
-
-        assertEquals(result.getVariable('계산'), new StringValue('Hello1'))
+        const { scope } = yaksok(code).getRunner()
+        assertEquals(scope.getVariable('계산'), new StringValue('Hello1'))
     })
 
     await context.step('Minus', () => {
@@ -381,7 +368,7 @@ Deno.test('Operator String and Number', async (context) => {
             const code = `
             계산: "Hello" - 1
             `
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -392,10 +379,10 @@ Deno.test('Operator String and Number', async (context) => {
         const code = `
             계산: "Hello" * 3
             `
-        const result = run(parse(tokenize(code)))
+        const { scope } = yaksok(code).getRunner()
 
         assertEquals(
-            result.getVariable('계산'),
+            scope.getVariable('계산'),
             new StringValue('HelloHelloHello'),
         )
     })
@@ -405,7 +392,7 @@ Deno.test('Operator String and Number', async (context) => {
             const code = `
             계산: "Hello" / 1
             `
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -417,7 +404,7 @@ Deno.test('Operator String and Number', async (context) => {
 계산: "Hello" 이고 1
             `
         try {
-            run(parse(tokenize(code)))
+            yaksok(code).getRunner()
             unreachable()
         } catch (e) {
             assertIsError(e, InvalidTypeForOperatorError)
@@ -433,8 +420,8 @@ Deno.test('Operator Boolean and Boolean', () => {
 계산: 식1 이고 식2
     `
 
-    const result = run(parse(tokenize(code)))
-    assertEquals(result.getVariable('계산'), new BooleanValue(true))
+    const { scope } = yaksok(code).getRunner()
+    assertEquals(scope.getVariable('계산'), new BooleanValue(true))
 })
 
 Deno.test('Binary operator operand exceedance', async (context) => {
@@ -568,7 +555,7 @@ Deno.test('Compare equity list and list', () => {
     `
 
     try {
-        run(parse(tokenize(code)))
+        yaksok(code).getRunner()
         unreachable()
     } catch (e) {
         assertIsError(e)
@@ -585,4 +572,21 @@ Deno.test('Raw Operator toPrint', () => {
     assertEquals(new Operator('-').toPrint(), '-')
     assertEquals(new Operator('*').toPrint(), '*')
     assertEquals(new Operator('/').toPrint(), '/')
+})
+
+Deno.test('Unknown Operator', () => {
+    const formula = new Formula({
+        left: new NumberValue(1),
+        operator: new Operator('NICE'),
+        right: new NumberValue(2),
+    })
+
+    const scope = new Scope()
+    const callFrame = new CallFrame(formula)
+
+    try {
+        formula.execute(scope, callFrame)
+    } catch (e) {
+        assertIsError(e, UnknownOperatorPrecedenceError)
+    }
 })

@@ -94,7 +94,9 @@ export class Formula extends Evaluable {
             )
         }
 
-        if (terms.length === 1) return terms[0] as ValueTypes
+        if (terms.length === 1) {
+            return terms[0] as ValueTypes
+        }
 
         const [operator] = terms.filter(
             (term): term is Operator => term instanceof Operator,

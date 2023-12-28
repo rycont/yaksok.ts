@@ -1,27 +1,28 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
+
+import {
+    PlusOperator,
+    NumberValue,
+    SetVariable,
+    Variable,
+    Keyword,
+    Block,
+    EOL,
+} from '../node/index.ts'
+import { CannotUseReservedWordForVariableNameError } from '../error/index.ts'
+import { NotDefinedVariableError } from '../error/variable.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { parse } from '../prepare/parse/index.ts'
-import {
-    Block,
-    SetVariable,
-    EOL,
-    Keyword,
-    NumberValue,
-    PlusOperator,
-    Variable,
-} from '../node/index.ts'
-
-import { run } from '../runtime/run.ts'
-import { CannotUseReservedWordForVariableNameError } from '../error/index.ts'
 import { Formula } from '../node/calculation.ts'
+import { run } from '../runtime/run.ts'
 import { Print } from '../node/misc.ts'
-import { NotDefinedVariableError } from '../error/variable.ts'
+import { yaksok } from '../index.ts'
 
 Deno.test('Parse Variable', () => {
-    const node = parse(tokenize('이름: 1', true))
+    const { ast } = parse(tokenize('이름: 1', true))
 
     assertEquals(
-        node,
+        ast,
         new Block([
             new EOL(),
             new SetVariable({
@@ -38,10 +39,10 @@ Deno.test('Parse variable with 이전 keyword', () => {
 나이: 1
 나이: 이전 나이 + 1    
 `
-    const node = parse(tokenize(code, true))
+    const { ast } = parse(tokenize(code, true))
 
     assertEquals(
-        node,
+        ast,
         new Block([
             new EOL(),
             new SetVariable({
@@ -66,7 +67,7 @@ Deno.test('Evaluate and calculate variable', () => {
 나이: 10
 나이: 이전 나이 + 1
 `
-    const scope = run(parse(tokenize(code)))
+    const { scope } = yaksok(code).getRunner()
     assertEquals(scope.getVariable('나이'), new NumberValue(11))
 })
 
@@ -74,7 +75,7 @@ Deno.test('Reserved word cannot be used as variable name', () => {
     const code = `만약: 10`
 
     try {
-        run(parse(tokenize(code)))
+        yaksok(code)
         unreachable()
     } catch (e) {
         assertIsError(e, CannotUseReservedWordForVariableNameError)

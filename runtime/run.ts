@@ -2,16 +2,19 @@ import {
     BreakNotInLoopError,
     CannotReturnOutsideFunctionError,
 } from '../error/index.ts'
-import { Block } from '../node/index.ts'
+import { Executable } from '../node/base.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from './callFrame.ts'
 import { BreakSignal, ReturnSignal } from './signals.ts'
 
-export function run(block: Block, scope = new Scope(), code?: string) {
-    const callFrame = new CallFrame(block, undefined, code)
+export function run<NodeType extends Executable>(
+    node: NodeType,
+    scope = new Scope(),
+) {
+    const callFrame = new CallFrame(node, undefined)
 
     try {
-        block.execute(scope, callFrame)
+        return node.execute(scope, callFrame) as ReturnType<NodeType['execute']>
     } catch (e) {
         if (e instanceof ReturnSignal) {
             throw new CannotReturnOutsideFunctionError({
@@ -27,6 +30,4 @@ export function run(block: Block, scope = new Scope(), code?: string) {
 
         throw e
     }
-
-    return scope
 }

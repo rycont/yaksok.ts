@@ -2,10 +2,7 @@ import { assertEquals } from 'assert'
 import { yaksok } from '../index.ts'
 
 Deno.test('Fibonacci', () => {
-    const _consoleLog = console.log
     let printed = ''
-
-    console.log = (...items) => (printed += items.join(' ') + '\n')
 
     const code = `
 약속 "피보나치" 수
@@ -23,7 +20,9 @@ Deno.test('Fibonacci', () => {
     만약 횟수 > 10 이면
         반복 그만
 `
-    yaksok(code)
+    yaksok(code, {
+        stdout: (message) => (printed += message + '\n'),
+    })
     assertEquals(
         printed,
         `1번째 피보나치 수는 1입니다
@@ -38,5 +37,4 @@ Deno.test('Fibonacci', () => {
 10번째 피보나치 수는 55입니다
 `,
     )
-    console.log = _consoleLog
 })

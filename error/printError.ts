@@ -1,11 +1,11 @@
 import { YaksokError, bold } from './common.ts'
 import { Position } from '../node/base.ts'
-import { Yaksok } from '../index.ts'
+import { CodeRunner } from '../index.ts'
 
 interface PrintErrorProps {
     error: YaksokError
     code?: string
-    runtime?: Yaksok
+    runtime?: CodeRunner
 }
 
 export function printError({ error, code }: PrintErrorProps) {
@@ -21,7 +21,7 @@ export function printError({ error, code }: PrintErrorProps) {
 
     output += '> ' + error.message + '\n\n'
 
-    if (!code || !error.position) return
+    if (!code || !error.position) return output
 
     output += '┌─────\n'
     output += getHintCode(error.position, code) + '\n'
@@ -50,4 +50,6 @@ function getHintCode(position: Position, code: string) {
 
         output += '│  \x1b[2m' + lineNum + '  ' + lineText + '\x1b[0m' + '\n'
     }
+
+    return output
 }

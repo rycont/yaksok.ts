@@ -3,9 +3,9 @@
         "assert": "https://deno.land/std@0.208.0/assert/mod.ts"
     },
     "tasks": {
-        "coverage": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage ./cov && rm -rf ./cov",
-        "build": "deno run --allow-read --allow-write --allow-net --allow-env ./build.ts > yaksok.js",
-        "build-demo": "deno run --allow-read --allow-write --allow-net --allow-env ./build.ts > ./demo/yaksok.js"
+        "coverage": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
+        "build": "deno run --allow-net --allow-write --allow-read --allow-env --allow-run ./build.ts > yaksok.js",
+        "build-demo": "deno run --allow-net --allow-write --allow-read --allow-env --allow-run ./build.ts > ./demo/yaksok.js"
     },
     "lint": {
         "rules": {

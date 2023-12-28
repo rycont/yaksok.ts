@@ -1,13 +1,13 @@
 import { assertEquals } from 'assert'
-import { parse } from '../prepare/parse/index.ts'
-import { Block } from '../node/block.ts'
-import { Formula } from '../node/calculation.ts'
-import { EOL } from '../node/misc.ts'
+
+import { IfStatement, SetVariable, Keyword, Variable } from '../node/index.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 import { EqualOperator } from '../node/operator.ts'
 import { NumberValue } from '../node/primitive.ts'
-
-import { tokenize } from '../prepare/tokenize/index.ts'
-import { IfStatement, SetVariable, Keyword, Variable } from '../node/index.ts'
+import { parse } from '../prepare/parse/index.ts'
+import { Formula } from '../node/calculation.ts'
+import { Block } from '../node/block.ts'
+import { EOL } from '../node/misc.ts'
 
 Deno.test('Parse with indent', () => {
     const code = `
@@ -20,10 +20,10 @@ Deno.test('Parse with indent', () => {
     값: 3
 `
 
-    const result = parse(tokenize(code, true))
+    const { ast } = parse(tokenize(code, true))
 
     assertEquals(
-        result,
+        ast,
         new Block([
             new EOL(),
             new IfStatement({

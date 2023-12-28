@@ -1,8 +1,5 @@
 import { assertEquals } from 'assert'
-import { parse } from '../prepare/parse/index.ts'
-
-import { run } from '../runtime/run.ts'
-import { tokenize } from '../prepare/tokenize/index.ts'
+import { yaksok } from '../index.ts'
 
 Deno.test('isTruthy: Boolean True', () => {
     const code = `
@@ -11,7 +8,7 @@ Deno.test('isTruthy: Boolean True', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenize(code)))
+    const result = yaksok(code).getRunner().scope
     assertEquals(result.getVariable('값').value, '참')
 })
 
@@ -22,7 +19,7 @@ Deno.test('isTruthy: Boolean False', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenize(code)))
+    const result = yaksok(code).getRunner().scope
     assertEquals(result.getVariable('값').value, '거짓')
 })
 
@@ -33,7 +30,7 @@ Deno.test('isTruthy: Number True', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenize(code)))
+    const result = yaksok(code).getRunner().scope
     assertEquals(result.getVariable('값').value, '참')
 })
 
@@ -44,7 +41,7 @@ Deno.test('isTruthy: Number False', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenize(code)))
+    const result = yaksok(code).getRunner().scope
     assertEquals(result.getVariable('값').value, '거짓')
 })
 
@@ -55,7 +52,7 @@ Deno.test('isTruthy: String True', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenize(code)))
+    const result = yaksok(code).getRunner().scope
     assertEquals(result.getVariable('값').value, '참')
 })
 
@@ -66,7 +63,7 @@ Deno.test('isTruthy: String True', () => {
 아니면
     값: "거짓"
 `
-    const result = run(parse(tokenize(code)))
+    const result = yaksok(code).getRunner().scope
     assertEquals(result.getVariable('값').value, '거짓')
 })
 
@@ -78,6 +75,6 @@ Deno.test('isTruthy: List True', () => {
     값: "거짓"
 `
 
-    const result = run(parse(tokenize(code)))
+    const result = yaksok(code).getRunner().scope
     assertEquals(result.getVariable('값').value, '참')
 })
