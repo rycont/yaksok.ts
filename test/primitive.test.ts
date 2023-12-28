@@ -12,7 +12,7 @@ Deno.test('Number to print', () => {
 `
     const result = yaksok(code, {
         stdout: (message) => (printed += message + '\n'),
-    })
+    }).getRunner().scope
     assertEquals(printed, '20\n')
     assertEquals(result.getVariable('나이').value, 20)
     assertEquals(result.getVariable('나이').toPrint(), '20')
@@ -28,7 +28,8 @@ Deno.test('String to print', () => {
 
     const result = yaksok(code, {
         stdout: (message) => (printed += message + '\n'),
-    })
+    }).getRunner().scope
+
     assertEquals(printed, '김철수\n')
     assertEquals(result.getVariable('이름').value, '김철수')
     assertEquals(result.getVariable('이름').toPrint(), '김철수')
@@ -47,7 +48,7 @@ Deno.test('Boolean to print', () => {
 
     const result = yaksok(code, {
         stdout: (message) => (printed += message + '\n'),
-    })
+    }).getRunner().scope
 
     assertEquals(printed, '거짓\n참\n')
 

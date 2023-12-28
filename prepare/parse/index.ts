@@ -4,19 +4,6 @@ import { tokenize } from '../tokenize/index.ts'
 import { parseIndent } from './parseIndent.ts'
 import { Yaksok } from '../../index.ts'
 
-export function _LEGACY__parse(
-    tokenized: ReturnType<typeof tokenize>,
-    runtime?: Yaksok,
-) {
-    const dynamicRules = createDynamicRule(tokenized, runtime)
-    const indentedNodes = parseIndent(tokenized.tokens)
-
-    const rules = [...dynamicRules]
-    const ast = callParseRecursively(indentedNodes, rules)
-
-    return ast
-}
-
 export function parse(
     tokenized: ReturnType<typeof tokenize>,
     runtime?: Yaksok,

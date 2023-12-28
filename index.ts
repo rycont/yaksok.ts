@@ -1,14 +1,14 @@
-import { _LEGACY__parse, parse } from './prepare/parse/index.ts'
-import { evaluate, run } from './runtime/run.ts'
+import { tokenize } from './prepare/tokenize/index.ts'
+import { ErrorInModuleError } from './error/index.ts'
+import { printError } from './error/printError.ts'
+import { parse } from './prepare/parse/index.ts'
+import { YaksokError } from './error/common.ts'
+import { Rule } from './prepare/parse/rule.ts'
 import { Block, Node } from './node/index.ts'
 import { Scope } from './runtime/scope.ts'
-import { tokenize } from './prepare/tokenize/index.ts'
-import { YaksokError } from './error/common.ts'
-import { printError } from './error/printError.ts'
-import { Rule } from './prepare/parse/rule.ts'
-import { CallFrame } from './runtime/callFrame.ts'
 import { Evaluable } from './node/base.ts'
-import { ErrorInModuleError } from './error/index.ts'
+import { run } from './runtime/run.ts'
+import { FileForRunNotExistError } from './error/prepare.ts'
 
 interface YaksokConfig {
     stdout: (message: string) => void
@@ -63,7 +63,7 @@ export class CodeRunner {
 
     evaluateFromExtern(node: Evaluable) {
         try {
-            return evaluate(node, this.scope)
+            return run(node, this.scope)
         } catch (error) {
             if (error instanceof YaksokError) {
                 this.runtime.stderr(
@@ -102,7 +102,16 @@ export class Yaksok implements YaksokConfig {
         this.entryPoint = config.entryPoint || defaultConfig.entryPoint
     }
 
-    getRunner(filename: string) {
+    getRunner(filename = this.entryPoint) {
+        if (!(filename in this.files)) {
+            throw new FileForRunNotExistError({
+                resource: {
+                    entryPoint: this.entryPoint,
+                    files: Object.keys(this.files),
+                },
+            })
+        }
+
         if (filename in this.runners) {
             return this.runners[filename]
         }
@@ -141,5 +150,6 @@ export function yaksok(
         config,
     )
 
-    return yaksok.run()
+    yaksok.run()
+    return yaksok
 }

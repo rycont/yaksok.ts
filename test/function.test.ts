@@ -1,26 +1,25 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { run } from '../runtime/run.ts'
-import { _LEGACY__parse } from '../prepare/parse/index.ts'
-import { tokenize } from '../prepare/tokenize/index.ts'
 
 import {
-    Block,
-    SetVariable,
-    Evaluable,
     DeclareFunction,
     FunctionInvoke,
-    Keyword,
     NumberValue,
+    SetVariable,
+    Evaluable,
     Variable,
+    Keyword,
+    Block,
 } from '../node/index.ts'
-import { Scope } from '../runtime/scope.ts'
 import {
     CannotReturnOutsideFunctionError,
-    FunctionMustHaveNameError,
     NotEvaluableParameterError,
+    FunctionMustHaveNameError,
 } from '../error/index.ts'
-import { yaksok } from '../index.ts'
+
 import { CannotParseError } from '../error/prepare.ts'
+import { Scope } from '../runtime/scope.ts'
+import { run } from '../runtime/run.ts'
+import { yaksok } from '../index.ts'
 
 Deno.test('Function that returns value', () => {
     const code = `
@@ -29,8 +28,8 @@ Deno.test('Function that returns value', () => {
 
 더한결과: 10와 20를 더하기
 `
-    const result = run(_LEGACY__parse(tokenize(code)))
-    assertEquals(result.getVariable('더한결과'), new NumberValue(30))
+    const { scope } = yaksok(code).getRunner()
+    assertEquals(scope.getVariable('더한결과'), new NumberValue(30))
 })
 
 Deno.test('Function that returns nothing', () => {
@@ -40,7 +39,7 @@ Deno.test('Function that returns nothing', () => {
 
 더한결과: 10와 20를 더하기
 `
-    const result = run(_LEGACY__parse(tokenize(code)))
+    const { scope: result } = yaksok(code).getRunner()
     assertEquals(result.getVariable('더한결과'), new NumberValue(0))
 })
 
@@ -102,7 +101,7 @@ Deno.test('Return outside function', () => {
 `
 
     try {
-        run(_LEGACY__parse(tokenize(code)))
+        yaksok(code)
         unreachable()
     } catch (e) {
         assertIsError(e, CannotReturnOutsideFunctionError)

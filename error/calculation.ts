@@ -10,10 +10,12 @@ export class UnknownOperatorPrecedenceError extends YaksokError {
         }
     }) {
         super(props)
-        this.message = `${props.resource.operator.toPrint()}(${NODE_NAMES[props.resource.operator.constructor.name]
-            })는 알 수 없는 연산자에요.`
+        this.message = `${props.resource.operator.toPrint()}(${
+            NODE_NAMES[props.resource.operator.constructor.name]
+        })는 알 수 없는 연산자에요.`
     }
 }
+
 export class InvalidNumberOfOperandsError extends YaksokError {
     constructor(props: {
         position?: Position
@@ -25,11 +27,14 @@ export class InvalidNumberOfOperandsError extends YaksokError {
         }
     }) {
         super(props)
-        this.message = `${props.resource.operator.toPrint()}(${NODE_NAMES[props.resource.operator.constructor.name]
-            })는 ${props.resource.expected}개의 값을 계산할 수 있는데, ${props.resource.actual
-            }개의 값이 주어졌어요.`
+        this.message = `${props.resource.operator.toPrint()}(${
+            NODE_NAMES[props.resource.operator.constructor.name]
+        })는 ${props.resource.expected}개의 값을 계산할 수 있는데, ${
+            props.resource.actual
+        }개의 값이 주어졌어요.`
     }
 }
+
 export class InvalidTypeForCompareError extends YaksokError {
     constructor(props: {
         position?: Position
@@ -46,6 +51,7 @@ export class InvalidTypeForCompareError extends YaksokError {
         this.message = `${leftText}와 ${rightText}는 비교할 수 없어요.`
     }
 }
+
 export class InvalidTypeForOperatorError extends YaksokError {
     constructor(props: {
         position?: Position

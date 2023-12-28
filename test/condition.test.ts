@@ -1,8 +1,6 @@
 import { assertEquals } from 'assert'
-import { _LEGACY__parse } from '../prepare/parse/index.ts'
 
-import { run } from '../runtime/run.ts'
-import { tokenize } from '../prepare/tokenize/index.ts'
+import { yaksok } from '../index.ts'
 
 Deno.test('If statement', () => {
     const code = `
@@ -11,7 +9,7 @@ Deno.test('If statement', () => {
     비교값: "같음"
 `
 
-    const result = run(_LEGACY__parse(tokenize(code)))
+    const result = yaksok(code).getRunner().scope
     assertEquals(result.getVariable('비교값').value, '같음')
 })
 
@@ -24,6 +22,6 @@ Deno.test('If-else statement', () => {
     비교값: "여전히 다름"
 `
 
-    const result = run(_LEGACY__parse(tokenize(code)))
+    const result = yaksok(code).getRunner().scope
     assertEquals(result.getVariable('비교값').value, '여전히 다름')
 })

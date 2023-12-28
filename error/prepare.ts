@@ -81,7 +81,7 @@ export class UnexpectedTokenError extends YaksokError {
     }
 }
 
-export class EntryPointNotExistError extends YaksokError {
+export class FileForRunNotExistError extends YaksokError {
     constructor(props: {
         resource: {
             entryPoint: string

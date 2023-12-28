@@ -1,29 +1,28 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { tokenize } from '../prepare/tokenize/index.ts'
 
-import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import {
-    Block,
-    EOL,
     NumberValue,
+    StringValue,
+    Block,
     Print,
     Loop,
-    StringValue,
+    EOL,
 } from '../node/index.ts'
-import { run } from '../runtime/run.ts'
 import { BreakNotInLoopError } from '../error/index.ts'
-import { yaksok } from '../index.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 import { CannotParseError } from '../error/prepare.ts'
+import { parse } from '../prepare/parse/index.ts'
+import { yaksok } from '../index.ts'
 
 Deno.test('Parse Loop', () => {
     const code = `
 반복
     "Hello, World!" 보여주기
 `
-    const node = _LEGACY__parse(tokenize(code, true))
+    const { ast } = parse(tokenize(code, true))
 
     assertEquals(
-        node,
+        ast,
         new Block([
             new EOL(),
             new Loop({
@@ -47,8 +46,8 @@ Deno.test('Run loop', () => {
     만약 횟수 = 11 이면
         반복 그만
 `
-    const result = run(_LEGACY__parse(tokenize(code)))
-    assertEquals(result.getVariable('횟수'), new NumberValue(11))
+    const { scope } = yaksok(code).getRunner()
+    assertEquals(scope.getVariable('횟수'), new NumberValue(11))
 })
 
 Deno.test('Break outside loop', () => {
@@ -58,7 +57,7 @@ Deno.test('Break outside loop', () => {
 `
 
     try {
-        run(_LEGACY__parse(tokenize(code)))
+        yaksok(code)
         unreachable()
     } catch (e) {
         assertIsError(e, BreakNotInLoopError)

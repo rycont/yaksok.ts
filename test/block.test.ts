@@ -1,9 +1,7 @@
 import { assertIsError, unreachable } from 'assert'
 
-import { tokenize } from '../prepare/tokenize/index.ts'
-import { _LEGACY__parse } from '../prepare/parse/index.ts'
 import { CannotParseError } from '../error/index.ts'
-import { run } from '../runtime/run.ts'
+import { yaksok } from '../index.ts'
 
 Deno.test('Broken Blocks', () => {
     const code = `
@@ -12,7 +10,7 @@ Deno.test('Broken Blocks', () => {
 `
 
     try {
-        run(_LEGACY__parse(tokenize(code)))
+        yaksok(code)
         unreachable()
     } catch (e) {
         assertIsError(e, CannotParseError)
