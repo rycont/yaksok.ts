@@ -1,8 +1,6 @@
-import { satisfiesPattern } from './satisfiesPattern.ts'
 import { Rule, internalPatternsByLevel } from './rule.ts'
-
+import { satisfiesPattern } from './satisfiesPattern.ts'
 import { Block, EOL, Node } from '../../node/index.ts'
-import { MentionScope } from '../../node/mention.ts'
 
 export function SRParse(_tokens: Node[], rules: Rule[]) {
     const tokens = [..._tokens]
