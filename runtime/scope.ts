@@ -1,9 +1,9 @@
-import { DeclareFFI, DeclareFunction, ValueTypes } from '../node/index.ts'
 import {
     NotDefinedFunctionError,
     NotDefinedVariableError,
 } from '../error/index.ts'
 import { Yaksok } from '../index.ts'
+import { DeclareFFI, DeclareFunction, ValueTypes } from '../node/index.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>

@@ -1,7 +1,12 @@
-import { Keyword, Expression, Evaluable, Node } from '../../../../node/base.ts'
-import { EOL } from '../../../../node/misc.ts'
-import { Variable } from '../../../../node/variable.ts'
-import { Rule } from '../../rule.ts'
+import {
+    Keyword,
+    Expression,
+    Evaluable,
+    Node,
+} from '../../../../../node/base.ts'
+import { EOL } from '../../../../../node/misc.ts'
+import { Variable } from '../../../../../node/variable.ts'
+import { Rule } from '../../../rule.ts'
 
 export const dynamicPatternDetector: (Omit<Rule, 'to'> & {
     name: 'variable' | 'list_loop'

@@ -8,10 +8,7 @@ import { IndexedValue } from './indexed.ts'
 import { PrimitiveValue } from './primitive.ts'
 
 export class FFIBody extends Keyword {
-    constructor(
-        public code: string,
-        public position?: Position,
-    ) {
+    constructor(public code: string, public position?: Position) {
         super(code, position)
     }
 }
@@ -46,10 +43,7 @@ export class DeclareFFI extends Executable {
             yaksokArgs,
         )
 
-        if (
-            !(result instanceof PrimitiveValue) &&
-            !(result instanceof IndexedValue)
-        ) {
+        if (!isYaksokValue(result)) {
             throw new FFIResulTypeIsNotForYaksokError({
                 position: this.position,
                 ffiName: this.name,
@@ -59,4 +53,8 @@ export class DeclareFFI extends Executable {
 
         return result
     }
+}
+
+function isYaksokValue(value: unknown): value is ValueTypes {
+    return value instanceof PrimitiveValue || value instanceof IndexedValue
 }
