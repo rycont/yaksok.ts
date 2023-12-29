@@ -465,33 +465,5 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
         },
-        {
-            to: DeclareFFI,
-            pattern: [
-                {
-                    type: Keyword,
-                    value: '번역',
-                },
-                {
-                    type: Expression,
-                    value: '(',
-                },
-                {
-                    type: Keyword,
-                    as: 'runtime',
-                },
-                {
-                    type: Expression,
-                    value: ')',
-                },
-                {
-                    type: EOL,
-                },
-                {
-                    type: FFIBody,
-                    as: 'body',
-                },
-            ],
-        },
     ],
 ]

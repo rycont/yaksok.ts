@@ -21,7 +21,6 @@ export class Block extends Executable {
             } else if (child instanceof EOL) {
                 continue
             } else {
-                console.log(this.children)
                 throw new CannotParseError({
                     position: child.position,
                     resource: {

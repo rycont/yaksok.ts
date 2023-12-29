@@ -31,6 +31,7 @@ Deno.test('Preprocess tokens', () => {
                 new Variable({ name: new Keyword('나이') }),
             ],
         ],
+        ffiHeaders: [],
     })
 })
 
@@ -42,5 +43,6 @@ Deno.test('Preprocess tokens with broken variable declaration', () => {
     assertEquals(result, {
         tokens: [new Keyword('약속'), new Expression(':')],
         functionHeaders: [[new Expression(':')]],
+        ffiHeaders: [],
     })
 })

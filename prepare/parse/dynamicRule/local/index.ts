@@ -1,15 +1,22 @@
-import { Node } from '../../../../node/base.ts'
-import { Rule } from '../../rule.ts'
-import { satisfiesPattern } from '../../satisfiesPattern.ts'
 import { dynamicPatternDetector, dynamicRuleFactory } from './pattern.ts'
+import { satisfiesPattern } from '../../satisfiesPattern.ts'
 import { createFunctionRules } from '../functionVariants.ts'
+import { TokenizeResult } from '../../../tokenize/index.ts'
+import { Rule } from '../../rule.ts'
 
-export function createLocalDynamicRules(
-    tokens: Node[],
-    functionHeaders: Node[][],
-) {
+export function createLocalDynamicRules({
+    tokens,
+    functionHeaders,
+    ffiHeaders,
+}: TokenizeResult) {
     let end = 0
-    const patterns: Rule[] = functionHeaders.flatMap(createFunctionRules)
+    const rules: Rule[] = []
+    const functionRules = functionHeaders.flatMap((rule) =>
+        createFunctionRules(rule),
+    )
+    const ffiRules = ffiHeaders.flatMap((header) =>
+        createFunctionRules(header, true),
+    )
 
     while (true) {
         for (const rule of dynamicPatternDetector) {
@@ -19,12 +26,12 @@ export function createLocalDynamicRules(
             if (!satisfiesPattern(substack, rule.pattern)) continue
 
             const dynamicRule = dynamicRuleFactory[rule.name](substack)
-            patterns.push(dynamicRule)
+            rules.push(dynamicRule)
         }
 
         end++
         if (end > tokens.length) break
     }
 
-    return patterns
+    return [...rules, ...functionRules, ...ffiRules]
 }

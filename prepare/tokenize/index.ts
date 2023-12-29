@@ -22,6 +22,8 @@ import {
 
 export class Tokenizer {
     functionHeaders: Node[][] | undefined = undefined
+    ffiHeaders: Node[][] | undefined = undefined
+
     tokens: Node[] = []
     chars: string[]
 
@@ -145,6 +147,8 @@ export class Tokenizer {
         }
 
         this.tokens.push(new FFIBody(ffi, this.position))
+        this.shift()
+        this.shift()
     }
 
     comment() {
@@ -241,9 +245,12 @@ export class Tokenizer {
     }
 
     postprocess() {
-        const { functionHeaders, tokens } = lexFunctionArgument(this.tokens)
+        const { functionHeaders, ffiHeaders, tokens } = lexFunctionArgument(
+            this.tokens,
+        )
 
         this.functionHeaders = functionHeaders
+        this.ffiHeaders = ffiHeaders
         this.tokens = tokens
 
         return tokens
@@ -284,5 +291,8 @@ export function tokenize(code: string, disablePosition = false) {
     return {
         tokens: tokenizer.tokens!,
         functionHeaders: tokenizer.functionHeaders!,
+        ffiHeaders: tokenizer.ffiHeaders!,
     }
 }
+
+export type TokenizeResult = ReturnType<typeof tokenize>

@@ -11,6 +11,8 @@ import {
     StringValue,
     Variable,
 } from '../../../node/index.ts'
+import { DeclareFFI, FFIBody } from '../../../node/ffi.ts'
+import { Expression } from '../../../node/base.ts'
 
 interface Variant {
     index: number
@@ -82,6 +84,7 @@ export function* getVariants(subtokens: (Variable | StringValue)[]) {
 function createFunctionDeclareRule(
     name: string,
     subtokens: (Variable | StringValue)[],
+    config: { isFFI: boolean },
 ): Rule {
     const declarationTemplate: PatternUnit[] = subtokens.map((t) => {
         if (t instanceof Variable) {
@@ -97,19 +100,45 @@ function createFunctionDeclareRule(
         }
     })
 
+    const prefix = config.isFFI
+        ? [
+              {
+                  type: Keyword,
+                  value: '번역',
+              },
+              {
+                  type: Expression,
+                  value: '(',
+              },
+              {
+                  type: Keyword,
+                  as: 'runtime',
+              },
+              {
+                  type: Expression,
+                  value: ')',
+              },
+          ]
+        : [
+              {
+                  type: Keyword,
+                  value: '약속',
+              },
+          ]
+
+    const body = config.isFFI ? FFIBody : Block
+    const target = config.isFFI ? DeclareFFI : DeclareFunction
+
     return {
-        to: DeclareFunction,
+        to: target,
         pattern: [
-            {
-                type: Keyword,
-                value: '약속',
-            },
+            ...prefix,
             ...declarationTemplate,
             {
                 type: EOL,
             },
             {
-                type: Block,
+                type: body,
                 as: 'body',
             },
         ],
@@ -167,13 +196,13 @@ function assertValidFunctionHeader(
             position: subtokens[0].position,
             resource: {
                 node: token,
-                parts: '',
+                parts: '약속 만들기',
             },
         })
     }
 }
 
-export function createFunctionRules(subtokens: Node[]) {
+export function createFunctionRules(subtokens: Node[], isFFI = false) {
     assertValidFunctionHeader(subtokens)
 
     const name = subtokens
@@ -186,7 +215,9 @@ export function createFunctionRules(subtokens: Node[]) {
     const variants = [...getVariants(subtokens)]
 
     return [
-        createFunctionDeclareRule(name, subtokens),
+        createFunctionDeclareRule(name, subtokens, {
+            isFFI,
+        }),
         ...variants.map((v) => createFunctionInvokeRule(name, v)),
     ]
 }
