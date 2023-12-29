@@ -32,6 +32,8 @@ import {
     RangeOperator,
     Return,
     Mention,
+    FFIBody,
+    DeclareFFI,
 } from '../../node/index.ts'
 import { ListLoop } from '../../node/listLoop.ts'
 
@@ -460,6 +462,34 @@ export const internalPatternsByLevel: Rule[][] = [
                 {
                     type: Keyword,
                     as: 'name',
+                },
+            ],
+        },
+        {
+            to: DeclareFFI,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '번역',
+                },
+                {
+                    type: Expression,
+                    value: '(',
+                },
+                {
+                    type: Keyword,
+                    as: 'runtime',
+                },
+                {
+                    type: Expression,
+                    value: ')',
+                },
+                {
+                    type: EOL,
+                },
+                {
+                    type: FFIBody,
+                    as: 'body',
                 },
             ],
         },
