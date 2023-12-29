@@ -151,7 +151,6 @@ Deno.test('Error in module', () => {
 │                 ^
 │  \u001b[2m12  \u001b[0m
 │  \u001b[2m13  모델명: "Arduino Uno"\u001b[0m
-
 └─────
 
 ─────
@@ -166,7 +165,6 @@ Deno.test('Error in module', () => {
 │  6      @아두이노 보드_시리얼 버전 보여주기
 │                  ^
 │  \u001b[2m7  \u001b[0m
-
 └─────
 
 `,

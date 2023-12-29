@@ -8,7 +8,10 @@ import { IndexedValue } from './indexed.ts'
 import { PrimitiveValue } from './primitive.ts'
 
 export class FFIBody extends Keyword {
-    constructor(public code: string, public position?: Position) {
+    constructor(
+        public code: string,
+        public position?: Position,
+    ) {
         super(code, position)
     }
 }

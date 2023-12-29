@@ -24,7 +24,7 @@ export function printError({ error, code }: PrintErrorProps) {
     if (!code || !error.position) return output
 
     output += '┌─────\n'
-    output += getHintCode(error.position, code) + '\n'
+    output += getHintCode(error.position, code)
     output += '└─────\n'
 
     return output

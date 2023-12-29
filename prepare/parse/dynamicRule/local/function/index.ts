@@ -1,6 +1,5 @@
 import { UnexpectedTokenError } from '../../../../../error/prepare.ts'
 import { Node, StringValue, Variable } from '../../../../../node/index.ts'
-import { PatternUnit } from '../../../rule.ts'
 import { createFunctionDeclareRule } from './declareRule.ts'
 import { FunctionHeaderNode, functionRuleByType } from './functionRuleByType.ts'
 import { getVariants } from './getVariants.ts'
