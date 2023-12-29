@@ -1,3 +1,5 @@
+import { FileForRunNotExistError } from './error/prepare.ts'
+import { Evaluable, ValueTypes } from './node/base.ts'
 import { tokenize } from './prepare/tokenize/index.ts'
 import { ErrorInModuleError } from './error/index.ts'
 import { printError } from './error/printError.ts'
@@ -6,20 +8,23 @@ import { YaksokError } from './error/common.ts'
 import { Rule } from './prepare/parse/rule.ts'
 import { Block, Node } from './node/index.ts'
 import { Scope } from './runtime/scope.ts'
-import { Evaluable } from './node/base.ts'
 import { run } from './runtime/run.ts'
-import { FileForRunNotExistError } from './error/prepare.ts'
+import { Params } from './node/function.ts'
 
 interface YaksokConfig {
     stdout: (message: string) => void
     stderr: (message: string) => void
     entryPoint: string
+    runFFI: (runtime: string, code: string, args: Params) => ValueTypes
 }
 
 const defaultConfig: YaksokConfig = {
     stdout: console.log,
     stderr: console.error,
     entryPoint: 'main',
+    runFFI: (runtime: string) => {
+        throw new Error(`FFI ${runtime} not implemented`)
+    },
 }
 
 export class CodeRunner {
@@ -89,6 +94,7 @@ export class Yaksok implements YaksokConfig {
     stdout: YaksokConfig['stdout']
     stderr: YaksokConfig['stderr']
     entryPoint: YaksokConfig['entryPoint']
+    runFFI: YaksokConfig['runFFI']
 
     runners: Record<string, CodeRunner> = {}
     ran: Record<string, boolean> = {}
@@ -100,6 +106,7 @@ export class Yaksok implements YaksokConfig {
         this.stdout = config.stdout || defaultConfig.stdout
         this.stderr = config.stderr || defaultConfig.stderr
         this.entryPoint = config.entryPoint || defaultConfig.entryPoint
+        this.runFFI = config.runFFI || defaultConfig.runFFI
     }
 
     getRunner(filename = this.entryPoint) {

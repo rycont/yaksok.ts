@@ -57,7 +57,7 @@ export class DeclareFunction extends Executable {
     }
 }
 
-interface Params {
+export interface Params {
     [key: string]: Node
 }
 
@@ -116,7 +116,7 @@ export class FunctionInvoke extends Evaluable {
     }
 }
 
-function getParams(params: Params, scope: Scope, callFrame: CallFrame) {
+export function getParams(params: Params, scope: Scope, callFrame: CallFrame) {
     const args: { [key: string]: ValueTypes } = {}
 
     for (const key in params) {
