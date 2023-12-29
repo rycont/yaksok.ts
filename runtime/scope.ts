@@ -1,13 +1,13 @@
-import { DeclareFunction, ValueTypes } from '../node/index.ts'
 import {
     NotDefinedFunctionError,
     NotDefinedVariableError,
 } from '../error/index.ts'
 import { Yaksok } from '../index.ts'
+import { DeclareFFI, DeclareFunction, ValueTypes } from '../node/index.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>
-    functions: Record<string, DeclareFunction> = {}
+    functions: Record<string, DeclareFunction | DeclareFFI> = {}
     parent: Scope | undefined
     runtime?: Yaksok
 
@@ -57,11 +57,11 @@ export class Scope {
         })
     }
 
-    setFunction(name: string, functionBody: DeclareFunction) {
+    setFunction(name: string, functionBody: DeclareFunction | DeclareFFI) {
         this.functions[name] = functionBody
     }
 
-    getFunction(name: string): DeclareFunction {
+    getFunction(name: string): DeclareFunction | DeclareFFI {
         const fetched = this.functions[name]
         if (fetched) return fetched
 

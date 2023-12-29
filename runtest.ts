@@ -1,23 +1,40 @@
 import { yaksok } from './index.ts'
+import { NumberValue, StringValue } from './node/primitive.ts'
 
-yaksok({
-    main: `
-보드_시리얼: "1032"
+yaksok(
+    {
+        main: `
+번역(javascript) 숫자1"와/과" 숫자2 "사이의 랜덤 수"
+***
+    return Math.floor(Math.random() * (숫자2 - 숫자1 + 1)) + 숫자1
+***
 
-만약 @아두이노 모델명 = "Arduino Uno" 이면
-    "아두이노 모델명이 맞습니다." 보여주기
-    @아두이노 보드_시리얼 버전 보여주기
+약속 언제나 "웃기"
+    "와하하하" 보여주기
+
+10과 20 사이의 랜덤 수 보여주기
 `,
-    아두이노: `
-약속 시리얼 "버전"
-    만약 시리얼 = "1032" 이면
-        결과: "1.0.0"
-    아니면
-        만약 시리얼 = "1033" 이면
-            결과: "1.0.1"
-        아니면
-            결과: "UNKNOWN"
+    },
+    {
+        runFFI: (runtime, code, args) => {
+            if (runtime !== 'javascript') {
+                throw '넹'
+            }
+            
+            const argKeys = Object.keys(args)
+            const unpackedArgValues = argKeys.map((key) => args[key].value)
 
-모델명: "Arduino Uno"
-`,
-})
+            const result = new Function(...argKeys, code)(...unpackedArgValues)
+
+            if (typeof result === 'number') {
+                return new NumberValue(result)
+            }
+
+            if (typeof result === 'string') {
+                return new StringValue(result)
+            }
+
+            throw '넹?'
+        },
+    },
+)
