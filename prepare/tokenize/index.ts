@@ -1,22 +1,23 @@
 import {
     IndentIsNotMultipleOf4Error,
-    UnexpectedCharError,
     UnexpectedEndOfCodeError,
+    UnexpectedCharError,
 } from '../../error/index.ts'
 import {
+    StringValue,
+    NumberValue,
     Expression,
     Operator,
     Keyword,
     Indent,
-    StringValue,
-    NumberValue,
     EOL,
     Node,
+    FFIBody,
 } from '../../node/index.ts'
 import { lexFunctionArgument } from './lexFunctionArgument.ts'
 import {
-    isValidCharForKeyword,
     isValidFirstCharForKeyword,
+    isValidCharForKeyword,
 } from './isValidCharForKeyword.ts'
 
 export class Tokenizer {
@@ -30,10 +31,7 @@ export class Tokenizer {
     static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~']
     static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')', '@']
 
-    constructor(
-        code: string,
-        private disablePosition = false,
-    ) {
+    constructor(code: string, private disablePosition = false) {
         this.chars = this.preprocess(code)
         this.tokenize()
         this.postprocess()
@@ -55,6 +53,11 @@ export class Tokenizer {
 
             if (char === '\n') {
                 this.EOL()
+                continue
+            }
+
+            if (this.isFFI()) {
+                this.ffi()
                 continue
             }
 
@@ -93,6 +96,15 @@ export class Tokenizer {
         }
     }
 
+    isFFI() {
+        const isFFIBlock =
+            this.chars[0] === '*' &&
+            this.chars[1] === '*' &&
+            this.chars[2] === '*'
+
+        return isFFIBlock
+    }
+
     isNumeric(char: string) {
         return '0' <= char && char <= '9'
     }
@@ -110,6 +122,29 @@ export class Tokenizer {
             return true
 
         return false
+    }
+
+    ffi() {
+        this.shift()
+        this.shift()
+        this.shift()
+
+        let ffi = ''
+
+        while (true) {
+            const nextChar = this.shift()
+
+            if (
+                nextChar === '*' &&
+                this.chars[0] === '*' &&
+                this.chars[1] === '*'
+            )
+                break
+
+            ffi += nextChar
+        }
+
+        this.tokens.push(new FFIBody(ffi, this.position))
     }
 
     comment() {
