@@ -9,18 +9,15 @@ yaksok(
     return Math.floor(Math.random() * (숫자2 - 숫자1 + 1)) + 숫자1
 ***
 
-약속 언제나 "웃기"
-    "와하하하" 보여주기
-
 10과 20 사이의 랜덤 수 보여주기
 `,
     },
     {
         runFFI: (runtime, code, args) => {
             if (runtime !== 'javascript') {
-                throw '넹'
+                throw new Error('Not implemented')
             }
-            
+
             const argKeys = Object.keys(args)
             const unpackedArgValues = argKeys.map((key) => args[key].value)
 
@@ -34,7 +31,7 @@ yaksok(
                 return new StringValue(result)
             }
 
-            throw '넹?'
+            throw new Error('Not implemented')
         },
     },
 )

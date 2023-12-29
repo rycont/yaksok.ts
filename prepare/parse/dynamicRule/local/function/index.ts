@@ -44,16 +44,10 @@ function getFunctionNameFromHeader(subtokens: FunctionHeaderNode[]) {
     return subtokens.map(functionHeaderToNameMap).join(' ')
 }
 
-function functionHeaderToNameMap(token: FunctionHeaderNode): PatternUnit {
+function functionHeaderToNameMap(token: FunctionHeaderNode) {
     if (token instanceof Variable) {
-        return {
-            type: Variable,
-            as: token.name,
-        }
-    }
-
-    return {
-        type: StringValue,
-        value: token.value,
+        return token.name
+    } else {
+        return token.value
     }
 }

@@ -1,4 +1,4 @@
-import { assertEquals, assertIsError, unreachable } from 'assert'
+import { assert, assertEquals, assertIsError, unreachable } from 'assert'
 
 import {
     DeclareFunction,
@@ -29,6 +29,8 @@ Deno.test('Function that returns value', () => {
 더한결과: 10와 20를 더하기
 `
     const { scope } = yaksok(code).getRunner()
+
+    assert('가 와 나 를 더하기' in scope.functions)
     assertEquals(scope.getVariable('더한결과'), new NumberValue(30))
 })
 
