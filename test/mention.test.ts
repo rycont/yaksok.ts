@@ -81,7 +81,7 @@ Deno.test('Mentioning', () => {
 
     const toPrint = (
         (
-            (result.getRunner().ast.children[2] as IfStatement)
+            (result.getRunner().ast.children[2] as IfStatement).cases[0]
                 .condition as Formula
         ).terms[0] as MentionScope
     ).toPrint()
