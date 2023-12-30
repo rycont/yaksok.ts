@@ -5,39 +5,75 @@ import { isTruthy } from '../runtime/internal/isTruthy.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
 
+interface Case {
+    condition?: Evaluable
+    body: Block
+}
+
 export class IfStatement extends Executable {
-    condition: Evaluable
-    ifBody: Block
-    elseBody?: Block
+    cases: Case[]
 
     constructor(
         props:
             | { condition: Evaluable; body: Block }
             | {
-                  ifBody: IfStatement
-                  elseBody: Block
+                  ifStatement: IfStatement
+                  elseStatement: ElseStatement
+              }
+            | {
+                  ifStatement: IfStatement
+                  elseIfStatement: ElseIfStatement
+              }
+            | {
+                  cases: Case[]
               },
     ) {
         super()
 
-        if ('ifBody' in props) {
-            this.condition = props.ifBody.condition
-            this.ifBody = props.ifBody.ifBody
-            this.elseBody = props.elseBody
+        if ('condition' in props) {
+            const { condition, body } = props
+            this.cases = [{ condition, body }]
+        } else if ('elseStatement' in props) {
+            const { ifStatement, elseStatement } = props
+
+            const elseCase: Case = {
+                body: elseStatement.body,
+            }
+
+            this.cases = [...ifStatement.cases, elseCase]
+        } else if ('elseIfStatement' in props) {
+            const { ifStatement, elseIfStatement } = props
+            const elseIfCase: Case = elseIfStatement.elseIfCase
+
+            this.cases = [...ifStatement.cases, elseIfCase]
         } else {
-            this.condition = props.condition
-            this.ifBody = props.body
+            this.cases = props.cases
         }
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
-        const { condition, ifBody: body } = this
 
-        if (isTruthy(condition.execute(scope, callFrame))) {
-            body.execute(scope, callFrame)
-        } else if (this.elseBody) {
-            this.elseBody.execute(scope, callFrame)
+        for (const { condition, body } of this.cases) {
+            if (!condition || isTruthy(condition.execute(scope, callFrame))) {
+                body.execute(scope, callFrame)
+                break
+            }
         }
+    }
+}
+
+export class ElseStatement extends Executable {
+    body: Block
+
+    constructor(props: { body: Block }) {
+        super()
+        this.body = props.body
+    }
+}
+
+export class ElseIfStatement extends Executable {
+    constructor(public elseIfCase: Case) {
+        super()
     }
 }

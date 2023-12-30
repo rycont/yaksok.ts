@@ -27,50 +27,51 @@ Deno.test('Parse with indent', () => {
         new Block([
             new EOL(),
             new IfStatement({
-                ifBody: new IfStatement({
-                    condition: new Formula({
-                        left: new NumberValue(1),
-                        operator: new EqualOperator(),
-                        right: new NumberValue(1),
-                    }),
-                    body: new Block([
-                        new IfStatement({
-                            ifBody: new IfStatement({
-                                condition: new Formula({
-                                    left: new NumberValue(2),
-                                    operator: new EqualOperator(),
-                                    right: new NumberValue(2),
-                                }),
-                                body: new Block([
-                                    new SetVariable({
-                                        name: new Variable({
-                                            name: new Keyword('값'),
+                cases: [
+                    {
+                        condition: new Formula({
+                            left: new NumberValue(1),
+                            operator: new EqualOperator(),
+                            right: new NumberValue(1),
+                        }),
+                        body: new Block([
+                            new IfStatement({
+                                cases: [
+                                    {
+                                        condition: new Formula({
+                                            left: new NumberValue(2),
+                                            operator: new EqualOperator(),
+                                            right: new NumberValue(2),
                                         }),
-                                        value: new NumberValue(5),
-                                    }),
-                                ]),
+                                        body: new Block([
+                                            new SetVariable({
+                                                name: new Variable('값'),
+                                                value: new NumberValue(5),
+                                            }),
+                                        ]),
+                                    },
+                                    {
+                                        body: new Block([
+                                            new SetVariable({
+                                                name: new Variable('값'),
+                                                value: new NumberValue(6),
+                                            }),
+                                        ]),
+                                    },
+                                ],
                             }),
-                            elseBody: new Block([
-                                new SetVariable({
-                                    name: new Variable({
-                                        name: new Keyword('값'),
-                                    }),
-                                    value: new NumberValue(6),
-                                }),
-                            ]),
-                        }),
-                        new EOL(),
-                    ]),
-                }),
-
-                elseBody: new Block([
-                    new SetVariable({
-                        name: new Variable({
-                            name: new Keyword('값'),
-                        }),
-                        value: new NumberValue(3),
-                    }),
-                ]),
+                            new EOL(),
+                        ]),
+                    },
+                    {
+                        body: new Block([
+                            new SetVariable({
+                                name: new Variable('값'),
+                                value: new NumberValue(3),
+                            }),
+                        ]),
+                    },
+                ],
             }),
             new EOL(),
         ]),

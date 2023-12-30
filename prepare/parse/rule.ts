@@ -5,6 +5,8 @@ import {
     Break,
     DivideOperator,
     EOL,
+    ElseIfStatement,
+    ElseStatement,
     EqualOperator,
     Evaluable,
     Expression,
@@ -306,6 +308,36 @@ export const internalPatternsByLevel: Rule[][] = [
             to: IfStatement,
             pattern: [
                 {
+                    type: IfStatement,
+                    as: 'ifStatement',
+                },
+                {
+                    type: ElseIfStatement,
+                    as: 'elseIfStatement',
+                },
+            ],
+        },
+        {
+            to: IfStatement,
+            pattern: [
+                {
+                    type: IfStatement,
+                    as: 'ifStatement',
+                },
+                {
+                    type: ElseStatement,
+                    as: 'elseStatement',
+                },
+            ],
+        },
+        {
+            to: ElseIfStatement,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '아니면',
+                },
+                {
                     type: Keyword,
                     value: '만약',
                 },
@@ -327,12 +359,8 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: IfStatement,
+            to: ElseStatement,
             pattern: [
-                {
-                    type: IfStatement,
-                    as: 'ifBody',
-                },
                 {
                     type: Keyword,
                     value: '아니면',
@@ -342,7 +370,31 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Block,
-                    as: 'elseBody',
+                    as: 'body',
+                },
+            ],
+        },
+        {
+            to: IfStatement,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '만약',
+                },
+                {
+                    type: Evaluable,
+                    as: 'condition',
+                },
+                {
+                    type: Keyword,
+                    value: '이면',
+                },
+                {
+                    type: EOL,
+                },
+                {
+                    type: Block,
+                    as: 'body',
                 },
             ],
         },
