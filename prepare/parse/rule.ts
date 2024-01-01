@@ -57,7 +57,6 @@ export type Rule = {
 export const internalPatternsByLevel: Rule[][] = [
     [
         {
-            _to: Indexing,
             pattern: [
                 {
                     type: Expression,
@@ -72,6 +71,10 @@ export const internalPatternsByLevel: Rule[][] = [
                     value: ']',
                 },
             ],
+            factory: (nodes) => {
+                const index = nodes[1] as Evaluable
+                return new Indexing({ index })
+            },
         },
         {
             _to: IndexFetch,
@@ -86,7 +89,7 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
         },
-    ] as unknown as Rule[],
+    ],
     [
         {
             _to: EqualOperator,
@@ -526,5 +529,5 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
         },
-    ] as Rule[],
+    ],
 ]

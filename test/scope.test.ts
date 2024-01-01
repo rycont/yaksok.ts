@@ -137,7 +137,7 @@ Deno.test('Set / Invoke Function', async (context) => {
                 value: new NumberValue(20),
             }),
             new SetVariable({
-                name: '나이',
+                name: '결과',
                 value: new NumberValue(10),
             }),
         ]),

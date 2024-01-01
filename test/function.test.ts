@@ -67,13 +67,16 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
     })
 
     await context.step('Invoke function with broken arguments', () => {
+
         const functionInvokation = new FunctionInvoke({
-            음식: new Keyword('사과') as unknown as Evaluable,
             name: '주문하기',
-        } as unknown as Record<string, Evaluable> & { name: string })
+            params: {
+                음식: new Keyword('사과') as unknown as Evaluable,
+            }
+        })
 
         try {
-            run(new Block([functionInvokation]), scope)
+            run(functionInvokation, scope)
             unreachable()
         } catch (e) {
             assertIsError(e, NotEvaluableParameterError)

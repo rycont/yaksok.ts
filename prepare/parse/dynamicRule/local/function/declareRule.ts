@@ -26,6 +26,9 @@ export function createFunctionDeclareRule(
         config: {
             name,
         },
+        factory() {
+            throw new Error('factory not implemented')
+        },
     }
 }
 

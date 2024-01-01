@@ -48,6 +48,7 @@ export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {
                     },
                     factory(nodes: Node[]) {
                         const child = rule.factory(nodes.slice(1))
+                        child.position = nodes[1].position
 
                         if (!(child instanceof Evaluable))
                             throw new Error('child is not Evaluable')

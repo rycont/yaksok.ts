@@ -56,7 +56,10 @@ export function __LEGACY__reduce(tokens: Node[], rule: Rule) {
 
 export function reduce(tokens: Node[], rule: Rule) {
     if (rule._to) return __LEGACY__reduce(tokens, rule)
-    return rule.factory(tokens)
+    const reduced = rule.factory(tokens)
+    reduced.position = tokens[0].position
+
+    return reduced
 }
 
 export function callParseRecursively(_tokens: Node[], patterns: Rule[]) {

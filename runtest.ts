@@ -2,7 +2,7 @@ import { yaksok } from './index.ts'
 
 yaksok({
     main: `
-보드_시리얼: "1033"
+보드_시리얼: "1032"
 
 만약 @아두이노 모델명 = "Arduino Uno" 이면
     "아두이노 모델명이 맞습니다." 보여주기
@@ -16,6 +16,8 @@ yaksok({
         결과: "1.0.1"
     아니면
         결과: "UNKNOWN"
+
+    "지민" / 2
 
 모델명: "Arduino Uno"
 `,
