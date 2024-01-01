@@ -11,7 +11,7 @@ export function createFunctionDeclareRule(
     const factory = functionRuleByType[config.type]
 
     return {
-        to: factory.target,
+        _to: factory.target,
         pattern: [
             ...factory.prefix,
             ...declarationTemplate,

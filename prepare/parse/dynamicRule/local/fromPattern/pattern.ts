@@ -11,82 +11,82 @@ import { Rule } from '../../../rule.ts'
 export const dynamicPatternDetector: (Omit<Rule, 'to'> & {
     name: 'variable' | 'list_loop'
 })[] = [
-    {
-        name: 'variable' as const,
-        pattern: [
-            {
-                type: Keyword,
-                as: 'name',
-            },
-            {
-                type: Expression,
-                value: ':',
-            },
-            {
-                type: Evaluable,
-            },
-        ],
-    },
-    {
-        name: 'variable' as const,
-        pattern: [
-            {
-                type: Keyword,
-                as: 'name',
-            },
-            {
-                type: Expression,
-                value: ':',
-            },
-            {
-                type: Expression,
-            },
-        ],
-    },
-    {
-        name: 'variable' as const,
-        pattern: [
-            {
-                type: Keyword,
-                as: 'name',
-            },
-            {
-                type: Expression,
-                value: ':',
-            },
-            {
-                type: Keyword,
-            },
-        ],
-    },
-    {
-        name: 'list_loop' as const,
-        pattern: [
-            {
-                type: Keyword,
-                value: '의',
-            },
-            {
-                type: Keyword,
-                as: 'name',
-            },
-            {
-                type: Keyword,
-                value: '마다',
-            },
-            {
-                type: EOL,
-            },
-        ],
-    },
-]
+        {
+            name: 'variable' as const,
+            pattern: [
+                {
+                    type: Keyword,
+                    as: 'name',
+                },
+                {
+                    type: Expression,
+                    value: ':',
+                },
+                {
+                    type: Evaluable,
+                },
+            ],
+        },
+        {
+            name: 'variable' as const,
+            pattern: [
+                {
+                    type: Keyword,
+                    as: 'name',
+                },
+                {
+                    type: Expression,
+                    value: ':',
+                },
+                {
+                    type: Expression,
+                },
+            ],
+        },
+        {
+            name: 'variable' as const,
+            pattern: [
+                {
+                    type: Keyword,
+                    as: 'name',
+                },
+                {
+                    type: Expression,
+                    value: ':',
+                },
+                {
+                    type: Keyword,
+                },
+            ],
+        },
+        {
+            name: 'list_loop' as const,
+            pattern: [
+                {
+                    type: Keyword,
+                    value: '의',
+                },
+                {
+                    type: Keyword,
+                    as: 'name',
+                },
+                {
+                    type: Keyword,
+                    value: '마다',
+                },
+                {
+                    type: EOL,
+                },
+            ],
+        },
+    ]
 
 export const dynamicRuleFactory: Record<
     'variable' | 'list_loop',
     (substack: Node[]) => Rule
 > = {
     variable: (substack: Node[]) => ({
-        to: Variable,
+        _to: Variable,
         pattern: [
             {
                 type: Keyword,
@@ -96,7 +96,7 @@ export const dynamicRuleFactory: Record<
         ],
     }),
     list_loop: (substack: Node[]) => ({
-        to: Variable,
+        _to: Variable,
         pattern: [
             {
                 type: Keyword,

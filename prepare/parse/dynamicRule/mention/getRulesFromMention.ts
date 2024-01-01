@@ -28,9 +28,9 @@ export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {
     for (const name of getMentionedNames(tokens)) {
         const runner = yaksok.getRunner(name)
         const exportedRules = runner.exports
-            .filter((rule) => !(rule.to instanceof DeclareFunction))
+            .filter((rule) => !(rule._to instanceof DeclareFunction))
             .map((rule) => ({
-                to: MentionScope,
+                _to: MentionScope,
                 pattern: [
                     {
                         type: Mention,

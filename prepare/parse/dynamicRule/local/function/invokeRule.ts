@@ -16,7 +16,7 @@ export function createFunctionInvokeRule(
     const invokeTemplate = subtokens.map(functionHeaderToInvokeMap)
 
     return {
-        to: FunctionInvoke,
+        _to: FunctionInvoke,
         pattern: invokeTemplate,
         config: {
             name,

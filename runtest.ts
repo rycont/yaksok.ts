@@ -1,5 +1,4 @@
-// import { yaksok } from './index.ts'
-import { yaksok } from 'https://deno.land/x/yaksok@beta-13/index.ts'
+import { yaksok } from './index.ts'
 
 yaksok({
     main: `

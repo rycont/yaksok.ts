@@ -37,7 +37,7 @@ export class MentionScope extends Evaluable {
         this.originRule = originRule
         this.filename = filename
 
-        const childNode = new originRule.to(rest) as Evaluable
+        const childNode = new originRule._to(rest) as Evaluable
         this.childNode = childNode
     }
 

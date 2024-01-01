@@ -39,24 +39,25 @@ import { ListLoop } from '../../node/listLoop.ts'
 
 export interface PatternUnit {
     type: {
-        new (...args: any[]): Node
+        new(...args: any[]): Node
     }
     value?: Record<string, unknown> | string | number
     as?: string
 }
 
 export interface Rule {
-    to: {
-        new (...args: any[]): Node
+    _to: {
+        new(...args: any[]): Node
     }
     pattern: PatternUnit[]
+    factory?: (nodes: Node[]) => Node
     config?: Record<string, unknown>
 }
 
 export const internalPatternsByLevel: Rule[][] = [
     [
         {
-            to: Indexing,
+            _to: Indexing,
             pattern: [
                 {
                     type: Expression,
@@ -73,7 +74,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: IndexFetch,
+            _to: IndexFetch,
             pattern: [
                 {
                     type: Evaluable,
@@ -88,7 +89,7 @@ export const internalPatternsByLevel: Rule[][] = [
     ],
     [
         {
-            to: EqualOperator,
+            _to: EqualOperator,
             pattern: [
                 {
                     type: Operator,
@@ -97,7 +98,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: Sequence,
+            _to: Sequence,
             pattern: [
                 {
                     type: Evaluable,
@@ -114,7 +115,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: List,
+            _to: List,
             pattern: [
                 {
                     type: Expression,
@@ -131,7 +132,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: List,
+            _to: List,
             pattern: [
                 {
                     type: Expression,
@@ -144,7 +145,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: SetToIndex,
+            _to: SetToIndex,
             pattern: [
                 {
                     type: IndexFetch,
@@ -161,7 +162,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: ValueGroup,
+            _to: ValueGroup,
             pattern: [
                 {
                     type: Expression,
@@ -178,7 +179,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: GreaterThanOperator,
+            _to: GreaterThanOperator,
             pattern: [
                 {
                     type: Operator,
@@ -187,7 +188,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: GreaterThanOrEqualOperator,
+            _to: GreaterThanOrEqualOperator,
             pattern: [
                 {
                     type: GreaterThanOperator,
@@ -198,7 +199,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: LessThanOperator,
+            _to: LessThanOperator,
             pattern: [
                 {
                     type: Operator,
@@ -207,7 +208,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: LessThanOrEqualOperator,
+            _to: LessThanOrEqualOperator,
             pattern: [
                 {
                     type: LessThanOperator,
@@ -218,7 +219,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: Variable,
+            _to: Variable,
             pattern: [
                 {
                     type: Keyword,
@@ -231,7 +232,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: SetVariable,
+            _to: SetVariable,
             pattern: [
                 {
                     type: Variable,
@@ -251,7 +252,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: DivideOperator,
+            _to: DivideOperator,
             pattern: [
                 {
                     type: Operator,
@@ -260,7 +261,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: MultiplyOperator,
+            _to: MultiplyOperator,
             pattern: [
                 {
                     type: Operator,
@@ -269,7 +270,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: PlusOperator,
+            _to: PlusOperator,
             pattern: [
                 {
                     type: Operator,
@@ -278,7 +279,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: MinusOperator,
+            _to: MinusOperator,
             pattern: [
                 {
                     type: Operator,
@@ -287,7 +288,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: AndOperator,
+            _to: AndOperator,
             pattern: [
                 {
                     type: Keyword,
@@ -296,7 +297,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: RangeOperator,
+            _to: RangeOperator,
             pattern: [
                 {
                     type: Operator,
@@ -305,7 +306,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: IfStatement,
+            _to: IfStatement,
             pattern: [
                 {
                     type: IfStatement,
@@ -318,7 +319,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: IfStatement,
+            _to: IfStatement,
             pattern: [
                 {
                     type: IfStatement,
@@ -331,7 +332,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: ElseIfStatement,
+            _to: ElseIfStatement,
             pattern: [
                 {
                     type: Keyword,
@@ -359,7 +360,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: ElseStatement,
+            _to: ElseStatement,
             pattern: [
                 {
                     type: Keyword,
@@ -375,7 +376,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: IfStatement,
+            _to: IfStatement,
             pattern: [
                 {
                     type: Keyword,
@@ -399,7 +400,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: Print,
+            _to: Print,
             pattern: [
                 {
                     type: Evaluable,
@@ -412,7 +413,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: Loop,
+            _to: Loop,
             pattern: [
                 {
                     type: Keyword,
@@ -428,7 +429,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: Break,
+            _to: Break,
             pattern: [
                 {
                     type: Keyword,
@@ -441,7 +442,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: Return,
+            _to: Return,
             pattern: [
                 {
                     type: Keyword,
@@ -454,7 +455,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: ListLoop,
+            _to: ListLoop,
             pattern: [
                 {
                     type: Keyword,
@@ -486,7 +487,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: Formula,
+            _to: Formula,
             pattern: [
                 {
                     type: Evaluable,
@@ -503,7 +504,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            to: Mention,
+            _to: Mention,
             pattern: [
                 {
                     type: Expression,
