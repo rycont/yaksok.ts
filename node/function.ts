@@ -62,25 +62,20 @@ export interface Params {
 }
 
 export class FunctionInvoke extends Evaluable {
-    #name: string
-    params: Params
+    private name: string
+    private params: Params
 
-    constructor(
-        props: Record<string, Evaluable> & {
-            name?: string
-        },
-    ) {
+    constructor(props: { name: string; params: Record<string, Evaluable> }) {
         super()
+
         if (!props.name) {
             throw new FunctionMustHaveNameError({
                 position: this.position,
             })
         }
 
-        this.#name = props.name!
-        delete props['name']
-
-        this.params = props
+        this.name = props.name!
+        this.params = props.params
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {
@@ -104,7 +99,7 @@ export class FunctionInvoke extends Evaluable {
         callFrame: CallFrame,
         args: { [key: string]: ValueTypes },
     ) {
-        const func = scope.getFunction(this.#name)
+        const func = scope.getFunction(this.name)
         const childScope = new Scope({
             parent: scope,
             initialVariable: args,

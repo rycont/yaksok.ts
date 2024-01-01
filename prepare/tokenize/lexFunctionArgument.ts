@@ -41,7 +41,7 @@ export function lexFunctionArgument(tokens: Node[]) {
 
             if (token instanceof Keyword) {
                 paramaters.push(token.value)
-                const variable = new Variable({ name: token })
+                const variable = new Variable(token.value)
 
                 tokenStack.push(variable)
                 functionHeader.push(variable)
@@ -84,7 +84,7 @@ export function lexFunctionArgument(tokens: Node[]) {
                     token instanceof Keyword &&
                     paramaters.includes(token.value)
                 ) {
-                    tokenStack.push(new Variable({ name: token }))
+                    tokenStack.push(new Variable(token.value))
                     continue
                 }
                 tokenStack.push(token)

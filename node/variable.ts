@@ -1,4 +1,4 @@
-import { Evaluable, Keyword, ValueTypes } from './index.ts'
+import { Evaluable, ValueTypes } from './index.ts'
 
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
@@ -8,20 +8,11 @@ import {
 } from '../error/index.ts'
 
 export class Variable extends Evaluable {
-    name: string
+    constructor(public name: string) {
+        if (typeof name !== 'string')
+            throw new Error('Variable name must be string')
 
-    constructor(args: { name: Keyword | Variable } | string) {
         super()
-
-        if (typeof args === 'string') {
-            this.name = args
-            return
-        } else if (args.name instanceof Keyword) {
-            this.name = args.name.value
-            return
-        }
-
-        this.name = args.name.name
     }
 
     execute(scope: Scope) {

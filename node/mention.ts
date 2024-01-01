@@ -2,6 +2,7 @@ import { Evaluable, Executable, Keyword, ValueTypes } from './base.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Rule } from '../prepare/parse/rule.ts'
 import { Scope } from '../runtime/scope.ts'
+import { Node } from './index.ts'
 
 export class Mention extends Executable {
     value: string
@@ -17,33 +18,19 @@ export class Mention extends Executable {
 }
 
 export class MentionScope extends Evaluable {
-    originRule: Rule
     filename: string
-    childNode: Evaluable
+    child: Evaluable
 
-    constructor(
-        props: { __internal: { originRule: Rule; filename: string } } & Record<
-            string,
-            Evaluable
-        >,
-    ) {
+    constructor(props: { child: Evaluable; filename: string }) {
         super()
 
-        const {
-            __internal: { originRule, filename },
-            ...rest
-        } = props
-
-        this.originRule = originRule
-        this.filename = filename
-
-        const childNode = new originRule._to(rest) as Evaluable
-        this.childNode = childNode
+        this.filename = props.filename
+        this.child = props.child
     }
 
     execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
         if (this.position) {
-            this.childNode.position = {
+            this.child.position = {
                 line: this.position.line,
                 column: this.position.column + 1 + this.filename.length,
             }
@@ -55,7 +42,7 @@ export class MentionScope extends Evaluable {
 
         moduleScope.parent = scope
 
-        const result = runner.evaluateFromExtern(this.childNode)
+        const result = runner.evaluateFromExtern(this.child)
 
         moduleScope.parent = undefined
 
@@ -63,6 +50,6 @@ export class MentionScope extends Evaluable {
     }
 
     toPrint(): string {
-        return '@' + this.filename + ' ' + this.childNode.toPrint()
+        return '@' + this.filename + ' ' + this.child.toPrint()
     }
 }

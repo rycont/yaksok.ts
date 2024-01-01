@@ -39,18 +39,18 @@ import { ListLoop } from '../../node/listLoop.ts'
 
 export interface PatternUnit {
     type: {
-        new(...args: any[]): Node
+        new (...args: any[]): Node
     }
     value?: Record<string, unknown> | string | number
     as?: string
 }
 
-export interface Rule {
-    _to: {
-        new(...args: any[]): Node
+export type Rule = {
+    _to?: {
+        new (...args: any[]): Node
     }
     pattern: PatternUnit[]
-    factory?: (nodes: Node[]) => Node
+    factory: (nodes: Node[]) => Node
     config?: Record<string, unknown>
 }
 
@@ -86,7 +86,7 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
         },
-    ],
+    ] as unknown as Rule[],
     [
         {
             _to: EqualOperator,
@@ -219,7 +219,6 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
         },
         {
-            _to: Variable,
             pattern: [
                 {
                     type: Keyword,
@@ -230,6 +229,12 @@ export const internalPatternsByLevel: Rule[][] = [
                     as: 'name',
                 },
             ],
+            factory: (nodes) => {
+                const variable = nodes[1] as Variable
+                const name = variable.name
+
+                return new Variable(name)
+            },
         },
         {
             _to: SetVariable,
@@ -516,5 +521,5 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
         },
-    ],
+    ] as Rule[],
 ]

@@ -35,8 +35,7 @@ export function SRParse(_tokens: Node[], rules: Rule[]) {
 }
 
 export function __LEGACY__reduce(tokens: Node[], rule: Rule) {
-    console.log('LEGACY REDUCE', rule._to.name)
-
+    console.log('LEGACY REDUCE', rule._to!.name)
     const args: Record<string, unknown> = { ...rule.config } || {}
     let hasArgs = rule.config ? true : undefined
 
@@ -49,7 +48,7 @@ export function __LEGACY__reduce(tokens: Node[], rule: Rule) {
         hasArgs = true
     }
 
-    const reduced = new rule._to(hasArgs && args)
+    const reduced = new rule._to!(hasArgs && args)
     reduced.position = tokens[0].position
 
     return reduced
@@ -57,7 +56,7 @@ export function __LEGACY__reduce(tokens: Node[], rule: Rule) {
 
 export function reduce(tokens: Node[], rule: Rule) {
     if (rule._to) return __LEGACY__reduce(tokens, rule)
-    throw new Error('Not implemented')
+    return rule.factory(tokens)
 }
 
 export function callParseRecursively(_tokens: Node[], patterns: Rule[]) {

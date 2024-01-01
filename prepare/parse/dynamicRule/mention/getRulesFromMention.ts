@@ -1,6 +1,7 @@
 import { Yaksok } from '../../../../index.ts'
 import { Expression, Keyword, Node } from '../../../../node/base.ts'
 import { DeclareFunction } from '../../../../node/function.ts'
+import { Evaluable } from '../../../../node/index.ts'
 import { Mention, MentionScope } from '../../../../node/mention.ts'
 import { Rule } from '../../rule.ts'
 
@@ -29,23 +30,35 @@ export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {
         const runner = yaksok.getRunner(name)
         const exportedRules = runner.exports
             .filter((rule) => !(rule._to instanceof DeclareFunction))
-            .map((rule) => ({
-                _to: MentionScope,
-                pattern: [
-                    {
-                        type: Mention,
-                        value: name,
+            .map((rule) => {
+                return {
+                    pattern: [
+                        {
+                            type: Mention,
+                            value: name,
+                        },
+                        ...rule.pattern,
+                    ],
+                    config: {
+                        ...rule.config,
+                        __internal: {
+                            originRule: rule,
+                            filename: name,
+                        },
                     },
-                    ...rule.pattern,
-                ],
-                config: {
-                    ...rule.config,
-                    __internal: {
-                        originRule: rule,
-                        filename: name,
+                    factory(nodes: Node[]) {
+                        const child = rule.factory(nodes.slice(1))
+
+                        if (!(child instanceof Evaluable))
+                            throw new Error('child is not Evaluable')
+
+                        return new MentionScope({
+                            filename: name,
+                            child,
+                        })
                     },
-                },
-            }))
+                }
+            })
 
         rules = rules.concat(exportedRules)
     }
