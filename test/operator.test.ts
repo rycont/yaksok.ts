@@ -94,11 +94,11 @@ Deno.test('Run Binary Operation', () => {
             new EOL(),
             new SetVariable({
                 name: '계산',
-                value: new Formula({
-                    left: new NumberValue(1),
-                    operator: new PlusOperator(),
-                    right: new NumberValue(1),
-                }),
+                value: new Formula([
+                    new NumberValue(1),
+                    new PlusOperator(),
+                    new NumberValue(1),
+                ]),
             }),
             new EOL(),
         ]),
@@ -573,11 +573,11 @@ Deno.test('Raw Operator toPrint', () => {
 })
 
 Deno.test('Unknown Operator', () => {
-    const formula = new Formula({
-        left: new NumberValue(1),
-        operator: new Operator('NICE'),
-        right: new NumberValue(2),
-    })
+    const formula = new Formula([
+        new NumberValue(1),
+        new Operator('NICE'),
+        new NumberValue(2),
+    ])
 
     const scope = new Scope()
     const callFrame = new CallFrame(formula)

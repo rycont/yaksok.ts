@@ -5,7 +5,6 @@ import {
     NumberValue,
     SetVariable,
     Variable,
-    Keyword,
     Block,
     EOL,
 } from '../node/index.ts'
@@ -51,11 +50,11 @@ Deno.test('Parse variable with 이전 keyword', () => {
             }),
             new SetVariable({
                 name: '나이',
-                value: new Formula({
-                    left: new Variable('나이'),
-                    operator: new PlusOperator(),
-                    right: new NumberValue(1),
-                }),
+                value: new Formula([
+                    new Variable('나이'),
+                    new PlusOperator(),
+                    new NumberValue(1),
+                ]),
             }),
             new EOL(),
         ]),
@@ -83,11 +82,7 @@ Deno.test('Reserved word cannot be used as variable name', () => {
 })
 
 Deno.test("Get not defined variable's value", () => {
-    const ast = new Block([
-        new Print({
-            value: new Variable('나이'),
-        }),
-    ])
+    const ast = new Block([new Print(new Variable('나이'))])
 
     try {
         run(ast)

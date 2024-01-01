@@ -31,11 +31,8 @@ const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
 ]
 
 export class ValueGroup extends Evaluable {
-    value: Evaluable
-
-    constructor(props: { value: Evaluable }) {
+    constructor(public value: Evaluable) {
         super()
-        this.value = props.value
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {
@@ -49,32 +46,8 @@ export class ValueGroup extends Evaluable {
 }
 
 export class Formula extends Evaluable {
-    terms: (Evaluable | Operator)[]
-
-    constructor(props: {
-        left: Evaluable
-        operator: Operator
-        right: Evaluable
-    }) {
+    constructor(public terms: (Evaluable | Operator)[]) {
         super()
-
-        let terms: (Evaluable | Operator)[] = []
-
-        if (props.left instanceof Formula) {
-            terms = terms.concat(props.left.terms)
-        } else {
-            terms.push(props.left)
-        }
-
-        terms.push(props.operator)
-
-        if (props.right instanceof Formula) {
-            terms = terms.concat(props.right.terms)
-        } else {
-            terms.push(props.right)
-        }
-
-        this.terms = terms
     }
 
     execute(scope: Scope, _callFrame: CallFrame): ValueTypes {

@@ -16,7 +16,6 @@ export const dynamicPatternDetector: (Omit<Rule, 'factory'> & {
         pattern: [
             {
                 type: Keyword,
-                as: 'name',
             },
             {
                 type: Expression,
@@ -32,7 +31,6 @@ export const dynamicPatternDetector: (Omit<Rule, 'factory'> & {
         pattern: [
             {
                 type: Keyword,
-                as: 'name',
             },
             {
                 type: Expression,
@@ -48,7 +46,6 @@ export const dynamicPatternDetector: (Omit<Rule, 'factory'> & {
         pattern: [
             {
                 type: Keyword,
-                as: 'name',
             },
             {
                 type: Expression,
@@ -68,7 +65,6 @@ export const dynamicPatternDetector: (Omit<Rule, 'factory'> & {
             },
             {
                 type: Keyword,
-                as: 'name',
             },
             {
                 type: Keyword,
@@ -90,7 +86,6 @@ export const dynamicRuleFactory: Record<
             {
                 type: Keyword,
                 value: (substack[0] as Keyword).value,
-                as: 'name',
             },
         ],
         factory: (tokens: Node[]) => {
@@ -103,7 +98,6 @@ export const dynamicRuleFactory: Record<
             {
                 type: Keyword,
                 value: (substack[1] as Keyword).value,
-                as: 'name',
             },
         ],
         factory: (tokens: Node[]) => {

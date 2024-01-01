@@ -32,9 +32,7 @@ Deno.test('Parse Mentioning', async (context) => {
 
         assertEquals(ast.children, [
             new EOL(),
-            new Mention({
-                name: new Keyword('아두이노'),
-            }),
+            new Mention('아두이노'),
             new Keyword('모델명'),
             new Keyword('보여주기'),
             new EOL(),

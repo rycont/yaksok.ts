@@ -1,4 +1,4 @@
-import { assertEquals, assertIsError, unreachable } from 'assert'
+import { assert, assertEquals, assertIsError, unreachable } from 'assert'
 
 import { tokenize } from '../prepare/tokenize/index.ts'
 import {
@@ -71,21 +71,13 @@ Deno.test('Parse list', async (context) => {
                 new EOL(),
                 new SetVariable({
                     name: '목록',
-                    value: new List({
-                        sequence: new Sequence({
-                            a: new Sequence({
-                                a: new Sequence({
-                                    a: new Sequence({
-                                        a: new NumberValue(1),
-                                        b: new NumberValue(3),
-                                    }),
-                                    b: new NumberValue(5),
-                                }),
-                                b: new NumberValue(7),
-                            }),
-                            b: new NumberValue(9),
-                        }),
-                    }),
+                    value: new List([
+                        new NumberValue(1),
+                        new NumberValue(3),
+                        new NumberValue(5),
+                        new NumberValue(7),
+                        new NumberValue(9),
+                    ]),
                 }),
                 new EOL(),
             ]),
@@ -224,15 +216,10 @@ Deno.test('Index target is not a sequence', () => {
     try {
         const scope = new Scope()
 
-        const node = new SetToIndex({
-            target: new IndexFetch({
-                target: new NumberValue(1),
-                index: new Indexing({
-                    index: new NumberValue(1),
-                }),
-            }),
-            value: new NumberValue(2),
-        })
+        const node = new SetToIndex(
+            new IndexFetch(new NumberValue(1), new NumberValue(1)),
+            new NumberValue(2),
+        )
 
         node.execute(scope, new CallFrame(node))
         unreachable()
@@ -245,13 +232,10 @@ Deno.test('Index fetching target is not IndexedValue', () => {
     try {
         const scope = new Scope()
 
-        const node = new IndexFetch({
-            // 오류 생성을 위해서.. 어쩔 수 없었어요
-            target: new NumberValue(1) as unknown as List,
-            index: new Indexing({
-                index: new NumberValue(1),
-            }),
-        })
+        const node = new IndexFetch( // 오류 생성을 위해서.. 어쩔 수 없었어요
+            new NumberValue(1) as unknown as List,
+            new NumberValue(1),
+        )
 
         node.execute(scope, new CallFrame(node))
         unreachable()
@@ -261,23 +245,16 @@ Deno.test('Index fetching target is not IndexedValue', () => {
 })
 
 Deno.test('Print list before evaluating', () => {
-    try {
-        const node = new List({
-            sequence: new Sequence({
-                a: new Formula({
-                    left: new NumberValue(1),
-                    operator: new PlusOperator(),
-                    right: new NumberValue(2),
-                }),
-                b: new NumberValue(2),
-            }),
-        })
+    const node = new List([
+        new Formula([
+            new NumberValue(1),
+            new PlusOperator(),
+            new NumberValue(2),
+        ]),
+        new NumberValue(2),
+    ])
 
-        node.toPrint()
-        unreachable()
-    } catch (error) {
-        assertIsError(error, ListNotEvaluatedError)
-    }
+    assertEquals(node.toPrint(), '[1 + 2, 2]')
 })
 
 Deno.test('List out of range', async (context) => {
@@ -365,7 +342,7 @@ Deno.test('List getting index is not number', () => {
 })
 
 Deno.test('List with no data source', () => {
-    const node = new List({})
+    const node = new List([])
     assertEquals(node.toPrint(), '[]')
 })
 

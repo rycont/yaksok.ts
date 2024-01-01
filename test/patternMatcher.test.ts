@@ -26,11 +26,11 @@ Deno.test('Matching case: Wrapping class inherits from child class', () => {
             new EOL(),
             new SetVariable({
                 name: '이름',
-                value: new Formula({
-                    left: new StringValue('홍길'),
-                    operator: new PlusOperator(),
-                    right: new StringValue('동'),
-                }),
+                value: new Formula([
+                    new StringValue('홍길'),
+                    new PlusOperator(),
+                    new StringValue('동'),
+                ]),
             }),
             new EOL(),
         ]),

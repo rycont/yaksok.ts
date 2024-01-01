@@ -8,27 +8,20 @@ export function createFunctionDeclareRule(
     config: { type: keyof typeof functionRuleByType },
 ): Rule {
     const declarationTemplate = subtokens.map(functionHeaderToRuleMap)
-    const factory = functionRuleByType[config.type]
+    const preset = functionRuleByType[config.type]
 
     return {
-        _to: factory.target,
         pattern: [
-            ...factory.prefix,
+            ...preset.prefix,
             ...declarationTemplate,
             {
                 type: EOL,
             },
             {
-                type: factory.body,
-                as: 'body',
+                type: preset.body,
             },
         ],
-        config: {
-            name,
-        },
-        factory() {
-            throw new Error('factory not implemented')
-        },
+        factory: preset.createFactory(subtokens, name),
     }
 }
 
@@ -36,7 +29,6 @@ function functionHeaderToRuleMap(token: FunctionHeaderNode): PatternUnit {
     if (token instanceof Variable) {
         return {
             type: Variable,
-            as: token.name,
         }
     }
 

@@ -46,9 +46,6 @@ export interface PatternUnit {
 }
 
 export type Rule = {
-    _to?: {
-        new (...args: any[]): Node
-    }
     pattern: PatternUnit[]
     factory: (nodes: Node[]) => Node
     config?: Record<string, unknown>
@@ -64,7 +61,6 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Evaluable,
-                    as: 'index',
                 },
                 {
                     type: Expression,
@@ -73,39 +69,40 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
             factory: (nodes) => {
                 const index = nodes[1] as Evaluable
-                return new Indexing({ index })
+                return new Indexing(index)
             },
         },
         {
-            _to: IndexFetch,
             pattern: [
                 {
                     type: Evaluable,
-                    as: 'target',
                 },
                 {
                     type: Indexing,
-                    as: 'index',
                 },
             ],
+            factory: (nodes) => {
+                const target = nodes[0] as Evaluable
+                const index = nodes[1] as Indexing
+
+                return new IndexFetch(target, index.value)
+            },
         },
     ],
     [
         {
-            _to: EqualOperator,
             pattern: [
                 {
                     type: Operator,
                     value: '=',
                 },
             ],
+            factory: () => new EqualOperator(),
         },
         {
-            _to: Sequence,
             pattern: [
                 {
                     type: Evaluable,
-                    as: 'a',
                 },
                 {
                     type: Expression,
@@ -113,12 +110,20 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Evaluable,
-                    as: 'b',
                 },
             ],
+            factory: (nodes) => {
+                const a = nodes[0] as Evaluable
+                const b = nodes[2] as Evaluable
+
+                if (a instanceof Sequence) {
+                    return new Sequence([...a.items, b])
+                }
+
+                return new Sequence([a, b])
+            },
         },
         {
-            _to: List,
             pattern: [
                 {
                     type: Expression,
@@ -126,16 +131,18 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Sequence,
-                    as: 'sequence',
                 },
                 {
                     type: Expression,
                     value: ']',
                 },
             ],
+            factory: (nodes) => {
+                const sequence = nodes[1] as Sequence
+                return new List(sequence.items)
+            },
         },
         {
-            _to: List,
             pattern: [
                 {
                     type: Expression,
@@ -146,13 +153,12 @@ export const internalPatternsByLevel: Rule[][] = [
                     value: ']',
                 },
             ],
+            factory: () => new List([]),
         },
         {
-            _to: SetToIndex,
             pattern: [
                 {
                     type: IndexFetch,
-                    as: 'target',
                 },
                 {
                     type: Expression,
@@ -160,12 +166,16 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Evaluable,
-                    as: 'value',
                 },
             ],
+            factory: (nodes) => {
+                const target = nodes[0] as IndexFetch
+                const value = nodes[2] as Evaluable
+
+                return new SetToIndex(target, value)
+            },
         },
         {
-            _to: ValueGroup,
             pattern: [
                 {
                     type: Expression,
@@ -173,25 +183,27 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Evaluable,
-                    as: 'value',
                 },
                 {
                     type: Expression,
                     value: ')',
                 },
             ],
+            factory: (nodes) => {
+                const value = nodes[1] as Evaluable
+                return new ValueGroup(value)
+            },
         },
         {
-            _to: GreaterThanOperator,
             pattern: [
                 {
                     type: Operator,
                     value: '>',
                 },
             ],
+            factory: () => new GreaterThanOperator(),
         },
         {
-            _to: GreaterThanOrEqualOperator,
             pattern: [
                 {
                     type: GreaterThanOperator,
@@ -200,18 +212,18 @@ export const internalPatternsByLevel: Rule[][] = [
                     type: EqualOperator,
                 },
             ],
+            factory: () => new GreaterThanOrEqualOperator(),
         },
         {
-            _to: LessThanOperator,
             pattern: [
                 {
                     type: Operator,
                     value: '<',
                 },
             ],
+            factory: () => new LessThanOperator(),
         },
         {
-            _to: LessThanOrEqualOperator,
             pattern: [
                 {
                     type: LessThanOperator,
@@ -220,6 +232,7 @@ export const internalPatternsByLevel: Rule[][] = [
                     type: EqualOperator,
                 },
             ],
+            factory: () => new LessThanOrEqualOperator(),
         },
         {
             pattern: [
@@ -229,7 +242,6 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Variable,
-                    as: 'name',
                 },
             ],
             factory: (nodes) => {
@@ -243,7 +255,6 @@ export const internalPatternsByLevel: Rule[][] = [
             pattern: [
                 {
                     type: Variable,
-                    as: 'name',
                 },
                 {
                     type: Expression,
@@ -251,7 +262,6 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Evaluable,
-                    as: 'value',
                 },
                 {
                     type: EOL,
@@ -265,87 +275,104 @@ export const internalPatternsByLevel: Rule[][] = [
             },
         },
         {
-            _to: DivideOperator,
             pattern: [
                 {
                     type: Operator,
                     value: '/',
                 },
             ],
+            factory: () => new DivideOperator(),
         },
         {
-            _to: MultiplyOperator,
             pattern: [
                 {
                     type: Operator,
                     value: '*',
                 },
             ],
+            factory: () => new MultiplyOperator(),
         },
         {
-            _to: PlusOperator,
             pattern: [
                 {
                     type: Operator,
                     value: '+',
                 },
             ],
+            factory: () => new PlusOperator(),
         },
         {
-            _to: MinusOperator,
             pattern: [
                 {
                     type: Operator,
                     value: '-',
                 },
             ],
+            factory: () => new MinusOperator(),
         },
         {
-            _to: AndOperator,
             pattern: [
                 {
                     type: Keyword,
                     value: '이고',
                 },
             ],
+            factory: () => new AndOperator(),
         },
         {
-            _to: RangeOperator,
             pattern: [
                 {
                     type: Operator,
                     value: '~',
                 },
             ],
+            factory: () => new RangeOperator(),
         },
         {
-            _to: IfStatement,
             pattern: [
                 {
                     type: IfStatement,
-                    as: 'ifStatement',
                 },
                 {
                     type: ElseIfStatement,
-                    as: 'elseIfStatement',
                 },
             ],
+            factory: (nodes) => {
+                const [ifStatement, elseIfStatement] = nodes as [
+                    IfStatement,
+                    ElseIfStatement,
+                ]
+
+                const elseIfCase = elseIfStatement.elseIfCase
+                ifStatement.cases.push(elseIfCase)
+
+                return ifStatement
+            },
         },
         {
-            _to: IfStatement,
             pattern: [
                 {
                     type: IfStatement,
-                    as: 'ifStatement',
                 },
                 {
                     type: ElseStatement,
-                    as: 'elseStatement',
                 },
             ],
+            factory: (nodes) => {
+                const [ifStatement, elseStatement] = nodes as [
+                    IfStatement,
+                    ElseStatement,
+                ]
+
+                const elseCase = {
+                    body: elseStatement.body,
+                }
+                ifStatement.cases.push(elseCase)
+
+                return ifStatement
+            },
         },
         {
-            _to: ElseIfStatement,
             pattern: [
                 {
                     type: Keyword,
@@ -357,7 +384,6 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Evaluable,
-                    as: 'condition',
                 },
                 {
                     type: Keyword,
@@ -368,12 +394,16 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Block,
-                    as: 'body',
                 },
             ],
+            factory: (nodes) => {
+                const condition = nodes[2] as Evaluable
+                const body = nodes[5] as Block
+
+                return new ElseIfStatement({ condition, body })
+            },
         },
         {
-            _to: ElseStatement,
             pattern: [
                 {
                     type: Keyword,
@@ -384,12 +414,15 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Block,
-                    as: 'body',
                 },
             ],
+            factory: (nodes) => {
+                const body = nodes[2] as Block
+
+                return new ElseStatement(body)
+            },
         },
         {
-            _to: IfStatement,
             pattern: [
                 {
                     type: Keyword,
@@ -397,7 +430,6 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Evaluable,
-                    as: 'condition',
                 },
                 {
                     type: Keyword,
@@ -408,25 +440,31 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Block,
-                    as: 'body',
                 },
             ],
+            factory: (nodes) => {
+                const condition = nodes[1] as Evaluable
+                const body = nodes[4] as Block
+
+                return new IfStatement([{ condition, body }])
+            },
         },
         {
-            _to: Print,
             pattern: [
                 {
                     type: Evaluable,
-                    as: 'value',
                 },
                 {
                     type: Keyword,
                     value: '보여주기',
                 },
             ],
+            factory: (nodes) => {
+                const value = nodes[0] as Evaluable
+                return new Print(value)
+            },
         },
         {
-            _to: Loop,
             pattern: [
                 {
                     type: Keyword,
@@ -437,12 +475,11 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Block,
-                    as: 'body',
                 },
             ],
+            factory: (nodes) => new Loop(nodes[2] as Block),
         },
         {
-            _to: Break,
             pattern: [
                 {
                     type: Keyword,
@@ -453,9 +490,9 @@ export const internalPatternsByLevel: Rule[][] = [
                     value: '그만',
                 },
             ],
+            factory: () => new Break(),
         },
         {
-            _to: Return,
             pattern: [
                 {
                     type: Keyword,
@@ -466,9 +503,9 @@ export const internalPatternsByLevel: Rule[][] = [
                     value: '그만',
                 },
             ],
+            factory: () => new Return(),
         },
         {
-            _to: ListLoop,
             pattern: [
                 {
                     type: Keyword,
@@ -476,7 +513,6 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Evaluable,
-                    as: 'list',
                 },
                 {
                     type: Keyword,
@@ -484,7 +520,6 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Variable,
-                    as: 'name',
                 },
                 {
                     type: Keyword,
@@ -495,29 +530,41 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Block,
-                    as: 'body',
                 },
             ],
+            factory: (nodes) => {
+                const list = nodes[1] as Evaluable
+                const name = (nodes[3] as Variable).name
+                const body = nodes[6] as Block
+
+                return new ListLoop(list, name, body)
+            },
         },
         {
-            _to: Formula,
             pattern: [
                 {
                     type: Evaluable,
-                    as: 'left',
                 },
                 {
                     type: Operator,
-                    as: 'operator',
                 },
                 {
                     type: Evaluable,
-                    as: 'right',
                 },
             ],
+            factory: (nodes) => {
+                const left = nodes[0] as Evaluable
+                const operator = nodes[1] as Operator
+                const right = nodes[2] as Evaluable
+
+                if (left instanceof Formula) {
+                    return new Formula([...left.terms, operator, right])
+                }
+
+                return new Formula([left, operator, right])
+            },
         },
         {
-            _to: Mention,
             pattern: [
                 {
                     type: Expression,
@@ -525,9 +572,12 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Keyword,
-                    as: 'name',
                 },
             ],
+            factory: (nodes) => {
+                const name = (nodes[1] as Keyword).value
+                return new Mention(name)
+            },
         },
     ],
 ]

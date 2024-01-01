@@ -151,8 +151,8 @@ export function yaksok(
     const yaksok = new Yaksok(
         typeof code === 'string'
             ? {
-                [defaultConfig.entryPoint]: code,
-            }
+                  [defaultConfig.entryPoint]: code,
+              }
             : code,
         config,
     )

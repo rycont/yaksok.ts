@@ -1,15 +1,10 @@
-import { Evaluable, Executable, Keyword, ValueTypes } from './base.ts'
+import { Evaluable, Executable, ValueTypes } from './base.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { Rule } from '../prepare/parse/rule.ts'
 import { Scope } from '../runtime/scope.ts'
-import { Node } from './index.ts'
 
 export class Mention extends Executable {
-    value: string
-
-    constructor(props: { name: Keyword }) {
+    constructor(public value: string) {
         super()
-        this.value = props.name.value
     }
 
     toPrint(): string {

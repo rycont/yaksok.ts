@@ -5,10 +5,8 @@ import { Block } from './block.ts'
 import { BreakSignal } from '../runtime/signals.ts'
 
 export class Loop extends Executable {
-    body: Block
-    constructor(props: { body: Block }) {
+    constructor(public body: Block) {
         super()
-        this.body = props.body
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {

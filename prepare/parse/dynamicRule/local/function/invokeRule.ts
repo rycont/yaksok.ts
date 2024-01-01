@@ -22,10 +22,13 @@ export function createFunctionInvokeRule(
             return new FunctionInvoke({
                 name,
                 params: Object.fromEntries(
-                    invokeTemplate
-                        .map((unit, i) => [unit, nodes[i]])
-                        .filter(([unit]) => unit.as)
-                        .map(([unit, node]) => [unit.as!, node]),
+                    subtokens
+                        .map((token, i) => [token, nodes[i]])
+                        .filter(
+                            (set): set is [Variable, Evaluable] =>
+                                set[0] instanceof Variable,
+                        )
+                        .map(([token, node]) => [token.name, node]),
                 ),
             })
         },
@@ -36,7 +39,6 @@ function functionHeaderToInvokeMap(token: FunctionHeaderNode): PatternUnit {
     if (token instanceof Variable) {
         return {
             type: Evaluable,
-            as: token.name,
         }
     }
 

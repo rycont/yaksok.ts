@@ -29,7 +29,7 @@ export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {
     for (const name of getMentionedNames(tokens)) {
         const runner = yaksok.getRunner(name)
         const exportedRules = runner.exports
-            .filter((rule) => !(rule._to instanceof DeclareFunction))
+            .filter((rule) => rule.pattern[0].value !== '약속')
             .map((rule) => {
                 return {
                     pattern: [

@@ -11,44 +11,8 @@ interface Case {
 }
 
 export class IfStatement extends Executable {
-    cases: Case[]
-
-    constructor(
-        props:
-            | { condition: Evaluable; body: Block }
-            | {
-                  ifStatement: IfStatement
-                  elseStatement: ElseStatement
-              }
-            | {
-                  ifStatement: IfStatement
-                  elseIfStatement: ElseIfStatement
-              }
-            | {
-                  cases: Case[]
-              },
-    ) {
+    constructor(public cases: Case[]) {
         super()
-
-        if ('condition' in props) {
-            const { condition, body } = props
-            this.cases = [{ condition, body }]
-        } else if ('elseStatement' in props) {
-            const { ifStatement, elseStatement } = props
-
-            const elseCase: Case = {
-                body: elseStatement.body,
-            }
-
-            this.cases = [...ifStatement.cases, elseCase]
-        } else if ('elseIfStatement' in props) {
-            const { ifStatement, elseIfStatement } = props
-            const elseIfCase: Case = elseIfStatement.elseIfCase
-
-            this.cases = [...ifStatement.cases, elseIfCase]
-        } else {
-            this.cases = props.cases
-        }
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {
@@ -64,11 +28,8 @@ export class IfStatement extends Executable {
 }
 
 export class ElseStatement extends Executable {
-    body: Block
-
-    constructor(props: { body: Block }) {
+    constructor(public body: Block) {
         super()
-        this.body = props.body
     }
 }
 

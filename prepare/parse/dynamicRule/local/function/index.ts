@@ -14,12 +14,12 @@ export function createFunctionRules(
     const name = getFunctionNameFromHeader(subtokens)
     const variants = [...getVariants(subtokens)]
 
-    return [
-        createFunctionDeclareRule(name, subtokens, {
-            type,
-        }),
-        ...variants.map((v) => createFunctionInvokeRule(name, v)),
-    ]
+    const declareRule = createFunctionDeclareRule(name, subtokens, {
+        type,
+    })
+    const invokeRules = variants.map((v) => createFunctionInvokeRule(name, v))
+
+    return [declareRule, ...invokeRules]
 }
 
 function assertValidFunctionHeader(

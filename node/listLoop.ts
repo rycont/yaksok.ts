@@ -8,19 +8,14 @@ import { BreakSignal } from '../runtime/signals.ts'
 import { Evaluable, Executable } from './base.ts'
 import { Block } from './block.ts'
 import { List } from './list.ts'
-import { Variable } from './variable.ts'
 
 export class ListLoop extends Executable {
-    list: Evaluable
-    name: Variable
-    body: Block
-
-    constructor(props: { list: Evaluable; name: Variable; body: Block }) {
+    constructor(
+        public list: Evaluable,
+        public variableName: string,
+        public body: Block,
+    ) {
         super()
-
-        this.list = props.list
-        this.name = props.name
-        this.body = props.body
     }
 
     execute(_scope: Scope, _callFrame: CallFrame): void {
@@ -49,7 +44,7 @@ export class ListLoop extends Executable {
         try {
             for (const value of list.items) {
                 const evaluatedValue = value.execute(scope, callFrame)
-                scope.setVariable(this.name.name, evaluatedValue)
+                scope.setVariable(this.variableName, evaluatedValue)
 
                 this.body.execute(scope, callFrame)
             }

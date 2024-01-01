@@ -8,29 +8,19 @@ import { IndexedValue } from './indexed.ts'
 import { PrimitiveValue } from './primitive.ts'
 
 export class FFIBody extends Keyword {
-    constructor(
-        public code: string,
-        public position?: Position,
-    ) {
+    constructor(public code: string, public position?: Position) {
         super(code, position)
     }
 }
 
 export class DeclareFFI extends Executable {
-    public name: string
-    public body: string
-    public runtime: string
-    public params: Params
-
-    constructor(props: { body: FFIBody; name: string; runtime: Keyword }) {
+    constructor(
+        public name: string,
+        public body: string,
+        public runtime: string,
+        public params: string[],
+    ) {
         super()
-
-        const { name, body, runtime, ...rest } = props
-
-        this.name = name
-        this.body = body.code
-        this.runtime = runtime.value
-        this.params = rest
     }
 
     execute(scope: Scope): void {
@@ -38,13 +28,11 @@ export class DeclareFFI extends Executable {
     }
 
     run(scope: Scope, _callFrame: CallFrame): ValueTypes {
-        const yaksokArgs = getParams(this.params, scope, _callFrame)
-
-        const result = scope.runtime!.runFFI(
-            this.runtime,
-            this.body,
-            yaksokArgs,
+        const params = Object.fromEntries(
+            this.params.map((param) => [param, scope.getVariable(param)]),
         )
+
+        const result = scope.runtime!.runFFI(this.runtime, this.body, params)
 
         if (!isYaksokValue(result)) {
             throw new FFIResulTypeIsNotForYaksokError({

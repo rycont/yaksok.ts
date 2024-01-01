@@ -5,6 +5,7 @@ import {
     Expression,
     FFIBody,
     Keyword,
+    Node,
     StringValue,
     Variable,
 } from '../../../../../node/index.ts'
@@ -23,7 +24,6 @@ export const functionRuleByType = {
             },
             {
                 type: Keyword,
-                as: 'runtime',
             },
             {
                 type: Expression,
@@ -31,7 +31,20 @@ export const functionRuleByType = {
             },
         ],
         body: FFIBody,
-        target: DeclareFFI,
+        createFactory(functionHeader: FunctionHeaderNode[], name: string) {
+            return (tokens: Node[]) => {
+                const params = functionHeader
+                    .filter((node) => node instanceof Variable)
+                    .map((node) => (node as Variable).name)
+
+                return new DeclareFFI(
+                    name,
+                    (tokens[tokens.length - 1] as FFIBody).code,
+                    (tokens[2] as Keyword).value,
+                    params,
+                )
+            }
+        },
     },
     yaksok: {
         prefix: [
@@ -41,6 +54,12 @@ export const functionRuleByType = {
             },
         ],
         body: Block,
-        target: DeclareFunction,
+        createFactory:
+            (_functionHeader: FunctionHeaderNode[], name: string) =>
+            (tokens: Node[]) =>
+                new DeclareFunction({
+                    name,
+                    body: tokens[tokens.length - 1] as Block,
+                }),
     },
 }
