@@ -63,9 +63,9 @@ export interface Params {
 
 export class FunctionInvoke extends Evaluable {
     private name: string
-    private params: Params
+    private params: Params | null
 
-    constructor(props: { name: string; params: Record<string, Evaluable> }) {
+    constructor(props: { name: string; params?: Record<string, Evaluable> }) {
         super()
 
         if (!props.name) {
@@ -75,12 +75,12 @@ export class FunctionInvoke extends Evaluable {
         }
 
         this.name = props.name!
-        this.params = props.params
+        this.params = props.params || null
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
-        const args = getParams(this.params, scope, callFrame)
+        const args = this.params && getParams(this.params, scope, callFrame)
 
         try {
             const result = this.invoke(scope, callFrame, args)
@@ -97,7 +97,7 @@ export class FunctionInvoke extends Evaluable {
     invoke(
         scope: Scope,
         callFrame: CallFrame,
-        args: { [key: string]: ValueTypes },
+        args: { [key: string]: ValueTypes } | null,
     ) {
         const func = scope.getFunction(this.name)
         const childScope = new Scope({

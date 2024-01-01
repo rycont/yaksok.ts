@@ -237,7 +237,6 @@ export const internalPatternsByLevel: Rule[][] = [
             },
         },
         {
-            _to: SetVariable,
             pattern: [
                 {
                     type: Variable,
@@ -255,6 +254,12 @@ export const internalPatternsByLevel: Rule[][] = [
                     type: EOL,
                 },
             ],
+            factory: (nodes) => {
+                const name = (nodes[0] as Variable).name
+                const value = nodes[2] as Evaluable
+
+                return new SetVariable({ name, value })
+            },
         },
         {
             _to: DivideOperator,

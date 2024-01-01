@@ -49,10 +49,10 @@ export class SetVariable extends Evaluable {
     name: string
     value: Evaluable
 
-    constructor(props: { name: Variable; value: Evaluable }) {
+    constructor(props: { name: string; value: Evaluable }) {
         super()
 
-        this.name = props.name.name
+        this.name = props.name
         this.value = props.value
     }
     execute(scope: Scope, _callFrame: CallFrame): ValueTypes {

@@ -93,9 +93,7 @@ Deno.test('Run Binary Operation', () => {
         new Block([
             new EOL(),
             new SetVariable({
-                name: new Variable({
-                    name: new Keyword('계산'),
-                }),
+                name: '계산',
                 value: new Formula({
                     left: new NumberValue(1),
                     operator: new PlusOperator(),

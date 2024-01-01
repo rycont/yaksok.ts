@@ -53,15 +53,11 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
             name: '주문하기',
             body: new Block([
                 new SetVariable({
-                    name: new Variable({
-                        name: new Keyword('나이'),
-                    }),
+                    name: '나이',
                     value: new NumberValue(20),
                 }),
                 new SetVariable({
-                    name: new Variable({
-                        name: new Keyword('결과'),
-                    }),
+                    name: '결과',
                     value: new NumberValue(10),
                 }),
             ]),

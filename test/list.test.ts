@@ -70,9 +70,7 @@ Deno.test('Parse list', async (context) => {
             new Block([
                 new EOL(),
                 new SetVariable({
-                    name: new Variable({
-                        name: new Keyword('목록'),
-                    }),
+                    name: '목록',
                     value: new List({
                         sequence: new Sequence({
                             a: new Sequence({

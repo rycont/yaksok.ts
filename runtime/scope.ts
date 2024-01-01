@@ -15,7 +15,7 @@ export class Scope {
         config: {
             parent?: Scope
             runtime?: Yaksok
-            initialVariable?: Record<string, ValueTypes>
+            initialVariable?: Record<string, ValueTypes> | null
         } = {},
     ) {
         this.variables = config.initialVariable || {}

@@ -133,15 +133,11 @@ Deno.test('Set / Invoke Function', async (context) => {
         name: '주문하기',
         body: new Block([
             new SetVariable({
-                name: new Variable({
-                    name: new Keyword('나이'),
-                }),
+                name: '나이',
                 value: new NumberValue(20),
             }),
             new SetVariable({
-                name: new Variable({
-                    name: new Keyword('결과'),
-                }),
+                name: '나이',
                 value: new NumberValue(10),
             }),
         ]),
@@ -149,7 +145,7 @@ Deno.test('Set / Invoke Function', async (context) => {
 
     const functionInvokation = new FunctionInvoke({
         name: '주문하기',
-    } as Record<string, Evaluable> & { name: string })
+    })
 
     const scope = new Scope()
 
@@ -214,9 +210,7 @@ Deno.test('Invoke Not Defined Function', () => {
 Deno.test('Block Return Outside Of Function', () => {
     const block = new Block([
         new SetVariable({
-            name: new Variable({
-                name: new Keyword('결과'),
-            }),
+            name: '결과',
             value: new NumberValue(1),
         }),
     ])
