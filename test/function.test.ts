@@ -1,25 +1,22 @@
 import { assert, assertEquals, assertIsError, unreachable } from 'assert'
 
 import {
-    DeclareFunction,
-    FunctionInvoke,
-    NumberValue,
-    SetVariable,
-    Evaluable,
-    Variable,
-    Keyword,
-    Block,
-} from '../node/index.ts'
-import {
     CannotReturnOutsideFunctionError,
     NotEvaluableParameterError,
-    FunctionMustHaveNameError,
 } from '../error/index.ts'
-
 import { CannotParseError } from '../error/prepare.ts'
-import { Scope } from '../runtime/scope.ts'
-import { run } from '../runtime/run.ts'
 import { yaksok } from '../index.ts'
+import {
+    Block,
+    DeclareFunction,
+    Evaluable,
+    FunctionInvoke,
+    Keyword,
+    NumberValue,
+    SetVariable,
+} from '../node/index.ts'
+import { run } from '../runtime/run.ts'
+import { Scope } from '../runtime/scope.ts'
 
 Deno.test('Function that returns value', () => {
     const code = `

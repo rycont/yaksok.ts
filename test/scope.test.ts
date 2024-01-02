@@ -5,21 +5,21 @@ import {
     assertIsError,
     unreachable,
 } from 'assert'
-import { Scope } from '../runtime/scope.ts'
-import {
-    Block,
-    Evaluable,
-    DeclareFunction,
-    FunctionInvoke,
-    Keyword,
-    NumberValue,
-} from '../node/index.ts'
+
 import {
     NotDefinedFunctionError,
     NotDefinedVariableError,
 } from '../error/index.ts'
-import { SetVariable, Variable } from '../node/variable.ts'
+import {
+    Block,
+    DeclareFunction,
+    Evaluable,
+    FunctionInvoke,
+    NumberValue,
+} from '../node/index.ts'
+import { SetVariable } from '../node/variable.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
 
 Deno.test('Create Scope', () => {
     const scope = new Scope()

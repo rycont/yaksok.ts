@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertIsError, unreachable } from 'assert'
+import { assertEquals, assertIsError, unreachable } from 'assert'
 
 import {
     InvalidNumberOfOperandsError,

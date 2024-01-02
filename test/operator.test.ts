@@ -1,15 +1,24 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { tokenize } from '../prepare/tokenize/index.ts'
+
+import {
+    InvalidTypeForCompareError,
+    UnknownOperatorPrecedenceError,
+} from '../error/calculation.ts'
+import {
+    InvalidNumberOfOperandsError,
+    InvalidTypeForOperatorError,
+} from '../error/index.ts'
+import { yaksok } from '../index.ts'
+import { Operator } from '../node/base.ts'
 import {
     AndOperator,
-    Formula,
     Block,
     BooleanValue,
-    SetVariable,
     DivideOperator,
     EOL,
     EqualOperator,
     Expression,
+    Formula,
     GreaterThanOperator,
     GreaterThanOrEqualOperator,
     Keyword,
@@ -19,23 +28,13 @@ import {
     MultiplyOperator,
     NumberValue,
     PlusOperator,
+    SetVariable,
     StringValue,
-    Variable,
 } from '../node/index.ts'
-import { Operator } from '../node/base.ts'
-
-import {
-    InvalidNumberOfOperandsError,
-    InvalidTypeForOperatorError,
-} from '../error/index.ts'
-import {
-    InvalidTypeForCompareError,
-    UnknownOperatorPrecedenceError,
-} from '../error/calculation.ts'
-import { yaksok } from '../index.ts'
 import { parse } from '../prepare/parse/index.ts'
-import { Scope } from '../runtime/scope.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
 
 Deno.test('Parse Binary Operation', () => {
     const code = `1 + 1`

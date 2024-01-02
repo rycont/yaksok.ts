@@ -1,17 +1,15 @@
 import { assertEquals } from 'assert'
 
-import { tokenize } from '../prepare/tokenize/index.ts'
-import { StringValue } from '../node/primitive.ts'
-import { Keyword } from '../node/base.ts'
 import {
-    Formula,
     Block,
-    SetVariable,
     EOL,
+    Formula,
     PlusOperator,
-    Variable,
+    SetVariable,
 } from '../node/index.ts'
+import { StringValue } from '../node/primitive.ts'
 import { parse } from '../prepare/parse/index.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 
 Deno.test('Matching case: Wrapping class inherits from child class', () => {
     const code = `

@@ -2,7 +2,7 @@ import { assertEquals } from 'assert'
 
 import { Block } from '../node/block.ts'
 import { Formula } from '../node/calculation.ts'
-import { IfStatement, SetVariable, Variable } from '../node/index.ts'
+import { IfStatement, SetVariable } from '../node/index.ts'
 import { EOL } from '../node/misc.ts'
 import { EqualOperator } from '../node/operator.ts'
 import { NumberValue } from '../node/primitive.ts'
