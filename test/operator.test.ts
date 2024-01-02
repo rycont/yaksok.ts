@@ -1,15 +1,24 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
-import { tokenize } from '../prepare/tokenize/index.ts'
+
+import {
+    InvalidTypeForCompareError,
+    UnknownOperatorPrecedenceError,
+} from '../error/calculation.ts'
+import {
+    InvalidNumberOfOperandsError,
+    InvalidTypeForOperatorError,
+} from '../error/index.ts'
+import { yaksok } from '../index.ts'
+import { Operator } from '../node/base.ts'
 import {
     AndOperator,
-    Formula,
     Block,
     BooleanValue,
-    SetVariable,
     DivideOperator,
     EOL,
     EqualOperator,
     Expression,
+    Formula,
     GreaterThanOperator,
     GreaterThanOrEqualOperator,
     Keyword,
@@ -19,23 +28,13 @@ import {
     MultiplyOperator,
     NumberValue,
     PlusOperator,
+    SetVariable,
     StringValue,
-    Variable,
 } from '../node/index.ts'
-import { Operator } from '../node/base.ts'
-
-import {
-    InvalidNumberOfOperandsError,
-    InvalidTypeForOperatorError,
-} from '../error/index.ts'
-import {
-    InvalidTypeForCompareError,
-    UnknownOperatorPrecedenceError,
-} from '../error/calculation.ts'
-import { yaksok } from '../index.ts'
 import { parse } from '../prepare/parse/index.ts'
-import { Scope } from '../runtime/scope.ts'
+import { tokenize } from '../prepare/tokenize/index.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
 
 Deno.test('Parse Binary Operation', () => {
     const code = `1 + 1`
@@ -92,16 +91,14 @@ Deno.test('Run Binary Operation', () => {
         ast,
         new Block([
             new EOL(),
-            new SetVariable({
-                name: new Variable({
-                    name: new Keyword('계산'),
-                }),
-                value: new Formula({
-                    left: new NumberValue(1),
-                    operator: new PlusOperator(),
-                    right: new NumberValue(1),
-                }),
-            }),
+            new SetVariable(
+                '계산',
+                new Formula([
+                    new NumberValue(1),
+                    new PlusOperator(),
+                    new NumberValue(1),
+                ]),
+            ),
             new EOL(),
         ]),
     )
@@ -548,10 +545,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
 Deno.test('Compare equity list and list', () => {
     const code = `
-리스트1: [1, 2, 3]
-리스트2: [1, 2, 3]
+목록1: [1, 2, 3]
+목록2: [1, 2, 3]
 
-계산: 리스트1 = 리스트2
+계산: 목록1 = 목록2
     `
 
     try {
@@ -575,11 +572,11 @@ Deno.test('Raw Operator toPrint', () => {
 })
 
 Deno.test('Unknown Operator', () => {
-    const formula = new Formula({
-        left: new NumberValue(1),
-        operator: new Operator('NICE'),
-        right: new NumberValue(2),
-    })
+    const formula = new Formula([
+        new NumberValue(1),
+        new Operator('NICE'),
+        new NumberValue(2),
+    ])
 
     const scope = new Scope()
     const callFrame = new CallFrame(formula)

@@ -1,83 +1,55 @@
-import { Evaluable, ValueTypes, Node, Executable, Operator } from './index.ts'
-import { NumberValue, PrimitiveValue } from './primitive.ts'
-import { IndexedValue } from './indexed.ts'
-
-import { CallFrame } from '../runtime/callFrame.ts'
-import { Scope } from '../runtime/scope.ts'
 import {
     InvalidNumberOfOperandsError,
     ListIndexMustBeGreaterThan1Error,
     ListIndexOutOfRangeError,
     ListIndexTypeError,
-    ListNotEvaluatedError,
     RangeEndMustBeNumberError,
     RangeStartMustBeLessThanEndError,
     RangeStartMustBeNumberError,
     TargetIsNotIndexedValueError,
 } from '../error/index.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
+import { Scope } from '../runtime/scope.ts'
+import { Evaluable, Executable, Node, Operator, ValueTypes } from './index.ts'
+import { IndexedValue } from './indexed.ts'
+import { NumberValue, PrimitiveValue } from './primitive.ts'
 
 export class Sequence extends Evaluable {
-    items: Evaluable[]
-
-    constructor(props: { a: Evaluable | Sequence; b: Evaluable | Sequence }) {
+    constructor(public items: Evaluable[]) {
         super()
-
-        const { a, b } = props
-        let items: Evaluable[] = []
-
-        if (a instanceof Sequence && b instanceof Evaluable) {
-            items = [...a.items, b]
-        } else if (a instanceof Evaluable && b instanceof Evaluable) {
-            items = [a, b]
-        }
-
-        this.items = items
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
-        const result = this.items[this.items.length - 1].execute(
-            scope,
-            callFrame,
-        )
+        const indexItem = this.items[this.items.length - 1]
+        const result = indexItem.execute(scope, callFrame)
 
         return result
     }
 
     toPrint() {
-        return '( ' + this.items.map((item) => item.toPrint()).join(' ') + ' )'
+        const content = this.items.map((item) => item.toPrint()).join(' ')
+        return '( ' + content + ' )'
     }
 }
 
 export class List extends IndexedValue {
-    items?: Evaluable[]
     evaluatedItems?: ValueTypes[]
 
-    constructor(props: { sequence?: Sequence; evaluatedItems?: ValueTypes[] }) {
+    constructor(public items: Evaluable[]) {
         super()
-
-        if (props.evaluatedItems) {
-            this.evaluatedItems = props.evaluatedItems
-            this.items = props.evaluatedItems
-
-            return
-        }
-
-        if (props.sequence) {
-            this.items = props.sequence.items
-            return
-        }
-
-        this.evaluatedItems = []
     }
 
-    execute(scope: Scope, callFrame: CallFrame) {
-        if (this.evaluatedItems) return this
+    execute(_scope: Scope, _callFrame: CallFrame) {
+        const callFrame = new CallFrame(this, _callFrame)
 
-        const items = this.items!.map((item) => item.execute(scope, callFrame))
+        this.evaluatedItems = List.evaluateList(
+            this.items,
+            new Scope(),
+            callFrame,
+        )
 
-        this.evaluatedItems = items
         return this
     }
 
@@ -89,52 +61,9 @@ export class List extends IndexedValue {
         const callFrame = new CallFrame(this, _callFrame)
 
         if (index instanceof NumberValue) {
-            const indexValue = index.value - 1
-
-            if (indexValue < 0)
-                throw new ListIndexMustBeGreaterThan1Error({
-                    position: this.position,
-                    resource: {
-                        index,
-                    },
-                })
-
-            const list = this.execute(scope, callFrame).evaluatedItems!.map(
-                (item) => item.execute(scope, callFrame),
-            )
-
-            if (list.length <= indexValue)
-                throw new ListIndexOutOfRangeError({
-                    resource: {
-                        index,
-                    },
-                    position: this.position,
-                })
-
-            return list[indexValue]
-        }
-
-        if (index instanceof List) {
-            const list = this.execute(scope, callFrame).evaluatedItems!.map(
-                (item) => item.execute(scope, callFrame),
-            )
-
-            const indexValue = index.execute(scope, callFrame).evaluatedItems!
-
-            return new List({
-                evaluatedItems: indexValue.map((index) => {
-                    if (index instanceof NumberValue) {
-                        return list[index.value - 1]
-                    }
-
-                    throw new ListIndexTypeError({
-                        position: this.position,
-                        resource: {
-                            index,
-                        },
-                    })
-                }),
-            })
+            return this.getItemByNumberIndex(index.value, scope, callFrame)
+        } else if (index instanceof List) {
+            return this.getItemsByListIndex(index, scope, callFrame)
         }
 
         throw new ListIndexTypeError({
@@ -145,101 +74,138 @@ export class List extends IndexedValue {
         })
     }
 
-    setItem(
-        index: PrimitiveValue<unknown>,
-        value: PrimitiveValue<unknown>,
+    private getItemByNumberIndex(
+        index: number,
         scope: Scope,
         callFrame: CallFrame,
     ) {
-        if (!(index instanceof NumberValue)) {
-            throw new ListIndexTypeError({
-                position: this.position,
-                resource: {
-                    index,
-                },
-            })
-        }
+        this.assertGreaterOrEqualThan1(index)
+        this.assertIndexLessThanLength(index)
+
+        const indexValue = index - 1
+        const list = this.execute(scope, callFrame).evaluatedItems!
+
+        return list[indexValue]
+    }
+
+    private getItemsByListIndex(
+        index: List,
+        scope: Scope,
+        callFrame: CallFrame,
+    ) {
+        const list = this.execute(scope, callFrame).evaluatedItems!
+        const indexes = index.execute(scope, callFrame).evaluatedItems!
+
+        const items = this.getItemsByIndexes(list, indexes)
+        const itemsList = new List(items)
+
+        return itemsList
+    }
+
+    private getItemsByIndexes(list: ValueTypes[], indexes: ValueTypes[]) {
+        return indexes.map((index) => {
+            this.assertProperIndexPrimitiveType(index)
+            return list[index.value - 1]
+        })
+    }
+
+    setItem(index: PrimitiveValue<unknown>, value: PrimitiveValue<unknown>) {
+        this.assertProperIndexPrimitiveType(index)
+        this.assertGreaterOrEqualThan1(index.value)
 
         const indexValue = index.value - 1
-
-        if (indexValue < 0) {
-            throw new ListIndexMustBeGreaterThan1Error({
-                position: this.position,
-                resource: {
-                    index,
-                },
-            })
-        }
-
-        const content = this.execute(scope, callFrame).evaluatedItems!
-        content[indexValue] = value
+        this.items[indexValue] = value
 
         return value
     }
 
-    toPrint(): string {
-        if (!this.evaluatedItems) {
-            throw new ListNotEvaluatedError({
-                position: this.position,
-            })
-        }
-        return (
-            '[' +
-            this.evaluatedItems.map((item) => item.toPrint()).join(', ') +
-            ']'
-        )
+    static evaluateList(
+        items: Evaluable[],
+        scope: Scope,
+        callFrame: CallFrame,
+    ) {
+        return items.map((item) => item.execute(scope, callFrame))
+    }
+
+    private assertGreaterOrEqualThan1(index: number) {
+        if (index >= 1) return
+
+        throw new ListIndexMustBeGreaterThan1Error({
+            position: this.position,
+            resource: {
+                index,
+            },
+        })
+    }
+
+    private assertProperIndexPrimitiveType(
+        index: ValueTypes,
+    ): asserts index is NumberValue {
+        if (index instanceof NumberValue) return
+
+        throw new ListIndexTypeError({
+            position: this.position,
+            resource: {
+                index,
+            },
+        })
+    }
+
+    private assertIndexLessThanLength(index: number) {
+        if (index <= this.items.length) return
+
+        throw new ListIndexOutOfRangeError({
+            resource: {
+                index,
+            },
+            position: this.position,
+        })
+    }
+
+    toPrint() {
+        const content = this.items.map((item) => item.toPrint()).join(', ')
+        return '[' + content + ']'
     }
 }
 
 export class Indexing extends Node {
-    value: Evaluable
-
-    constructor(props: { index: Evaluable }) {
+    constructor(public value: Evaluable) {
         super()
-        this.value = props.index
     }
 }
 
 export class IndexFetch extends Evaluable {
-    target: Evaluable
-    index: Indexing
-
-    constructor(props: { target: Evaluable; index: Indexing }) {
+    constructor(public target: Evaluable, public index: Evaluable) {
         super()
-
-        this.target = props.target
-        this.index = props.index
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
-        const index = this.index.value.execute(scope, callFrame)
         const target = this.target.execute(scope, callFrame)
+        this.assertProperTargetType(target)
 
-        if (!(target instanceof IndexedValue)) {
-            throw new TargetIsNotIndexedValueError({
-                position: this.position,
-                resource: {
-                    target,
-                },
-            })
-        }
-
+        const index = this.index.execute(scope, callFrame)
         const value = target.getItem(index, scope, callFrame)
+
         return value
+    }
+
+    assertProperTargetType(target: ValueTypes): asserts target is IndexedValue {
+        if (target instanceof IndexedValue) return
+
+        throw new TargetIsNotIndexedValueError({
+            position: this.position,
+            resource: {
+                target,
+            },
+        })
     }
 }
 
 export class SetToIndex extends Executable {
-    target: IndexFetch
-    value: Evaluable
-
-    constructor(props: { target: IndexFetch; value: Evaluable }) {
+    constructor(public target: IndexFetch, public value: Evaluable) {
         super()
-
-        this.target = props.target
-        this.value = props.value
     }
     execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
@@ -247,71 +213,96 @@ export class SetToIndex extends Executable {
         const value = this.value.execute(scope, callFrame)
 
         const targetList = this.target.target.execute(scope, callFrame)
-        const targetIndex = this.target.index.value.execute(scope, callFrame)
+        const targetIndex = this.target.index.execute(scope, callFrame)
 
-        if (!(targetList instanceof IndexedValue)) {
-            throw new TargetIsNotIndexedValueError({
-                position: this.position,
-                resource: {
-                    target: targetList,
-                },
-            })
-        }
-
+        this.assertProperTargetType(targetList)
         targetList.setItem(targetIndex, value, scope, callFrame)
+    }
+
+    assertProperTargetType(target: ValueTypes): asserts target is IndexedValue {
+        if (target instanceof IndexedValue) return
+
+        throw new TargetIsNotIndexedValueError({
+            position: this.position,
+            resource: {
+                target,
+            },
+        })
     }
 }
 
 export class RangeOperator extends Operator {
     call(...operands: ValueTypes[]): List {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    actual: operands.length,
-                    expected: 2,
-                    operator: this,
-                },
-            })
-        }
+        this.assertProperOperands(operands)
+
         const [start, end] = operands
 
-        if (!(start instanceof NumberValue)) {
-            throw new RangeStartMustBeNumberError({
-                position: this.position,
-                resource: {
-                    start,
-                },
-            })
-        }
+        const items = Array.from(
+            { length: end.value - start.value + 1 },
+            (_, i) => new NumberValue(i + start.value),
+        )
 
-        if (!(end instanceof NumberValue)) {
-            throw new RangeEndMustBeNumberError({
-                position: this.position,
-                resource: {
-                    end,
-                },
-            })
-        }
+        const list = new List(items)
+        list.evaluatedItems = items
 
-        if (start.value > end.value) {
-            throw new RangeStartMustBeLessThanEndError({
-                position: this.position,
-                resource: {
-                    start: start.value,
-                    end: end.value,
-                },
-            })
-        }
+        return list
+    }
 
-        const evaluatedItems: NumberValue[] = []
+    private assertProperOperands(
+        operands: ValueTypes[],
+    ): asserts operands is [NumberValue, NumberValue] {
+        this.assertProperOperandsLength(operands)
+        this.assertProperStartType(operands[0])
+        this.assertProperEndType(operands[1])
+        this.assertRangeStartLessThanEnd(operands[0].value, operands[1].value)
+    }
 
-        for (let i = start.value; i <= end.value; i++) {
-            evaluatedItems.push(new NumberValue(i))
-        }
+    private assertProperOperandsLength(operands: ValueTypes[]) {
+        if (operands.length === 2) return
 
-        return new List({
-            evaluatedItems,
+        throw new InvalidNumberOfOperandsError({
+            position: this.position,
+            resource: {
+                actual: operands.length,
+                expected: 2,
+                operator: this,
+            },
+        })
+    }
+
+    private assertProperStartType(
+        start: ValueTypes,
+    ): asserts start is NumberValue {
+        if (start instanceof NumberValue) return
+
+        throw new RangeStartMustBeNumberError({
+            position: this.position,
+            resource: {
+                start,
+            },
+        })
+    }
+
+    private assertProperEndType(end: ValueTypes): asserts end is NumberValue {
+        if (end instanceof NumberValue) return
+
+        throw new RangeEndMustBeNumberError({
+            position: this.position,
+            resource: {
+                end,
+            },
+        })
+    }
+
+    private assertRangeStartLessThanEnd(start: number, end: number) {
+        if (start <= end) return
+
+        throw new RangeStartMustBeLessThanEndError({
+            position: this.position,
+            resource: {
+                start,
+                end,
+            },
         })
     }
 }

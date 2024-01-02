@@ -1,17 +1,15 @@
-import { Executable, ValueTypes, Evaluable } from './base.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
-
 import {
-    FunctionMustHaveNameError,
     NotDefinedFunctionError,
     NotDefinedVariableError,
     NotEvaluableParameterError,
 } from '../error/index.ts'
+import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
-import { NumberValue } from './primitive.ts'
+import { ReturnSignal } from '../runtime/signals.ts'
+import { Evaluable, Executable, ValueTypes } from './base.ts'
 import { Block } from './block.ts'
 import { Node } from './index.ts'
-import { ReturnSignal } from '../runtime/signals.ts'
+import { NumberValue } from './primitive.ts'
 
 const DEFAULT_RETURN_VALUE = new NumberValue(0)
 
@@ -62,30 +60,19 @@ export interface Params {
 }
 
 export class FunctionInvoke extends Evaluable {
-    #name: string
-    params: Params
+    private name: string
+    private params: Params | null
 
-    constructor(
-        props: Record<string, Evaluable> & {
-            name?: string
-        },
-    ) {
+    constructor(props: { name: string; params?: Record<string, Evaluable> }) {
         super()
-        if (!props.name) {
-            throw new FunctionMustHaveNameError({
-                position: this.position,
-            })
-        }
 
-        this.#name = props.name!
-        delete props['name']
-
-        this.params = props
+        this.name = props.name!
+        this.params = props.params || null
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
-        const args = getParams(this.params, scope, callFrame)
+        const args = this.params && getParams(this.params, scope, callFrame)
 
         try {
             const result = this.invoke(scope, callFrame, args)
@@ -102,9 +89,9 @@ export class FunctionInvoke extends Evaluable {
     invoke(
         scope: Scope,
         callFrame: CallFrame,
-        args: { [key: string]: ValueTypes },
+        args: { [key: string]: ValueTypes } | null,
     ) {
-        const func = scope.getFunction(this.#name)
+        const func = scope.getFunction(this.name)
         const childScope = new Scope({
             parent: scope,
             initialVariable: args,
@@ -122,17 +109,20 @@ export function getParams(params: Params, scope: Scope, callFrame: CallFrame) {
     for (const key in params) {
         const value = params[key]
 
-        if (value instanceof Evaluable) {
-            args[key] = value.execute(scope, callFrame)
-        } else {
-            throw new NotEvaluableParameterError({
-                position: value.position,
-                resource: {
-                    node: value,
-                },
-            })
-        }
+        assertEvaluable(value)
+        args[key] = value.execute(scope, callFrame)
     }
 
     return args
+}
+
+function assertEvaluable(node: Node): asserts node is Evaluable {
+    if (node instanceof Evaluable) return
+
+    throw new NotEvaluableParameterError({
+        position: node.position,
+        resource: {
+            node,
+        },
+    })
 }

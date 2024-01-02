@@ -10,23 +10,14 @@ export class EOL extends Node {
 }
 
 export class Indent extends Node {
-    constructor(
-        public size: number,
-        public position?: Position,
-    ) {
+    constructor(public size: number, public position?: Position) {
         super()
     }
 }
 
 export class Print extends Executable {
-    value: Evaluable
-
-    constructor(
-        props: { value: Evaluable },
-        public position?: Position,
-    ) {
+    constructor(public value: Evaluable, public position?: Position) {
         super()
-        this.value = props.value
     }
 
     execute(scope: Scope, _callFrame: CallFrame) {

@@ -25,14 +25,12 @@ Deno.test('Parse Loop', () => {
         ast,
         new Block([
             new EOL(),
-            new Loop({
-                body: new Block([
-                    new Print({
-                        value: new StringValue('Hello, World!'),
-                    }),
+            new Loop(
+                new Block([
+                    new Print(new StringValue('Hello, World!')),
                     new EOL(),
                 ]),
-            }),
+            ),
             new EOL(),
         ]),
     )

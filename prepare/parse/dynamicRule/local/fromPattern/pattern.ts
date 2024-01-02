@@ -8,7 +8,7 @@ import { EOL } from '../../../../../node/misc.ts'
 import { Variable } from '../../../../../node/variable.ts'
 import { Rule } from '../../../rule.ts'
 
-export const dynamicPatternDetector: (Omit<Rule, 'to'> & {
+export const dynamicPatternDetector: (Omit<Rule, 'factory'> & {
     name: 'variable' | 'list_loop'
 })[] = [
     {
@@ -16,7 +16,6 @@ export const dynamicPatternDetector: (Omit<Rule, 'to'> & {
         pattern: [
             {
                 type: Keyword,
-                as: 'name',
             },
             {
                 type: Expression,
@@ -32,7 +31,6 @@ export const dynamicPatternDetector: (Omit<Rule, 'to'> & {
         pattern: [
             {
                 type: Keyword,
-                as: 'name',
             },
             {
                 type: Expression,
@@ -48,7 +46,6 @@ export const dynamicPatternDetector: (Omit<Rule, 'to'> & {
         pattern: [
             {
                 type: Keyword,
-                as: 'name',
             },
             {
                 type: Expression,
@@ -68,7 +65,6 @@ export const dynamicPatternDetector: (Omit<Rule, 'to'> & {
             },
             {
                 type: Keyword,
-                as: 'name',
             },
             {
                 type: Keyword,
@@ -86,23 +82,27 @@ export const dynamicRuleFactory: Record<
     (substack: Node[]) => Rule
 > = {
     variable: (substack: Node[]) => ({
-        to: Variable,
         pattern: [
             {
                 type: Keyword,
                 value: (substack[0] as Keyword).value,
-                as: 'name',
             },
         ],
+        factory: (tokens: Node[]) => {
+            const name = tokens[0] as Keyword
+            return new Variable(name.value)
+        },
     }),
     list_loop: (substack: Node[]) => ({
-        to: Variable,
         pattern: [
             {
                 type: Keyword,
                 value: (substack[1] as Keyword).value,
-                as: 'name',
             },
         ],
+        factory: (tokens: Node[]) => {
+            const name = tokens[0] as Keyword
+            return new Variable(name.value)
+        },
     }),
 }

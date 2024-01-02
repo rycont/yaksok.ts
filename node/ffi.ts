@@ -2,35 +2,24 @@ import { FFIResulTypeIsNotForYaksokError } from '../error/ffi.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
 import { Executable, Position, ValueTypes } from './base.ts'
-import { Params, getParams } from './function.ts'
 import { Keyword } from './index.ts'
 import { IndexedValue } from './indexed.ts'
 import { PrimitiveValue } from './primitive.ts'
 
 export class FFIBody extends Keyword {
-    constructor(
-        public code: string,
-        public position?: Position,
-    ) {
+    constructor(public code: string, public position?: Position) {
         super(code, position)
     }
 }
 
 export class DeclareFFI extends Executable {
-    public name: string
-    public body: string
-    public runtime: string
-    public params: Params
-
-    constructor(props: { body: FFIBody; name: string; runtime: Keyword }) {
+    constructor(
+        public name: string,
+        public body: string,
+        public runtime: string,
+        public paramNames: string[],
+    ) {
         super()
-
-        const { name, body, runtime, ...rest } = props
-
-        this.name = name
-        this.body = body.code
-        this.runtime = runtime.value
-        this.params = rest
     }
 
     execute(scope: Scope): void {
@@ -38,23 +27,29 @@ export class DeclareFFI extends Executable {
     }
 
     run(scope: Scope, _callFrame: CallFrame): ValueTypes {
-        const yaksokArgs = getParams(this.params, scope, _callFrame)
+        const params = this.getParams(scope)
+        const result = scope.runtime!.runFFI(this.runtime, this.body, params)
 
-        const result = scope.runtime!.runFFI(
-            this.runtime,
-            this.body,
-            yaksokArgs,
+        this.assertYaksokValue(result)
+        return result
+    }
+
+    getParams(scope: Scope) {
+        const params = Object.fromEntries(
+            this.paramNames.map((param) => [param, scope.getVariable(param)]),
         )
 
-        if (!isYaksokValue(result)) {
-            throw new FFIResulTypeIsNotForYaksokError({
-                position: this.position,
-                ffiName: this.name,
-                value: result,
-            })
-        }
+        return params
+    }
 
-        return result
+    assertYaksokValue(value: unknown): asserts value is ValueTypes {
+        if (isYaksokValue(value)) return
+
+        throw new FFIResulTypeIsNotForYaksokError({
+            position: this.position,
+            ffiName: this.name,
+            value,
+        })
     }
 }
 

@@ -1,4 +1,4 @@
-import { Evaluable, Keyword, ValueTypes } from './index.ts'
+import { Evaluable, ValueTypes } from './index.ts'
 
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
@@ -8,20 +8,8 @@ import {
 } from '../error/index.ts'
 
 export class Variable extends Evaluable {
-    name: string
-
-    constructor(args: { name: Keyword | Variable } | string) {
+    constructor(public name: string) {
         super()
-
-        if (typeof args === 'string') {
-            this.name = args
-            return
-        } else if (args.name instanceof Keyword) {
-            this.name = args.name.value
-            return
-        }
-
-        this.name = args.name.name
     }
 
     execute(scope: Scope) {
@@ -55,31 +43,29 @@ export const RESERVED_WORDS = [
 ]
 
 export class SetVariable extends Evaluable {
-    name: string
-    value: Evaluable
-
-    constructor(props: { name: Variable; value: Evaluable }) {
+    constructor(public name: string, public value: Evaluable) {
         super()
-
-        this.name = props.name.name
-        this.value = props.value
+        this.assertValidName()
     }
+
     execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+        const { name, value } = this
         const callFrame = new CallFrame(this, _callFrame)
 
-        const { name, value } = this
         const result = value.execute(scope, callFrame)
 
-        if (RESERVED_WORDS.includes(name)) {
-            throw new CannotUseReservedWordForVariableNameError({
-                position: this.position,
-                resource: {
-                    name,
-                },
-            })
-        } else {
-            scope.setVariable(name, result)
-            return result
-        }
+        scope.setVariable(name, result)
+        return result
+    }
+
+    assertValidName() {
+        if (!RESERVED_WORDS.includes(this.name)) return
+
+        throw new CannotUseReservedWordForVariableNameError({
+            position: this.position,
+            resource: {
+                name: this.name,
+            },
+        })
     }
 }

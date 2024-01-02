@@ -1,25 +1,22 @@
 import { assert, assertEquals, assertIsError, unreachable } from 'assert'
 
 import {
-    DeclareFunction,
-    FunctionInvoke,
-    NumberValue,
-    SetVariable,
-    Evaluable,
-    Variable,
-    Keyword,
-    Block,
-} from '../node/index.ts'
-import {
     CannotReturnOutsideFunctionError,
     NotEvaluableParameterError,
-    FunctionMustHaveNameError,
 } from '../error/index.ts'
-
 import { CannotParseError } from '../error/prepare.ts'
-import { Scope } from '../runtime/scope.ts'
-import { run } from '../runtime/run.ts'
 import { yaksok } from '../index.ts'
+import {
+    Block,
+    DeclareFunction,
+    Evaluable,
+    FunctionInvoke,
+    Keyword,
+    NumberValue,
+    SetVariable,
+} from '../node/index.ts'
+import { run } from '../runtime/run.ts'
+import { Scope } from '../runtime/scope.ts'
 
 Deno.test('Function that returns value', () => {
     const code = `
@@ -52,18 +49,8 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
         const testFunction = new DeclareFunction({
             name: '주문하기',
             body: new Block([
-                new SetVariable({
-                    name: new Variable({
-                        name: new Keyword('나이'),
-                    }),
-                    value: new NumberValue(20),
-                }),
-                new SetVariable({
-                    name: new Variable({
-                        name: new Keyword('결과'),
-                    }),
-                    value: new NumberValue(10),
-                }),
+                new SetVariable('나이', new NumberValue(20)),
+                new SetVariable('결과', new NumberValue(10)),
             ]),
         })
 
@@ -72,26 +59,17 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
 
     await context.step('Invoke function with broken arguments', () => {
         const functionInvokation = new FunctionInvoke({
-            음식: new Keyword('사과') as unknown as Evaluable,
             name: '주문하기',
-        } as unknown as Record<string, Evaluable> & { name: string })
+            params: {
+                음식: new Keyword('사과') as unknown as Evaluable,
+            },
+        })
 
         try {
-            run(new Block([functionInvokation]), scope)
+            run(functionInvokation, scope)
             unreachable()
         } catch (e) {
             assertIsError(e, NotEvaluableParameterError)
-        }
-    })
-
-    await context.step('Invoke function with no name', () => {
-        try {
-            new FunctionInvoke({
-                음식: new Keyword('사과') as unknown as Evaluable,
-            } as unknown as Record<string, Evaluable> & { name: string })
-            unreachable()
-        } catch (e) {
-            assertIsError(e, FunctionMustHaveNameError)
         }
     })
 })

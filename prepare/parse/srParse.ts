@@ -35,19 +35,7 @@ export function SRParse(_tokens: Node[], rules: Rule[]) {
 }
 
 export function reduce(tokens: Node[], rule: Rule) {
-    const args: Record<string, unknown> = { ...rule.config } || {}
-    let hasArgs = rule.config ? true : undefined
-
-    for (let i = 0; i < rule.pattern.length; i++) {
-        const pattern = rule.pattern[i]
-
-        if (!pattern.as) continue
-
-        args[pattern.as] = tokens[i]
-        hasArgs = true
-    }
-
-    const reduced = new rule.to(hasArgs && args)
+    const reduced = rule.factory(tokens)
     reduced.position = tokens[0].position
 
     return reduced

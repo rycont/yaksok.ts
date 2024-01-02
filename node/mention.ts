@@ -1,14 +1,10 @@
-import { Evaluable, Executable, Keyword, ValueTypes } from './base.ts'
+import { Evaluable, Executable, ValueTypes } from './base.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
-import { Rule } from '../prepare/parse/rule.ts'
 import { Scope } from '../runtime/scope.ts'
 
 export class Mention extends Executable {
-    value: string
-
-    constructor(props: { name: Keyword }) {
+    constructor(public value: string) {
         super()
-        this.value = props.name.value
     }
 
     toPrint(): string {
@@ -17,45 +13,20 @@ export class Mention extends Executable {
 }
 
 export class MentionScope extends Evaluable {
-    originRule: Rule
-    filename: string
-    childNode: Evaluable
-
-    constructor(
-        props: { __internal: { originRule: Rule; filename: string } } & Record<
-            string,
-            Evaluable
-        >,
-    ) {
+    constructor(public fileName: string, public child: Evaluable) {
         super()
-
-        const {
-            __internal: { originRule, filename },
-            ...rest
-        } = props
-
-        this.originRule = originRule
-        this.filename = filename
-
-        const childNode = new originRule.to(rest) as Evaluable
-        this.childNode = childNode
     }
 
     execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
-        if (this.position) {
-            this.childNode.position = {
-                line: this.position.line,
-                column: this.position.column + 1 + this.filename.length,
-            }
-        }
+        this.setChildPosition()
 
         const scope = _scope.createChild()
-        const runner = _scope.runtime!.runOnce(this.filename)
+        const runner = _scope.runtime!.runOnce(this.fileName)
         const moduleScope = runner.scope
 
         moduleScope.parent = scope
 
-        const result = runner.evaluateFromExtern(this.childNode)
+        const result = runner.evaluateFromExtern(this.child)
 
         moduleScope.parent = undefined
 
@@ -63,6 +34,15 @@ export class MentionScope extends Evaluable {
     }
 
     toPrint(): string {
-        return '@' + this.filename + ' ' + this.childNode.toPrint()
+        return '@' + this.fileName + ' ' + this.child.toPrint()
+    }
+
+    private setChildPosition() {
+        if (!this.position) return
+
+        this.child.position = {
+            line: this.position.line,
+            column: this.position.column + 1 + this.fileName.length,
+        }
     }
 }

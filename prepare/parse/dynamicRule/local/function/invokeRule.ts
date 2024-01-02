@@ -2,6 +2,7 @@ import {
     Evaluable,
     FunctionInvoke,
     Keyword,
+    Node,
     StringValue,
     Variable,
 } from '../../../../../node/index.ts'
@@ -16,19 +17,35 @@ export function createFunctionInvokeRule(
     const invokeTemplate = subtokens.map(functionHeaderToInvokeMap)
 
     return {
-        to: FunctionInvoke,
         pattern: invokeTemplate,
-        config: {
-            name,
+        factory(nodes: Node[]) {
+            return new FunctionInvoke({
+                name,
+                params: getParamsFromMatchedNodes(subtokens, nodes),
+            })
         },
     }
+}
+
+function getParamsFromMatchedNodes(
+    template: FunctionHeaderNode[],
+    matchedNodes: Node[],
+) {
+    return Object.fromEntries(
+        template
+            .map((token, i) => [token, matchedNodes[i]])
+            .filter(
+                (set): set is [Variable, Evaluable] =>
+                    set[0] instanceof Variable,
+            )
+            .map(([token, node]) => [token.name, node]),
+    )
 }
 
 function functionHeaderToInvokeMap(token: FunctionHeaderNode): PatternUnit {
     if (token instanceof Variable) {
         return {
             type: Evaluable,
-            as: token.name,
         }
     }
 
