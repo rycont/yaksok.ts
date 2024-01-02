@@ -52,14 +52,8 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
         const testFunction = new DeclareFunction({
             name: '주문하기',
             body: new Block([
-                new SetVariable({
-                    name: '나이',
-                    value: new NumberValue(20),
-                }),
-                new SetVariable({
-                    name: '결과',
-                    value: new NumberValue(10),
-                }),
+                new SetVariable('나이', new NumberValue(20)),
+                new SetVariable('결과', new NumberValue(10)),
             ]),
         })
 
@@ -67,12 +61,11 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
     })
 
     await context.step('Invoke function with broken arguments', () => {
-
         const functionInvokation = new FunctionInvoke({
             name: '주문하기',
             params: {
                 음식: new Keyword('사과') as unknown as Evaluable,
-            }
+            },
         })
 
         try {
@@ -80,17 +73,6 @@ Deno.test('Function invoke argument is not evaluable', async (context) => {
             unreachable()
         } catch (e) {
             assertIsError(e, NotEvaluableParameterError)
-        }
-    })
-
-    await context.step('Invoke function with no name', () => {
-        try {
-            new FunctionInvoke({
-                음식: new Keyword('사과') as unknown as Evaluable,
-            } as unknown as Record<string, Evaluable> & { name: string })
-            unreachable()
-        } catch (e) {
-            assertIsError(e, FunctionMustHaveNameError)
         }
     })
 })

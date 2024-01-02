@@ -9,9 +9,6 @@ import {
 
 export class Variable extends Evaluable {
     constructor(public name: string) {
-        if (typeof name !== 'string')
-            throw new Error('Variable name must be string')
-
         super()
     }
 
@@ -46,31 +43,29 @@ export const RESERVED_WORDS = [
 ]
 
 export class SetVariable extends Evaluable {
-    name: string
-    value: Evaluable
-
-    constructor(props: { name: string; value: Evaluable }) {
+    constructor(public name: string, public value: Evaluable) {
         super()
-
-        this.name = props.name
-        this.value = props.value
+        this.assertValidName()
     }
+
     execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+        const { name, value } = this
         const callFrame = new CallFrame(this, _callFrame)
 
-        const { name, value } = this
         const result = value.execute(scope, callFrame)
 
-        if (RESERVED_WORDS.includes(name)) {
-            throw new CannotUseReservedWordForVariableNameError({
-                position: this.position,
-                resource: {
-                    name,
-                },
-            })
-        } else {
-            scope.setVariable(name, result)
-            return result
-        }
+        scope.setVariable(name, result)
+        return result
+    }
+
+    assertValidName() {
+        if (!RESERVED_WORDS.includes(this.name)) return
+
+        throw new CannotUseReservedWordForVariableNameError({
+            position: this.position,
+            resource: {
+                name: this.name,
+            },
+        })
     }
 }

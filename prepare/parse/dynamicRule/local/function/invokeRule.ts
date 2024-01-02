@@ -21,18 +21,25 @@ export function createFunctionInvokeRule(
         factory(nodes: Node[]) {
             return new FunctionInvoke({
                 name,
-                params: Object.fromEntries(
-                    subtokens
-                        .map((token, i) => [token, nodes[i]])
-                        .filter(
-                            (set): set is [Variable, Evaluable] =>
-                                set[0] instanceof Variable,
-                        )
-                        .map(([token, node]) => [token.name, node]),
-                ),
+                params: getParamsFromMatchedNodes(subtokens, nodes),
             })
         },
     }
+}
+
+function getParamsFromMatchedNodes(
+    template: FunctionHeaderNode[],
+    matchedNodes: Node[],
+) {
+    return Object.fromEntries(
+        template
+            .map((token, i) => [token, matchedNodes[i]])
+            .filter(
+                (set): set is [Variable, Evaluable] =>
+                    set[0] instanceof Variable,
+            )
+            .map(([token, node]) => [token.name, node]),
+    )
 }
 
 function functionHeaderToInvokeMap(token: FunctionHeaderNode): PatternUnit {

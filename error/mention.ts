@@ -5,13 +5,13 @@ export class ErrorInModuleError extends YaksokError {
     constructor(props: {
         position?: Position
         resource: {
-            filename: string
+            fileName: string
         }
     }) {
         super(props)
 
         this.message = `다른 약속 파일 ${blue(
-            bold(props.resource.filename),
+            bold(props.resource.fileName),
         )}에서 오류가 발생했어요.`
     }
 }

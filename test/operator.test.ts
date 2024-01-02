@@ -92,14 +92,14 @@ Deno.test('Run Binary Operation', () => {
         ast,
         new Block([
             new EOL(),
-            new SetVariable({
-                name: '계산',
-                value: new Formula([
+            new SetVariable(
+                '계산',
+                new Formula([
                     new NumberValue(1),
                     new PlusOperator(),
                     new NumberValue(1),
                 ]),
-            }),
+            ),
             new EOL(),
         ]),
     )
@@ -546,10 +546,10 @@ Deno.test('Binary operator operand exceedance', async (context) => {
 
 Deno.test('Compare equity list and list', () => {
     const code = `
-리스트1: [1, 2, 3]
-리스트2: [1, 2, 3]
+목록1: [1, 2, 3]
+목록2: [1, 2, 3]
 
-계산: 리스트1 = 리스트2
+계산: 목록1 = 목록2
     `
 
     try {

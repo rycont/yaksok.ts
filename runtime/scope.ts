@@ -46,6 +46,7 @@ export class Scope {
         if (name in this.variables) {
             return this.variables[name]
         }
+
         if (this.parent) {
             return this.parent.getVariable(name)
         }

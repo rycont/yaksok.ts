@@ -24,14 +24,14 @@ Deno.test('Matching case: Wrapping class inherits from child class', () => {
         ast,
         new Block([
             new EOL(),
-            new SetVariable({
-                name: '이름',
-                value: new Formula([
+            new SetVariable(
+                '이름',
+                new Formula([
                     new StringValue('홍길'),
                     new PlusOperator(),
                     new StringValue('동'),
                 ]),
-            }),
+            ),
             new EOL(),
         ]),
     )

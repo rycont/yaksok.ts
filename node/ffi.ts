@@ -2,7 +2,6 @@ import { FFIResulTypeIsNotForYaksokError } from '../error/ffi.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
 import { Executable, Position, ValueTypes } from './base.ts'
-import { Params, getParams } from './function.ts'
 import { Keyword } from './index.ts'
 import { IndexedValue } from './indexed.ts'
 import { PrimitiveValue } from './primitive.ts'
@@ -18,7 +17,7 @@ export class DeclareFFI extends Executable {
         public name: string,
         public body: string,
         public runtime: string,
-        public params: string[],
+        public paramNames: string[],
     ) {
         super()
     }
@@ -28,21 +27,29 @@ export class DeclareFFI extends Executable {
     }
 
     run(scope: Scope, _callFrame: CallFrame): ValueTypes {
-        const params = Object.fromEntries(
-            this.params.map((param) => [param, scope.getVariable(param)]),
-        )
-
+        const params = this.getParams(scope)
         const result = scope.runtime!.runFFI(this.runtime, this.body, params)
 
-        if (!isYaksokValue(result)) {
-            throw new FFIResulTypeIsNotForYaksokError({
-                position: this.position,
-                ffiName: this.name,
-                value: result,
-            })
-        }
-
+        this.assertYaksokValue(result)
         return result
+    }
+
+    getParams(scope: Scope) {
+        const params = Object.fromEntries(
+            this.paramNames.map((param) => [param, scope.getVariable(param)]),
+        )
+
+        return params
+    }
+
+    assertYaksokValue(value: unknown): asserts value is ValueTypes {
+        if (isYaksokValue(value)) return
+
+        throw new FFIResulTypeIsNotForYaksokError({
+            position: this.position,
+            ffiName: this.name,
+            value,
+        })
     }
 }
 

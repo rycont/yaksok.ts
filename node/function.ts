@@ -68,12 +68,6 @@ export class FunctionInvoke extends Evaluable {
     constructor(props: { name: string; params?: Record<string, Evaluable> }) {
         super()
 
-        if (!props.name) {
-            throw new FunctionMustHaveNameError({
-                position: this.position,
-            })
-        }
-
         this.name = props.name!
         this.params = props.params || null
     }
@@ -117,17 +111,20 @@ export function getParams(params: Params, scope: Scope, callFrame: CallFrame) {
     for (const key in params) {
         const value = params[key]
 
-        if (value instanceof Evaluable) {
-            args[key] = value.execute(scope, callFrame)
-        } else {
-            throw new NotEvaluableParameterError({
-                position: value.position,
-                resource: {
-                    node: value,
-                },
-            })
-        }
+        assertEvaluable(value)
+        args[key] = value.execute(scope, callFrame)
     }
 
     return args
+}
+
+function assertEvaluable(node: Node): asserts node is Evaluable {
+    if (node instanceof Evaluable) return
+
+    throw new NotEvaluableParameterError({
+        position: node.position,
+        resource: {
+            node,
+        },
+    })
 }

@@ -5,13 +5,11 @@ export class ListIndexOutOfRangeError extends YaksokError {
     constructor(props: {
         position?: Position
         resource: {
-            index: Evaluable
+            index: number
         }
     }) {
         super(props)
-        this.message = `인덱스 ${evaluableToText(
-            props.resource.index,
-        )}는 목록의 범위를 벗어났어요.`
+        this.message = `인덱스 ${props.resource.index}는 목록의 범위를 벗어났어요.`
     }
 }
 
@@ -34,19 +32,11 @@ export class ListIndexMustBeGreaterThan1Error extends YaksokError {
         position?: Position
 
         resource: {
-            index: Evaluable
+            index: number
         }
     }) {
         super(props)
-        this.message = `리스트의 인덱스는 1보다 크거나 같아야 해요. ${evaluableToText(
-            props.resource.index,
-        )}는 그렇지 않아요.`
-    }
-}
-export class ListNotEvaluatedError extends YaksokError {
-    constructor(props: { position?: Position }) {
-        super(props)
-        this.message = `아직 실행되지 않은 리스트는 사용할 수 없어요.`
+        this.message = `목록의 인덱스는 1보다 크거나 같아야 해요. ${props.resource.index}는 그렇지 않아요.`
     }
 }
 export class RangeEndMustBeNumberError extends YaksokError {
@@ -87,9 +77,9 @@ export class ListIndexTypeError extends YaksokError {
         }
     }) {
         super(props)
-        this.message = `리스트의 인덱스는 숫자나 리스트여야 해요. ${evaluableToText(
+        this.message = `목록의 인덱스는 숫자나 목록여야 해요. ${evaluableToText(
             props.resource.index,
-        )}는 숫자나 리스트가 아니에요.`
+        )}는 숫자나 목록가 아니에요.`
     }
 }
 export class RangeStartMustBeNumberError extends YaksokError {

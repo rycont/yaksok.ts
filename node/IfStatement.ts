@@ -19,11 +19,21 @@ export class IfStatement extends Executable {
         const callFrame = new CallFrame(this, _callFrame)
 
         for (const { condition, body } of this.cases) {
-            if (!condition || isTruthy(condition.execute(scope, callFrame))) {
-                body.execute(scope, callFrame)
-                break
-            }
+            const shouldStop = this.shouldStop(condition, scope, callFrame)
+            if (!shouldStop) continue
+
+            body.execute(scope, callFrame)
+            break
         }
+    }
+
+    shouldStop(
+        condition: Evaluable | undefined,
+        scope: Scope,
+        _callFrame: CallFrame,
+    ) {
+        const callFrame = new CallFrame(this, _callFrame)
+        return !condition || isTruthy(condition.execute(scope, callFrame))
     }
 }
 

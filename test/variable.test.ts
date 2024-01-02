@@ -24,10 +24,7 @@ Deno.test('Parse Variable', () => {
         ast,
         new Block([
             new EOL(),
-            new SetVariable({
-                name: '이름',
-                value: new NumberValue(1),
-            }),
+            new SetVariable('이름', new NumberValue(1)),
             new EOL(),
         ]),
     )
@@ -44,18 +41,15 @@ Deno.test('Parse variable with 이전 keyword', () => {
         ast,
         new Block([
             new EOL(),
-            new SetVariable({
-                name: '나이',
-                value: new NumberValue(1),
-            }),
-            new SetVariable({
-                name: '나이',
-                value: new Formula([
+            new SetVariable('나이', new NumberValue(1)),
+            new SetVariable(
+                '나이',
+                new Formula([
                     new Variable('나이'),
                     new PlusOperator(),
                     new NumberValue(1),
                 ]),
-            }),
+            ),
             new EOL(),
         ]),
     )

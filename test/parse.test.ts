@@ -42,18 +42,12 @@ Deno.test('Parse with indent', () => {
                                     new NumberValue(2),
                                 ]),
                                 body: new Block([
-                                    new SetVariable({
-                                        name: '값',
-                                        value: new NumberValue(5),
-                                    }),
+                                    new SetVariable('값', new NumberValue(5)),
                                 ]),
                             },
                             {
                                 body: new Block([
-                                    new SetVariable({
-                                        name: '값',
-                                        value: new NumberValue(6),
-                                    }),
+                                    new SetVariable('값', new NumberValue(6)),
                                 ]),
                             },
                         ]),
@@ -62,10 +56,7 @@ Deno.test('Parse with indent', () => {
                 },
                 {
                     body: new Block([
-                        new SetVariable({
-                            name: '값',
-                            value: new NumberValue(3),
-                        }),
+                        new SetVariable('값', new NumberValue(3)),
                     ]),
                 },
             ]),

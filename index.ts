@@ -36,7 +36,7 @@ export class CodeRunner {
     constructor(
         private code: string,
         private runtime: Yaksok,
-        private filename: string,
+        private fileName: string,
     ) {
         this.scope = new Scope({
             runtime: this.runtime,
@@ -82,7 +82,7 @@ export class CodeRunner {
 
             throw new ErrorInModuleError({
                 resource: {
-                    filename: this.filename,
+                    fileName: this.fileName,
                 },
                 position: node.position,
             })
@@ -109,8 +109,8 @@ export class Yaksok implements YaksokConfig {
         this.runFFI = config.runFFI || defaultConfig.runFFI
     }
 
-    getRunner(filename = this.entryPoint) {
-        if (!(filename in this.files)) {
+    getRunner(fileName = this.entryPoint) {
+        if (!(fileName in this.files)) {
             throw new FileForRunNotExistError({
                 resource: {
                     entryPoint: this.entryPoint,
@@ -119,26 +119,26 @@ export class Yaksok implements YaksokConfig {
             })
         }
 
-        if (filename in this.runners) {
-            return this.runners[filename]
+        if (fileName in this.runners) {
+            return this.runners[fileName]
         }
 
-        this.runners[filename] = new CodeRunner(
-            this.files[filename],
+        this.runners[fileName] = new CodeRunner(
+            this.files[fileName],
             this,
-            filename,
+            fileName,
         )
-        return this.runners[filename]
+        return this.runners[fileName]
     }
 
-    run(filename = this.entryPoint) {
-        const runner = this.getRunner(filename)
+    run(fileName = this.entryPoint) {
+        const runner = this.getRunner(fileName)
         return runner.run()
     }
 
-    runOnce(filename = this.entryPoint) {
-        const runner = this.getRunner(filename)
-        if (!(filename in this.ran)) runner.run()
+    runOnce(fileName = this.entryPoint) {
+        const runner = this.getRunner(fileName)
+        if (!(fileName in this.ran)) runner.run()
 
         return runner
     }

@@ -13,26 +13,15 @@ export class Mention extends Executable {
 }
 
 export class MentionScope extends Evaluable {
-    filename: string
-    child: Evaluable
-
-    constructor(props: { child: Evaluable; filename: string }) {
+    constructor(public fileName: string, public child: Evaluable) {
         super()
-
-        this.filename = props.filename
-        this.child = props.child
     }
 
     execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
-        if (this.position) {
-            this.child.position = {
-                line: this.position.line,
-                column: this.position.column + 1 + this.filename.length,
-            }
-        }
+        this.setChildPosition()
 
         const scope = _scope.createChild()
-        const runner = _scope.runtime!.runOnce(this.filename)
+        const runner = _scope.runtime!.runOnce(this.fileName)
         const moduleScope = runner.scope
 
         moduleScope.parent = scope
@@ -45,6 +34,15 @@ export class MentionScope extends Evaluable {
     }
 
     toPrint(): string {
-        return '@' + this.filename + ' ' + this.child.toPrint()
+        return '@' + this.fileName + ' ' + this.child.toPrint()
+    }
+
+    private setChildPosition() {
+        if (!this.position) return
+
+        this.child.position = {
+            line: this.position.line,
+            column: this.position.column + 1 + this.fileName.length,
+        }
     }
 }

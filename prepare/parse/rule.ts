@@ -271,7 +271,7 @@ export const internalPatternsByLevel: Rule[][] = [
                 const name = (nodes[0] as Variable).name
                 const value = nodes[2] as Evaluable
 
-                return new SetVariable({ name, value })
+                return new SetVariable(name, value)
             },
         },
         {
