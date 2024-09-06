@@ -1,5 +1,16 @@
+import {
+    FunctionCannotHaveArgumentsInARowError,
+    FunctionMustHaveOneOrMoreStringPartError,
+} from '../../error/index.ts'
 import { Expression } from '../../node/base.ts'
-import { Node, Keyword, Variable, EOL, Indent } from '../../node/index.ts'
+import {
+    Node,
+    Keyword,
+    Variable,
+    EOL,
+    Indent,
+    StringValue,
+} from '../../node/index.ts'
 import { satisfiesPattern } from '../parse/satisfiesPattern.ts'
 
 export function lexFunctionArgument(tokens: Node[]) {
@@ -27,9 +38,6 @@ export function lexFunctionArgument(tokens: Node[]) {
         const token = leftTokens.shift()!
         tokenStack.push(token)
 
-        if (leftTokens[0] instanceof Keyword && leftTokens[0].value === '그만')
-            continue
-
         const paramaters: string[] = []
         const functionHeader: Node[] = []
 
@@ -42,6 +50,7 @@ export function lexFunctionArgument(tokens: Node[]) {
             if (token instanceof Keyword) {
                 paramaters.push(token.value)
                 const variable = new Variable(token.value)
+                variable.position = token.position
 
                 tokenStack.push(variable)
                 functionHeader.push(variable)
@@ -57,6 +66,8 @@ export function lexFunctionArgument(tokens: Node[]) {
             functionHeader.push(token)
             tokenStack.push(token)
         }
+
+        assertHaveStaticPartInFunctionHeader(functionHeader)
 
         if (isFFIDeclare) {
             ffiHeaders.push(functionHeader)
@@ -99,7 +110,21 @@ export function lexFunctionArgument(tokens: Node[]) {
 }
 
 function isStartOfFunction(tokens: Node[]) {
-    return tokens[0] instanceof Keyword && tokens[0].value === '약속'
+    const isFunctionDeclare = satisfiesPattern(tokens, [
+        {
+            type: Keyword,
+            value: '약속',
+        },
+    ])
+
+    const isNotFunctionBreak = satisfiesPattern(tokens.slice(1, 2), [
+        {
+            type: Keyword,
+            value: '그만',
+        },
+    ])
+
+    return isFunctionDeclare && !isNotFunctionBreak
 }
 
 function isStartOfFFI(tokens: Node[]) {
@@ -120,4 +145,31 @@ function isStartOfFFI(tokens: Node[]) {
             value: ')',
         },
     ])
+}
+
+function assertHaveStaticPartInFunctionHeader(tokens: Node[]) {
+    let lastTokenType = null
+
+    for (const token of tokens) {
+        const currentTokenType = token.constructor
+
+        if (currentTokenType === Variable && lastTokenType === Variable) {
+            throw new FunctionCannotHaveArgumentsInARowError({
+                position: token.position,
+            })
+        }
+
+        lastTokenType = currentTokenType
+
+        if (token instanceof StringValue) return
+    }
+
+    throw new FunctionMustHaveOneOrMoreStringPartError({
+        position: tokens[0].position,
+        resource: {
+            declarationString: (tokens as Variable[])
+                .map((token) => token.name)
+                .join(' '),
+        },
+    })
 }

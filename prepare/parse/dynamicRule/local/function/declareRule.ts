@@ -8,6 +8,7 @@ export function createFunctionDeclareRule(
     config: { type: keyof typeof functionRuleByType },
 ): Rule {
     const declarationTemplate = subtokens.map(functionHeaderToRuleMap)
+
     const preset = functionRuleByType[config.type]
 
     return {

@@ -3,8 +3,9 @@ import { assert, assertEquals, assertIsError, unreachable } from 'assert'
 import {
     CannotReturnOutsideFunctionError,
     NotEvaluableParameterError,
+    FunctionMustHaveOneOrMoreStringPartError,
+    CannotParseError,
 } from '../error/index.ts'
-import { CannotParseError } from '../error/prepare.ts'
 import { yaksok } from '../index.ts'
 import {
     Block,
@@ -78,6 +79,7 @@ Deno.test('Return outside function', () => {
     const code = `
 결과: 10
 약속 그만
+"이건 약속 선언이 아니야" 보여주기
 `
 
     try {
@@ -100,5 +102,20 @@ Deno.test('Function with broken body', () => {
         unreachable()
     } catch (e) {
         assertIsError(e, CannotParseError)
+    }
+})
+
+Deno.test('Function with no valid string part', () => {
+    const code = `
+약속 놀기
+    결과: "똥"
+
+놀기 보여주기`
+
+    try {
+        yaksok(code)
+        unreachable()
+    } catch (e) {
+        assertIsError(e, FunctionMustHaveOneOrMoreStringPartError)
     }
 })
