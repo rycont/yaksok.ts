@@ -15,5 +15,5 @@ export function createLocalDynamicRules({
     )
     const rulesFromPattern = getDynamicRulesFromPattern(tokens)
 
-    return [...rulesFromPattern, ...functionRules, ...ffiRules]
+    return [...functionRules, ...ffiRules, ...rulesFromPattern]
 }
