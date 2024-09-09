@@ -1,9 +1,10 @@
+import { UnexpectedTokenError } from '../../../../../error/index.ts'
+import { Expression } from '../../../../../node/base.ts'
 import {
     Evaluable,
     FunctionInvoke,
     Keyword,
     Node,
-    StringValue,
     Variable,
 } from '../../../../../node/index.ts'
 import { PatternUnit, Rule } from '../../../rule.ts'
@@ -49,10 +50,27 @@ function functionHeaderToInvokeMap(token: FunctionHeaderNode): PatternUnit {
         }
     }
 
-    return {
-        type: Keyword,
-        value: token.value,
+    if (token instanceof Keyword) {
+        return {
+            type: Keyword,
+            value: token.value,
+        }
     }
+
+    if (token instanceof Expression) {
+        return {
+            type: Expression,
+            value: token.value,
+        }
+    }
+
+    throw new UnexpectedTokenError({
+        position: (token as Node).position,
+        resource: {
+            node: token,
+            parts: '새 약속 만들기',
+        },
+    })
 }
 
 function splitFunctionHeaderWithSpace(_tokens: FunctionHeaderNode[]) {
@@ -60,13 +78,13 @@ function splitFunctionHeaderWithSpace(_tokens: FunctionHeaderNode[]) {
     const result: FunctionHeaderNode[] = []
 
     for (const token of tokens) {
-        if (token instanceof Variable) {
+        if (token instanceof Variable || token instanceof Expression) {
             result.push(token)
             continue
         }
 
         const splitted = token.value.split(' ')
-        result.push(...splitted.map((s) => new StringValue(s)))
+        result.push(...splitted.map((s) => new Keyword(s)))
     }
 
     return result

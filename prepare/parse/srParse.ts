@@ -41,26 +41,29 @@ export function reduce(tokens: Node[], rule: Rule) {
     return reduced
 }
 
-export function callParseRecursively(_tokens: Node[], patterns: Rule[]) {
-    const tokens = [..._tokens]
+export function callParseRecursively(
+    _tokens: Node[],
+    externalPatterns: Rule[],
+) {
+    let parsedTokens = [..._tokens]
 
-    for (let i = 0; i < tokens.length; i++) {
-        const token = tokens[i]
+    for (let i = 0; i < parsedTokens.length; i++) {
+        const token = parsedTokens[i]
 
         if (!(token instanceof Block)) continue
-        tokens[i] = callParseRecursively(token.children, patterns)
+        parsedTokens[i] = callParseRecursively(token.children, externalPatterns)
     }
 
-    tokens.push(new EOL())
+    parsedTokens.push(new EOL())
 
-    let parsedTokens: Node[] = tokens
+    for (const externalPattern of externalPatterns) {
+        const result = SRParse(parsedTokens, [externalPattern])
+        parsedTokens = result.tokens
+    }
 
     loop1: while (true) {
-        for (const internalPatterns of internalPatternsByLevel) {
-            const result = SRParse(parsedTokens, [
-                ...internalPatterns,
-                ...patterns,
-            ])
+        for (const patterns of internalPatternsByLevel) {
+            const result = SRParse(parsedTokens, patterns)
             parsedTokens = result.tokens
 
             if (result.changed) continue loop1

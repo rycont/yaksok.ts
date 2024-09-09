@@ -6,11 +6,10 @@ import {
     FFIBody,
     Keyword,
     Node,
-    StringValue,
     Variable,
 } from '../../../../../node/index.ts'
 
-export type FunctionHeaderNode = Variable | StringValue
+export type FunctionHeaderNode = Variable | Keyword | Expression
 export const functionRuleByType = {
     ffi: {
         prefix: [

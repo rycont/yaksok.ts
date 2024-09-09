@@ -1,4 +1,4 @@
-import { StringValue } from '../../../../../node/index.ts'
+import { Keyword, StringValue } from '../../../../../node/index.ts'
 import { getCombination } from '../getCombination.ts'
 import { FunctionHeaderNode } from './functionRuleByType.ts'
 
@@ -20,7 +20,7 @@ export function* getVariants(subtokens: FunctionHeaderNode[]) {
 
 function* getVariantParts(subtokens: FunctionHeaderNode[]) {
     for (const [index, token] of subtokens.entries()) {
-        if (!(token instanceof StringValue)) continue
+        if (!(token instanceof Keyword)) continue
         if (!token.value.includes('/')) continue
 
         const [v, postfix] = token.value.split(' ')
@@ -47,7 +47,7 @@ function createVariantFromChoices(
             ? candidates[optionIndex] + ' ' + postfix
             : candidates[optionIndex]
 
-        tokens[variants[index].index] = new StringValue(content)
+        tokens[variants[index].index] = new Keyword(content)
     }
 
     return tokens

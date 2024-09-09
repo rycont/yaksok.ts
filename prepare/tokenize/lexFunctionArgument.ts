@@ -1,16 +1,12 @@
 import {
     FunctionCannotHaveArgumentsInARowError,
     FunctionMustHaveOneOrMoreStringPartError,
+    UnexpectedEndOfCodeError,
+    UnexpectedTokenError,
 } from '../../error/index.ts'
-import { Expression } from '../../node/base.ts'
-import {
-    Node,
-    Keyword,
-    Variable,
-    EOL,
-    Indent,
-    StringValue,
-} from '../../node/index.ts'
+import { Expression, Operator } from '../../node/base.ts'
+import { Node, Keyword, Variable, EOL, Indent } from '../../node/index.ts'
+import { BRACKET_TYPE, isBracket } from '../../util/isBracket.ts'
 import { satisfiesPattern } from '../parse/satisfiesPattern.ts'
 
 export function lexFunctionArgument(tokens: Node[]) {
@@ -48,14 +44,99 @@ export function lexFunctionArgument(tokens: Node[]) {
             if (!token) break
 
             if (token instanceof Keyword) {
-                paramaters.push(token.value)
-                const variable = new Variable(token.value)
-                variable.position = token.position
-
-                tokenStack.push(variable)
-                functionHeader.push(variable)
+                tokenStack.push(token)
+                functionHeader.push(token)
 
                 continue
+            }
+
+            if (isBracket(token) === BRACKET_TYPE.OPENING) {
+                const openingBracket = token
+
+                const argumentKeywordToken = leftTokens.shift()
+
+                if (!argumentKeywordToken) {
+                    throw new UnexpectedEndOfCodeError({
+                        resource: {
+                            parts: '새 약속 만들기',
+                        },
+                        position: token.position,
+                    })
+                }
+
+                const isKeyword = argumentKeywordToken instanceof Keyword
+
+                if (!isKeyword) {
+                    throw new UnexpectedTokenError({
+                        resource: {
+                            node: argumentKeywordToken,
+                            parts: '함수 인자 이름',
+                        },
+                    })
+                }
+
+                const argumentName = argumentKeywordToken.value
+                const argumentVariable = new Variable(argumentName)
+                argumentVariable.position = argumentKeywordToken.position
+
+                const closingBracketToken = leftTokens.shift()
+
+                if (!closingBracketToken) {
+                    throw new UnexpectedEndOfCodeError({
+                        resource: {
+                            parts: '새 약속 만들기',
+                        },
+                        position: argumentVariable.position,
+                    })
+                }
+
+                const isClosingBracket =
+                    isBracket(closingBracketToken) === BRACKET_TYPE.CLOSING
+                if (!isClosingBracket) {
+                    throw new UnexpectedTokenError({
+                        resource: {
+                            node: closingBracketToken,
+                            parts: '함수 인자 이름을 끝내는 괄호',
+                        },
+                    })
+                }
+
+                tokenStack.push(openingBracket)
+                functionHeader.push(openingBracket)
+
+                tokenStack.push(argumentVariable)
+                functionHeader.push(argumentVariable)
+
+                tokenStack.push(closingBracketToken)
+                functionHeader.push(closingBracketToken)
+
+                paramaters.push(argumentName)
+
+                continue
+            }
+
+            if (token instanceof Operator) {
+                const lastToken = functionHeader[functionHeader.length - 1]
+
+                if (lastToken instanceof Keyword) {
+                    lastToken.value += token.value
+                }
+
+                const nextToken = leftTokens.shift()
+
+                if (!nextToken) {
+                    throw new UnexpectedEndOfCodeError({
+                        resource: {
+                            parts: '새 약속 만들기',
+                        },
+                        position: token.position,
+                    })
+                }
+
+                if (nextToken instanceof Keyword) {
+                    lastToken.value += nextToken.value
+                    continue
+                }
             }
 
             if (token instanceof EOL) {
@@ -63,12 +144,16 @@ export function lexFunctionArgument(tokens: Node[]) {
                 break
             }
 
-            functionHeader.push(token)
-            tokenStack.push(token)
+            throw new UnexpectedTokenError({
+                resource: {
+                    node: token,
+                    parts: '함수 인자',
+                },
+                position: token.position,
+            })
         }
 
         assertHaveStaticPartInFunctionHeader(functionHeader)
-        console.log(functionHeader)
 
         if (isFFIDeclare) {
             ffiHeaders.push(functionHeader)
@@ -151,10 +236,12 @@ function isStartOfFFI(tokens: Node[]) {
 function assertHaveStaticPartInFunctionHeader(tokens: Node[]) {
     let lastTokenType = null
 
+    let hasStaticPart = false
+
     for (const token of tokens) {
         const currentTokenType = token.constructor
 
-        if (currentTokenType === Variable && lastTokenType === Variable) {
+        if (currentTokenType === Expression && lastTokenType === Expression) {
             throw new FunctionCannotHaveArgumentsInARowError({
                 position: token.position,
             })
@@ -162,7 +249,13 @@ function assertHaveStaticPartInFunctionHeader(tokens: Node[]) {
 
         lastTokenType = currentTokenType
 
-        if (token instanceof StringValue) return
+        if (token instanceof Keyword) {
+            hasStaticPart = true
+        }
+    }
+
+    if (hasStaticPart) {
+        return
     }
 
     throw new FunctionMustHaveOneOrMoreStringPartError({
