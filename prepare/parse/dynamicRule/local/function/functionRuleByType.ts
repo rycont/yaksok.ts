@@ -52,6 +52,10 @@ export const functionRuleByType = {
                 type: Keyword,
                 value: '약속',
             },
+            {
+                type: Expression,
+                value: ',',
+            },
         ],
         body: Block,
         createFactory:
