@@ -21,23 +21,23 @@ import { Scope } from '../runtime/scope.ts'
 
 Deno.test('Function that returns value', () => {
     const code = `
-약속 가"와" 나"를 더하기"
+약속, [가]와 [나]를 더하기
     결과: 가 + 나
 
-더한결과: 10와 20를 더하기
+더한결과: [10]와 [20]를 더하기
 `
     const { scope } = yaksok(code).getRunner()
 
-    assert('가 와 나 를 더하기' in scope.functions)
+    assert('[가] 와 [나] 를 더하기' in scope.functions)
     assertEquals(scope.getVariable('더한결과'), new NumberValue(30))
 })
 
 Deno.test('Function that returns nothing', () => {
     const code = `
-약속 가"와" 나"를 더하기"
+약속, [가]와 [나]를 더하기
     아무것도아닌거: 가 + 나
 
-더한결과: 10와 20를 더하기
+더한결과: [10]와 [20]를 더하기
 `
     const { scope: result } = yaksok(code).getRunner()
     assertEquals(result.getVariable('더한결과'), new NumberValue(0))
@@ -92,7 +92,7 @@ Deno.test('Return outside function', () => {
 
 Deno.test('Function with broken body', () => {
     const code = `
-약속 "숫자보여주기"
+약속, 숫자보여주기
     숫자 보여주 기
     
 숫자보여주기
@@ -107,7 +107,7 @@ Deno.test('Function with broken body', () => {
 
 Deno.test('Function with no valid string part', () => {
     const code = `
-약속 놀기
+약속, [놀기]
     결과: "똥"
 
 놀기 보여주기`
