@@ -28,6 +28,7 @@ export function lexFunctionArgument(tokens: Node[]) {
         if (isFFIDeclare) {
             tokenStack.push(leftTokens.shift()!)
             tokenStack.push(leftTokens.shift()!)
+            tokenStack.push(leftTokens.shift()!)
         }
 
         tokenStack.push(leftTokens.shift()!)

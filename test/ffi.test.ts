@@ -6,10 +6,10 @@ import { NumberValue, StringValue } from '../node/index.ts'
 
 Deno.test('FFI Calling', () => {
     const code = `
-번역(plaintext) "한바탕" 횟수 "번 웃기"
+번역(plaintext), 한바탕 [횟수]번 웃기
 ***와하하***
 
-한바탕 5번 웃기
+한바탕 [5]번 웃기
 `
     yaksok(
         {
@@ -29,12 +29,12 @@ Deno.test('FFI Calling', () => {
 
 Deno.test('Get result from JavaScript adapter', () => {
     const code = `
-번역(javascript) "한바탕" 횟수 "번 웃기"
+번역(javascript), 한바탕 [횟수]번 웃기
 ***
     return "와" + "하".repeat(횟수) + "하"
 ***
 
-한바탕 10번 웃기 보여주기
+한바탕 [10]번 웃기 보여주기
 `
     let stdout = ''
 
@@ -63,12 +63,12 @@ Deno.test('Get result from JavaScript adapter', () => {
 
 Deno.test('Got result is not a primitive value, but a JS number', () => {
     const code = `
-번역(javascript) "한바탕" 횟수 "번 웃기"
+번역(javascript), 한바탕 [횟수]번 웃기
 ***
     return "와" + "하".repeat(횟수) + "하"
 ***
 
-한바탕 10번 웃기
+한바탕 [10]번 웃기
 `
 
     try {
@@ -85,12 +85,12 @@ Deno.test('Got result is not a primitive value, but a JS number', () => {
 
 Deno.test('Got result is not a primitive value, but a JS string', () => {
     const code = `
-번역(javascript) "한바탕" 횟수 "번 웃기"
+번역(javascript), 한바탕 [횟수]번 웃기
 ***
     return "와" + "하".repeat(횟수) + "하"
 ***
 
-한바탕 10번 웃기
+한바탕 [10]번 웃기
 `
 
     try {
@@ -107,12 +107,12 @@ Deno.test('Got result is not a primitive value, but a JS string', () => {
 
 Deno.test('Got result is not a primitive value, but a JS object', () => {
     const code = `
-번역(javascript) "한바탕" 횟수 "번 웃기"
+번역(javascript), 한바탕 [횟수]번 웃기
 ***
     return "와" + "하".repeat(횟수) + "하"
 ***
 
-한바탕 10번 웃기
+한바탕 [10]번 웃기
 `
 
     try {

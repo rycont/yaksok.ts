@@ -28,6 +28,10 @@ export const functionRuleByType = {
                 type: Expression,
                 value: ')',
             },
+            {
+                type: Expression,
+                value: ',',
+            },
         ],
         body: FFIBody,
         createFactory(functionHeader: FunctionHeaderNode[], name: string) {
