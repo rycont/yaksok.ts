@@ -230,7 +230,7 @@ Deno.test('Tokenize Variable Declaration with Variable', () => {
 
 Deno.test('Tokenize Function Declaration with Multiple Parameter', () => {
     const code = `
-약속 이름"에게" 메시지"라고 인사하기"
+약속, [이름]에게 [메시지]라고 인사하기
     메시지 + ", " + 이름 + "!" 보여주기
 `.trim()
 
@@ -239,10 +239,16 @@ Deno.test('Tokenize Function Declaration with Multiple Parameter', () => {
     assertEquals(tokens, [
         new EOL(),
         new Keyword('약속'),
+        new Expression(','),
+        new Expression('['),
         new Variable('이름'),
-        new StringValue('에게'),
+        new Expression(']'),
+        new Keyword('에게'),
+        new Expression('['),
         new Variable('메시지'),
-        new StringValue('라고 인사하기'),
+        new Expression(']'),
+        new Keyword('라고'),
+        new Keyword('인사하기'),
         new EOL(),
         new Indent(1),
         new Variable('메시지'),

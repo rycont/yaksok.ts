@@ -14,7 +14,7 @@ import {
     GreaterThanOrEqualOperator,
     IfStatement,
     IndexFetch,
-    Indexing,
+    ValueWithBracket,
     Keyword,
     LessThanOperator,
     LessThanOrEqualOperator,
@@ -32,7 +32,7 @@ import {
     Sequence,
     SetToIndex,
     SetVariable,
-    ValueGroup,
+    ValueWithParenthesis,
     Variable,
 } from '../../node/index.ts'
 import { ListLoop } from '../../node/listLoop.ts'
@@ -69,7 +69,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
             factory: (nodes) => {
                 const index = nodes[1] as Evaluable
-                return new Indexing(index)
+                return new ValueWithBracket(index)
             },
         },
         {
@@ -78,13 +78,12 @@ export const internalPatternsByLevel: Rule[][] = [
                     type: Evaluable,
                 },
                 {
-                    type: Indexing,
+                    type: ValueWithBracket,
                 },
             ],
             factory: (nodes) => {
                 const target = nodes[0] as Evaluable
-                const index = nodes[1] as Indexing
-
+                const index = nodes[1] as ValueWithBracket
                 return new IndexFetch(target, index.value)
             },
         },
@@ -191,7 +190,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
             factory: (nodes) => {
                 const value = nodes[1] as Evaluable
-                return new ValueGroup(value)
+                return new ValueWithParenthesis(value)
             },
         },
         {

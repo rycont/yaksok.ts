@@ -30,7 +30,7 @@ const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
     [MultiplyOperator, DivideOperator],
 ]
 
-export class ValueGroup extends Evaluable {
+export class ValueWithParenthesis extends Evaluable {
     constructor(public value: Evaluable) {
         super()
     }

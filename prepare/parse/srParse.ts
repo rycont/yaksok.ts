@@ -56,13 +56,13 @@ export function callParseRecursively(
 
     parsedTokens.push(new EOL())
 
-    for (const externalPattern of externalPatterns) {
-        const result = SRParse(parsedTokens, [externalPattern])
-        parsedTokens = result.tokens
-    }
+    const patternsByLevel = [
+        ...externalPatterns.map((e) => [e]),
+        ...internalPatternsByLevel,
+    ]
 
     loop1: while (true) {
-        for (const patterns of internalPatternsByLevel) {
+        for (const patterns of patternsByLevel) {
             const result = SRParse(parsedTokens, patterns)
             parsedTokens = result.tokens
 

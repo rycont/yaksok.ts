@@ -168,12 +168,6 @@ export class List extends IndexedValue {
     }
 }
 
-export class Indexing extends Node {
-    constructor(public value: Evaluable) {
-        super()
-    }
-}
-
 export class IndexFetch extends Evaluable {
     constructor(public target: Evaluable, public index: Evaluable) {
         super()

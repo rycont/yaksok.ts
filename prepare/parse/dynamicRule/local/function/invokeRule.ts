@@ -5,6 +5,7 @@ import {
     FunctionInvoke,
     Keyword,
     Node,
+    ValueWithBracket,
     Variable,
 } from '../../../../../node/index.ts'
 import { PatternUnit, Rule } from '../../../rule.ts'
@@ -15,7 +16,9 @@ export function createFunctionInvokeRule(
     _subtokens: FunctionHeaderNode[],
 ): Rule {
     const subtokens = splitFunctionHeaderWithSpace(_subtokens)
-    const invokeTemplate = subtokens.map(functionHeaderToInvokeMap)
+    const invokeTemplate = subtokens
+        .map(functionHeaderToInvokeMap)
+        .filter(Boolean) as PatternUnit[]
 
     return {
         pattern: invokeTemplate,
@@ -43,10 +46,12 @@ function getParamsFromMatchedNodes(
     )
 }
 
-function functionHeaderToInvokeMap(token: FunctionHeaderNode): PatternUnit {
+function functionHeaderToInvokeMap(
+    token: FunctionHeaderNode,
+): PatternUnit | PatternUnit | null {
     if (token instanceof Variable) {
         return {
-            type: Evaluable,
+            type: ValueWithBracket,
         }
     }
 
@@ -58,10 +63,7 @@ function functionHeaderToInvokeMap(token: FunctionHeaderNode): PatternUnit {
     }
 
     if (token instanceof Expression) {
-        return {
-            type: Expression,
-            value: token.value,
-        }
+        return null
     }
 
     throw new UnexpectedTokenError({
