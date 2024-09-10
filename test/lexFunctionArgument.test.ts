@@ -5,16 +5,16 @@ import {
     FunctionCannotHaveArgumentsInARowError,
     FunctionMustHaveOneOrMoreStringPartError,
 } from '../error/index.ts'
+import { Expression } from '../node/base.ts'
 
 Deno.test('Preprocess tokens', () => {
     const tokens = [
         new Keyword('약속'),
+        new Expression(','),
+        new Expression('['),
         new Keyword('이름'),
-        new StringValue('나이'),
-        new EOL(),
-        new Keyword('약속'),
-        new StringValue('나이'),
-        new EOL(),
+        new Expression(']'),
+        new Keyword('나이'),
     ]
 
     const result = lexFunctionArgument(tokens)
@@ -22,20 +22,32 @@ Deno.test('Preprocess tokens', () => {
     assertEquals(result, {
         tokens: [
             new Keyword('약속'),
+            new Expression(','),
+            new Expression('['),
             new Variable('이름'),
-            new StringValue('나이'),
-            new EOL(),
-            new Keyword('약속'),
-            new StringValue('나이'),
-            new EOL(),
+            new Expression(']'),
+            new Keyword('나이'),
         ],
-        functionHeaders: [[new Variable('이름'), new StringValue('나이')]],
+        functionHeaders: [
+            [
+                new Expression('['),
+                new Variable('이름'),
+                new Expression(']'),
+                new Keyword('나이'),
+            ],
+        ],
         ffiHeaders: [],
     })
 })
 
 Deno.test('Preprocess tokens with broken declaration: No static part', () => {
-    const tokens = [new Keyword('약속'), new Keyword('똥')]
+    const tokens = [
+        new Keyword('약속'),
+        new Expression(','),
+        new Expression('['),
+        new Keyword('이름'),
+        new Expression(']'),
+    ]
 
     try {
         lexFunctionArgument(tokens)
@@ -50,8 +62,13 @@ Deno.test(
     () => {
         const tokens = [
             new Keyword('약속'),
-            new Keyword('나이'),
+            new Expression(','),
+            new Expression('['),
             new Keyword('이름'),
+            new Expression(']'),
+            new Expression('['),
+            new Keyword('나이'),
+            new Expression(']'),
         ]
 
         try {
