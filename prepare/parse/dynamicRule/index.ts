@@ -9,5 +9,5 @@ export function createDynamicRule(tokenized: TokenizeResult, runtime?: Yaksok) {
         ? getDynamicRulesFromMention(tokenized.tokens, runtime)
         : []
 
-    return [...localRules, ...mentioningRules]
+    return [...localRules, mentioningRules]
 }

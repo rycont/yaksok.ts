@@ -14,7 +14,7 @@ import {
     Node,
     FFIBody,
 } from '../../node/index.ts'
-import { lexFunctionArgument } from './lexFunctionArgument.ts'
+import { lex } from './lex.ts'
 import {
     isValidFirstCharForKeyword,
     isValidCharForKeyword,
@@ -33,10 +33,7 @@ export class Tokenizer {
     static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~']
     static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')', '@']
 
-    constructor(
-        code: string,
-        private disablePosition = false,
-    ) {
+    constructor(code: string, private disablePosition = false) {
         this.chars = this.preprocess(code)
         this.tokenize()
         this.postprocess()
@@ -248,9 +245,7 @@ export class Tokenizer {
     }
 
     postprocess() {
-        const { functionHeaders, ffiHeaders, tokens } = lexFunctionArgument(
-            this.tokens,
-        )
+        const { functionHeaders, ffiHeaders, tokens } = lex(this.tokens)
 
         this.functionHeaders = functionHeaders
         this.ffiHeaders = ffiHeaders

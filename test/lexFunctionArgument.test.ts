@@ -1,10 +1,7 @@
 import { assertEquals, assertIsError, unreachable } from 'assert'
 import { Keyword, Variable, EOL, StringValue } from '../node/index.ts'
-import { lexFunctionArgument } from '../prepare/tokenize/lexFunctionArgument.ts'
-import {
-    FunctionCannotHaveArgumentsInARowError,
-    FunctionMustHaveOneOrMoreStringPartError,
-} from '../error/index.ts'
+import { lex } from '../prepare/tokenize/lex.ts'
+import { FunctionMustHaveOneOrMoreStringPartError } from '../error/index.ts'
 import { Expression } from '../node/base.ts'
 
 Deno.test('Preprocess tokens', () => {
@@ -17,7 +14,7 @@ Deno.test('Preprocess tokens', () => {
         new Keyword('나이'),
     ]
 
-    const result = lexFunctionArgument(tokens)
+    const result = lex(tokens)
 
     assertEquals(result, {
         tokens: [
@@ -50,32 +47,9 @@ Deno.test('Preprocess tokens with broken declaration: No static part', () => {
     ]
 
     try {
-        lexFunctionArgument(tokens)
+        lex(tokens)
         unreachable()
     } catch (error) {
         assertIsError(error, FunctionMustHaveOneOrMoreStringPartError)
     }
 })
-
-Deno.test(
-    'Preprocess tokens with broken declaration: Arguments in a row',
-    () => {
-        const tokens = [
-            new Keyword('약속'),
-            new Expression(','),
-            new Expression('['),
-            new Keyword('이름'),
-            new Expression(']'),
-            new Expression('['),
-            new Keyword('나이'),
-            new Expression(']'),
-        ]
-
-        try {
-            lexFunctionArgument(tokens)
-            unreachable()
-        } catch (error) {
-            assertIsError(error, FunctionCannotHaveArgumentsInARowError)
-        }
-    },
-)

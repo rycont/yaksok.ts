@@ -1,5 +1,5 @@
 import { CallFrame } from '../runtime/callFrame.ts'
-import { Executable, Node } from './index.ts'
+import { Evaluable, Executable, Node } from './index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CannotParseError } from '../error/index.ts'
 import { EOL } from './misc.ts'
@@ -29,5 +29,23 @@ export class Block extends Executable {
                 })
             }
         }
+    }
+}
+
+export class InlineParenthesisBlock extends Evaluable {
+    children: Node[]
+
+    constructor(content: Node[]) {
+        super()
+        this.children = content
+    }
+}
+
+export class InlineBracketBlock extends Evaluable {
+    children: Node[]
+
+    constructor(content: Node[]) {
+        super()
+        this.children = content
     }
 }

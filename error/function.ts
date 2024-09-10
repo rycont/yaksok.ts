@@ -27,13 +27,6 @@ export class FunctionMustHaveOneOrMoreStringPartError extends YaksokError {
     }
 }
 
-export class FunctionCannotHaveArgumentsInARowError extends YaksokError {
-    constructor(props: { position?: Position }) {
-        super(props)
-        this.message = `함수는 인자를 연속해서 가질 수 없어요.`
-    }
-}
-
 export class NotDefinedFunctionError extends YaksokError {
     constructor(props: {
         position?: Position

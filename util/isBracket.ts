@@ -20,3 +20,19 @@ export function isBracket(token: Node) {
 
     return false
 }
+
+export function isParentheses(token: Node) {
+    if (!(token instanceof Expression)) {
+        return false
+    }
+
+    if (token.value === '(') {
+        return BRACKET_TYPE.OPENING
+    }
+
+    if (token.value === ')') {
+        return BRACKET_TYPE.CLOSING
+    }
+
+    return false
+}
