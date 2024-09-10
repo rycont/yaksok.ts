@@ -37,6 +37,7 @@ function getParamsFromMatchedNodes(
 ) {
     return Object.fromEntries(
         template
+            .filter((token) => !(token instanceof Expression))
             .map((token, i) => [token, matchedNodes[i]])
             .filter(
                 (set): set is [Variable, Evaluable] =>
