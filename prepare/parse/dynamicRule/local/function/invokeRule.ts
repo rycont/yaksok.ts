@@ -43,7 +43,7 @@ function getParamsFromMatchedNodes(
             .map((token, i) => [token, matchedNodes[i]])
             .filter(
                 (set): set is [Variable, Evaluable] =>
-                    set[1] instanceof Evaluable,
+                    set[1] instanceof Evaluable && !(set[1] instanceof Keyword),
             )
             .map(([token, node]) => [token.value, node]),
     )

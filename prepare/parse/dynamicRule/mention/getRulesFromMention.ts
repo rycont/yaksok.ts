@@ -32,7 +32,10 @@ function isNotFunctionDeclareRule(rule: Rule) {
     return !isDeclare
 }
 
-function createMentioningRuleFromExportedRule(fileName: string, rule: Rule) {
+function createMentioningRuleFromExportedRule(
+    fileName: string,
+    rule: Rule,
+): Rule {
     return {
         pattern: [
             {

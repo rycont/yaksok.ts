@@ -8,6 +8,8 @@ import {
     BooleanValue,
     PrimitiveValue,
 } from './primitive.ts'
+import { Variable } from './variable.ts'
+import { NotDefinedVariableError } from '../error/index.ts'
 
 export interface Position {
     line: number
@@ -44,12 +46,25 @@ export class Evaluable extends Executable {
     }
 }
 
-export class Keyword extends Node {
+export class Keyword extends Evaluable {
     constructor(public value: string, public position?: Position) {
         super()
     }
+
     toPrint() {
         return this.value
+    }
+
+    execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+        try {
+            return scope.getVariable(this.value)
+        } catch (e) {
+            if (e instanceof NotDefinedVariableError) {
+                throw 'Keyword is not proper'
+            }
+
+            throw e
+        }
     }
 }
 

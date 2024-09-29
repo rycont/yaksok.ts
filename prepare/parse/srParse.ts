@@ -95,6 +95,7 @@ export function callParseRecursively(
         return new Block(parsedTokens)
     }
 
+    console.log(_tokens)
     const validTokens = parsedTokens.filter((token) => !(token instanceof EOL))
 
     const lastToken = validTokens[validTokens.length - 1]
