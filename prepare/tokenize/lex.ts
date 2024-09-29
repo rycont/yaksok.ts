@@ -16,7 +16,6 @@ import { BRACKET_TYPE, isBracket, isParentheses } from '../../util/isBracket.ts'
 import { satisfiesPattern } from '../parse/satisfiesPattern.ts'
 import { parseIndent } from '../parse/parseIndent.ts'
 import { Block } from '../../node/block.ts'
-import { PatternUnit } from '../parse/rule.ts'
 import { FunctionHeaderNode } from '../parse/dynamicRule/local/function/functionRuleByType.ts'
 
 class Lexer {
@@ -90,6 +89,16 @@ class Lexer {
                 throw '아직'
             }
 
+            if (this.isVariableDeclaration(token)) {
+                this.parseVariableDeclaration(token)
+                continue
+            }
+
+            if (this.isVariableUsage(token)) {
+                this.parseVariableUsage(token)
+                continue
+            }
+
             this.lexedTokens.push(token)
         }
     }
@@ -112,7 +121,7 @@ class Lexer {
             const nextToken = this.tokens.shift()
 
             if (!nextToken) {
-                throw this.unexpectedEOL()
+                throw this.unexpectedEOL('괄호로 묶인 코드')
             }
 
             if (isParentheses(nextToken) === BRACKET_TYPE.OPENING) {
@@ -179,8 +188,9 @@ class Lexer {
 
     parseFunction() {
         const { argumentNames, functionHeader } = this.parseFunctionHeader()
-        this.variables = argumentNames
         this.functionHeaders.push(functionHeader)
+
+        this.parseFunctionBody(argumentNames)
     }
 
     parseFunctionHeader() {
@@ -194,7 +204,7 @@ class Lexer {
             const token = this.tokens.shift()
 
             if (!token) {
-                throw this.unexpectedEOL()
+                throw this.unexpectedEOL('함수 이름')
             }
 
             if (token instanceof Keyword) {
@@ -207,7 +217,7 @@ class Lexer {
                 const nextToken = this.tokens.shift() as Keyword | undefined
 
                 if (!nextToken) {
-                    throw this.unexpectedEOL()
+                    throw this.unexpectedEOL('함수 이름의 변형')
                 }
 
                 const lastToken = functionHeader[functionHeader.length - 1]
@@ -246,7 +256,7 @@ class Lexer {
         const argumentNameToken = this.tokens.shift()
 
         if (!argumentNameToken) {
-            throw this.unexpectedEOL()
+            throw this.unexpectedEOL('함수 인자 이름')
         }
 
         if (!(argumentNameToken instanceof Keyword)) {
@@ -261,7 +271,7 @@ class Lexer {
         const closingBracketToken = this.tokens.shift()
 
         if (!closingBracketToken) {
-            throw this.unexpectedEOL()
+            throw this.unexpectedEOL("함수 인자 이름을 끝내는 ')' 괄호")
         }
 
         if (isBracket(closingBracketToken) !== BRACKET_TYPE.CLOSING) {
@@ -295,14 +305,41 @@ class Lexer {
         return isLastTokenKeyword && isNextTokenKeyword && isDivision
     }
 
+    parseFunctionBody(argumentNames: string[]) {
+        const functionBodyBlock = this.tokens.shift()
+
+        if (!functionBodyBlock) {
+            throw this.unexpectedEOL('새 약속의 코드')
+        }
+
+        if (!(functionBodyBlock instanceof Block)) {
+            throw new UnexpectedTokenError({
+                resource: {
+                    node: functionBodyBlock,
+                    parts: '새 약속의 코드',
+                },
+            })
+        }
+
+        const functionBodyTokens = lex(
+            functionBodyBlock.children,
+            argumentNames,
+        ).tokens
+
+        const lexedFunctionBody = new Block(functionBodyTokens)
+        lexedFunctionBody.position = functionBodyBlock.position
+
+        this.lexedTokens.push(lexedFunctionBody)
+    }
+
     pull() {
         this.lexedTokens.push(this.tokens.shift()!)
     }
 
-    unexpectedEOL() {
+    unexpectedEOL(parts: string) {
         return new UnexpectedEndOfCodeError({
             resource: {
-                parts: '???',
+                parts,
             },
             position:
                 this.tokens?.[0]?.position ||
@@ -311,15 +348,7 @@ class Lexer {
     }
 
     postprocess() {}
-
-    replaceFunctionDeclaration() {
-        this.functionHeaders.map()
-    }
-
-    replaceFunctionInvocation() {}
 }
-
-function functionHeaderToPattern() {}
 
 export const lex = Lexer.lex
 

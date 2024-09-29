@@ -32,20 +32,14 @@ export class Block extends Executable {
     }
 }
 
-export class InlineParenthesisBlock extends Evaluable {
-    children: Node[]
-
+export class InlineParenthesisBlock extends Block {
     constructor(content: Node[]) {
-        super()
-        this.children = content
+        super(content)
     }
 }
 
-export class InlineBracketBlock extends Evaluable {
-    children: Node[]
-
+export class InlineBracketBlock extends Block {
     constructor(content: Node[]) {
-        super()
-        this.children = content
+        super(content)
     }
 }

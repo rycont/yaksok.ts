@@ -286,6 +286,7 @@ export class Tokenizer {
 
 export function tokenize(code: string, disablePosition = false) {
     const tokenizer = new Tokenizer(code, disablePosition)
+
     return {
         tokens: tokenizer.tokens!,
         functionHeaders: tokenizer.functionHeaders!,

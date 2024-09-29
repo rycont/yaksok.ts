@@ -1,6 +1,13 @@
 import { Rule, internalPatternsByLevel } from './rule.ts'
 import { satisfiesPattern } from './satisfiesPattern.ts'
-import { Block, EOL, Node } from '../../node/index.ts'
+import {
+    Block,
+    EOL,
+    Evaluable,
+    Node,
+    ValueWithBracket,
+    ValueWithParenthesis,
+} from '../../node/index.ts'
 
 export function SRParse(_tokens: Node[], rules: Rule[]) {
     const tokens = [..._tokens]
@@ -44,6 +51,7 @@ export function reduce(tokens: Node[], rule: Rule) {
 export function callParseRecursively(
     _tokens: Node[],
     externalPatterns: Rule[][],
+    wrapper: 'Block' | 'ValueWithParenthesis' | 'ValueWithBracket' = 'Block',
 ) {
     let parsedTokens = [..._tokens]
 
@@ -51,7 +59,21 @@ export function callParseRecursively(
         const token = parsedTokens[i]
 
         if (!(token instanceof Block)) continue
-        parsedTokens[i] = callParseRecursively(token.children, externalPatterns)
+
+        const blockWrapper = {
+            Block: 'Block',
+            InlineParenthesisBlock: 'ValueWithParenthesis',
+            InlineBracketBlock: 'ValueWithBracket',
+        }[token.constructor.name] as
+            | 'Block'
+            | 'ValueWithParenthesis'
+            | 'ValueWithBracket'
+
+        parsedTokens[i] = callParseRecursively(
+            token.children,
+            externalPatterns,
+            blockWrapper,
+        )
     }
 
     parsedTokens.push(new EOL())
@@ -69,5 +91,21 @@ export function callParseRecursively(
         break
     }
 
-    return new Block(parsedTokens)
+    if (wrapper === 'Block') {
+        return new Block(parsedTokens)
+    }
+
+    const validTokens = parsedTokens.filter((token) => !(token instanceof EOL))
+
+    const lastToken = validTokens[validTokens.length - 1]
+
+    if (!(lastToken instanceof Evaluable)) {
+        throw new Error('lastToken is not Evaluable')
+    }
+
+    if (wrapper === 'ValueWithParenthesis') {
+        return new ValueWithParenthesis(lastToken)
+    }
+
+    return new ValueWithBracket(lastToken)
 }

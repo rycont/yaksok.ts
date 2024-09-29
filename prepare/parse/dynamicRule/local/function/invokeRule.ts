@@ -8,6 +8,7 @@ import {
     ValueWithBracket,
     Variable,
 } from '../../../../../node/index.ts'
+import { BRACKET_TYPE, isBracket } from '../../../../../util/isBracket.ts'
 import { PatternUnit, Rule } from '../../../rule.ts'
 import { FunctionHeaderNode } from './functionRuleByType.ts'
 
@@ -23,9 +24,10 @@ export function createFunctionInvokeRule(
     return {
         pattern: invokeTemplate,
         factory(nodes: Node[]) {
+            const params = getParamsFromMatchedNodes(subtokens, nodes)
             return new FunctionInvoke({
                 name,
-                params: getParamsFromMatchedNodes(subtokens, nodes),
+                params,
             })
         },
     }
@@ -41,16 +43,27 @@ function getParamsFromMatchedNodes(
             .map((token, i) => [token, matchedNodes[i]])
             .filter(
                 (set): set is [Variable, Evaluable] =>
-                    set[0] instanceof Variable,
+                    set[1] instanceof Evaluable,
             )
-            .map(([token, node]) => [token.name, node]),
+            .map(([token, node]) => [token.value, node]),
     )
 }
 
 function functionHeaderToInvokeMap(
     token: FunctionHeaderNode,
+    index: number,
+    tokenSequence: FunctionHeaderNode[],
 ): PatternUnit | PatternUnit | null {
-    if (token instanceof Variable) {
+    // if (token instanceof Variable) {
+    //     return {
+    //         type: ValueWithBracket,
+    //     }
+    // }
+
+    const previousToken = tokenSequence[index - 1]
+    const isParameterToken =
+        previousToken && isBracket(previousToken) === BRACKET_TYPE.OPENING
+    if (isParameterToken) {
         return {
             type: ValueWithBracket,
         }
