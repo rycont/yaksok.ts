@@ -4,7 +4,9 @@ import {
     Block,
     EOL,
     Evaluable,
+    List,
     Node,
+    Sequence,
     ValueWithBracket,
     ValueWithParenthesis,
 } from '../../node/index.ts'
@@ -95,9 +97,7 @@ export function callParseRecursively(
         return new Block(parsedTokens)
     }
 
-    console.log(_tokens)
     const validTokens = parsedTokens.filter((token) => !(token instanceof EOL))
-
     const lastToken = validTokens[validTokens.length - 1]
 
     if (!(lastToken instanceof Evaluable)) {
@@ -106,6 +106,11 @@ export function callParseRecursively(
 
     if (wrapper === 'ValueWithParenthesis') {
         return new ValueWithParenthesis(lastToken)
+    }
+
+    if (lastToken instanceof Sequence) {
+        const list = new List(lastToken.items)
+        return list
     }
 
     return new ValueWithBracket(lastToken)

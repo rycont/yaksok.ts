@@ -94,10 +94,10 @@ class Lexer {
                 continue
             }
 
-            if (this.isVariableUsage(token)) {
-                this.parseVariableUsage(token)
-                continue
-            }
+            // if (this.isVariableUsage(token)) {
+            //     this.parseVariableUsage(token)
+            //     continue
+            // }
 
             this.lexedTokens.push(token)
         }

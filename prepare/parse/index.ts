@@ -9,7 +9,8 @@ export function parse(tokenized: TokenizeResult, runtime?: Yaksok) {
     const indentedNodes = parseIndent(tokenized.tokens)
 
     const ast = callParseRecursively(indentedNodes, dynamicRules)
-    console.log(ast)
-
+    console.log(tokenized.tokens)
+    // console.log(ast.children[5].body.children)
+    // console.log(ast.children[5])
     return { ast, dynamicRules }
 }

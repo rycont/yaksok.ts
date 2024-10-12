@@ -60,7 +60,7 @@ export class Keyword extends Evaluable {
             return scope.getVariable(this.value)
         } catch (e) {
             if (e instanceof NotDefinedVariableError) {
-                throw 'Keyword is not proper'
+                e.position = this.position
             }
 
             throw e

@@ -10,7 +10,7 @@ import {
 } from '../error/index.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
-import { Evaluable, Executable, Node, Operator, ValueTypes } from './index.ts'
+import { Evaluable, Executable, Operator, ValueTypes } from './index.ts'
 import { IndexedValue } from './indexed.ts'
 import { NumberValue, PrimitiveValue } from './primitive.ts'
 
