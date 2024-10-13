@@ -37,6 +37,5 @@ export const NODE_NAMES: Record<string, string> = {
     StringValue: '문자',
     BooleanValue: '참거짓',
     Return: '약속 그만',
-    Variable: '변수',
     SetVariable: '변수에 값 저장하기',
 }

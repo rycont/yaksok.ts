@@ -4,17 +4,17 @@ import {
     DeclareFunction,
     Expression,
     FFIBody,
-    Keyword,
+    Identifier,
     Node,
-    Variable,
 } from '../../../../../node/index.ts'
+import { BRACKET_TYPE, isBracket } from '../../../../../util/isBracket.ts'
 
-export type FunctionHeaderNode = Variable | Keyword | Expression
+export type FunctionHeaderNode = Identifier | Expression
 export const functionRuleByType = {
     ffi: {
         prefix: [
             {
-                type: Keyword,
+                type: Identifier,
                 value: '번역',
             },
             {
@@ -22,7 +22,7 @@ export const functionRuleByType = {
                 value: '(',
             },
             {
-                type: Keyword,
+                type: Identifier,
             },
             {
                 type: Expression,
@@ -37,13 +37,23 @@ export const functionRuleByType = {
         createFactory(functionHeader: FunctionHeaderNode[], name: string) {
             return (tokens: Node[]) => {
                 const params = functionHeader
-                    .filter((node) => node instanceof Variable)
-                    .map((node) => (node as Variable).name)
+                    .filter((node, index) => {
+                        const previousNode = functionHeader[index - 1]
+                        const isPreviousNodeOpeningBracket =
+                            previousNode instanceof Expression &&
+                            isBracket(previousNode) === BRACKET_TYPE.OPENING
+
+                        return (
+                            isPreviousNodeOpeningBracket &&
+                            node instanceof Identifier
+                        )
+                    })
+                    .map((node) => (node as Identifier).value)
 
                 return new DeclareFFI(
                     name,
                     (tokens[tokens.length - 1] as FFIBody).code,
-                    (tokens[2] as Keyword).value,
+                    (tokens[2] as Identifier).value,
                     params,
                 )
             }
@@ -52,7 +62,7 @@ export const functionRuleByType = {
     yaksok: {
         prefix: [
             {
-                type: Keyword,
+                type: Identifier,
                 value: '약속',
             },
             {

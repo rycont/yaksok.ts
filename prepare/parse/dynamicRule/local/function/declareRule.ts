@@ -1,6 +1,6 @@
 import { UnexpectedTokenError } from '../../../../../error/index.ts'
-import { Expression, Keyword } from '../../../../../node/base.ts'
-import { EOL, Node, Variable } from '../../../../../node/index.ts'
+import { Expression, Identifier } from '../../../../../node/base.ts'
+import { EOL, Node } from '../../../../../node/index.ts'
 import { PatternUnit, Rule } from '../../../rule.ts'
 import { FunctionHeaderNode, functionRuleByType } from './functionRuleByType.ts'
 
@@ -28,15 +28,15 @@ export function createFunctionDeclareRule(
 }
 
 function functionHeaderToRuleMap(token: FunctionHeaderNode): PatternUnit {
-    if (token instanceof Variable) {
-        return {
-            type: Variable,
-        }
-    }
+    // if (token instanceof Variable) {
+    //     return {
+    //         type: Variable,
+    //     }
+    // }
 
-    if (token instanceof Keyword) {
+    if (token instanceof Identifier) {
         return {
-            type: Keyword,
+            type: Identifier,
             value: token.value,
         }
     }

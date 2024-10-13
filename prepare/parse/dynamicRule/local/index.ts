@@ -1,5 +1,5 @@
 import { TokenizeResult } from '../../../tokenize/index.ts'
-import { getDynamicRulesFromPattern } from './fromPattern/index.ts'
+// import { getDynamicRulesFromPattern } from './fromPattern/index.ts'
 import { createFunctionRules } from './function/index.ts'
 
 export function createLocalDynamicRules({
@@ -14,10 +14,10 @@ export function createLocalDynamicRules({
         createFunctionRules(header, 'ffi'),
     )
 
-    const rulesFromPattern = [...getDynamicRulesFromPattern(tokens)]
+    // const rulesFromPattern = [...getDynamicRulesFromPattern(tokens)]
 
     return [
         ...[...functionRules, ...ffiRules].map((e) => [e]),
-        rulesFromPattern,
+        // rulesFromPattern,
     ]
 }
