@@ -2,6 +2,7 @@ import {
     IndentIsNotMultipleOf4Error,
     UnexpectedEndOfCodeError,
     UnexpectedCharError,
+    UnknownOperatorPrecedenceError,
 } from '../../error/index.ts'
 import {
     StringValue,
@@ -30,7 +31,7 @@ export class Tokenizer {
     line = 0
     column = 0
 
-    static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~']
+    static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~', '%', '**', '//']
     static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')', '@']
 
     constructor(code: string, private disablePosition = false) {
@@ -235,8 +236,30 @@ export class Tokenizer {
     }
 
     operator() {
-        const char = this.shift()!
-        this.tokens.push(new Operator(char, this.position))
+        let operator = this.shift()!
+
+        while (true) {
+            const nextChar = this.chars[0]
+            if (!nextChar) break
+
+            const nextOperator = operator + nextChar
+            const isValidStartingSequence = Tokenizer.OPERATORS.some((op) =>
+                op.startsWith(nextOperator),
+            )
+
+            if (!isValidStartingSequence) break
+            operator = nextOperator
+            this.shift()
+        }
+
+        const isValidOperator = Tokenizer.OPERATORS.includes(operator)
+        if (!isValidOperator)
+            throw new UnknownOperatorPrecedenceError({
+                position: this.position,
+                resource: { operator },
+            })
+
+        this.tokens.push(new Operator(operator, this.position))
     }
 
     expression() {

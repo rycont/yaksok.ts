@@ -10,6 +10,7 @@ import {
     ValueWithBracket,
     ValueWithParenthesis,
 } from '../../node/index.ts'
+import { CannotParseError } from '../../error/index.ts'
 
 export function SRParse(_tokens: Node[], rules: Rule[]) {
     const tokens = [..._tokens]
@@ -98,11 +99,17 @@ export function callParseRecursively(
     }
 
     const validTokens = parsedTokens.filter((token) => !(token instanceof EOL))
-    const lastToken = validTokens[validTokens.length - 1]
 
-    if (!(lastToken instanceof Evaluable)) {
-        throw new Error('lastToken is not Evaluable')
+    if (validTokens.length !== 1 || !(validTokens[0] instanceof Evaluable)) {
+        throw new CannotParseError({
+            position: validTokens[0].position,
+            resource: {
+                part: validTokens[0],
+            },
+        })
     }
+
+    const lastToken = validTokens[0]
 
     if (wrapper === 'ValueWithParenthesis') {
         return new ValueWithParenthesis(lastToken)

@@ -161,6 +161,91 @@ export class DivideOperator extends Operator {
     }
 }
 
+export class ModularOperator extends Operator {
+    override call(...operands: ValueTypes[]) {
+        if (operands.length !== 2) {
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
+        }
+
+        const [left, right] = operands
+
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new NumberValue(left.value % right.value)
+        }
+
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
+    }
+}
+export class PowerOperator extends Operator {
+    override call(...operands: ValueTypes[]) {
+        if (operands.length !== 2) {
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
+        }
+
+        const [left, right] = operands
+
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new NumberValue(left.value ** right.value)
+        }
+
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
+    }
+}
+export class IntegerDivideOperator extends Operator {
+    override call(...operands: ValueTypes[]) {
+        if (operands.length !== 2) {
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
+        }
+
+        const [left, right] = operands
+
+        if (left instanceof NumberValue && right instanceof NumberValue) {
+            return new NumberValue(Math.floor(left.value / right.value))
+        }
+
+        throw new InvalidTypeForOperatorError({
+            position: this.position,
+            resource: {
+                operator: this,
+                operands,
+            },
+        })
+    }
+}
+
 export class EqualOperator extends Operator {
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
