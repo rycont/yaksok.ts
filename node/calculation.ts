@@ -9,6 +9,7 @@ import {
     LessThanOrEqualOperator,
     MinusOperator,
     MultiplyOperator,
+    OrOperator,
     PlusOperator,
 } from './operator.ts'
 import { Evaluable, Operator, ValueTypes } from './base.ts'
@@ -29,6 +30,7 @@ const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
         LessThanOrEqualOperator,
         GreaterThanOrEqualOperator,
         AndOperator,
+        OrOperator,
         RangeOperator,
     ],
     [MinusOperator, PlusOperator],

@@ -303,6 +303,38 @@ export class AndOperator extends Operator {
     }
 }
 
+export class OrOperator extends Operator {
+    override call(...operands: ValueTypes[]) {
+        if (operands.length !== 2) {
+            throw new InvalidNumberOfOperandsError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    expected: 2,
+                    actual: operands.length,
+                },
+            })
+        }
+
+        const [left, right] = operands
+
+        if (
+            !(left instanceof BooleanValue) ||
+            !(right instanceof BooleanValue)
+        ) {
+            throw new InvalidTypeForOperatorError({
+                position: this.position,
+                resource: {
+                    operator: this,
+                    operands,
+                },
+            })
+        }
+
+        return new BooleanValue(left.value || right.value)
+    }
+}
+
 export class GreaterThanOperator extends Operator {
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
