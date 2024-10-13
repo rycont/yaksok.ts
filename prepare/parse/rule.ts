@@ -36,6 +36,7 @@ import {
     IntegerDivideOperator,
     ModularOperator,
     PowerOperator,
+    OrOperator,
 } from '../../node/index.ts'
 import { ListLoop } from '../../node/listLoop.ts'
 
@@ -327,6 +328,33 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
             factory: () => new AndOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Identifier,
+                    value: '고',
+                },
+            ],
+            factory: () => new AndOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Identifier,
+                    value: '이거나',
+                },
+            ],
+            factory: () => new OrOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Identifier,
+                    value: '거나',
+                },
+            ],
+            factory: () => new OrOperator(),
         },
         {
             pattern: [
