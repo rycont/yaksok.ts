@@ -1,10 +1,5 @@
 import { UnexpectedTokenError } from '../../../../../error/prepare.ts'
-import {
-    Expression,
-    Keyword,
-    Node,
-    Variable,
-} from '../../../../../node/index.ts'
+import { Expression, Identifier, Node } from '../../../../../node/index.ts'
 import { BRACKET_TYPE, isBracket } from '../../../../../util/isBracket.ts'
 import { createFunctionDeclareRule } from './declareRule.ts'
 import { FunctionHeaderNode, functionRuleByType } from './functionRuleByType.ts'
@@ -34,8 +29,7 @@ function assertValidFunctionHeader(
     let isInBracket = false
 
     for (const token of subtokens) {
-        if (token instanceof Variable) continue
-        if (token instanceof Keyword) continue
+        if (token instanceof Identifier) continue
 
         const bracketType = isBracket(token)
 
@@ -64,12 +58,11 @@ function getFunctionNameFromHeader(subtokens: FunctionHeaderNode[]) {
 }
 
 function functionHeaderToNameMap(token: FunctionHeaderNode) {
-    if (token instanceof Variable) {
-        return `[${token.name}]`
+    if (token instanceof Identifier) {
+        return token.value
     }
+
     if (token instanceof Expression) {
         return null
-    } else {
-        return token.value
     }
 }

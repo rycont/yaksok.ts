@@ -12,7 +12,7 @@ export class Block extends Executable {
         this.children = content
     }
 
-    execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         for (const child of this.children) {

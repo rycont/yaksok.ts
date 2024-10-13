@@ -8,8 +8,7 @@ import {
     BooleanValue,
     PrimitiveValue,
 } from './primitive.ts'
-import { Variable } from './variable.ts'
-import { NotDefinedVariableError } from '../error/index.ts'
+import { NotDefinedIdentifierError } from '../error/index.ts'
 
 export interface Position {
     line: number
@@ -35,31 +34,31 @@ export class Executable extends Node {
     execute(_scope: Scope, _callFrame: CallFrame) {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
-    toPrint(): string {
+    override toPrint(): string {
         throw new Error(`${this.constructor.name} has no toPrint method`)
     }
 }
 
 export class Evaluable extends Executable {
-    execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
 }
 
-export class Keyword extends Evaluable {
-    constructor(public value: string, public position?: Position) {
+export class Identifier extends Evaluable {
+    constructor(public value: string, override position?: Position) {
         super()
     }
 
-    toPrint() {
+    override toPrint() {
         return this.value
     }
 
-    execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
         try {
             return scope.getVariable(this.value)
         } catch (e) {
-            if (e instanceof NotDefinedVariableError) {
+            if (e instanceof NotDefinedIdentifierError) {
                 e.position = this.position
             }
 
@@ -69,11 +68,11 @@ export class Keyword extends Evaluable {
 }
 
 export class Operator extends Node {
-    constructor(public value?: string, public position?: Position) {
+    constructor(public value?: string, public override position?: Position) {
         super()
     }
 
-    toPrint(): string {
+    override toPrint(): string {
         return this.value ?? 'unknown'
     }
 
@@ -83,11 +82,11 @@ export class Operator extends Node {
 }
 
 export class Expression extends Node {
-    constructor(public value: string, public position?: Position) {
+    constructor(public value: string, public override position?: Position) {
         super()
     }
 
-    toPrint() {
+    override toPrint() {
         return this.value
     }
 }

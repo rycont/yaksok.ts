@@ -1,4 +1,4 @@
-import { Expression, Keyword, Node } from '../../../../node/base.ts'
+import { Expression, Identifier, Node } from '../../../../node/base.ts'
 
 export function getMentionedNames(tokens: Node[]) {
     const names = new Set<string>()
@@ -16,11 +16,11 @@ export function getMentionedNames(tokens: Node[]) {
     return [...names]
 }
 
-function isMention(a: Node, b: Node): b is Keyword {
+function isMention(a: Node, b: Node): b is Identifier {
     const hasMentionHeader = a instanceof Expression && a.value === '@'
     if (!hasMentionHeader) return false
 
-    const hasName = b instanceof Keyword
+    const hasName = b instanceof Identifier
     if (!hasName) return false
 
     return true

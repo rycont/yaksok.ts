@@ -10,39 +10,33 @@ export class PrimitiveValue<T> extends Evaluable {
         this.value = content
     }
 
-    execute(_scope: Scope, _callFrame: CallFrame): PrimitiveValue<T> {
+    override execute(_scope: Scope, _callFrame: CallFrame): PrimitiveValue<T> {
         return this
     }
 }
 
 export class NumberValue extends PrimitiveValue<number> {
-    constructor(
-        content: number,
-        public position?: Position,
-    ) {
+    constructor(content: number, public override position?: Position) {
         super(content)
     }
 
-    toPrint() {
+    override toPrint() {
         return this.value.toString()
     }
 }
 
 export class StringValue extends PrimitiveValue<string> {
-    constructor(
-        content: string,
-        public position?: Position,
-    ) {
+    constructor(content: string, public override position?: Position) {
         super(content)
     }
 
-    toPrint() {
+    override toPrint() {
         return this.value
     }
 }
 
 export class BooleanValue extends PrimitiveValue<boolean> {
-    toPrint() {
+    override toPrint() {
         return this.value ? '참' : '거짓'
     }
 }

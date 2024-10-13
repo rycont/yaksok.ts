@@ -7,12 +7,12 @@ export class ValueWithBracket extends Evaluable {
         super()
     }
 
-    execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
         return this.value.execute(scope, callFrame)
     }
 
-    toPrint(): string {
+    override toPrint(): string {
         return `${this.value.toPrint()}`
     }
 }

@@ -15,14 +15,13 @@ export class ListLoop extends Executable {
         super()
     }
 
-    execute(_scope: Scope, _callFrame: CallFrame): void {
+    override execute(_scope: Scope, _callFrame: CallFrame): void {
         const scope = new Scope({
             parent: _scope,
         })
         const callFrame = new CallFrame(this, _callFrame)
 
-        const list = this.list
-            .execute(scope, callFrame)
+        const list = this.list.execute(scope, callFrame)
 
         this.assertRepeatTargetIsList(list)
 

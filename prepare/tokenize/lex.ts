@@ -6,8 +6,7 @@ import {
 import { Expression, Operator } from '../../node/base.ts'
 import {
     Node,
-    Keyword,
-    Variable,
+    Identifier,
     EOL,
     InlineParenthesisBlock,
     InlineBracketBlock,
@@ -89,16 +88,6 @@ class Lexer {
                 throw '아직'
             }
 
-            if (this.isVariableDeclaration(token)) {
-                this.parseVariableDeclaration(token)
-                continue
-            }
-
-            // if (this.isVariableUsage(token)) {
-            //     this.parseVariableUsage(token)
-            //     continue
-            // }
-
             this.lexedTokens.push(token)
         }
     }
@@ -155,37 +144,6 @@ class Lexer {
         return inlineBlockNode
     }
 
-    isVariableDeclaration(token: Node): token is Keyword {
-        const isKeyword = token instanceof Keyword
-        const nextToken = this.tokens[0]
-        const isDeclaration =
-            nextToken instanceof Expression && nextToken.value === ':'
-
-        return isKeyword && isDeclaration
-    }
-
-    parseVariableDeclaration(token: Keyword) {
-        const variableToken = new Variable(token.value)
-        variableToken.position = token.position
-
-        this.lexedTokens.push(variableToken)
-        this.variables.push(token.value)
-    }
-
-    isVariableUsage(token: Node) {
-        const isKeyword = token instanceof Keyword
-        const isInArguments = isKeyword && this.variables.includes(token.value)
-
-        return isInArguments
-    }
-
-    parseVariableUsage(token: Node) {
-        const variableToken = new Variable((token as Keyword).value)
-        variableToken.position = token.position
-
-        this.lexedTokens.push(variableToken)
-    }
-
     parseFunction() {
         const { argumentNames, functionHeader } = this.parseFunctionHeader()
         this.functionHeaders.push(functionHeader)
@@ -207,14 +165,14 @@ class Lexer {
                 throw this.unexpectedEOL('함수 이름')
             }
 
-            if (token instanceof Keyword) {
+            if (token instanceof Identifier) {
                 functionHeader.push(token)
 
                 continue
             }
 
             if (token instanceof Operator && this.isFunctionVariants(token)) {
-                const nextToken = this.tokens.shift() as Keyword | undefined
+                const nextToken = this.tokens.shift() as Identifier | undefined
 
                 if (!nextToken) {
                     throw this.unexpectedEOL('함수 이름의 변형')
@@ -259,7 +217,7 @@ class Lexer {
             throw this.unexpectedEOL('함수 인자 이름')
         }
 
-        if (!(argumentNameToken instanceof Keyword)) {
+        if (!(argumentNameToken instanceof Identifier)) {
             throw new UnexpectedTokenError({
                 resource: {
                     node: argumentNameToken,
@@ -298,8 +256,8 @@ class Lexer {
 
     isFunctionVariants(token: Operator) {
         const isLastTokenKeyword =
-            this.lexedTokens.slice(-1)[0] instanceof Keyword
-        const isNextTokenKeyword = this.tokens[0] instanceof Keyword
+            this.lexedTokens.slice(-1)[0] instanceof Identifier
+        const isNextTokenKeyword = this.tokens[0] instanceof Identifier
         const isDivision = token.value === '/'
 
         return isLastTokenKeyword && isNextTokenKeyword && isDivision
@@ -352,197 +310,10 @@ class Lexer {
 
 export const lex = Lexer.lex
 
-// function classicLexer(tokens: Node[]) {
-//     const leftTokens = [...tokens]
-//     const tokenStack: Node[] = []
-
-//     const functionHeaders: Node[][] = []
-//     const ffiHeaders: Node[][] = []
-
-//     while (leftTokens.length) {
-//         const isFunctionDeclare = isStartOfFunction(leftTokens)
-//         const isFFIDeclare = isStartOfFFI(leftTokens)
-
-//         if (!isFunctionDeclare && !isFFIDeclare) {
-//             tokenStack.push(leftTokens.shift()!)
-//             continue
-//         }
-
-//         if (isFFIDeclare) {
-//             tokenStack.push(leftTokens.shift()!)
-//             tokenStack.push(leftTokens.shift()!)
-//             tokenStack.push(leftTokens.shift()!)
-//         }
-
-//         tokenStack.push(leftTokens.shift()!)
-//         const token = leftTokens.shift()!
-//         tokenStack.push(token)
-
-//         const paramaters: string[] = []
-//         const functionHeader: Node[] = []
-
-//         // Detect function header and convert arguments to variable
-
-//         while (true) {
-//             const token = leftTokens.shift()
-//             if (!token) break
-
-//             if (token instanceof Keyword) {
-//                 tokenStack.push(token)
-//                 functionHeader.push(token)
-
-//                 continue
-//             }
-
-//             if (isBracket(token) === BRACKET_TYPE.OPENING) {
-//                 const openingBracket = token
-
-//                 const argumentKeywordToken = leftTokens.shift()
-
-//                 if (!argumentKeywordToken) {
-//                     throw new UnexpectedEndOfCodeError({
-//                         resource: {
-//                             parts: '새 약속 만들기',
-//                         },
-//                         position: token.position,
-//                     })
-//                 }
-
-//                 const isKeyword = argumentKeywordToken instanceof Keyword
-
-//                 if (!isKeyword) {
-//                     throw new UnexpectedTokenError({
-//                         resource: {
-//                             node: argumentKeywordToken,
-//                             parts: '함수 인자 이름',
-//                         },
-//                     })
-//                 }
-
-//                 const argumentName = argumentKeywordToken.value
-//                 const argumentVariable = new Variable(argumentName)
-//                 argumentVariable.position = argumentKeywordToken.position
-
-//                 const closingBracketToken = leftTokens.shift()
-
-//                 if (!closingBracketToken) {
-//                     throw new UnexpectedEndOfCodeError({
-//                         resource: {
-//                             parts: '새 약속 만들기',
-//                         },
-//                         position: argumentVariable.position,
-//                     })
-//                 }
-
-//                 const isClosingBracket =
-//                     isBracket(closingBracketToken) === BRACKET_TYPE.CLOSING
-//                 if (!isClosingBracket) {
-//                     throw new UnexpectedTokenError({
-//                         resource: {
-//                             node: closingBracketToken,
-//                             parts: '함수 인자 이름을 끝내는 괄호',
-//                         },
-//                     })
-//                 }
-
-//                 tokenStack.push(openingBracket)
-//                 functionHeader.push(openingBracket)
-
-//                 tokenStack.push(argumentVariable)
-//                 functionHeader.push(argumentVariable)
-
-//                 tokenStack.push(closingBracketToken)
-//                 functionHeader.push(closingBracketToken)
-
-//                 paramaters.push(argumentName)
-
-//                 continue
-//             }
-
-//             if (token instanceof Operator) {
-//                 const lastToken = functionHeader[functionHeader.length - 1]
-
-//                 if (lastToken instanceof Keyword) {
-//                     lastToken.value += token.value
-//                 }
-
-//                 const nextToken = leftTokens.shift()
-
-//                 if (!nextToken) {
-//                     throw new UnexpectedEndOfCodeError({
-//                         resource: {
-//                             parts: '새 약속 만들기',
-//                         },
-//                         position: token.position,
-//                     })
-//                 }
-
-//                 if (nextToken instanceof Keyword) {
-//                     lastToken.value += nextToken.value
-//                     continue
-//                 }
-//             }
-
-//             if (token instanceof EOL) {
-//                 tokenStack.push(token)
-//                 break
-//             }
-
-//             throw new UnexpectedTokenError({
-//                 resource: {
-//                     node: token,
-//                     parts: '함수 인자',
-//                 },
-//                 position: token.position,
-//             })
-//         }
-
-//         assertHaveStaticPartInFunctionHeader(functionHeader)
-
-//         if (isFFIDeclare) {
-//             ffiHeaders.push(functionHeader)
-//         } else {
-//             functionHeaders.push(functionHeader)
-//         }
-
-//         if (isFunctionDeclare)
-//             // Convert function body to variable
-//             while (true) {
-//                 const token = leftTokens.shift()
-//                 if (!token) break
-
-//                 // 줄바꿈이 됐는데 들여쓰기가 없으면 함수가 끝난 것
-//                 if (
-//                     token instanceof EOL &&
-//                     !(leftTokens[0] instanceof Indent)
-//                 ) {
-//                     tokenStack.push(token)
-//                     break
-//                 }
-
-//                 // 키워드이고 인자에 포함되어 있으면 변수로 바꿔줌
-//                 if (
-//                     token instanceof Keyword &&
-//                     paramaters.includes(token.value)
-//                 ) {
-//                     tokenStack.push(new Variable(token.value))
-//                     continue
-//                 }
-//                 tokenStack.push(token)
-//             }
-//     }
-
-//     return {
-//         tokens: tokenStack,
-//         functionHeaders,
-//         ffiHeaders,
-//     }
-// }
-
 function isStartOfFunction(tokens: Node[]) {
     const isFunctionDeclare = satisfiesPattern(tokens, [
         {
-            type: Keyword,
+            type: Identifier,
             value: '약속',
         },
         {
@@ -557,7 +328,7 @@ function isStartOfFunction(tokens: Node[]) {
 function isStartOfFFI(tokens: Node[]) {
     return satisfiesPattern(tokens, [
         {
-            type: Keyword,
+            type: Identifier,
             value: '번역',
         },
         {
@@ -565,7 +336,7 @@ function isStartOfFFI(tokens: Node[]) {
             value: '(',
         },
         {
-            type: Keyword,
+            type: Identifier,
         },
         {
             type: Expression,
@@ -580,7 +351,7 @@ function isStartOfFFI(tokens: Node[]) {
 
 function assertHaveStaticPartInFunctionHeader(tokens: Node[]) {
     for (const token of tokens) {
-        if (token instanceof Keyword) {
+        if (token instanceof Identifier) {
             return
         }
     }
@@ -588,8 +359,8 @@ function assertHaveStaticPartInFunctionHeader(tokens: Node[]) {
     throw new FunctionMustHaveOneOrMoreStringPartError({
         position: tokens[0].position,
         resource: {
-            declarationString: (tokens as Variable[])
-                .map((token) => token.name)
+            declarationString: (tokens as Identifier[])
+                .map((token) => token.value)
                 .join(' '),
         },
     })

@@ -7,7 +7,7 @@ export class Mention extends Executable {
         super()
     }
 
-    toPrint(): string {
+    override toPrint(): string {
         return '@' + this.value
     }
 }
@@ -17,7 +17,7 @@ export class MentionScope extends Evaluable {
         super()
     }
 
-    execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
         this.setChildPosition()
 
         const scope = _scope.createChild()
@@ -33,7 +33,7 @@ export class MentionScope extends Evaluable {
         return result
     }
 
-    toPrint(): string {
+    override toPrint(): string {
         return '@' + this.fileName + ' ' + this.child.toPrint()
     }
 

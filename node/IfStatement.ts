@@ -15,7 +15,7 @@ export class IfStatement extends Executable {
         super()
     }
 
-    execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         for (const { condition, body } of this.cases) {

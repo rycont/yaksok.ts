@@ -35,12 +35,12 @@ export class ValueWithParenthesis extends Evaluable {
         super()
     }
 
-    execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
         return this.value.execute(scope, callFrame)
     }
 
-    toPrint() {
+    override toPrint() {
         return '(' + this.value.toPrint() + ')'
     }
 }
@@ -50,7 +50,7 @@ export class Formula extends Evaluable {
         super()
     }
 
-    execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
         const callFrame = new CallFrame(this, _callFrame)
         const terms = [...this.terms]
 
@@ -114,7 +114,7 @@ export class Formula extends Evaluable {
         }
     }
 
-    toPrint(): string {
+    override toPrint(): string {
         return this.terms.map((term) => term.toPrint()).join(' ')
     }
 }

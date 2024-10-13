@@ -3,10 +3,9 @@ import { Expression } from '../../../../../node/base.ts'
 import {
     Evaluable,
     FunctionInvoke,
-    Keyword,
+    Identifier,
     Node,
     ValueWithBracket,
-    Variable,
 } from '../../../../../node/index.ts'
 import { BRACKET_TYPE, isBracket } from '../../../../../util/isBracket.ts'
 import { PatternUnit, Rule } from '../../../rule.ts'
@@ -42,8 +41,9 @@ function getParamsFromMatchedNodes(
             .filter((token) => !(token instanceof Expression))
             .map((token, i) => [token, matchedNodes[i]])
             .filter(
-                (set): set is [Variable, Evaluable] =>
-                    set[1] instanceof Evaluable && !(set[1] instanceof Keyword),
+                (set): set is [Identifier, Evaluable] =>
+                    set[1] instanceof Evaluable &&
+                    !(set[1] instanceof Identifier),
             )
             .map(([token, node]) => [token.value, node]),
     )
@@ -69,9 +69,9 @@ function functionHeaderToInvokeMap(
         }
     }
 
-    if (token instanceof Keyword) {
+    if (token instanceof Identifier) {
         return {
-            type: Keyword,
+            type: Identifier,
             value: token.value,
         }
     }
@@ -94,13 +94,13 @@ function splitFunctionHeaderWithSpace(_tokens: FunctionHeaderNode[]) {
     const result: FunctionHeaderNode[] = []
 
     for (const token of tokens) {
-        if (token instanceof Variable || token instanceof Expression) {
+        if (token instanceof Expression) {
             result.push(token)
             continue
         }
 
         const splitted = token.value.split(' ')
-        result.push(...splitted.map((s) => new Keyword(s)))
+        result.push(...splitted.map((s) => new Identifier(s)))
     }
 
     return result

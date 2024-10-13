@@ -8,7 +8,7 @@ import {
     NumberValue,
     Expression,
     Operator,
-    Keyword,
+    Identifier,
     Indent,
     EOL,
     Node,
@@ -53,7 +53,7 @@ export class Tokenizer {
                 continue
             }
 
-            if (char === '\n') {
+            if (char === '\n' || char === '\r' || char === '\r\n') {
                 this.EOL()
                 continue
             }
@@ -87,6 +87,8 @@ export class Tokenizer {
                 this.expression()
                 continue
             }
+
+            console.log({ char })
 
             throw new UnexpectedCharError({
                 position: this.position,
@@ -226,7 +228,7 @@ export class Tokenizer {
             word += this.shift()
         }
 
-        this.tokens.push(new Keyword(word, this.position))
+        this.tokens.push(new Identifier(word, this.position))
     }
 
     operator() {

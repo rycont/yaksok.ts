@@ -2,12 +2,12 @@ import { FFIResulTypeIsNotForYaksokError } from '../error/ffi.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
 import { Executable, Position, ValueTypes } from './base.ts'
-import { Keyword } from './index.ts'
+import { Identifier } from './index.ts'
 import { IndexedValue } from './indexed.ts'
 import { PrimitiveValue } from './primitive.ts'
 
-export class FFIBody extends Keyword {
-    constructor(public code: string, public position?: Position) {
+export class FFIBody extends Identifier {
+    constructor(public code: string, public override position?: Position) {
         super(code, position)
     }
 }
@@ -22,7 +22,7 @@ export class DeclareFFI extends Executable {
         super()
     }
 
-    execute(scope: Scope): void {
+    override execute(scope: Scope): void {
         scope.setFunction(this.name, this)
     }
 

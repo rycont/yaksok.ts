@@ -9,7 +9,7 @@ export class Loop extends Executable {
         super()
     }
 
-    execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         try {
@@ -25,7 +25,7 @@ export class Loop extends Executable {
 }
 
 export class Break extends Executable {
-    execute(_scope: Scope, _callFrame: CallFrame) {
+    override execute(_scope: Scope, _callFrame: CallFrame) {
         throw new BreakSignal(this.position)
     }
 }
