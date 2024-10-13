@@ -37,15 +37,19 @@ export class Sequence extends Evaluable {
 export class List extends IndexedValue {
     evaluatedItems?: ValueTypes[]
 
-    constructor(public items: Evaluable[]) {
+    constructor(private initialItem: Evaluable[]) {
         super()
     }
 
     override execute(_scope: Scope, _callFrame: CallFrame) {
+        if (this.evaluatedItems) {
+            return this
+        }
+
         const callFrame = new CallFrame(this, _callFrame)
 
         this.evaluatedItems = List.evaluateList(
-            this.items,
+            this.initialItem,
             new Scope(),
             callFrame,
         )
@@ -53,17 +57,11 @@ export class List extends IndexedValue {
         return this
     }
 
-    getItem(
-        index: ValueTypes,
-        scope: Scope,
-        _callFrame: CallFrame,
-    ): ValueTypes {
-        const callFrame = new CallFrame(this, _callFrame)
-
+    getItem(index: ValueTypes): ValueTypes {
         if (index instanceof NumberValue) {
-            return this.getItemByNumberIndex(index.value, scope, callFrame)
+            return this.getItemByNumberIndex(index.value)
         } else if (index instanceof List) {
-            return this.getItemsByListIndex(index, scope, callFrame)
+            return this.getItemsByListIndex(index)
         }
 
         throw new ListIndexTypeError({
@@ -74,27 +72,19 @@ export class List extends IndexedValue {
         })
     }
 
-    private getItemByNumberIndex(
-        index: number,
-        scope: Scope,
-        callFrame: CallFrame,
-    ) {
+    private getItemByNumberIndex(index: number) {
         this.assertGreaterOrEqualThan1(index)
         this.assertIndexLessThanLength(index)
 
         const indexValue = index - 1
-        const list = this.execute(scope, callFrame).evaluatedItems!
+        const list = this.evaluatedItems!
 
         return list[indexValue]
     }
 
-    private getItemsByListIndex(
-        index: List,
-        scope: Scope,
-        callFrame: CallFrame,
-    ) {
-        const list = this.execute(scope, callFrame).evaluatedItems!
-        const indexes = index.execute(scope, callFrame).evaluatedItems!
+    private getItemsByListIndex(index: List) {
+        const list = this.evaluatedItems!
+        const indexes = index.evaluatedItems!
 
         const items = this.getItemsByIndexes(list, indexes)
         const itemsList = new List(items)
@@ -114,7 +104,8 @@ export class List extends IndexedValue {
         this.assertGreaterOrEqualThan1(index.value)
 
         const indexValue = index.value - 1
-        this.items[indexValue] = value
+
+        this.evaluatedItems![indexValue] = value
 
         return value
     }
@@ -152,7 +143,7 @@ export class List extends IndexedValue {
     }
 
     private assertIndexLessThanLength(index: number) {
-        if (index <= this.items.length) return
+        if (index <= this.evaluatedItems!.length) return
 
         throw new ListIndexOutOfRangeError({
             resource: {
@@ -163,7 +154,9 @@ export class List extends IndexedValue {
     }
 
     override toPrint() {
-        const content = this.items.map((item) => item.toPrint()).join(', ')
+        const content = this.evaluatedItems
+            ?.map((item) => item.toPrint())
+            .join(', ')
         return '[' + content + ']'
     }
 }
