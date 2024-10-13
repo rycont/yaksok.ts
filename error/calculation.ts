@@ -6,12 +6,13 @@ export class UnknownOperatorPrecedenceError extends YaksokError {
     constructor(props: {
         position?: Position
         resource: {
-            operator: Operator
+            operator: string
         }
     }) {
         super(props)
-        this.message = `${props.resource.operator.toPrint()}(${
-            NODE_NAMES[props.resource.operator.constructor.name]
+
+        this.message = `${props.resource.operator}(${
+            NODE_NAMES[props.resource.operator]
         })는 알 수 없는 연산자에요.`
     }
 }

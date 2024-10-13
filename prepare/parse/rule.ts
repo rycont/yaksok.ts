@@ -33,6 +33,8 @@ import {
     SetToIndex,
     SetVariable,
     ValueWithParenthesis,
+    IntegerDivideOperator,
+    ModularOperator,
 } from '../../node/index.ts'
 import { ListLoop } from '../../node/listLoop.ts'
 
@@ -252,6 +254,24 @@ export const internalPatternsByLevel: Rule[][] = [
 
                 return new SetVariable(name, value)
             },
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '//',
+                },
+            ],
+            factory: () => new IntegerDivideOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '%',
+                },
+            ],
+            factory: () => new ModularOperator(),
         },
         {
             pattern: [

@@ -12,7 +12,12 @@ import {
     PlusOperator,
 } from './operator.ts'
 import { Evaluable, Operator, ValueTypes } from './base.ts'
-import { EqualOperator } from './index.ts'
+import {
+    EqualOperator,
+    IntegerDivideOperator,
+    ModularOperator,
+    PowerOperator,
+} from './index.ts'
 import { UnknownOperatorPrecedenceError } from '../error/index.ts'
 import { RangeOperator } from './list.ts'
 
@@ -27,7 +32,8 @@ const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
         RangeOperator,
     ],
     [MinusOperator, PlusOperator],
-    [MultiplyOperator, DivideOperator],
+    [MultiplyOperator, DivideOperator, ModularOperator, IntegerDivideOperator],
+    [PowerOperator],
 ]
 
 export class ValueWithParenthesis extends Evaluable {
@@ -78,7 +84,7 @@ export class Formula extends Evaluable {
         throw new UnknownOperatorPrecedenceError({
             position: operator.position,
             resource: {
-                operator,
+                operator: operator.constructor.name,
             },
         })
     }
