@@ -1,6 +1,15 @@
 import { Rule, internalPatternsByLevel } from './rule.ts'
 import { satisfiesPattern } from './satisfiesPattern.ts'
-import { Block, EOL, Node } from '../../node/index.ts'
+import {
+    Block,
+    EOL,
+    Evaluable,
+    List,
+    Node,
+    Sequence,
+    ValueWithBracket,
+    ValueWithParenthesis,
+} from '../../node/index.ts'
 
 export function SRParse(_tokens: Node[], rules: Rule[]) {
     const tokens = [..._tokens]
@@ -41,26 +50,41 @@ export function reduce(tokens: Node[], rule: Rule) {
     return reduced
 }
 
-export function callParseRecursively(_tokens: Node[], patterns: Rule[]) {
-    const tokens = [..._tokens]
+export function callParseRecursively(
+    _tokens: Node[],
+    externalPatterns: Rule[][],
+    wrapper: 'Block' | 'ValueWithParenthesis' | 'ValueWithBracket',
+) {
+    let parsedTokens = [..._tokens]
 
-    for (let i = 0; i < tokens.length; i++) {
-        const token = tokens[i]
+    for (let i = 0; i < parsedTokens.length; i++) {
+        const token = parsedTokens[i]
 
         if (!(token instanceof Block)) continue
-        tokens[i] = callParseRecursively(token.children, patterns)
+
+        const blockWrapper = {
+            Block: 'Block',
+            InlineParenthesisBlock: 'ValueWithParenthesis',
+            InlineBracketBlock: 'ValueWithBracket',
+        }[token.constructor.name] as
+            | 'Block'
+            | 'ValueWithParenthesis'
+            | 'ValueWithBracket'
+
+        parsedTokens[i] = callParseRecursively(
+            token.children,
+            externalPatterns,
+            blockWrapper,
+        )
     }
 
-    tokens.push(new EOL())
+    parsedTokens.push(new EOL())
 
-    let parsedTokens: Node[] = tokens
+    const patternsByLevel = [...externalPatterns, ...internalPatternsByLevel]
 
     loop1: while (true) {
-        for (const internalPatterns of internalPatternsByLevel) {
-            const result = SRParse(parsedTokens, [
-                ...internalPatterns,
-                ...patterns,
-            ])
+        for (const patterns of patternsByLevel) {
+            const result = SRParse(parsedTokens, patterns)
             parsedTokens = result.tokens
 
             if (result.changed) continue loop1
@@ -69,5 +93,25 @@ export function callParseRecursively(_tokens: Node[], patterns: Rule[]) {
         break
     }
 
-    return new Block(parsedTokens)
+    if (wrapper === 'Block') {
+        return new Block(parsedTokens)
+    }
+
+    const validTokens = parsedTokens.filter((token) => !(token instanceof EOL))
+    const lastToken = validTokens[validTokens.length - 1]
+
+    if (!(lastToken instanceof Evaluable)) {
+        throw new Error('lastToken is not Evaluable')
+    }
+
+    if (wrapper === 'ValueWithParenthesis') {
+        return new ValueWithParenthesis(lastToken)
+    }
+
+    if (lastToken instanceof Sequence) {
+        const list = new List(lastToken.items)
+        return list
+    }
+
+    return new ValueWithBracket(lastToken)
 }

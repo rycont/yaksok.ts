@@ -1,5 +1,5 @@
 import { CallFrame } from '../runtime/callFrame.ts'
-import { Executable, Node } from './index.ts'
+import { Evaluable, Executable, Node } from './index.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CannotParseError } from '../error/index.ts'
 import { EOL } from './misc.ts'
@@ -12,7 +12,7 @@ export class Block extends Executable {
         this.children = content
     }
 
-    execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         for (const child of this.children) {
@@ -29,5 +29,17 @@ export class Block extends Executable {
                 })
             }
         }
+    }
+}
+
+export class InlineParenthesisBlock extends Block {
+    constructor(content: Node[]) {
+        super(content)
+    }
+}
+
+export class InlineBracketBlock extends Block {
+    constructor(content: Node[]) {
+        super(content)
     }
 }

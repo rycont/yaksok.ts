@@ -1,6 +1,6 @@
-import { StringValue } from '../../../../../node/index.ts'
-import { getCombination } from '../getCombination.ts'
+import { Identifier } from '../../../../node/index.ts'
 import { FunctionHeaderNode } from './functionRuleByType.ts'
+import { getCombination } from './getCombination.ts'
 
 interface VariantedPart {
     index: number
@@ -20,7 +20,7 @@ export function* getVariants(subtokens: FunctionHeaderNode[]) {
 
 function* getVariantParts(subtokens: FunctionHeaderNode[]) {
     for (const [index, token] of subtokens.entries()) {
-        if (!(token instanceof StringValue)) continue
+        if (!(token instanceof Identifier)) continue
         if (!token.value.includes('/')) continue
 
         const [v, postfix] = token.value.split(' ')
@@ -47,7 +47,7 @@ function createVariantFromChoices(
             ? candidates[optionIndex] + ' ' + postfix
             : candidates[optionIndex]
 
-        tokens[variants[index].index] = new StringValue(content)
+        tokens[variants[index].index] = new Identifier(content)
     }
 
     return tokens

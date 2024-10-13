@@ -10,7 +10,7 @@ import {
 } from '../error/index.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
-import { Evaluable, Executable, Node, Operator, ValueTypes } from './index.ts'
+import { Evaluable, Executable, Operator, ValueTypes } from './index.ts'
 import { IndexedValue } from './indexed.ts'
 import { NumberValue, PrimitiveValue } from './primitive.ts'
 
@@ -19,7 +19,7 @@ export class Sequence extends Evaluable {
         super()
     }
 
-    execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         const indexItem = this.items[this.items.length - 1]
@@ -28,7 +28,7 @@ export class Sequence extends Evaluable {
         return result
     }
 
-    toPrint() {
+    override toPrint() {
         const content = this.items.map((item) => item.toPrint()).join(' ')
         return '( ' + content + ' )'
     }
@@ -41,7 +41,7 @@ export class List extends IndexedValue {
         super()
     }
 
-    execute(_scope: Scope, _callFrame: CallFrame) {
+    override execute(_scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         this.evaluatedItems = List.evaluateList(
@@ -162,15 +162,9 @@ export class List extends IndexedValue {
         })
     }
 
-    toPrint() {
+    override toPrint() {
         const content = this.items.map((item) => item.toPrint()).join(', ')
         return '[' + content + ']'
-    }
-}
-
-export class Indexing extends Node {
-    constructor(public value: Evaluable) {
-        super()
     }
 }
 
@@ -179,7 +173,7 @@ export class IndexFetch extends Evaluable {
         super()
     }
 
-    execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         const target = this.target.execute(scope, callFrame)
@@ -207,7 +201,7 @@ export class SetToIndex extends Executable {
     constructor(public target: IndexFetch, public value: Evaluable) {
         super()
     }
-    execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         const value = this.value.execute(scope, callFrame)
@@ -232,7 +226,7 @@ export class SetToIndex extends Executable {
 }
 
 export class RangeOperator extends Operator {
-    call(...operands: ValueTypes[]): List {
+    override call(...operands: ValueTypes[]): List {
         this.assertProperOperands(operands)
 
         const [start, end] = operands

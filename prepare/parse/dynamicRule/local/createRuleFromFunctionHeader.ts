@@ -1,11 +1,15 @@
-import { UnexpectedTokenError } from '../../../../../error/prepare.ts'
-import { Node, StringValue, Variable } from '../../../../../node/index.ts'
+import { UnexpectedTokenError } from '../../../../error/prepare.ts'
+import { Node, Identifier, Expression } from '../../../../node/index.ts'
+import { isParentheses, BRACKET_TYPE } from '../../../../util/isBracket.ts'
 import { createFunctionDeclareRule } from './declareRule.ts'
-import { FunctionHeaderNode, functionRuleByType } from './functionRuleByType.ts'
+import type {
+    functionRuleByType,
+    FunctionHeaderNode,
+} from './functionRuleByType.ts'
 import { getVariants } from './getVariants.ts'
 import { createFunctionInvokeRule } from './invokeRule.ts'
 
-export function createFunctionRules(
+export function createRuleFromFunctionHeader(
     subtokens: Node[],
     type: keyof typeof functionRuleByType,
 ) {
@@ -25,28 +29,43 @@ export function createFunctionRules(
 function assertValidFunctionHeader(
     subtokens: Node[],
 ): asserts subtokens is FunctionHeaderNode[] {
+    let isInParenthesis = false
+
     for (const token of subtokens) {
-        if (token instanceof Variable) continue
-        if (token instanceof StringValue) continue
+        if (token instanceof Identifier) continue
+
+        const parenthesisType = isParentheses(token)
+
+        if (parenthesisType === BRACKET_TYPE.OPENING && !isInParenthesis) {
+            isInParenthesis = true
+            continue
+        }
+
+        if (parenthesisType === BRACKET_TYPE.CLOSING && isInParenthesis) {
+            isInParenthesis = false
+            continue
+        }
 
         throw new UnexpectedTokenError({
             position: subtokens[0].position,
             resource: {
                 node: token,
-                parts: '약속 만들기',
+                parts: '새 약속 만들기',
             },
         })
     }
 }
 
 function getFunctionNameFromHeader(subtokens: FunctionHeaderNode[]) {
-    return subtokens.map(functionHeaderToNameMap).join(' ')
+    return subtokens.map(functionHeaderToNameMap).filter(Boolean).join(' ')
 }
 
 function functionHeaderToNameMap(token: FunctionHeaderNode) {
-    if (token instanceof Variable) {
-        return token.name
-    } else {
+    if (token instanceof Identifier) {
         return token.value
+    }
+
+    if (token instanceof Expression) {
+        return null
     }
 }

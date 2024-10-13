@@ -1,13 +1,13 @@
 import { Yaksok } from '../../../../index.ts'
-import { Keyword, Node } from '../../../../node/base.ts'
+import { Node } from '../../../../node/base.ts'
 import { Evaluable } from '../../../../node/index.ts'
 import { Mention, MentionScope } from '../../../../node/mention.ts'
 import { Rule } from '../../rule.ts'
 import { getMentionedNames } from './getMentionedNames.ts'
 
 export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {
-    const rules = getMentionedNames(tokens).flatMap(
-        getMentioningRules.bind(null, yaksok),
+    const rules = getMentionedNames(tokens).flatMap((fileName) =>
+        getMentioningRules(yaksok, fileName),
     )
 
     return rules
@@ -15,24 +15,19 @@ export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {
 
 function getMentioningRules(yaksok: Yaksok, fileName: string) {
     const runner = yaksok.getRunner(fileName)
-    const rules = runner.exports
+    const rules = runner.exportedRules
 
-    return rules
-        .filter(isNotFunctionDeclareRule)
-        .map(createMentioningRuleFromExportedRule.bind(null, fileName))
+    const mentioningRules = rules
+        .filter((r) => r.config?.exported)
+        .map((rule) => createMentioningRuleFromExportedRule(fileName, rule))
+
+    return mentioningRules
 }
 
-function isNotFunctionDeclareRule(rule: Rule) {
-    const firstNode = rule.pattern[0]
-
-    const isKeyword = firstNode instanceof Keyword
-    if (!isKeyword) return true
-
-    const isDeclare = ['약속'].includes(firstNode.value)
-    return !isDeclare
-}
-
-function createMentioningRuleFromExportedRule(fileName: string, rule: Rule) {
+function createMentioningRuleFromExportedRule(
+    fileName: string,
+    rule: Rule,
+): Rule {
     return {
         pattern: [
             {

@@ -14,8 +14,8 @@ import {
     GreaterThanOrEqualOperator,
     IfStatement,
     IndexFetch,
-    Indexing,
-    Keyword,
+    ValueWithBracket,
+    Identifier,
     LessThanOperator,
     LessThanOrEqualOperator,
     List,
@@ -32,8 +32,7 @@ import {
     Sequence,
     SetToIndex,
     SetVariable,
-    ValueGroup,
-    Variable,
+    ValueWithParenthesis,
 } from '../../node/index.ts'
 import { ListLoop } from '../../node/listLoop.ts'
 
@@ -69,7 +68,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
             factory: (nodes) => {
                 const index = nodes[1] as Evaluable
-                return new Indexing(index)
+                return new ValueWithBracket(index)
             },
         },
         {
@@ -78,13 +77,12 @@ export const internalPatternsByLevel: Rule[][] = [
                     type: Evaluable,
                 },
                 {
-                    type: Indexing,
+                    type: ValueWithBracket,
                 },
             ],
             factory: (nodes) => {
                 const target = nodes[0] as Evaluable
-                const index = nodes[1] as Indexing
-
+                const index = nodes[1] as ValueWithBracket
                 return new IndexFetch(target, index.value)
             },
         },
@@ -121,25 +119,6 @@ export const internalPatternsByLevel: Rule[][] = [
                 }
 
                 return new Sequence([a, b])
-            },
-        },
-        {
-            pattern: [
-                {
-                    type: Expression,
-                    value: '[',
-                },
-                {
-                    type: Sequence,
-                },
-                {
-                    type: Expression,
-                    value: ']',
-                },
-            ],
-            factory: (nodes) => {
-                const sequence = nodes[1] as Sequence
-                return new List(sequence.items)
             },
         },
         {
@@ -191,7 +170,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
             factory: (nodes) => {
                 const value = nodes[1] as Evaluable
-                return new ValueGroup(value)
+                return new ValueWithParenthesis(value)
             },
         },
         {
@@ -237,24 +216,24 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '이전',
                 },
                 {
-                    type: Variable,
+                    type: Identifier,
                 },
             ],
             factory: (nodes) => {
-                const variable = nodes[1] as Variable
-                const name = variable.name
+                const identifier = nodes[1] as Identifier
+                const name = identifier.value
 
-                return new Variable(name)
+                return new Identifier(name)
             },
         },
         {
             pattern: [
                 {
-                    type: Variable,
+                    type: Identifier,
                 },
                 {
                     type: Expression,
@@ -268,7 +247,7 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
             factory: (nodes) => {
-                const name = (nodes[0] as Variable).name
+                const name = (nodes[0] as Identifier).value
                 const value = nodes[2] as Evaluable
 
                 return new SetVariable(name, value)
@@ -313,7 +292,7 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '이고',
                 },
             ],
@@ -375,18 +354,18 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '아니면',
                 },
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '만약',
                 },
                 {
                     type: Evaluable,
                 },
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '이면',
                 },
                 {
@@ -406,7 +385,7 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '아니면',
                 },
                 {
@@ -425,14 +404,14 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '만약',
                 },
                 {
                     type: Evaluable,
                 },
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '이면',
                 },
                 {
@@ -455,7 +434,7 @@ export const internalPatternsByLevel: Rule[][] = [
                     type: Evaluable,
                 },
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '보여주기',
                 },
             ],
@@ -467,7 +446,7 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '반복',
                 },
                 {
@@ -482,11 +461,11 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '반복',
                 },
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '그만',
                 },
             ],
@@ -495,11 +474,11 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '약속',
                 },
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '그만',
                 },
             ],
@@ -508,21 +487,21 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '반복',
                 },
                 {
                     type: Evaluable,
                 },
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '의',
                 },
                 {
-                    type: Variable,
+                    type: Identifier,
                 },
                 {
-                    type: Keyword,
+                    type: Identifier,
                     value: '마다',
                 },
                 {
@@ -534,7 +513,7 @@ export const internalPatternsByLevel: Rule[][] = [
             ],
             factory: (nodes) => {
                 const list = nodes[1] as Evaluable
-                const name = (nodes[3] as Variable).name
+                const name = (nodes[3] as Identifier).value
                 const body = nodes[6] as Block
 
                 return new ListLoop(list, name, body)
@@ -571,11 +550,11 @@ export const internalPatternsByLevel: Rule[][] = [
                     value: '@',
                 },
                 {
-                    type: Keyword,
+                    type: Identifier,
                 },
             ],
             factory: (nodes) => {
-                const name = (nodes[1] as Keyword).value
+                const name = (nodes[1] as Identifier).value
                 return new Mention(name)
             },
         },

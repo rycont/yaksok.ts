@@ -12,11 +12,11 @@ import {
 } from './primitive.ts'
 
 export class PlusOperator extends Operator {
-    toPrint() {
+    override toPrint() {
         return '+'
     }
 
-    call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
                 position: this.position,
@@ -57,11 +57,11 @@ export class PlusOperator extends Operator {
 }
 
 export class MinusOperator extends Operator {
-    toPrint() {
+    override toPrint() {
         return '-'
     }
 
-    call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
                 position: this.position,
@@ -89,11 +89,11 @@ export class MinusOperator extends Operator {
 }
 
 export class MultiplyOperator extends Operator {
-    toPrint() {
+    override toPrint() {
         return '*'
     }
 
-    call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
                 position: this.position,
@@ -129,11 +129,11 @@ export class MultiplyOperator extends Operator {
 }
 
 export class DivideOperator extends Operator {
-    toPrint() {
+    override toPrint() {
         return '/'
     }
 
-    call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
                 position: this.position,
@@ -162,7 +162,7 @@ export class DivideOperator extends Operator {
 }
 
 export class EqualOperator extends Operator {
-    call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
                 position: this.position,
@@ -187,7 +187,7 @@ export class EqualOperator extends Operator {
 }
 
 export class AndOperator extends Operator {
-    call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
                 position: this.position,
@@ -219,7 +219,7 @@ export class AndOperator extends Operator {
 }
 
 export class GreaterThanOperator extends Operator {
-    call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
                 position: this.position,
@@ -248,7 +248,7 @@ export class GreaterThanOperator extends Operator {
 }
 
 export class LessThanOperator extends Operator {
-    call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
                 position: this.position,
@@ -277,7 +277,7 @@ export class LessThanOperator extends Operator {
 }
 
 export class GreaterThanOrEqualOperator extends Operator {
-    call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
                 position: this.position,
@@ -306,7 +306,7 @@ export class GreaterThanOrEqualOperator extends Operator {
 }
 
 export class LessThanOrEqualOperator extends Operator {
-    call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
                 position: this.position,

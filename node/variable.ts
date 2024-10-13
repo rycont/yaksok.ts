@@ -2,32 +2,7 @@ import { Evaluable, ValueTypes } from './index.ts'
 
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
-import {
-    CannotUseReservedWordForVariableNameError,
-    NotDefinedVariableError,
-} from '../error/index.ts'
-
-export class Variable extends Evaluable {
-    constructor(public name: string) {
-        super()
-    }
-
-    execute(scope: Scope) {
-        try {
-            return scope.getVariable(this.name)
-        } catch (e) {
-            if (e instanceof NotDefinedVariableError) {
-                e.position = this.position
-            }
-
-            throw e
-        }
-    }
-
-    toPrint(): string {
-        return this.name
-    }
-}
+import { CannotUseReservedWordForIdentifierNameError } from '../error/index.ts'
 
 export const RESERVED_WORDS = [
     '약속',
@@ -48,7 +23,7 @@ export class SetVariable extends Evaluable {
         this.assertValidName()
     }
 
-    execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
         const { name, value } = this
         const callFrame = new CallFrame(this, _callFrame)
 
@@ -61,7 +36,7 @@ export class SetVariable extends Evaluable {
     assertValidName() {
         if (!RESERVED_WORDS.includes(this.name)) return
 
-        throw new CannotUseReservedWordForVariableNameError({
+        throw new CannotUseReservedWordForIdentifierNameError({
             position: this.position,
             resource: {
                 name: this.name,

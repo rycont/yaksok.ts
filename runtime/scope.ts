@@ -1,6 +1,6 @@
 import {
     NotDefinedFunctionError,
-    NotDefinedVariableError,
+    NotDefinedIdentifierError,
 } from '../error/index.ts'
 import { Yaksok } from '../index.ts'
 import { DeclareFFI, DeclareFunction, ValueTypes } from '../node/index.ts'
@@ -51,7 +51,7 @@ export class Scope {
             return this.parent.getVariable(name)
         }
 
-        throw new NotDefinedVariableError({
+        throw new NotDefinedIdentifierError({
             resource: {
                 name,
             },

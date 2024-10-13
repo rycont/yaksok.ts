@@ -1,6 +1,6 @@
 import {
     NotDefinedFunctionError,
-    NotDefinedVariableError,
+    NotDefinedIdentifierError,
     NotEvaluableParameterError,
 } from '../error/index.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
@@ -24,7 +24,7 @@ export class DeclareFunction extends Executable {
         this.body = props.body
     }
 
-    execute(scope: Scope) {
+    override execute(scope: Scope) {
         scope.setFunction(this.name, this)
     }
 
@@ -46,7 +46,7 @@ export class DeclareFunction extends Executable {
         try {
             return scope.getVariable('결과')
         } catch (e) {
-            if (e instanceof NotDefinedVariableError) {
+            if (e instanceof NotDefinedIdentifierError) {
                 return DEFAULT_RETURN_VALUE
             }
 
@@ -70,7 +70,7 @@ export class FunctionInvoke extends Evaluable {
         this.params = props.params || null
     }
 
-    execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
         const args = this.params && getParams(this.params, scope, callFrame)
 

@@ -8,13 +8,13 @@ import {
     NumberValue,
     Expression,
     Operator,
-    Keyword,
+    Identifier,
     Indent,
     EOL,
     Node,
     FFIBody,
 } from '../../node/index.ts'
-import { lexFunctionArgument } from './lexFunctionArgument.ts'
+import { lex } from './lex.ts'
 import {
     isValidFirstCharForKeyword,
     isValidCharForKeyword,
@@ -33,10 +33,7 @@ export class Tokenizer {
     static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~']
     static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')', '@']
 
-    constructor(
-        code: string,
-        private disablePosition = false,
-    ) {
+    constructor(code: string, private disablePosition = false) {
         this.chars = this.preprocess(code)
         this.tokenize()
         this.postprocess()
@@ -56,7 +53,7 @@ export class Tokenizer {
                 continue
             }
 
-            if (char === '\n') {
+            if (char === '\n' || char === '\r' || char === '\r\n') {
                 this.EOL()
                 continue
             }
@@ -72,7 +69,12 @@ export class Tokenizer {
             }
 
             if (char === '"') {
-                this.string()
+                this.string('"')
+                continue
+            }
+
+            if (char === "'") {
+                this.string("'")
                 continue
             }
 
@@ -208,13 +210,13 @@ export class Tokenizer {
         this.tokens.push(new NumberValue(parseFloat(number), this.position))
     }
 
-    string() {
+    string(openingChar: string) {
         this.shift()
         let word = ''
 
         while (true) {
             const nextChar = this.shift()
-            if (nextChar === '"') break
+            if (nextChar === openingChar) break
 
             word += nextChar
         }
@@ -229,7 +231,7 @@ export class Tokenizer {
             word += this.shift()
         }
 
-        this.tokens.push(new Keyword(word, this.position))
+        this.tokens.push(new Identifier(word, this.position))
     }
 
     operator() {
@@ -248,9 +250,7 @@ export class Tokenizer {
     }
 
     postprocess() {
-        const { functionHeaders, ffiHeaders, tokens } = lexFunctionArgument(
-            this.tokens,
-        )
+        const { functionHeaders, ffiHeaders, tokens } = lex(this.tokens)
 
         this.functionHeaders = functionHeaders
         this.ffiHeaders = ffiHeaders
@@ -291,6 +291,7 @@ export class Tokenizer {
 
 export function tokenize(code: string, disablePosition = false) {
     const tokenizer = new Tokenizer(code, disablePosition)
+
     return {
         tokens: tokenizer.tokens!,
         functionHeaders: tokenizer.functionHeaders!,

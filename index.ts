@@ -6,7 +6,7 @@ import { printError } from './error/printError.ts'
 import { parse } from './prepare/parse/index.ts'
 import { YaksokError } from './error/common.ts'
 import { Rule } from './prepare/parse/rule.ts'
-import { Block, Node } from './node/index.ts'
+import { Block, Executable, Node } from './node/index.ts'
 import { Scope } from './runtime/scope.ts'
 import { run } from './runtime/run.ts'
 import { Params } from './node/function.ts'
@@ -30,8 +30,8 @@ const defaultConfig: YaksokConfig = {
 export class CodeRunner {
     functionDeclaration: Node[][] = []
     scope: Scope
-    ast: Block
-    exports: Rule[] = []
+    ast: Executable
+    exportedRules: Rule[] = []
 
     constructor(
         private code: string,
@@ -46,7 +46,7 @@ export class CodeRunner {
             const parseResult = parse(tokenize(code), this.runtime)
 
             this.ast = parseResult.ast
-            this.exports = parseResult.dynamicRules
+            this.exportedRules = parseResult.exportedRules
         } catch (error) {
             if (error instanceof YaksokError) {
                 this.runtime.stderr(
