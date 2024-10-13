@@ -2,14 +2,14 @@ import { FileForRunNotExistError } from './error/prepare.ts'
 import { Evaluable, ValueTypes } from './node/base.ts'
 import { tokenize } from './prepare/tokenize/index.ts'
 import { ErrorInModuleError } from './error/index.ts'
+import { Executable, Node } from './node/index.ts'
 import { printError } from './error/printError.ts'
 import { parse } from './prepare/parse/index.ts'
 import { YaksokError } from './error/common.ts'
 import { Rule } from './prepare/parse/rule.ts'
-import { Block, Executable, Node } from './node/index.ts'
+import { Params } from './node/function.ts'
 import { Scope } from './runtime/scope.ts'
 import { run } from './runtime/run.ts'
-import { Params } from './node/function.ts'
 
 interface YaksokConfig {
     stdout: (message: string) => void
