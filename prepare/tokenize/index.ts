@@ -69,7 +69,12 @@ export class Tokenizer {
             }
 
             if (char === '"') {
-                this.string()
+                this.string('"')
+                continue
+            }
+
+            if (char === "'") {
+                this.string("'")
                 continue
             }
 
@@ -87,8 +92,6 @@ export class Tokenizer {
                 this.expression()
                 continue
             }
-
-            console.log({ char })
 
             throw new UnexpectedCharError({
                 position: this.position,
@@ -207,13 +210,13 @@ export class Tokenizer {
         this.tokens.push(new NumberValue(parseFloat(number), this.position))
     }
 
-    string() {
+    string(openingChar: string) {
         this.shift()
         let word = ''
 
         while (true) {
             const nextChar = this.shift()
-            if (nextChar === '"') break
+            if (nextChar === openingChar) break
 
             word += nextChar
         }
