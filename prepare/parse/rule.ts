@@ -35,6 +35,7 @@ import {
     ValueWithParenthesis,
     IntegerDivideOperator,
     ModularOperator,
+    PowerOperator,
 } from '../../node/index.ts'
 import { ListLoop } from '../../node/listLoop.ts'
 
@@ -272,6 +273,15 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
             factory: () => new ModularOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '**',
+                },
+            ],
+            factory: () => new PowerOperator(),
         },
         {
             pattern: [

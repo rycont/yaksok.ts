@@ -249,6 +249,7 @@ export class Tokenizer {
 
             if (!isValidStartingSequence) break
             operator = nextOperator
+            this.shift()
         }
 
         const isValidOperator = Tokenizer.OPERATORS.includes(operator)
