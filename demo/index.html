@@ -54,15 +54,15 @@
 
             if (location.hash) {
                 input.value = decodeURIComponent(atob(location.hash.slice(1)))
-            }
-
-            input.value = `
+            } else {
+                input.value = `
 약속, 키가 (키)cm이고 몸무게가 (몸무게)일 때 비만도
     결과: 몸무게 / (키 / 100 * 키 / 100)
 
 비만도: 키가 (170)cm이고 몸무게가 (70)일 때 비만도
 비만도 보여주기
             `.trim()
+            }
 
             let output
 
