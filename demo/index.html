@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
     <head>
         <meta charset="UTF-8" />
@@ -36,14 +36,15 @@
         <a href="https://github.com/rycont/yaksok.ts">See also on GitHub!</a>
         <h1>Yaksok.ts</h1>
         <p>
-            아직 런타임이 불안정합니다. 실행되지 않는 코드가 있다면
+            실행되지 않는 코드가 있다면
             <a href="https://github.com/rycont/yaksok.ts/issues"
                 >이슈를 남겨주세요!</a
             >
         </p>
-        <h2>직접 짜보기</h2>
+
         <textarea id="input" rows="10"></textarea>
         <button id="run">Run!</button>
+        <button id="share">코드 공유</button>
         <h2>출력</h2>
         <blockquote>코드를 입력하고 실행 버튼을 눌러보세요.</blockquote>
         <script type="module">
@@ -51,24 +52,23 @@
 
             const input = document.getElementById('input')
 
-            input.value = `약속 "피보나치" 수
-    만약 수 < 3 이면
-        결과: 1
-    아니면
-        결과: (피보나치 (수 - 1)) + (피보나치 (수 - 2))
+            if (location.hash) {
+                input.value = decodeURIComponent(atob(location.hash.slice(1)))
+            }
 
-횟수: 1
+            input.value = `
+약속, 키가 (키)cm이고 몸무게가 (몸무게)일 때 비만도
+    결과: 몸무게 / (키 / 100 * 키 / 100)
 
-반복
-    횟수 + "번째 피보나치 수는 " + (피보나치 횟수) + "입니다" 보여주기
-    횟수: 횟수 + 1
-
-    만약 횟수 > 10 이면
-        반복 그만`
+비만도: 키가 (170)cm이고 몸무게가 (70)일 때 비만도
+비만도 보여주기
+            `.trim()
 
             let output
 
-            document.getElementById('run').addEventListener('click', () => {
+            document.getElementById('run').addEventListener('click', run)
+
+            function run() {
                 if (output) {
                     output.remove()
                 }
@@ -88,7 +88,17 @@
                     stdout,
                     stderr: stdout,
                 })
+            }
+
+            document.getElementById('share').addEventListener('click', () => {
+                const encodedCode = btoa(encodeURIComponent(input.value))
+                location.hash = encodedCode
+
+                navigator.clipboard.writeText(location.href)
+                prompt('다음 링크를 복사해서 공유하세요.', location.href)
             })
+
+            run()
         </script>
     </body>
 </html>

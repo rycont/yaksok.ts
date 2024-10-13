@@ -12,7 +12,7 @@ const result = await esbuild.build({
     format: 'esm',
     minify: true,
     treeShaking: true,
-    keepNames: false,
+    keepNames: true,
 })
 
 console.log(result.outputFiles[0].text)
