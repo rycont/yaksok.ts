@@ -5,9 +5,9 @@ import {
     FunctionInvoke,
     Identifier,
     Node,
-    ValueWithBracket,
+    ValueWithParenthesis,
 } from '../../../../../node/index.ts'
-import { BRACKET_TYPE, isBracket } from '../../../../../util/isBracket.ts'
+import { BRACKET_TYPE, isParentheses } from '../../../../../util/isBracket.ts'
 import { PatternUnit, Rule } from '../../../rule.ts'
 import { FunctionHeaderNode } from './functionRuleByType.ts'
 
@@ -28,6 +28,9 @@ export function createFunctionInvokeRule(
                 name,
                 params,
             })
+        },
+        config: {
+            exported: true,
         },
     }
 }
@@ -62,10 +65,10 @@ function functionHeaderToInvokeMap(
 
     const previousToken = tokenSequence[index - 1]
     const isParameterToken =
-        previousToken && isBracket(previousToken) === BRACKET_TYPE.OPENING
+        previousToken && isParentheses(previousToken) === BRACKET_TYPE.OPENING
     if (isParameterToken) {
         return {
-            type: ValueWithBracket,
+            type: ValueWithParenthesis,
         }
     }
 

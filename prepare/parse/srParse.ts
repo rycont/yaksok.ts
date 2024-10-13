@@ -53,7 +53,7 @@ export function reduce(tokens: Node[], rule: Rule) {
 export function callParseRecursively(
     _tokens: Node[],
     externalPatterns: Rule[][],
-    wrapper: 'Block' | 'ValueWithParenthesis' | 'ValueWithBracket' = 'Block',
+    wrapper: 'Block' | 'ValueWithParenthesis' | 'ValueWithBracket',
 ) {
     let parsedTokens = [..._tokens]
 

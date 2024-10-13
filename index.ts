@@ -31,7 +31,7 @@ export class CodeRunner {
     functionDeclaration: Node[][] = []
     scope: Scope
     ast: Executable
-    exports: Rule[] = []
+    exportedRules: Rule[] = []
 
     constructor(
         private code: string,
@@ -46,7 +46,7 @@ export class CodeRunner {
             const parseResult = parse(tokenize(code), this.runtime)
 
             this.ast = parseResult.ast
-            this.exports = parseResult.dynamicRules.flat()
+            this.exportedRules = parseResult.exportedRules
         } catch (error) {
             if (error instanceof YaksokError) {
                 this.runtime.stderr(

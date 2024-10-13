@@ -92,8 +92,8 @@ class Lexer {
         }
     }
 
-    isBlock(token: Node) {
-        return token instanceof Block
+    isBlock(token: Node): token is Block {
+        return token.constructor.name === 'Block'
     }
 
     parseBlock(token: Block) {
@@ -116,11 +116,15 @@ class Lexer {
             if (isParentheses(nextToken) === BRACKET_TYPE.OPENING) {
                 const bracketNode = this.parseInlineBlock('parenthesis')
                 nodes.push(bracketNode)
+
+                continue
             }
 
             if (isBracket(nextToken) === BRACKET_TYPE.OPENING) {
                 const bracketNode = this.parseInlineBlock('bracket')
                 nodes.push(bracketNode)
+
+                continue
             }
 
             if (isParentheses(nextToken) === BRACKET_TYPE.CLOSING) {
@@ -184,7 +188,7 @@ class Lexer {
                 continue
             }
 
-            if (isBracket(token) === BRACKET_TYPE.OPENING) {
+            if (isParentheses(token) === BRACKET_TYPE.OPENING) {
                 const { argumentName, nodes } = this.parseFunctionArgument(
                     token as Expression,
                 )
@@ -232,7 +236,7 @@ class Lexer {
             throw this.unexpectedEOL("함수 인자 이름을 끝내는 ')' 괄호")
         }
 
-        if (isBracket(closingBracketToken) !== BRACKET_TYPE.CLOSING) {
+        if (isParentheses(closingBracketToken) !== BRACKET_TYPE.CLOSING) {
             throw new UnexpectedTokenError({
                 resource: {
                     node: closingBracketToken,

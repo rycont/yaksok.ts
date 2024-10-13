@@ -7,7 +7,7 @@ import {
     Identifier,
     Node,
 } from '../../../../../node/index.ts'
-import { BRACKET_TYPE, isBracket } from '../../../../../util/isBracket.ts'
+import { BRACKET_TYPE, isParentheses } from '../../../../../util/isBracket.ts'
 
 export type FunctionHeaderNode = Identifier | Expression
 export const functionRuleByType = {
@@ -39,12 +39,12 @@ export const functionRuleByType = {
                 const params = functionHeader
                     .filter((node, index) => {
                         const previousNode = functionHeader[index - 1]
-                        const isPreviousNodeOpeningBracket =
+                        const isPreviousNodeOpeningParenthesis =
                             previousNode instanceof Expression &&
-                            isBracket(previousNode) === BRACKET_TYPE.OPENING
+                            isParentheses(previousNode) === BRACKET_TYPE.OPENING
 
                         return (
-                            isPreviousNodeOpeningBracket &&
+                            isPreviousNodeOpeningParenthesis &&
                             node instanceof Identifier
                         )
                     })

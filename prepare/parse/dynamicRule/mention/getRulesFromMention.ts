@@ -1,5 +1,5 @@
 import { Yaksok } from '../../../../index.ts'
-import { Identifier, Node } from '../../../../node/base.ts'
+import { Node } from '../../../../node/base.ts'
 import { Evaluable } from '../../../../node/index.ts'
 import { Mention, MentionScope } from '../../../../node/mention.ts'
 import { Rule } from '../../rule.ts'
@@ -15,21 +15,13 @@ export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {
 
 function getMentioningRules(yaksok: Yaksok, fileName: string) {
     const runner = yaksok.getRunner(fileName)
-    const rules = runner.exports
+    const rules = runner.exportedRules
 
-    return rules
-        .filter(isNotFunctionDeclareRule)
+    const mentioningRules = rules
+        .filter((r) => r.config?.exported)
         .map((rule) => createMentioningRuleFromExportedRule(fileName, rule))
-}
 
-function isNotFunctionDeclareRule(rule: Rule) {
-    const firstNode = rule.pattern[0]
-
-    const isKeyword = firstNode instanceof Identifier
-    if (!isKeyword) return true
-
-    const isDeclare = ['약속'].includes(firstNode.value)
-    return !isDeclare
+    return mentioningRules
 }
 
 function createMentioningRuleFromExportedRule(

@@ -1,6 +1,10 @@
 import { UnexpectedTokenError } from '../../../../../error/prepare.ts'
 import { Expression, Identifier, Node } from '../../../../../node/index.ts'
-import { BRACKET_TYPE, isBracket } from '../../../../../util/isBracket.ts'
+import {
+    BRACKET_TYPE,
+    isBracket,
+    isParentheses,
+} from '../../../../../util/isBracket.ts'
 import { createFunctionDeclareRule } from './declareRule.ts'
 import { FunctionHeaderNode, functionRuleByType } from './functionRuleByType.ts'
 import { getVariants } from './getVariants.ts'
@@ -26,20 +30,20 @@ export function createFunctionRules(
 function assertValidFunctionHeader(
     subtokens: Node[],
 ): asserts subtokens is FunctionHeaderNode[] {
-    let isInBracket = false
+    let isInParenthesis = false
 
     for (const token of subtokens) {
         if (token instanceof Identifier) continue
 
-        const bracketType = isBracket(token)
+        const parenthesisType = isParentheses(token)
 
-        if (bracketType === BRACKET_TYPE.OPENING && !isInBracket) {
-            isInBracket = true
+        if (parenthesisType === BRACKET_TYPE.OPENING && !isInParenthesis) {
+            isInParenthesis = true
             continue
         }
 
-        if (bracketType === BRACKET_TYPE.CLOSING && isInBracket) {
-            isInBracket = false
+        if (parenthesisType === BRACKET_TYPE.CLOSING && isInParenthesis) {
+            isInParenthesis = false
             continue
         }
 
