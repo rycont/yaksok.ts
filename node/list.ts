@@ -37,7 +37,7 @@ export class Sequence extends Evaluable {
 export class List extends IndexedValue {
     evaluatedItems?: ValueTypes[]
 
-    constructor(public items: Evaluable[]) {
+    constructor(private initialItem: Evaluable[]) {
         super()
     }
 
@@ -45,7 +45,7 @@ export class List extends IndexedValue {
         const callFrame = new CallFrame(this, _callFrame)
 
         this.evaluatedItems = List.evaluateList(
-            this.items,
+            this.initialItem,
             new Scope(),
             callFrame,
         )
@@ -114,7 +114,8 @@ export class List extends IndexedValue {
         this.assertGreaterOrEqualThan1(index.value)
 
         const indexValue = index.value - 1
-        this.items[indexValue] = value
+
+        this.evaluatedItems![indexValue] = value
 
         return value
     }
@@ -152,7 +153,7 @@ export class List extends IndexedValue {
     }
 
     private assertIndexLessThanLength(index: number) {
-        if (index <= this.items.length) return
+        if (index <= this.evaluatedItems!.length) return
 
         throw new ListIndexOutOfRangeError({
             resource: {
@@ -163,7 +164,9 @@ export class List extends IndexedValue {
     }
 
     override toPrint() {
-        const content = this.items.map((item) => item.toPrint()).join(', ')
+        const content = this.evaluatedItems
+            ?.map((item) => item.toPrint())
+            .join(', ')
         return '[' + content + ']'
     }
 }
