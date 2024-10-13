@@ -1,8 +1,11 @@
-import { UnexpectedTokenError } from '../../../../../error/index.ts'
-import { Expression, Identifier } from '../../../../../node/base.ts'
-import { EOL, Node } from '../../../../../node/index.ts'
-import { PatternUnit, Rule } from '../../../rule.ts'
-import { FunctionHeaderNode, functionRuleByType } from './functionRuleByType.ts'
+import { UnexpectedTokenError } from '../../../../error/prepare.ts'
+import { Identifier, Expression, Node } from '../../../../node/index.ts'
+import { EOL } from '../../../../node/misc.ts'
+import type { Rule, PatternUnit } from '../../rule.ts'
+import {
+    type FunctionHeaderNode,
+    functionRuleByType,
+} from './functionRuleByType.ts'
 
 export function createFunctionDeclareRule(
     name: string,

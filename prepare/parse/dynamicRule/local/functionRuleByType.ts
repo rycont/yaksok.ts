@@ -1,13 +1,8 @@
-import {
-    Block,
-    DeclareFFI,
-    DeclareFunction,
-    Expression,
-    FFIBody,
-    Identifier,
-    Node,
-} from '../../../../../node/index.ts'
-import { BRACKET_TYPE, isParentheses } from '../../../../../util/isBracket.ts'
+import { Identifier, Expression, Node } from '../../../../node/base.ts'
+import { Block } from '../../../../node/block.ts'
+import { FFIBody, DeclareFFI } from '../../../../node/ffi.ts'
+import { DeclareFunction } from '../../../../node/function.ts'
+import { isParentheses, BRACKET_TYPE } from '../../../../util/isBracket.ts'
 
 export type FunctionHeaderNode = Identifier | Expression
 export const functionRuleByType = {

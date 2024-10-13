@@ -1,16 +1,15 @@
-import { UnexpectedTokenError } from '../../../../../error/prepare.ts'
-import { Expression, Identifier, Node } from '../../../../../node/index.ts'
-import {
-    BRACKET_TYPE,
-    isBracket,
-    isParentheses,
-} from '../../../../../util/isBracket.ts'
+import { UnexpectedTokenError } from '../../../../error/prepare.ts'
+import { Node, Identifier, Expression } from '../../../../node/index.ts'
+import { isParentheses, BRACKET_TYPE } from '../../../../util/isBracket.ts'
 import { createFunctionDeclareRule } from './declareRule.ts'
-import { FunctionHeaderNode, functionRuleByType } from './functionRuleByType.ts'
+import type {
+    functionRuleByType,
+    FunctionHeaderNode,
+} from './functionRuleByType.ts'
 import { getVariants } from './getVariants.ts'
 import { createFunctionInvokeRule } from './invokeRule.ts'
 
-export function createFunctionRules(
+export function createRuleFromFunctionHeader(
     subtokens: Node[],
     type: keyof typeof functionRuleByType,
 ) {

@@ -1,14 +1,14 @@
-import { UnexpectedTokenError } from '../../../../../error/index.ts'
-import { Expression } from '../../../../../node/base.ts'
+import { UnexpectedTokenError } from '../../../../error/prepare.ts'
 import {
-    Evaluable,
-    FunctionInvoke,
-    Identifier,
     Node,
-    ValueWithParenthesis,
-} from '../../../../../node/index.ts'
-import { BRACKET_TYPE, isParentheses } from '../../../../../util/isBracket.ts'
-import { PatternUnit, Rule } from '../../../rule.ts'
+    Expression,
+    Identifier,
+    Evaluable,
+} from '../../../../node/base.ts'
+import { ValueWithParenthesis } from '../../../../node/calculation.ts'
+import { FunctionInvoke } from '../../../../node/function.ts'
+import { isParentheses, BRACKET_TYPE } from '../../../../util/isBracket.ts'
+import type { Rule, PatternUnit } from '../../rule.ts'
 import { FunctionHeaderNode } from './functionRuleByType.ts'
 
 export function createFunctionInvokeRule(
