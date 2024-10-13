@@ -23,14 +23,13 @@ import { UnknownOperatorPrecedenceError } from '../error/index.ts'
 import { RangeOperator } from './list.ts'
 
 const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
+    [AndOperator, OrOperator],
     [
         EqualOperator,
         LessThanOperator,
         GreaterThanOperator,
         LessThanOrEqualOperator,
         GreaterThanOrEqualOperator,
-        AndOperator,
-        OrOperator,
         RangeOperator,
     ],
     [MinusOperator, PlusOperator],
