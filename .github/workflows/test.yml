@@ -28,10 +28,10 @@ jobs:
             - name: Setup Deno
               uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31
               with:
-                  deno-version: v1.x
+                  deno-version: v2.x
 
             - name: Run linter
               run: deno lint
 
             - name: Run tests
-              run: deno test --allow-read -A
+              run: deno test --allow-read
