@@ -28,7 +28,9 @@ export class DeclareFFI extends Executable {
 
     run(scope: Scope, _callFrame: CallFrame): ValueTypes {
         const params = this.getParams(scope)
-        const result = scope.runtime!.runFFI(this.runtime, this.body, params)
+        const result = scope
+            .runtime!.runFFI(this.runtime, this.body, params)
+            .execute(scope, _callFrame)
 
         this.assertYaksokValue(result)
         return result
