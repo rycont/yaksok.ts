@@ -15,7 +15,7 @@ import {
 export class QuickJS {
     instance: QuickJSWASMModule | null = null
 
-    constructor(private functions: Record<string, (args: any[]) => any>) {}
+    constructor(private functions: Record<string, (...args: any[]) => any>) {}
 
     async init() {
         this.instance = await getQuickJS()
