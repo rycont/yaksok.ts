@@ -85,7 +85,9 @@ class Lexer {
 
             if (isStartOfFFI([token, ...this.tokens])) {
                 this.tokens.unshift(token)
-                throw '아직'
+                this.parseFFI()
+
+                continue
             }
 
             this.lexedTokens.push(token)
@@ -149,6 +151,8 @@ class Lexer {
     }
 
     parseFunction() {
+        this.pull()
+        this.pull()
         const { argumentNames, functionHeader } = this.parseFunctionHeader()
         this.functionHeaders.push(functionHeader)
 
@@ -156,9 +160,6 @@ class Lexer {
     }
 
     parseFunctionHeader() {
-        this.pull()
-        this.pull()
-
         const functionHeader: FunctionHeaderNode[] = []
         const argumentNames: string[] = []
 
@@ -294,8 +295,24 @@ class Lexer {
         this.lexedTokens.push(lexedFunctionBody)
     }
 
+    parseFFI() {
+        this.pull()
+        this.pull()
+        this.pull()
+        this.pull()
+        this.pull()
+
+        const { functionHeader } = this.parseFunctionHeader()
+
+        this.ffiHeaders.push(functionHeader)
+        this.pull()
+    }
+
     pull() {
-        this.lexedTokens.push(this.tokens.shift()!)
+        const currentToken = this.tokens.shift()!
+        this.lexedTokens.push(currentToken)
+
+        return currentToken
     }
 
     unexpectedEOL(parts: string) {

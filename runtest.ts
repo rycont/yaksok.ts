@@ -1,11 +1,64 @@
 import { yaksok } from './index.ts'
+import { getQuickJS } from 'npm:quickjs-emscripten'
+import { NumberValue, StringValue, type PrimitiveTypes } from './node/index.ts'
+
+const quickJSRuntime = await getQuickJS()
 
 yaksok(
     `
-만약 (1 < 3) 이거나 (3 < 1) 이면
-    "OR 연산자는 둘 중 하나만 참이어도 참이다." 보여주기
+번역(QuickJS), (문자열)을 (횟수)번 반복하기
+***
+    return 문자열.repeat(횟수)
+***
 
-만약 (1 < 3) 이고 (3 > 1) 이면
-    "AND 연산자는 둘 다 참이어야 참이다." 보여주기
+("*")을 (3)번 반복하기 보여주기
 `,
+    {
+        runFFI(runtime, bodyCode, args) {
+            if (runtime !== 'QuickJS') {
+                throw new Error(`Unknown runtime: ${runtime}`)
+            }
+
+            const wrappedCode = createWrapperCodeFromFFICall(bodyCode, args)
+
+            const vm = quickJSRuntime.newContext()
+            const result = vm.evalCode(wrappedCode)
+
+            if (result.error) {
+                console.log(vm.dump(result.error))
+                result.error.dispose()
+            } else {
+                const resultValue = vm.dump(result.value)
+                result.value.dispose()
+
+                if (typeof resultValue === 'string') {
+                    return new StringValue(resultValue)
+                } else if (typeof resultValue === 'number') {
+                    return new NumberValue(resultValue)
+                }
+            }
+        },
+    },
 )
+
+function createWrapperCodeFromFFICall(
+    bodyCode: string,
+    args: Record<string, any>,
+) {
+    const parameters = Object.keys(args)
+    const parameterValues = Object.values(args).map(
+        convertYaksokDataIntoQuickJSData,
+    )
+
+    return `((${parameters.join(
+        ', ',
+    )}) => {${bodyCode}})(${parameterValues.join(', ')})`
+}
+
+function convertYaksokDataIntoQuickJSData(data: PrimitiveTypes) {
+    if (data instanceof StringValue) {
+        return `"${data.value}"`
+    } else {
+        return data.value
+    }
+}

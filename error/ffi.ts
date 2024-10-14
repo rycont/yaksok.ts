@@ -7,7 +7,9 @@ export class FFIResulTypeIsNotForYaksokError extends YaksokError {
 
         let stringValue = ''
 
-        if (typeof props.value === 'string') {
+        if (!props.value) {
+            stringValue = 'undefined'
+        } else if (typeof props.value === 'string') {
             stringValue = props.value
         } else if (props.value.__proto__ && props.value.__proto__.toString) {
             stringValue = props.value.toString()
