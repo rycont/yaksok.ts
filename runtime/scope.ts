@@ -1,7 +1,4 @@
-import {
-    NotDefinedFunctionError,
-    NotDefinedIdentifierError,
-} from '../error/index.ts'
+import { NotDefinedIdentifierError } from '../error/index.ts'
 import { Yaksok } from '../index.ts'
 import { DeclareFFI, DeclareFunction, ValueTypes } from '../node/index.ts'
 
