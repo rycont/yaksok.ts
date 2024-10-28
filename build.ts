@@ -1,18 +1,18 @@
-import * as esbuild from 'https://deno.land/x/esbuild@v0.19.10/mod.js'
+import * as esbuild from 'npm:esbuild@0.20.2'
+import { denoPlugins } from 'jsr:@luca/esbuild-deno-loader@^0.11.0'
 
-const ts = await Deno.readTextFile('./index.ts')
 const result = await esbuild.build({
-    stdin: {
-        contents: ts,
-        loader: 'ts',
-        resolveDir: '.',
-    },
+    entryPoints: ['./index.ts'],
     bundle: true,
     write: false,
     format: 'esm',
-    minify: true,
     treeShaking: true,
     keepNames: true,
+    minifyWhitespace: true,
+    minifyIdentifiers: false,
+    minifySyntax: true,
+
+    plugins: [...denoPlugins()],
 })
 
 console.log(result.outputFiles[0].text)
