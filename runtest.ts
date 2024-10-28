@@ -1,11 +1,36 @@
+import { QuickJS } from './bridge/quickjs/index.ts'
 import { yaksok } from './index.ts'
 
-yaksok(`
-약속, (음식)을/를 (사람)와/과 먹기
-    "맛있는 " + 음식 + ", " + 사람 + "의 입으로 모두 들어갑니다." 보여주기
+const quickJS = new QuickJS({
+    workingDirectory() {
+        const cwd = Deno.cwd()
+        return cwd
+    },
+})
 
-("피자")를 ("철수")와 먹기
-("햄버거")를 ("영희")와 먹기
-("치킨")을 ("형님")과 먹기
-("초밥")을 ("동생")과 먹기
-`)
+await quickJS.init()
+
+yaksok(
+    `
+번역(QuickJS), CWD
+***
+    return [workingDirectory()]
+***
+
+CWD 보여주기
+`,
+    {
+        runFFI(runtime, bodyCode, args) {
+            if (runtime === 'QuickJS') {
+                const result = quickJS.run(bodyCode, args)
+                if (!result) {
+                    throw new Error('Result is null')
+                }
+
+                return result
+            }
+
+            throw new Error(`Unknown runtime: ${runtime}`)
+        },
+    },
+)

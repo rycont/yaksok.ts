@@ -1,5 +1,143 @@
 {
-  "version": "3",
+  "version": "4",
+  "specifiers": {
+    "jsr:@sebastianwessel/quickjs@*": "1.3.0",
+    "npm:@types/node@*": "22.5.4",
+    "npm:memfs@^4.9.3": "4.14.0_tslib@2.7.0",
+    "npm:quickjs-emscripten-core@~0.29.2": "0.29.2",
+    "npm:quickjs-emscripten@*": "0.31.0",
+    "npm:rate-limiter-flexible@^5.0.3": "5.0.3",
+    "npm:typescript@^5.5.3": "5.6.3"
+  },
+  "jsr": {
+    "@sebastianwessel/quickjs@1.3.0": {
+      "integrity": "698165444762261eae785adb47291edde9cf1b4b0167408a0fc9e7628b0efc3a",
+      "dependencies": [
+        "npm:memfs",
+        "npm:quickjs-emscripten-core",
+        "npm:rate-limiter-flexible",
+        "npm:typescript"
+      ]
+    }
+  },
+  "npm": {
+    "@jitl/quickjs-ffi-types@0.29.2": {
+      "integrity": "sha512-069uQTiEla2PphXg6UpyyJ4QXHkTj3S9TeXgaMCd8NDYz3ODBw5U/rkg6fhuU8SMpoDrWjEzybmV5Mi2Pafb5w=="
+    },
+    "@jitl/quickjs-ffi-types@0.31.0": {
+      "integrity": "sha512-1yrgvXlmXH2oNj3eFTrkwacGJbmM0crwipA3ohCrjv52gBeDaD7PsTvFYinlAnqU8iPME3LGP437yk05a2oejw=="
+    },
+    "@jitl/quickjs-wasmfile-debug-asyncify@0.31.0": {
+      "integrity": "sha512-YkdzQdr1uaftFhgEnTRjTTZHk2SFZdpWO7XhOmRVbi6CEVsH9g5oNF8Ta1q3OuSJHRwwT8YsuR1YzEiEIJEk6w==",
+      "dependencies": [
+        "@jitl/quickjs-ffi-types@0.31.0"
+      ]
+    },
+    "@jitl/quickjs-wasmfile-debug-sync@0.31.0": {
+      "integrity": "sha512-8XvloaaWBONqcHXYs5tWOjdhQVxzULilIfB2hvZfS6S+fI4m2+lFiwQy7xeP8ExHmiZ7D8gZGChNkdLgjGfknw==",
+      "dependencies": [
+        "@jitl/quickjs-ffi-types@0.31.0"
+      ]
+    },
+    "@jitl/quickjs-wasmfile-release-asyncify@0.31.0": {
+      "integrity": "sha512-uz0BbQYTxNsFkvkurd7vk2dOg57ElTBLCuvNtRl4rgrtbC++NIndD5qv2+AXb6yXDD3Uy1O2PCwmoaH0eXgEOg==",
+      "dependencies": [
+        "@jitl/quickjs-ffi-types@0.31.0"
+      ]
+    },
+    "@jitl/quickjs-wasmfile-release-sync@0.31.0": {
+      "integrity": "sha512-hYduecOByj9AsAfsJhZh5nA6exokmuFC8cls39+lYmTCGY51bgjJJJwReEu7Ff7vBWaQCL6TeDdVlnp2WYz0jw==",
+      "dependencies": [
+        "@jitl/quickjs-ffi-types@0.31.0"
+      ]
+    },
+    "@jsonjoy.com/base64@1.1.2_tslib@2.7.0": {
+      "integrity": "sha512-q6XAnWQDIMA3+FTiOYajoYqySkO+JSat0ytXGSuRdq9uXE7o92gzuQwQM14xaCRlBLGq3v5miDGC4vkVTn54xA==",
+      "dependencies": [
+        "tslib"
+      ]
+    },
+    "@jsonjoy.com/json-pack@1.1.0_tslib@2.7.0": {
+      "integrity": "sha512-zlQONA+msXPPwHWZMKFVS78ewFczIll5lXiVPwFPCZUsrOKdxc2AvxU1HoNBmMRhqDZUR9HkC3UOm+6pME6Xsg==",
+      "dependencies": [
+        "@jsonjoy.com/base64",
+        "@jsonjoy.com/util",
+        "hyperdyperid",
+        "thingies",
+        "tslib"
+      ]
+    },
+    "@jsonjoy.com/util@1.5.0_tslib@2.7.0": {
+      "integrity": "sha512-ojoNsrIuPI9g6o8UxhraZQSyF2ByJanAY4cTFbc8Mf2AXEF4aQRGY1dJxyJpuyav8r9FGflEt/Ff3u5Nt6YMPA==",
+      "dependencies": [
+        "tslib"
+      ]
+    },
+    "@types/node@22.5.4": {
+      "integrity": "sha512-FDuKUJQm/ju9fT/SeX/6+gBzoPzlVCzfzmGkwKvRHQVxi4BntVbyIwf6a4Xn62mrvndLiml6z/UBXIdEVjQLXg==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
+    "hyperdyperid@1.2.0": {
+      "integrity": "sha512-Y93lCzHYgGWdrJ66yIktxiaGULYc6oGiABxhcO5AufBeOyoIdZF7bIfLaOrbM0iGIOXQQgxxRrFEnb+Y6w1n4A=="
+    },
+    "memfs@4.14.0_tslib@2.7.0": {
+      "integrity": "sha512-JUeY0F/fQZgIod31Ja1eJgiSxLn7BfQlCnqhwXFBzFHEw63OdLK7VJUJ7bnzNsWgCyoUP5tEp1VRY8rDaYzqOA==",
+      "dependencies": [
+        "@jsonjoy.com/json-pack",
+        "@jsonjoy.com/util",
+        "tree-dump",
+        "tslib"
+      ]
+    },
+    "quickjs-emscripten-core@0.29.2": {
+      "integrity": "sha512-jEAiURW4jGqwO/fW01VwlWqa2G0AJxnN5FBy1xnVu8VIVhVhiaxUfCe+bHqS6zWzfjFm86HoO40lzpteusvyJA==",
+      "dependencies": [
+        "@jitl/quickjs-ffi-types@0.29.2"
+      ]
+    },
+    "quickjs-emscripten-core@0.31.0": {
+      "integrity": "sha512-oQz8p0SiKDBc1TC7ZBK2fr0GoSHZKA0jZIeXxsnCyCs4y32FStzCW4d1h6E1sE0uHDMbGITbk2zhNaytaoJwXQ==",
+      "dependencies": [
+        "@jitl/quickjs-ffi-types@0.31.0"
+      ]
+    },
+    "quickjs-emscripten@0.31.0": {
+      "integrity": "sha512-K7Yt78aRPLjPcqv3fIuLW1jW3pvwO21B9pmFOolsjM/57ZhdVXBr51GqJpalgBlkPu9foAvhEAuuQPnvIGvLvQ==",
+      "dependencies": [
+        "@jitl/quickjs-wasmfile-debug-asyncify",
+        "@jitl/quickjs-wasmfile-debug-sync",
+        "@jitl/quickjs-wasmfile-release-asyncify",
+        "@jitl/quickjs-wasmfile-release-sync",
+        "quickjs-emscripten-core@0.31.0"
+      ]
+    },
+    "rate-limiter-flexible@5.0.3": {
+      "integrity": "sha512-lWx2y8NBVlTOLPyqs+6y7dxfEpT6YFqKy3MzWbCy95sTTOhOuxufP2QvRyOHpfXpB9OUJPbVLybw3z3AVAS5fA=="
+    },
+    "thingies@1.21.0_tslib@2.7.0": {
+      "integrity": "sha512-hsqsJsFMsV+aD4s3CWKk85ep/3I9XzYV/IXaSouJMYIoDlgyi11cBhsqYe9/geRfB0YIikBQg6raRaM+nIMP9g==",
+      "dependencies": [
+        "tslib"
+      ]
+    },
+    "tree-dump@1.0.2_tslib@2.7.0": {
+      "integrity": "sha512-dpev9ABuLWdEubk+cIaI9cHwRNNDjkBBLXTwI4UCUFdQ5xXKqNXoK4FEciw/vxf+NQ7Cb7sGUyeUtORvHIdRXQ==",
+      "dependencies": [
+        "tslib"
+      ]
+    },
+    "tslib@2.7.0": {
+      "integrity": "sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA=="
+    },
+    "typescript@5.6.3": {
+      "integrity": "sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw=="
+    },
+    "undici-types@6.19.8": {
+      "integrity": "sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw=="
+    }
+  },
   "redirects": {
     "https://deno.land/x/emit/mod.ts": "https://deno.land/x/emit@0.32.0/mod.ts"
   },
