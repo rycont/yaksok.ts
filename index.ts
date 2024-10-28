@@ -174,3 +174,7 @@ export function yaksok(
     yaksok.run()
     return yaksok
 }
+
+export * from './prepare/tokenize/index.ts'
+export * from './prepare/parse/index.ts'
+export * from './bridge/quickjs/index.ts'
