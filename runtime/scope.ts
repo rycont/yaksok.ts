@@ -1,7 +1,4 @@
-import {
-    NotDefinedFunctionError,
-    NotDefinedIdentifierError,
-} from '../error/index.ts'
+import { NotDefinedIdentifierError } from '../error/index.ts'
 import { Yaksok } from '../index.ts'
 import { DeclareFFI, DeclareFunction, ValueTypes } from '../node/index.ts'
 
@@ -66,15 +63,7 @@ export class Scope {
         const fetched = this.functions[name]
         if (fetched) return fetched
 
-        if (this.parent) {
-            return this.parent.getFunction(name)
-        }
-
-        throw new NotDefinedFunctionError({
-            resource: {
-                name,
-            },
-        })
+        return this.parent!.getFunction(name)
     }
 
     createChild(initialVariable?: Record<string, ValueTypes>) {

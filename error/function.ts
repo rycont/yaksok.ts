@@ -16,14 +16,9 @@ export class FunctionMustHaveNameError extends YaksokError {
 }
 
 export class FunctionMustHaveOneOrMoreStringPartError extends YaksokError {
-    constructor(props: {
-        position?: Position
-        resource: {
-            declarationString: string
-        }
-    }) {
+    constructor(props: { position?: Position }) {
         super(props)
-        this.message = `함수를 선언할 때엔 적어도 하나의 문자열 부분이 있어야 해요. 인자를 받지 않는 함수라면 약속 이름을 따옴표로 감싸서 "${props.resource.declarationString}"처럼 작성해주세요.`
+        this.message = `함수를 선언할 때엔 적어도 하나의 고정되는 부분이 있어야 해요.`
     }
 }
 

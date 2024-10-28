@@ -112,7 +112,7 @@ class Lexer {
             const nextToken = this.tokens.shift()
 
             if (!nextToken) {
-                throw this.unexpectedEOL('괄호로 묶인 코드')
+                throw this.unexpectedEOF('괄호로 묶인 코드')
             }
 
             if (isParentheses(nextToken) === BRACKET_TYPE.OPENING) {
@@ -167,20 +167,24 @@ class Lexer {
             const token = this.tokens.shift()
 
             if (!token) {
-                throw this.unexpectedEOL('함수 이름')
+                throw this.unexpectedEOF('함수 이름')
             }
 
             if (token instanceof Identifier) {
                 functionHeader.push(token)
+                this.lexedTokens.push(token)
 
                 continue
             }
 
-            if (token instanceof Operator && this.isFunctionVariants(token)) {
+            const isFunctionVariants =
+                token instanceof Operator && this.isFunctionVariants(token)
+
+            if (isFunctionVariants) {
                 const nextToken = this.tokens.shift() as Identifier | undefined
 
                 if (!nextToken) {
-                    throw this.unexpectedEOL('함수 이름의 변형')
+                    throw this.unexpectedEOF('함수 이름의 변형')
                 }
 
                 const lastToken = functionHeader[functionHeader.length - 1]
@@ -195,13 +199,13 @@ class Lexer {
                 )
 
                 functionHeader.push(...nodes)
+                this.lexedTokens.push(...nodes)
                 argumentNames.push(argumentName)
 
                 continue
             }
 
             if (token instanceof EOL) {
-                this.lexedTokens.push(...functionHeader)
                 this.lexedTokens.push(token)
                 break
             }
@@ -219,7 +223,7 @@ class Lexer {
         const argumentNameToken = this.tokens.shift()
 
         if (!argumentNameToken) {
-            throw this.unexpectedEOL('함수 인자 이름')
+            throw this.unexpectedEOF('함수 인자 이름')
         }
 
         if (!(argumentNameToken instanceof Identifier)) {
@@ -234,7 +238,7 @@ class Lexer {
         const closingBracketToken = this.tokens.shift()
 
         if (!closingBracketToken) {
-            throw this.unexpectedEOL("함수 인자 이름을 끝내는 ')' 괄호")
+            throw this.unexpectedEOF("함수 인자 이름을 끝내는 ')' 괄호")
         }
 
         if (isParentheses(closingBracketToken) !== BRACKET_TYPE.CLOSING) {
@@ -272,7 +276,7 @@ class Lexer {
         const functionBodyBlock = this.tokens.shift()
 
         if (!functionBodyBlock) {
-            throw this.unexpectedEOL('새 약속의 코드')
+            throw this.unexpectedEOF('새 약속의 코드')
         }
 
         if (!(functionBodyBlock instanceof Block)) {
@@ -315,18 +319,16 @@ class Lexer {
         return currentToken
     }
 
-    unexpectedEOL(parts: string) {
+    unexpectedEOF(parts: string) {
         return new UnexpectedEndOfCodeError({
             resource: {
                 parts,
             },
             position:
-                this.tokens?.[0]?.position ||
+                this.tokens[0]?.position ||
                 this.lexedTokens.slice(-1)?.[0]?.position,
         })
     }
-
-    postprocess() {}
 }
 
 export const lex = Lexer.lex
@@ -371,18 +373,21 @@ function isStartOfFFI(tokens: Node[]) {
 }
 
 function assertHaveStaticPartInFunctionHeader(tokens: Node[]) {
-    for (const token of tokens) {
-        if (token instanceof Identifier) {
+    for (const tokenIndex in tokens) {
+        const previousToken = tokens[Number(tokenIndex) - 1]
+        const isPreviousTokenOpeningParenthesis =
+            previousToken instanceof Expression &&
+            isParentheses(previousToken) === BRACKET_TYPE.OPENING
+
+        const isCurrentTokenIdentifier =
+            tokens[tokenIndex] instanceof Identifier
+
+        if (!isPreviousTokenOpeningParenthesis && isCurrentTokenIdentifier) {
             return
         }
     }
 
     throw new FunctionMustHaveOneOrMoreStringPartError({
         position: tokens[0].position,
-        resource: {
-            declarationString: (tokens as Identifier[])
-                .map((token) => token.value)
-                .join(' '),
-        },
     })
 }
