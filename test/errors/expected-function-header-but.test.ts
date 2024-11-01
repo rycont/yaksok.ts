@@ -1,12 +1,22 @@
 import { assertIsError } from 'assert'
 import { yaksok } from '../../index.ts'
-import { UnexpectedTokenError } from '../../error/index.ts'
+import {
+    UnexpectedEndOfCodeError,
+    UnexpectedTokenError,
+} from '../../error/index.ts'
 
 Deno.test('온전하지 않은 약속 정의', () => {
     try {
         yaksok(`약속, (A)와 (`)
     } catch (error) {
         assertIsError(error, UnexpectedTokenError)
-        console.log(error)
+    }
+})
+
+Deno.test('온전하지 않은 FFI 정의', () => {
+    try {
+        yaksok(`***`)
+    } catch (error) {
+        assertIsError(error, UnexpectedEndOfCodeError)
     }
 })

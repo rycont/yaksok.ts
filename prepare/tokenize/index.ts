@@ -34,7 +34,7 @@ export class Tokenizer {
     static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~', '%', '**', '//']
     static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')', '@']
 
-    constructor(code: string, private disablePosition = false) {
+    constructor(code: string) {
         this.chars = this.preprocess(code)
         this.tokenize()
         this.postprocess()
@@ -119,17 +119,21 @@ export class Tokenizer {
 
     canBeFisrtCharOfNumber(char: string) {
         if ('0' <= char && char <= '9') return true
-        if (
-            char === '-' &&
-            this.chars.length > 1 &&
-            this.isNumeric(this.chars[1]) &&
-            this.tokens.length &&
-            (this.tokens[this.tokens.length - 1] instanceof Operator ||
-                this.tokens[this.tokens.length - 1] instanceof Expression)
-        )
-            return true
 
-        return false
+        const isNegativeSign = char === '-'
+        const isNextCharNumeric =
+            this.chars.length && this.isNumeric(this.chars[1])
+
+        const lastToken = this.tokens[this.tokens.length - 1]
+        const isLastTokenOperator = lastToken instanceof Operator
+        const isLastTokenExpression = lastToken instanceof Expression
+
+        const isValidNegativeSign =
+            isNegativeSign &&
+            isNextCharNumeric &&
+            (isLastTokenOperator || isLastTokenExpression)
+
+        return isValidNegativeSign
     }
 
     ffi() {
@@ -240,7 +244,6 @@ export class Tokenizer {
 
         while (true) {
             const nextChar = this.chars[0]
-            if (!nextChar) break
 
             const nextOperator = operator + nextChar
             const isValidStartingSequence = Tokenizer.OPERATORS.some((op) =>
@@ -252,12 +255,13 @@ export class Tokenizer {
             this.shift()
         }
 
-        const isValidOperator = Tokenizer.OPERATORS.includes(operator)
-        if (!isValidOperator)
-            throw new UnknownOperatorPrecedenceError({
-                position: this.position,
-                resource: { operator },
-            })
+        // const isValidOperator = Tokenizer.OPERATORS.includes(operator)
+
+        // if (!isValidOperator)
+        //     throw new UnknownOperatorPrecedenceError({
+        //         position: this.position,
+        //         resource: { operator },
+        //     })
 
         this.tokens.push(new Operator(operator, this.position))
     }
@@ -284,13 +288,15 @@ export class Tokenizer {
 
     shift() {
         const char = this.chars.shift()
-        if (!char)
+
+        if (!char) {
             throw new UnexpectedEndOfCodeError({
                 position: this.position,
                 resource: {
                     parts: '코드',
                 },
             })
+        }
 
         if (char === '\n') {
             this.line++
@@ -303,8 +309,6 @@ export class Tokenizer {
     }
 
     get position() {
-        if (this.disablePosition) return undefined
-
         return {
             line: this.line,
             column: this.column,
@@ -312,8 +316,8 @@ export class Tokenizer {
     }
 }
 
-export function tokenize(code: string, disablePosition = false) {
-    const tokenizer = new Tokenizer(code, disablePosition)
+export function tokenize(code: string) {
+    const tokenizer = new Tokenizer(code)
 
     return {
         tokens: tokenizer.tokens!,
