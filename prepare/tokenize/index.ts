@@ -17,9 +17,9 @@ import {
 } from '../../node/index.ts'
 import { lex } from './lex.ts'
 import {
-    isValidFirstCharForKeyword,
-    isValidCharForKeyword,
-} from './isValidCharForKeyword.ts'
+    isValidFirstCharForIdentifier,
+    isValidCharForIdentifier,
+} from './isValidCharForIdentifier.ts'
 
 export class Tokenizer {
     functionHeaders: Node[][] | undefined = undefined
@@ -79,8 +79,8 @@ export class Tokenizer {
                 continue
             }
 
-            if (isValidFirstCharForKeyword(char)) {
-                this.keyword()
+            if (isValidFirstCharForIdentifier(char)) {
+                this.identifier()
                 continue
             }
 
@@ -225,10 +225,10 @@ export class Tokenizer {
         this.tokens.push(new StringValue(word, this.position))
     }
 
-    keyword() {
+    identifier() {
         let word = ''
 
-        while (this.chars.length && isValidCharForKeyword(this.chars[0])) {
+        while (this.chars.length && isValidCharForIdentifier(this.chars[0])) {
             word += this.shift()
         }
 
