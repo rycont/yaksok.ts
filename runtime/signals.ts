@@ -1,4 +1,4 @@
-import { Position } from '../node/index.ts'
+import type { Position } from '../node/index.ts'
 
 export class Signal {
     constructor(public position?: Position) {}

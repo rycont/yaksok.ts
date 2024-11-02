@@ -1,13 +1,13 @@
 import { FileForRunNotExistError } from './error/prepare.ts'
-import { Evaluable, ValueTypes } from './node/base.ts'
+import type { Evaluable, ValueTypes } from './node/base.ts'
 import { tokenize } from './prepare/tokenize/index.ts'
 import { ErrorInModuleError } from './error/index.ts'
-import { Executable, Node } from './node/index.ts'
+import type { Executable, Node } from './node/index.ts'
 import { printError } from './error/printError.ts'
 import { parse } from './prepare/parse/index.ts'
 import { YaksokError } from './error/common.ts'
-import { Rule } from './prepare/parse/rule.ts'
-import { Params } from './node/function.ts'
+import type { Rule } from './prepare/parse/rule.ts'
+import type { Params } from './node/function.ts'
 import { Scope } from './runtime/scope.ts'
 import { run } from './runtime/run.ts'
 
@@ -62,7 +62,7 @@ export class CodeRunner {
         }
     }
 
-    run() {
+    run(): void {
         try {
             return run(this.ast, this.scope)
         } catch (error) {
@@ -80,7 +80,7 @@ export class CodeRunner {
         }
     }
 
-    evaluateFromExtern(node: Evaluable) {
+    evaluateFromExtern(node: Evaluable): ValueTypes {
         try {
             return run(node, this.scope)
         } catch (error) {
@@ -123,7 +123,7 @@ export class Yaksok implements YaksokConfig {
         this.runFFI = config.runFFI || defaultConfig.runFFI
     }
 
-    getRunner(fileName = this.entryPoint) {
+    getRunner(fileName = this.entryPoint): CodeRunner {
         if (!(fileName in this.files)) {
             throw new FileForRunNotExistError({
                 resource: {
@@ -145,12 +145,15 @@ export class Yaksok implements YaksokConfig {
         return this.runners[fileName]
     }
 
-    run(fileName = this.entryPoint) {
+    run(fileName = this.entryPoint): CodeRunner {
         const runner = this.getRunner(fileName)
-        return runner.run()
+        runner.run()
+        this.ran[fileName] = true
+
+        return runner
     }
 
-    runOnce(fileName = this.entryPoint) {
+    runOnce(fileName = this.entryPoint): CodeRunner {
         const runner = this.getRunner(fileName)
         if (!(fileName in this.ran)) runner.run()
 
@@ -161,7 +164,7 @@ export class Yaksok implements YaksokConfig {
 export function yaksok(
     code: string | Record<string, string>,
     config: Partial<YaksokConfig> = {},
-) {
+): Yaksok {
     const yaksok = new Yaksok(
         typeof code === 'string'
             ? {

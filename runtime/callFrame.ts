@@ -1,4 +1,4 @@
-import { Node } from '../node/index.ts'
+import type { Node } from '../node/index.ts'
 
 export class CallFrame {
     event: Record<string, (...args: any[]) => void> = {}

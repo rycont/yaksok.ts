@@ -11,8 +11,9 @@ import {
     Identifier,
     Indent,
     EOL,
-    Node,
+    type Node,
     FFIBody,
+    type Position,
 } from '../../node/index.ts'
 import { lex } from './lex.ts'
 import {
@@ -117,7 +118,7 @@ export class Tokenizer {
         }
     }
 
-    isFFI() {
+    isFFI(): boolean {
         const isFFIBlock =
             this.chars[0] === '*' &&
             this.chars[1] === '*' &&
@@ -126,16 +127,16 @@ export class Tokenizer {
         return isFFIBlock
     }
 
-    isNumeric(char: string) {
+    isNumeric(char: string): boolean {
         return '0' <= char && char <= '9'
     }
 
-    canBeFisrtCharOfNumber(char: string) {
+    canBeFisrtCharOfNumber(char: string): boolean {
         if ('0' <= char && char <= '9') return true
 
         const isNegativeSign = char === '-'
         const isNextCharNumeric =
-            this.chars.length && this.isNumeric(this.chars[1])
+            this.chars.length > 0 && this.isNumeric(this.chars[1])
 
         const lastToken = this.tokens[this.tokens.length - 1]
         const isLastTokenOperator = lastToken instanceof Operator
@@ -276,12 +277,12 @@ export class Tokenizer {
         this.tokens.push(new Expression(char, this.position))
     }
 
-    preprocess(code: string) {
+    preprocess(code: string): string[] {
         const trimmed = '\n' + code + '\n'
         return [...trimmed]
     }
 
-    postprocess() {
+    postprocess(): Node[] {
         const { functionHeaders, ffiHeaders, tokens } = lex(this.tokens)
 
         this.functionHeaders = functionHeaders
@@ -291,7 +292,7 @@ export class Tokenizer {
         return tokens
     }
 
-    shift() {
+    shift(): string {
         const char = this.chars.shift()
 
         if (!char) {
@@ -313,7 +314,7 @@ export class Tokenizer {
         return char
     }
 
-    get position() {
+    get position(): Position {
         return {
             line: this.line,
             column: this.column,
@@ -321,7 +322,7 @@ export class Tokenizer {
     }
 }
 
-export function tokenize(code: string) {
+export function tokenize(code: string): TokenizeResult {
     const tokenizer = new Tokenizer(code)
 
     return {
@@ -331,4 +332,8 @@ export function tokenize(code: string) {
     }
 }
 
-export type TokenizeResult = ReturnType<typeof tokenize>
+export interface TokenizeResult {
+    tokens: Node[]
+    functionHeaders: Node[][]
+    ffiHeaders: Node[][]
+}

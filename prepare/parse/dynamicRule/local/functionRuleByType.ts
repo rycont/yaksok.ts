@@ -1,4 +1,4 @@
-import { Identifier, Expression, Node } from '../../../../node/base.ts'
+import { Identifier, Expression, type Node } from '../../../../node/base.ts'
 import { Block } from '../../../../node/block.ts'
 import { FFIBody, DeclareFFI } from '../../../../node/ffi.ts'
 import { DeclareFunction } from '../../../../node/function.ts'

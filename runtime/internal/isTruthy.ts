@@ -1,4 +1,4 @@
-import { ValueTypes } from '../../node/base.ts'
+import type { ValueTypes } from '../../node/base.ts'
 import { BooleanValue, NumberValue, StringValue } from '../../node/primitive.ts'
 
 export function isTruthy(value: ValueTypes) {

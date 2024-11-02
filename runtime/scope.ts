@@ -1,6 +1,6 @@
 import { NotDefinedIdentifierError } from '../error/index.ts'
-import { Yaksok } from '../index.ts'
-import { DeclareFFI, DeclareFunction, ValueTypes } from '../node/index.ts'
+import type { Yaksok } from '../index.ts'
+import type { DeclareFFI, DeclareFunction, ValueTypes } from '../node/index.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>
@@ -66,7 +66,7 @@ export class Scope {
         return this.parent!.getFunction(name)
     }
 
-    createChild(initialVariable?: Record<string, ValueTypes>) {
+    createChild(initialVariable?: Record<string, ValueTypes>): Scope {
         return new Scope({
             parent: this,
             initialVariable,

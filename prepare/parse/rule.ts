@@ -23,7 +23,7 @@ import {
     Mention,
     MinusOperator,
     MultiplyOperator,
-    Node,
+    type Node,
     Operator,
     PlusOperator,
     Print,
