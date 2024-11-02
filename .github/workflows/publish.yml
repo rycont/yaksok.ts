@@ -1,24 +1,39 @@
 name: Publish
 on:
-    release:
-        types: [created]
+    push:
+        branches:
+            - main
+        paths:
+            - 'deno.json'
 
 jobs:
-    publish:
+    Publish:
         runs-on: ubuntu-latest
+        workflows: [Test]
 
         permissions:
-            contents: read
+            contents: write
             id-token: write
 
         steps:
-            - name: Setup repo
+            - name: Checkout repository
               uses: actions/checkout@v3
 
             - name: Setup Deno
-              uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31
+              uses: denoland/setup-deno@v1
               with:
                   deno-version: v2.x
+
+            - name: Get version from deno.json
+              id: get_version
+              run: echo "::set-output name=version::$(jq -r .version deno.json)"
+
+            - name: Create GitHub tag
+              run: |
+                  git config --global user.name 'github-actions[bot]'
+                  git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+                  git tag -a v${{ steps.get_version.outputs.version }} -m "Release version ${{ steps.get_version.outputs.version }}"
+                  git push origin v${{ steps.get_version.outputs.version }}
 
             - name: Publish on tag
               run: deno run -A jsr:@david/publish-on-tag@0.1.4
