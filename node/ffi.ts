@@ -1,10 +1,8 @@
 import { FFIResulTypeIsNotForYaksokError } from '../error/ffi.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
-import { Executable, Position, ValueTypes } from './base.ts'
+import { Evaluable, Executable, Position, ValueTypes } from './base.ts'
 import { Identifier } from './index.ts'
-import { IndexedValue } from './indexed.ts'
-import { PrimitiveValue } from './primitive.ts'
 
 export class FFIBody extends Identifier {
     constructor(public code: string, public override position?: Position) {
@@ -28,12 +26,16 @@ export class DeclareFFI extends Executable {
 
     run(scope: Scope, _callFrame: CallFrame): ValueTypes {
         const params = this.getParams(scope)
-        const result = scope
-            .runtime!.runFFI(this.runtime, this.body, params)
-            .execute(scope, _callFrame)
+        const returnValue = scope.runtime!.runFFI(
+            this.runtime,
+            this.body,
+            params,
+        )
 
-        this.assertYaksokValue(result)
-        return result
+        this.assertEvaluable(returnValue)
+        const executedResult = returnValue.execute(scope, _callFrame)
+
+        return executedResult
     }
 
     getParams(scope: Scope) {
@@ -44,8 +46,8 @@ export class DeclareFFI extends Executable {
         return params
     }
 
-    assertYaksokValue(value: unknown): asserts value is ValueTypes {
-        if (isYaksokValue(value)) return
+    assertEvaluable(value: unknown): asserts value is Evaluable {
+        if (value instanceof Evaluable) return
 
         throw new FFIResulTypeIsNotForYaksokError({
             position: this.position,
@@ -53,8 +55,4 @@ export class DeclareFFI extends Executable {
             value,
         })
     }
-}
-
-function isYaksokValue(value: unknown): value is ValueTypes {
-    return value instanceof PrimitiveValue || value instanceof IndexedValue
 }

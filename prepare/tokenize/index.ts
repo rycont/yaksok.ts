@@ -268,14 +268,6 @@ export class Tokenizer {
             this.shift()
         }
 
-        // const isValidOperator = Tokenizer.OPERATORS.includes(operator)
-
-        // if (!isValidOperator)
-        //     throw new UnknownOperatorPrecedenceError({
-        //         position: this.position,
-        //         resource: { operator },
-        //     })
-
         this.tokens.push(new Operator(operator, this.position))
     }
 
