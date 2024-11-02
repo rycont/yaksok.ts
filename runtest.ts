@@ -1,8 +1,31 @@
-import { yaksok } from './index.ts'
+import { QuickJS, yaksok } from './index.ts'
 
-yaksok({
-    아두이노: `
-이름: "아두이노" / 2
-`,
-    main: '(@아두이노 이름) 보여주기',
+const quickJS = new QuickJS({
+    prompt: () => {
+        return '10'
+    },
 })
+
+await quickJS.init()
+
+yaksok(
+    `
+번역(QuickJS), 에러 발생
+***
+    return ("ㅁㄴㅇㄹ" as string) */ 10
+***
+
+에러 발생
+        `,
+    {
+        runFFI(_, code, args) {
+            const result = quickJS.run(code, args)
+
+            if (!result) {
+                throw new Error('Result is null')
+            }
+
+            return result
+        },
+    },
+)
