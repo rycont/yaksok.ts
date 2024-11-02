@@ -2,7 +2,6 @@ import {
     IndentIsNotMultipleOf4Error,
     UnexpectedEndOfCodeError,
     UnexpectedCharError,
-    UnknownOperatorPrecedenceError,
 } from '../../error/index.ts'
 import {
     StringValue,
