@@ -2,11 +2,14 @@ import { assertIsError, unreachable } from 'assert'
 import { yaksok } from '../../index.ts'
 import {
     InvalidTypeForOperatorError,
+    ListIndexOutOfRangeError,
+    ListIndexError,
     NotEnumerableValueForListLoopError,
     RangeEndMustBeNumberError,
     RangeStartMustBeLessThanEndError,
     RangeStartMustBeNumberError,
     TargetIsNotIndexedValueError,
+    ListIndexMustBeGreaterThan1Error,
 } from '../../error/index.ts'
 
 Deno.test('Error raised in loop', () => {
@@ -75,7 +78,7 @@ Deno.test('Range end must be number', () => {
 Deno.test('Index set target is must be indexable', () => {
     try {
         yaksok(`목록: 5
-목록[1] = 10
+목록[1]: 10
 
 목록 보여주기
 `)
@@ -93,5 +96,50 @@ Deno.test('Index get target is must be indexable', () => {
         unreachable()
     } catch (e) {
         assertIsError(e, TargetIsNotIndexedValueError)
+    }
+})
+
+Deno.test('List out of range', () => {
+    try {
+        yaksok(`목록: [1, 2, 3]
+목록[4] 보여주기
+`)
+        unreachable()
+    } catch (e) {
+        assertIsError(e, ListIndexOutOfRangeError)
+    }
+})
+
+Deno.test('List index must be number', () => {
+    try {
+        yaksok(`목록: [1, 2, 3]
+목록["Hello"] 보여주기
+`)
+        unreachable()
+    } catch (e) {
+        assertIsError(e, ListIndexError)
+    }
+})
+
+Deno.test('List index must be integer', () => {
+    try {
+        yaksok(`목록: [1, 2, 3]
+목록[1.5] 보여주기
+`)
+        unreachable()
+    } catch (e) {
+        console.log(e)
+        assertIsError(e, ListIndexError)
+    }
+})
+
+Deno.test('List index must bigger than 1', () => {
+    try {
+        yaksok(`목록: [1, 2, 3]
+목록[0] 보여주기
+`)
+        unreachable()
+    } catch (e) {
+        assertIsError(e, ListIndexMustBeGreaterThan1Error)
     }
 })

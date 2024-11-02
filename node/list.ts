@@ -1,7 +1,7 @@
 import {
     ListIndexMustBeGreaterThan1Error,
     ListIndexOutOfRangeError,
-    ListIndexTypeError,
+    ListIndexError,
     RangeEndMustBeNumberError,
     RangeStartMustBeLessThanEndError,
     RangeStartMustBeNumberError,
@@ -44,18 +44,13 @@ export class List extends IndexedValue {
     }
 
     getItem(index: ValueTypes, scope: Scope, callFrame: CallFrame): ValueTypes {
+        this.assertProperIndexPrimitiveType(index)
+
         if (index instanceof NumberValue) {
             return this.getItemByNumberIndex(index.value)
-        } else if (index instanceof List) {
-            return this.getItemsByListIndex(index, scope, callFrame)
         }
 
-        throw new ListIndexTypeError({
-            position: this.position,
-            resource: {
-                index,
-            },
-        })
+        return this.getItemsByListIndex(index, scope, callFrame)
     }
 
     private getItemByNumberIndex(index: number) {
@@ -74,7 +69,7 @@ export class List extends IndexedValue {
         callFrame: CallFrame,
     ) {
         const list = this.items!
-        const indexes = index.items!
+        const indexes = index.items! as NumberValue[]
 
         const items = this.getItemsByIndexes(list, indexes)
         const itemsList = new List(items)
@@ -84,9 +79,8 @@ export class List extends IndexedValue {
         return itemsList
     }
 
-    private getItemsByIndexes(list: ValueTypes[], indexes: ValueTypes[]) {
+    private getItemsByIndexes(list: ValueTypes[], indexes: NumberValue[]) {
         return indexes.map((index) => {
-            this.assertProperIndexPrimitiveType(index)
             return list[index.value - 1]
         })
     }
@@ -123,10 +117,19 @@ export class List extends IndexedValue {
 
     private assertProperIndexPrimitiveType(
         index: ValueTypes,
-    ): asserts index is NumberValue {
-        if (index instanceof NumberValue) return
+    ): asserts index is NumberValue | List {
+        if (index instanceof List) {
+            for (const item of index.items!) {
+                this.assertProperIndexPrimitiveType(item)
+            }
 
-        throw new ListIndexTypeError({
+            return
+        }
+
+        if (index instanceof NumberValue && Number.isInteger(index.value))
+            return
+
+        throw new ListIndexError({
             position: this.position,
             resource: {
                 index,
