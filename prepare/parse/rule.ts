@@ -59,25 +59,6 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Expression,
-                    value: '[',
-                },
-                {
-                    type: Evaluable,
-                },
-                {
-                    type: Expression,
-                    value: ']',
-                },
-            ],
-            factory: (nodes) => {
-                const index = nodes[1] as Evaluable
-                return new ValueWithBracket(index)
-            },
-        },
-        {
-            pattern: [
-                {
                     type: Evaluable,
                 },
                 {
