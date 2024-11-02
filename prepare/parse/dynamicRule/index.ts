@@ -3,11 +3,12 @@ import { createLocalDynamicRules } from './local/index.ts'
 import { TokenizeResult } from '../../tokenize/index.ts'
 import { Yaksok } from '../../../index.ts'
 
-export function createDynamicRule(tokenized: TokenizeResult, runtime?: Yaksok) {
+export function createDynamicRule(tokenized: TokenizeResult, runtime: Yaksok) {
     const localRules = createLocalDynamicRules(tokenized)
-    const mentioningRules = runtime
-        ? getDynamicRulesFromMention(tokenized.tokens, runtime)
-        : []
+    const mentioningRules = getDynamicRulesFromMention(
+        tokenized.tokens,
+        runtime,
+    )
 
     return [...localRules, mentioningRules]
 }

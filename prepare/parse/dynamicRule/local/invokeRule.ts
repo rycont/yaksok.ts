@@ -1,4 +1,3 @@
-import { UnexpectedTokenError } from '../../../../error/prepare.ts'
 import {
     Node,
     Expression,
@@ -57,12 +56,6 @@ function functionHeaderToInvokeMap(
     index: number,
     tokenSequence: FunctionHeaderNode[],
 ): PatternUnit | PatternUnit | null {
-    // if (token instanceof Variable) {
-    //     return {
-    //         type: ValueWithBracket,
-    //     }
-    // }
-
     const previousToken = tokenSequence[index - 1]
     const isParameterToken =
         previousToken && isParentheses(previousToken) === BRACKET_TYPE.OPENING
@@ -79,17 +72,7 @@ function functionHeaderToInvokeMap(
         }
     }
 
-    if (token instanceof Expression) {
-        return null
-    }
-
-    throw new UnexpectedTokenError({
-        position: (token as Node).position,
-        resource: {
-            node: token,
-            parts: '새 약속 만들기',
-        },
-    })
+    return null
 }
 
 function splitFunctionHeaderWithSpace(_tokens: FunctionHeaderNode[]) {

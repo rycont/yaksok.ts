@@ -19,7 +19,6 @@ import {
     ModularOperator,
     PowerOperator,
 } from './index.ts'
-import { UnknownOperatorPrecedenceError } from '../error/index.ts'
 import { RangeOperator } from './list.ts'
 
 const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
@@ -74,20 +73,7 @@ export class Formula extends Evaluable {
             )
         }
 
-        if (terms.length === 1) {
-            return terms[0] as ValueTypes
-        }
-
-        const [operator] = terms.filter(
-            (term): term is Operator => term instanceof Operator,
-        )
-
-        throw new UnknownOperatorPrecedenceError({
-            position: operator.position,
-            resource: {
-                operator: operator.constructor.name,
-            },
-        })
+        return terms[0] as ValueTypes
     }
 
     calculateOperatorWithPrecedence(

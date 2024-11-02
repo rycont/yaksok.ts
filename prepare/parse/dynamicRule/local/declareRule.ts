@@ -1,5 +1,4 @@
-import { UnexpectedTokenError } from '../../../../error/prepare.ts'
-import { Identifier, Expression, Node } from '../../../../node/index.ts'
+import { Identifier, Expression } from '../../../../node/index.ts'
 import { EOL } from '../../../../node/misc.ts'
 import type { Rule, PatternUnit } from '../../rule.ts'
 import {
@@ -31,12 +30,6 @@ export function createFunctionDeclareRule(
 }
 
 function functionHeaderToRuleMap(token: FunctionHeaderNode): PatternUnit {
-    // if (token instanceof Variable) {
-    //     return {
-    //         type: Variable,
-    //     }
-    // }
-
     if (token instanceof Identifier) {
         return {
             type: Identifier,
@@ -44,18 +37,8 @@ function functionHeaderToRuleMap(token: FunctionHeaderNode): PatternUnit {
         }
     }
 
-    if (token instanceof Expression) {
-        return {
-            type: Expression,
-            value: token.value,
-        }
+    return {
+        type: Expression,
+        value: token.value,
     }
-
-    throw new UnexpectedTokenError({
-        position: (token as Node).position,
-        resource: {
-            node: token,
-            parts: '새 약속 만들기',
-        },
-    })
 }

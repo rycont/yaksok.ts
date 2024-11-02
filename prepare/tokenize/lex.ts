@@ -62,14 +62,20 @@ class Lexer {
                 continue
             }
 
-            if (isParentheses(token) === BRACKET_TYPE.OPENING) {
+            if (
+                isParentheses(token) === BRACKET_TYPE.OPENING &&
+                isParentheses(this.tokens[0]) !== BRACKET_TYPE.CLOSING
+            ) {
                 const node = this.parseInlineBlock('parenthesis')
                 this.lexedTokens.push(node)
 
                 continue
             }
 
-            if (isBracket(token) === BRACKET_TYPE.OPENING) {
+            if (
+                isBracket(token) === BRACKET_TYPE.OPENING &&
+                isBracket(this.tokens[0]) !== BRACKET_TYPE.CLOSING
+            ) {
                 const node = this.parseInlineBlock('bracket')
                 this.lexedTokens.push(node)
 
@@ -164,11 +170,7 @@ class Lexer {
         const argumentNames: string[] = []
 
         while (true) {
-            const token = this.tokens.shift()
-
-            if (!token) {
-                throw this.unexpectedEOF('함수 이름')
-            }
+            const token = this.tokens.shift()!
 
             if (token instanceof Identifier) {
                 functionHeader.push(token)
@@ -181,14 +183,10 @@ class Lexer {
                 token instanceof Operator && this.isFunctionVariants(token)
 
             if (isFunctionVariants) {
-                const nextToken = this.tokens.shift() as Identifier | undefined
-
-                if (!nextToken) {
-                    throw this.unexpectedEOF('함수 이름의 변형')
-                }
+                const nextToken = this.tokens.shift()! as Identifier
 
                 const lastToken = functionHeader[functionHeader.length - 1]
-                lastToken.value += token.value + '/' + nextToken.value
+                lastToken.value += token.value + nextToken.value
 
                 continue
             }
@@ -220,11 +218,7 @@ class Lexer {
     }
 
     parseFunctionArgument(openingBracket: Expression) {
-        const argumentNameToken = this.tokens.shift()
-
-        if (!argumentNameToken) {
-            throw this.unexpectedEOF('함수 인자 이름')
-        }
+        const argumentNameToken = this.tokens.shift()!
 
         if (!(argumentNameToken instanceof Identifier)) {
             throw new UnexpectedTokenError({
@@ -235,11 +229,7 @@ class Lexer {
             })
         }
 
-        const closingBracketToken = this.tokens.shift()
-
-        if (!closingBracketToken) {
-            throw this.unexpectedEOF("함수 인자 이름을 끝내는 ')' 괄호")
-        }
+        const closingBracketToken = this.tokens.shift()!
 
         if (isParentheses(closingBracketToken) !== BRACKET_TYPE.CLOSING) {
             throw new UnexpectedTokenError({

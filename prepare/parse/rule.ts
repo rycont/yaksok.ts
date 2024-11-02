@@ -32,7 +32,6 @@ import {
     Sequence,
     SetToIndex,
     SetVariable,
-    ValueWithParenthesis,
     IntegerDivideOperator,
     ModularOperator,
     PowerOperator,
@@ -56,25 +55,6 @@ export type Rule = {
 
 export const internalPatternsByLevel: Rule[][] = [
     [
-        {
-            pattern: [
-                {
-                    type: Expression,
-                    value: '[',
-                },
-                {
-                    type: Evaluable,
-                },
-                {
-                    type: Expression,
-                    value: ']',
-                },
-            ],
-            factory: (nodes) => {
-                const index = nodes[1] as Evaluable
-                return new ValueWithBracket(index)
-            },
-        },
         {
             pattern: [
                 {
@@ -161,41 +141,11 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Expression,
-                    value: '(',
-                },
-                {
-                    type: Evaluable,
-                },
-                {
-                    type: Expression,
-                    value: ')',
-                },
-            ],
-            factory: (nodes) => {
-                const value = nodes[1] as Evaluable
-                return new ValueWithParenthesis(value)
-            },
-        },
-        {
-            pattern: [
-                {
                     type: Operator,
                     value: '>',
                 },
             ],
             factory: () => new GreaterThanOperator(),
-        },
-        {
-            pattern: [
-                {
-                    type: GreaterThanOperator,
-                },
-                {
-                    type: EqualOperator,
-                },
-            ],
-            factory: () => new GreaterThanOrEqualOperator(),
         },
         {
             pattern: [
@@ -209,30 +159,20 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: LessThanOperator,
-                },
-                {
-                    type: EqualOperator,
+                    type: Operator,
+                    value: '>=',
                 },
             ],
-            factory: () => new LessThanOrEqualOperator(),
+            factory: () => new GreaterThanOrEqualOperator(),
         },
         {
             pattern: [
                 {
-                    type: Identifier,
-                    value: '이전',
-                },
-                {
-                    type: Identifier,
+                    type: Operator,
+                    value: '<=',
                 },
             ],
-            factory: (nodes) => {
-                const identifier = nodes[1] as Identifier
-                const name = identifier.value
-
-                return new Identifier(name)
-            },
+            factory: () => new LessThanOrEqualOperator(),
         },
         {
             pattern: [

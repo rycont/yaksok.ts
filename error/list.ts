@@ -68,7 +68,7 @@ export class RangeStartMustBeLessThanEndError extends YaksokError {
     }
 }
 
-export class ListIndexTypeError extends YaksokError {
+export class ListIndexError extends YaksokError {
     constructor(props: {
         position?: Position
 
@@ -77,9 +77,10 @@ export class ListIndexTypeError extends YaksokError {
         }
     }) {
         super(props)
-        this.message = `목록의 인덱스는 숫자나 목록여야 해요. ${evaluableToText(
+
+        this.message = `목록의 인덱스는 정수나 목록여야 해요. ${evaluableToText(
             props.resource.index,
-        )}는 숫자나 목록가 아니에요.`
+        )}는 정수나 목록가 아니에요.`
     }
 }
 export class RangeStartMustBeNumberError extends YaksokError {

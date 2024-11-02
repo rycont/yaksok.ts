@@ -1,4 +1,4 @@
-export function isValidCharForKeyword(char: string) {
+export function isValidCharForIdentifier(char: string) {
     if ('가' <= char && char <= '힣') return true
     if ('ㄱ' <= char && char <= 'ㆉ') return true
     if ('0' <= char && char <= '9') return true
@@ -9,7 +9,7 @@ export function isValidCharForKeyword(char: string) {
     return false
 }
 
-export function isValidFirstCharForKeyword(char: string) {
+export function isValidFirstCharForIdentifier(char: string) {
     if ('가' <= char && char <= '힣') return true
     if ('ㄱ' <= char && char <= 'ㆉ') return true
     if ('A' <= char && char <= 'Z') return true

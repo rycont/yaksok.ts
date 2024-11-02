@@ -8,13 +8,16 @@ import { SetVariable } from '../../node/variable.ts'
 import type { Rule } from './rule.ts'
 import { Identifier } from '../../node/index.ts'
 
-export function parse(tokenized: TokenizeResult, runtime?: Yaksok) {
+export function parse(tokenized: TokenizeResult, runtime: Yaksok) {
     const dynamicRules = createDynamicRule(tokenized, runtime)
     const indentedNodes = parseIndent(tokenized.tokens)
 
-    const ast = callParseRecursively(indentedNodes, dynamicRules, 'Block')
-    const exportedVariables =
-        ast instanceof Block ? getExportedVariablesRules(ast) : []
+    const ast = callParseRecursively(
+        indentedNodes,
+        dynamicRules,
+        'Block',
+    ) as Block
+    const exportedVariables = getExportedVariablesRules(ast)
 
     const exportedRules = [...dynamicRules.flat(), ...exportedVariables]
 

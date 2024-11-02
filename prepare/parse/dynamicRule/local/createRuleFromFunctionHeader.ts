@@ -1,6 +1,5 @@
-import { UnexpectedTokenError } from '../../../../error/prepare.ts'
 import { Node, Identifier, Expression } from '../../../../node/index.ts'
-import { isParentheses, BRACKET_TYPE } from '../../../../util/isBracket.ts'
+import { isParentheses } from '../../../../util/isBracket.ts'
 import { createFunctionDeclareRule } from './declareRule.ts'
 import type {
     functionRuleByType,
@@ -29,30 +28,9 @@ export function createRuleFromFunctionHeader(
 function assertValidFunctionHeader(
     subtokens: Node[],
 ): asserts subtokens is FunctionHeaderNode[] {
-    let isInParenthesis = false
-
     for (const token of subtokens) {
         if (token instanceof Identifier) continue
-
-        const parenthesisType = isParentheses(token)
-
-        if (parenthesisType === BRACKET_TYPE.OPENING && !isInParenthesis) {
-            isInParenthesis = true
-            continue
-        }
-
-        if (parenthesisType === BRACKET_TYPE.CLOSING && isInParenthesis) {
-            isInParenthesis = false
-            continue
-        }
-
-        throw new UnexpectedTokenError({
-            position: subtokens[0].position,
-            resource: {
-                node: token,
-                parts: '새 약속 만들기',
-            },
-        })
+        if (isParentheses(token)) continue
     }
 }
 

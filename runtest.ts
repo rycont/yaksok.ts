@@ -1,10 +1,8 @@
-import { QuickJS } from './bridge/quickjs/index.ts'
-import { yaksok } from './index.ts'
+import { QuickJS, yaksok } from './index.ts'
 
 const quickJS = new QuickJS({
-    workingDirectory() {
-        const cwd = Deno.cwd()
-        return cwd
+    prompt: () => {
+        return '10'
     },
 })
 
@@ -12,25 +10,22 @@ await quickJS.init()
 
 yaksok(
     `
-번역(QuickJS), CWD
+번역(QuickJS), 에러 발생
 ***
-    return [workingDirectory()]
+    return ("ㅁㄴㅇㄹ" as string) */ 10
 ***
 
-CWD 보여주기
-`,
+에러 발생
+        `,
     {
-        runFFI(runtime, bodyCode, args) {
-            if (runtime === 'QuickJS') {
-                const result = quickJS.run(bodyCode, args)
-                if (!result) {
-                    throw new Error('Result is null')
-                }
+        runFFI(_, code, args) {
+            const result = quickJS.run(code, args)
 
-                return result
+            if (!result) {
+                throw new Error('Result is null')
             }
 
-            throw new Error(`Unknown runtime: ${runtime}`)
+            return result
         },
     },
 )

@@ -11,11 +11,14 @@ import {
     type PrimitiveTypes,
     type ValueTypes,
 } from '../../node/index.ts'
+import { bold, dim } from '../../error/common.ts'
 
 export class QuickJS {
     instance: QuickJSWASMModule | null = null
 
-    constructor(private functions: Record<string, (...args: any[]) => any>) {}
+    constructor(
+        private functions: Record<string, (...args: any[]) => any> = {},
+    ) {}
 
     async init() {
         this.instance = await getQuickJS()
@@ -28,9 +31,10 @@ export class QuickJS {
         const result = vm.evalCode(wrappedCode)
 
         if (result.error) {
-            const error = vm.dump(result.error)
+            const error = vm.dump(result.error) as QuickJSErrorData
             result.error.dispose()
-            console.error(error)
+
+            throw new QuickJSInternalError(error)
         } else {
             const resultValue = vm.dump(result.value)
             result.value.dispose()
@@ -43,7 +47,7 @@ export class QuickJS {
 
     private createContext() {
         if (!this.instance) {
-            throw new Error('QuickJS instance is not initialized yet')
+            throw new QuickJSNotInitializedError()
         }
 
         const context = this.instance.newContext()
@@ -97,7 +101,7 @@ function convertJSDataIntoQuickJSData(data: any, context: QuickJSContext) {
             context.setProp(
                 array,
                 item,
-                convertJSDataIntoQuickJSData(item, context),
+                convertJSDataIntoQuickJSData(arrayData[item], context),
             )
         }
 
@@ -129,4 +133,43 @@ function convertJSDataIntoYaksok(data: unknown): ValueTypes {
     }
 
     throw new Error('Unsupported data type: ' + typeof data)
+}
+
+interface QuickJSErrorData {
+    name: string
+    message: string
+    stack: string
+}
+
+export class QuickJSInternalError extends Error {
+    constructor(error: QuickJSErrorData) {
+        super(error.message)
+
+        this.name = error.name
+        this.stack = error.stack
+
+        let output = ''
+
+        output += '─────\n\n'
+        output += `🚨  ${bold(`[QuickJS] 문제가 발생했어요`)}  🚨` + '\n\n'
+        output += '> ' + error.message + '\n\n'
+
+        output += '┌─────\n'
+
+        output += error.stack
+            .split('\n')
+            .filter((line) => line.length)
+            .map((line, index) => `│ ${dim(index + 1)}${line}`)
+            .join('\n')
+
+        output += '\n└─────\n'
+
+        console.error(output)
+    }
+}
+
+export class QuickJSNotInitializedError extends Error {
+    constructor() {
+        super('QuickJS instance is not initialized yet')
+    }
 }

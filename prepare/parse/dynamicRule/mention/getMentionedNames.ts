@@ -28,7 +28,5 @@ function isMention(a: Node, b: Node): b is Identifier {
     if (!hasMentionHeader) return false
 
     const hasName = b instanceof Identifier
-    if (!hasName) return false
-
-    return true
+    return hasName
 }

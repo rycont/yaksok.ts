@@ -2,7 +2,6 @@ import {
     IndentIsNotMultipleOf4Error,
     UnexpectedEndOfCodeError,
     UnexpectedCharError,
-    UnknownOperatorPrecedenceError,
 } from '../../error/index.ts'
 import {
     StringValue,
@@ -17,9 +16,9 @@ import {
 } from '../../node/index.ts'
 import { lex } from './lex.ts'
 import {
-    isValidFirstCharForKeyword,
-    isValidCharForKeyword,
-} from './isValidCharForKeyword.ts'
+    isValidFirstCharForIdentifier,
+    isValidCharForIdentifier,
+} from './isValidCharForIdentifier.ts'
 
 export class Tokenizer {
     functionHeaders: Node[][] | undefined = undefined
@@ -31,10 +30,24 @@ export class Tokenizer {
     line = 0
     column = 0
 
-    static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~', '%', '**', '//']
+    static OPERATORS = [
+        '+',
+        '-',
+        '*',
+        '/',
+        '>',
+        '=',
+        '<',
+        '~',
+        '%',
+        '**',
+        '//',
+        '<=',
+        '>=',
+    ]
     static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')', '@']
 
-    constructor(code: string, private disablePosition = false) {
+    constructor(code: string) {
         this.chars = this.preprocess(code)
         this.tokenize()
         this.postprocess()
@@ -79,8 +92,8 @@ export class Tokenizer {
                 continue
             }
 
-            if (isValidFirstCharForKeyword(char)) {
-                this.keyword()
+            if (isValidFirstCharForIdentifier(char)) {
+                this.identifier()
                 continue
             }
 
@@ -119,17 +132,21 @@ export class Tokenizer {
 
     canBeFisrtCharOfNumber(char: string) {
         if ('0' <= char && char <= '9') return true
-        if (
-            char === '-' &&
-            this.chars.length > 1 &&
-            this.isNumeric(this.chars[1]) &&
-            this.tokens.length &&
-            (this.tokens[this.tokens.length - 1] instanceof Operator ||
-                this.tokens[this.tokens.length - 1] instanceof Expression)
-        )
-            return true
 
-        return false
+        const isNegativeSign = char === '-'
+        const isNextCharNumeric =
+            this.chars.length && this.isNumeric(this.chars[1])
+
+        const lastToken = this.tokens[this.tokens.length - 1]
+        const isLastTokenOperator = lastToken instanceof Operator
+        const isLastTokenExpression = lastToken instanceof Expression
+
+        const isValidNegativeSign =
+            isNegativeSign &&
+            isNextCharNumeric &&
+            (isLastTokenOperator || isLastTokenExpression)
+
+        return isValidNegativeSign
     }
 
     ffi() {
@@ -225,10 +242,10 @@ export class Tokenizer {
         this.tokens.push(new StringValue(word, this.position))
     }
 
-    keyword() {
+    identifier() {
         let word = ''
 
-        while (this.chars.length && isValidCharForKeyword(this.chars[0])) {
+        while (this.chars.length && isValidCharForIdentifier(this.chars[0])) {
             word += this.shift()
         }
 
@@ -240,7 +257,6 @@ export class Tokenizer {
 
         while (true) {
             const nextChar = this.chars[0]
-            if (!nextChar) break
 
             const nextOperator = operator + nextChar
             const isValidStartingSequence = Tokenizer.OPERATORS.some((op) =>
@@ -251,13 +267,6 @@ export class Tokenizer {
             operator = nextOperator
             this.shift()
         }
-
-        const isValidOperator = Tokenizer.OPERATORS.includes(operator)
-        if (!isValidOperator)
-            throw new UnknownOperatorPrecedenceError({
-                position: this.position,
-                resource: { operator },
-            })
 
         this.tokens.push(new Operator(operator, this.position))
     }
@@ -284,13 +293,15 @@ export class Tokenizer {
 
     shift() {
         const char = this.chars.shift()
-        if (!char)
+
+        if (!char) {
             throw new UnexpectedEndOfCodeError({
                 position: this.position,
                 resource: {
                     parts: '코드',
                 },
             })
+        }
 
         if (char === '\n') {
             this.line++
@@ -303,8 +314,6 @@ export class Tokenizer {
     }
 
     get position() {
-        if (this.disablePosition) return undefined
-
         return {
             line: this.line,
             column: this.column,
@@ -312,8 +321,8 @@ export class Tokenizer {
     }
 }
 
-export function tokenize(code: string, disablePosition = false) {
-    const tokenizer = new Tokenizer(code, disablePosition)
+export function tokenize(code: string) {
+    const tokenizer = new Tokenizer(code)
 
     return {
         tokens: tokenizer.tokens!,

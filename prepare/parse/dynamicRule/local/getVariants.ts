@@ -5,7 +5,6 @@ import { getCombination } from './getCombination.ts'
 interface VariantedPart {
     index: number
     candidates: string[]
-    postfix: string
 }
 
 export function* getVariants(subtokens: FunctionHeaderNode[]) {
@@ -23,13 +22,11 @@ function* getVariantParts(subtokens: FunctionHeaderNode[]) {
         if (!(token instanceof Identifier)) continue
         if (!token.value.includes('/')) continue
 
-        const [v, postfix] = token.value.split(' ')
-        const candidates = v.split('/')
+        const candidates = token.value.split('/')
 
         yield {
             index,
             candidates,
-            postfix,
         }
     }
 }
@@ -42,10 +39,8 @@ function createVariantFromChoices(
     const tokens = [..._tokens]
 
     for (const [index, optionIndex] of choice.entries()) {
-        const { candidates, postfix } = variants[index]
-        const content = postfix
-            ? candidates[optionIndex] + ' ' + postfix
-            : candidates[optionIndex]
+        const { candidates } = variants[index]
+        const content = candidates[optionIndex]
 
         tokens[variants[index].index] = new Identifier(content)
     }

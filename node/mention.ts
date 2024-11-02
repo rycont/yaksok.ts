@@ -1,6 +1,7 @@
 import { Evaluable, Executable, ValueTypes } from './base.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
+import { ErrorInModuleError } from '../error/index.ts'
 
 export class Mention extends Executable {
     constructor(public value: string) {
@@ -21,16 +22,26 @@ export class MentionScope extends Evaluable {
         this.setChildPosition()
 
         const scope = _scope.createChild()
-        const runner = _scope.runtime!.runOnce(this.fileName)
-        const moduleScope = runner.scope
 
-        moduleScope.parent = scope
+        try {
+            const runner = _scope.runtime!.runOnce(this.fileName)
+            const moduleScope = runner.scope
 
-        const result = runner.evaluateFromExtern(this.child)
+            moduleScope.parent = scope
 
-        moduleScope.parent = undefined
+            const result = runner.evaluateFromExtern(this.child)
 
-        return result
+            moduleScope.parent = undefined
+
+            return result
+        } catch (_) {
+            throw new ErrorInModuleError({
+                resource: {
+                    fileName: this.fileName,
+                },
+                position: this.position,
+            })
+        }
     }
 
     override toPrint(): string {

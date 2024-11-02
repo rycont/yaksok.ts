@@ -26,7 +26,7 @@ export class ListLoop extends Executable {
         this.assertRepeatTargetIsList(list)
 
         try {
-            for (const value of list.evaluatedItems!) {
+            for (const value of list.items!) {
                 scope.setVariable(this.variableName, value)
                 this.body.execute(scope, callFrame)
             }
