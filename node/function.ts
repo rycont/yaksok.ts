@@ -2,8 +2,8 @@ import { NotDefinedIdentifierError } from '../error/index.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
 import { ReturnSignal } from '../runtime/signals.ts'
-import { Evaluable, Executable, ValueTypes } from './base.ts'
-import { Block } from './block.ts'
+import { Evaluable, Executable, type ValueTypes } from './base.ts'
+import type { Block } from './block.ts'
 import { NumberValue } from './primitive.ts'
 
 const DEFAULT_RETURN_VALUE = new NumberValue(0)
@@ -23,7 +23,7 @@ export class DeclareFunction extends Executable {
         scope.setFunction(this.name, this)
     }
 
-    run(scope: Scope, _callFrame: CallFrame) {
+    run(scope: Scope, _callFrame: CallFrame): ValueTypes {
         const callFrame = new CallFrame(this, _callFrame)
 
         try {
@@ -37,7 +37,7 @@ export class DeclareFunction extends Executable {
         return this.getReturnValue(scope)
     }
 
-    getReturnValue(scope: Scope) {
+    getReturnValue(scope: Scope): ValueTypes {
         try {
             return scope.getVariable('결과')
         } catch (e) {

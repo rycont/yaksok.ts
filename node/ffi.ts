@@ -1,8 +1,13 @@
 import { FFIResulTypeIsNotForYaksokError } from '../error/ffi.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
-import { Scope } from '../runtime/scope.ts'
-import { Evaluable, Executable, Position, ValueTypes } from './base.ts'
-import { Identifier } from './index.ts'
+import type { CallFrame } from '../runtime/callFrame.ts'
+import type { Scope } from '../runtime/scope.ts'
+import {
+    Evaluable,
+    Executable,
+    type Position,
+    type ValueTypes,
+} from './base.ts'
+import { Identifier, type Params } from './index.ts'
 
 export class FFIBody extends Identifier {
     constructor(public code: string, public override position?: Position) {
@@ -38,7 +43,7 @@ export class DeclareFFI extends Executable {
         return executedResult
     }
 
-    getParams(scope: Scope) {
+    getParams(scope: Scope): Params {
         const params = Object.fromEntries(
             this.paramNames.map((param) => [param, scope.getVariable(param)]),
         )

@@ -1,19 +1,16 @@
-import * as esbuild from 'npm:esbuild@0.20.2'
+import { build } from 'npm:esbuild@0.20.2'
 import { denoPlugins } from 'jsr:@luca/esbuild-deno-loader@^0.11.0'
 
-const result = await esbuild.build({
+await build({
     entryPoints: ['./index.ts'],
     bundle: true,
-    write: false,
+    write: true,
     format: 'esm',
     treeShaking: true,
     keepNames: true,
     minifyWhitespace: true,
     minifyIdentifiers: false,
     minifySyntax: true,
-
     plugins: [...denoPlugins()],
+    outdir: 'dist',
 })
-
-console.log(result.outputFiles[0].text)
-esbuild.stop()

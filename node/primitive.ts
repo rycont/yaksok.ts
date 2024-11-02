@@ -1,6 +1,6 @@
-import { CallFrame } from '../runtime/callFrame.ts'
-import { Evaluable, Position } from './base.ts'
-import { Scope } from '../runtime/scope.ts'
+import type { CallFrame } from '../runtime/callFrame.ts'
+import { Evaluable, type Position } from './base.ts'
+import type { Scope } from '../runtime/scope.ts'
 
 export class PrimitiveValue<T> extends Evaluable {
     value: T

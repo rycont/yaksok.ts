@@ -1,5 +1,5 @@
 import { Identifier } from '../../../../node/index.ts'
-import { FunctionHeaderNode } from './functionRuleByType.ts'
+import type { FunctionHeaderNode } from './functionRuleByType.ts'
 import { getCombination } from './getCombination.ts'
 
 interface VariantedPart {

@@ -1,4 +1,4 @@
-import { Node, Indent, EOL, Block } from '../../node/index.ts'
+import { type Node, Indent, EOL, Block } from '../../node/index.ts'
 
 export function parseIndent(_tokens: Node[], indent = 0) {
     const groups: Node[] = []

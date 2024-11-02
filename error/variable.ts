@@ -1,4 +1,4 @@
-import { Position } from '../node/base.ts'
+import type { Position } from '../node/base.ts'
 import { YaksokError } from './common.ts'
 
 export class CannotUseReservedWordForIdentifierNameError extends YaksokError {

@@ -1,4 +1,4 @@
-import { Position } from '../node/base.ts'
+import type { Position } from '../node/base.ts'
 import { YaksokError, blue, bold, dim } from './common.ts'
 
 export class FFIResulTypeIsNotForYaksokError extends YaksokError {

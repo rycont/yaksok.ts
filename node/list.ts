@@ -9,9 +9,9 @@ import {
 } from '../error/index.ts'
 import { CallFrame } from '../runtime/callFrame.ts'
 import { Scope } from '../runtime/scope.ts'
-import { Evaluable, Executable, Operator, ValueTypes } from './index.ts'
+import { Evaluable, Executable, Operator, type ValueTypes } from './index.ts'
 import { IndexedValue } from './indexed.ts'
-import { NumberValue, PrimitiveValue } from './primitive.ts'
+import { NumberValue, type PrimitiveValue } from './primitive.ts'
 
 export class Sequence extends Evaluable {
     constructor(public items: Evaluable[]) {

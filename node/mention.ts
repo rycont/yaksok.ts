@@ -1,6 +1,6 @@
-import { Evaluable, Executable, ValueTypes } from './base.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
-import { Scope } from '../runtime/scope.ts'
+import { Evaluable, Executable, type ValueTypes } from './base.ts'
+import type { CallFrame } from '../runtime/callFrame.ts'
+import type { Scope } from '../runtime/scope.ts'
 import { ErrorInModuleError } from '../error/index.ts'
 
 export class Mention extends Executable {

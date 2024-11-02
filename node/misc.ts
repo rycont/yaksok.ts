@@ -1,7 +1,7 @@
-import { CallFrame } from '../runtime/callFrame.ts'
-import { Scope } from '../runtime/scope.ts'
+import type { CallFrame } from '../runtime/callFrame.ts'
+import type { Scope } from '../runtime/scope.ts'
 
-import { Node, Executable, Evaluable, Position } from './base.ts'
+import { Node, Executable, type Evaluable, type Position } from './base.ts'
 
 export class EOL extends Node {
     constructor(public override position?: Position) {

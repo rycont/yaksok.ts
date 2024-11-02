@@ -1,4 +1,4 @@
-import { Scope } from '../runtime/scope.ts'
+import type { Scope } from '../runtime/scope.ts'
 import { ReturnSignal } from '../runtime/signals.ts'
 import { Executable } from './base.ts'
 
