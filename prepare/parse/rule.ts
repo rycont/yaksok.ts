@@ -161,41 +161,11 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Expression,
-                    value: '(',
-                },
-                {
-                    type: Evaluable,
-                },
-                {
-                    type: Expression,
-                    value: ')',
-                },
-            ],
-            factory: (nodes) => {
-                const value = nodes[1] as Evaluable
-                return new ValueWithParenthesis(value)
-            },
-        },
-        {
-            pattern: [
-                {
                     type: Operator,
                     value: '>',
                 },
             ],
             factory: () => new GreaterThanOperator(),
-        },
-        {
-            pattern: [
-                {
-                    type: GreaterThanOperator,
-                },
-                {
-                    type: EqualOperator,
-                },
-            ],
-            factory: () => new GreaterThanOrEqualOperator(),
         },
         {
             pattern: [
@@ -216,23 +186,6 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
             factory: () => new LessThanOrEqualOperator(),
-        },
-        {
-            pattern: [
-                {
-                    type: Identifier,
-                    value: '이전',
-                },
-                {
-                    type: Identifier,
-                },
-            ],
-            factory: (nodes) => {
-                const identifier = nodes[1] as Identifier
-                const name = identifier.value
-
-                return new Identifier(name)
-            },
         },
         {
             pattern: [

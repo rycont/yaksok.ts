@@ -62,14 +62,20 @@ class Lexer {
                 continue
             }
 
-            if (isParentheses(token) === BRACKET_TYPE.OPENING) {
+            if (
+                isParentheses(token) === BRACKET_TYPE.OPENING &&
+                isParentheses(this.tokens[0]) !== BRACKET_TYPE.CLOSING
+            ) {
                 const node = this.parseInlineBlock('parenthesis')
                 this.lexedTokens.push(node)
 
                 continue
             }
 
-            if (isBracket(token) === BRACKET_TYPE.OPENING) {
+            if (
+                isBracket(token) === BRACKET_TYPE.OPENING &&
+                isBracket(this.tokens[0]) !== BRACKET_TYPE.CLOSING
+            ) {
                 const node = this.parseInlineBlock('bracket')
                 this.lexedTokens.push(node)
 
