@@ -1,6 +1,5 @@
-import { UnexpectedTokenError } from '../../../../error/prepare.ts'
 import { Node, Identifier, Expression } from '../../../../node/index.ts'
-import { isParentheses, BRACKET_TYPE } from '../../../../util/isBracket.ts'
+import { isParentheses } from '../../../../util/isBracket.ts'
 import { createFunctionDeclareRule } from './declareRule.ts'
 import type {
     functionRuleByType,

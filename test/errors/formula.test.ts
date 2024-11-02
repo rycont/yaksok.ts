@@ -1,4 +1,4 @@
-import { assertEquals, assertIsError } from 'assert'
+import { assertEquals } from 'assert'
 import { yaksok } from '../../index.ts'
 
 function createRandomValue(depth = 0): number | (string | number)[] {

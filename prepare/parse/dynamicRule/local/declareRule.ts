@@ -1,5 +1,4 @@
-import { UnexpectedTokenError } from '../../../../error/prepare.ts'
-import { Identifier, Expression, Node } from '../../../../node/index.ts'
+import { Identifier, Expression } from '../../../../node/index.ts'
 import { EOL } from '../../../../node/misc.ts'
 import type { Rule, PatternUnit } from '../../rule.ts'
 import {

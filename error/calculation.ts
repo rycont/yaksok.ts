@@ -1,5 +1,4 @@
 import { Position, Operator, Evaluable } from '../node/index.ts'
-import { NODE_NAMES } from './nodeNames.ts'
 import { YaksokError, evaluableToText, operatorToText } from './common.ts'
 
 export class InvalidTypeForCompareError extends YaksokError {

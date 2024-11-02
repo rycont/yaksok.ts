@@ -32,7 +32,6 @@ import {
     Sequence,
     SetToIndex,
     SetVariable,
-    ValueWithParenthesis,
     IntegerDivideOperator,
     ModularOperator,
     PowerOperator,
