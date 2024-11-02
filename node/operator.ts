@@ -162,6 +162,10 @@ export class DivideOperator extends Operator {
 }
 
 export class ModularOperator extends Operator {
+    override toPrint() {
+        return '%'
+    }
+
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
@@ -190,6 +194,10 @@ export class ModularOperator extends Operator {
     }
 }
 export class PowerOperator extends Operator {
+    override toPrint() {
+        return '**'
+    }
+
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
@@ -218,6 +226,10 @@ export class PowerOperator extends Operator {
     }
 }
 export class IntegerDivideOperator extends Operator {
+    override toPrint() {
+        return '//'
+    }
+
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
@@ -247,6 +259,10 @@ export class IntegerDivideOperator extends Operator {
 }
 
 export class EqualOperator extends Operator {
+    override toPrint() {
+        return '='
+    }
+
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
@@ -272,6 +288,10 @@ export class EqualOperator extends Operator {
 }
 
 export class AndOperator extends Operator {
+    override toPrint() {
+        return '이고(그리고)'
+    }
+
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
@@ -304,6 +324,10 @@ export class AndOperator extends Operator {
 }
 
 export class OrOperator extends Operator {
+    override toPrint() {
+        return '이거나(또는)'
+    }
+
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
@@ -336,6 +360,10 @@ export class OrOperator extends Operator {
 }
 
 export class GreaterThanOperator extends Operator {
+    override toPrint() {
+        return '>'
+    }
+
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
@@ -365,6 +393,10 @@ export class GreaterThanOperator extends Operator {
 }
 
 export class LessThanOperator extends Operator {
+    override toPrint() {
+        return '<'
+    }
+
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
@@ -394,6 +426,10 @@ export class LessThanOperator extends Operator {
 }
 
 export class GreaterThanOrEqualOperator extends Operator {
+    override toPrint() {
+        return '>='
+    }
+
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
@@ -423,6 +459,10 @@ export class GreaterThanOrEqualOperator extends Operator {
 }
 
 export class LessThanOrEqualOperator extends Operator {
+    override toPrint() {
+        return '<='
+    }
+
     override call(...operands: ValueTypes[]) {
         if (operands.length !== 2) {
             throw new InvalidNumberOfOperandsError({
