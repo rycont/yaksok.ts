@@ -186,7 +186,7 @@ class Lexer {
                 const nextToken = this.tokens.shift()! as Identifier
 
                 const lastToken = functionHeader[functionHeader.length - 1]
-                lastToken.value += token.value + '/' + nextToken.value
+                lastToken.value += token.value + nextToken.value
 
                 continue
             }

@@ -8,7 +8,7 @@ import { SetVariable } from '../../node/variable.ts'
 import type { Rule } from './rule.ts'
 import { Identifier } from '../../node/index.ts'
 
-export function parse(tokenized: TokenizeResult, runtime?: Yaksok) {
+export function parse(tokenized: TokenizeResult, runtime: Yaksok) {
     const dynamicRules = createDynamicRule(tokenized, runtime)
     const indentedNodes = parseIndent(tokenized.tokens)
 

@@ -29,30 +29,9 @@ export function createRuleFromFunctionHeader(
 function assertValidFunctionHeader(
     subtokens: Node[],
 ): asserts subtokens is FunctionHeaderNode[] {
-    let isInParenthesis = false
-
     for (const token of subtokens) {
         if (token instanceof Identifier) continue
-
-        const parenthesisType = isParentheses(token)
-
-        if (parenthesisType === BRACKET_TYPE.OPENING && !isInParenthesis) {
-            isInParenthesis = true
-            continue
-        }
-
-        if (parenthesisType === BRACKET_TYPE.CLOSING && isInParenthesis) {
-            isInParenthesis = false
-            continue
-        }
-
-        throw new UnexpectedTokenError({
-            position: subtokens[0].position,
-            resource: {
-                node: token,
-                parts: '새 약속 만들기',
-            },
-        })
+        if (isParentheses(token)) continue
     }
 }
 

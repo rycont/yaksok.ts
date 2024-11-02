@@ -52,9 +52,6 @@ function createFactory(fileName: string, rule: Rule) {
         const child = rule.factory(nodes.slice(1))
         child.position = nodes[1].position
 
-        if (!(child instanceof Evaluable))
-            throw new Error('child is not Evaluable')
-
-        return new MentionScope(fileName, child)
+        return new MentionScope(fileName, child as Evaluable)
     }
 }

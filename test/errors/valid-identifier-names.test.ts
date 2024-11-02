@@ -1,5 +1,6 @@
 import { assertIsError, unreachable } from 'assert'
 import { yaksok } from '../../index.ts'
+import { CannotUseReservedWordForIdentifierNameError } from '../../error/index.ts'
 
 Deno.test('Valid identifier names', () => {
     try {
@@ -13,11 +14,20 @@ Deno.test('Valid identifier names', () => {
     }
 })
 
-Deno.test('Invalid proper identifier names', () => {
+Deno.test('Invalid identifier name', () => {
     try {
         yaksok(`멍멍*이: 10`)
         unreachable()
     } catch (error) {
         assertIsError(error)
+    }
+})
+
+Deno.test('Cannot use reserved words as an identifier', () => {
+    try {
+        yaksok(`만약: 10`)
+        unreachable()
+    } catch (error) {
+        assertIsError(error, CannotUseReservedWordForIdentifierNameError)
     }
 })
