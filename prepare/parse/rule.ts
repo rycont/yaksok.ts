@@ -160,10 +160,17 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: LessThanOperator,
+                    type: Operator,
+                    value: '>=',
                 },
+            ],
+            factory: () => new GreaterThanOrEqualOperator(),
+        },
+        {
+            pattern: [
                 {
-                    type: EqualOperator,
+                    type: Operator,
+                    value: '<=',
                 },
             ],
             factory: () => new LessThanOrEqualOperator(),

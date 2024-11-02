@@ -30,7 +30,21 @@ export class Tokenizer {
     line = 0
     column = 0
 
-    static OPERATORS = ['+', '-', '*', '/', '>', '=', '<', '~', '%', '**', '//']
+    static OPERATORS = [
+        '+',
+        '-',
+        '*',
+        '/',
+        '>',
+        '=',
+        '<',
+        '~',
+        '%',
+        '**',
+        '//',
+        '<=',
+        '>=',
+    ]
     static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')', '@']
 
     constructor(code: string) {
