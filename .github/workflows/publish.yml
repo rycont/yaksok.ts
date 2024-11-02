@@ -15,12 +15,19 @@ jobs:
             id-token: write
 
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+            - name: Setup repo
+              uses: actions/checkout@v3
 
-            - name: Test
-              uses: ./.github/workflows/test.yml
-              secrets: inherit
+            - name: Setup Deno
+              uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31
+              with:
+                  deno-version: v2.x
+
+            - name: Run linter
+              run: deno lint
+
+            - name: Run tests
+              run: deno test --allow-read
 
             - name: Get version from deno.json
               id: get_version
