@@ -56,34 +56,26 @@ export class DeclareFunction extends Executable {
 }
 
 export interface Params {
-    [key: string]: Node
+    [key: string]: Evaluable
 }
 
 export class FunctionInvoke extends Evaluable {
     private name: string
-    private params: Params | null
+    private params: Params
 
-    constructor(props: { name: string; params?: Record<string, Evaluable> }) {
+    constructor(props: { name: string; params: Params }) {
         super()
 
         this.name = props.name!
-        this.params = props.params || null
+        this.params = props.params
     }
 
     override execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
-        const args = this.params && getParams(this.params, scope, callFrame)
+        const args = getParams(this.params, scope, callFrame)
 
-        try {
-            const result = this.invoke(scope, callFrame, args)
-            return result || DEFAULT_RETURN_VALUE
-        } catch (e) {
-            if (e instanceof NotDefinedFunctionError) {
-                e.position = this.position
-            }
-
-            throw e
-        }
+        const result = this.invoke(scope, callFrame, args)
+        return result
     }
 
     invoke(
@@ -108,21 +100,8 @@ export function getParams(params: Params, scope: Scope, callFrame: CallFrame) {
 
     for (const key in params) {
         const value = params[key]
-
-        assertEvaluable(value)
         args[key] = value.execute(scope, callFrame)
     }
 
     return args
-}
-
-function assertEvaluable(node: Node): asserts node is Evaluable {
-    if (node instanceof Evaluable) return
-
-    throw new NotEvaluableParameterError({
-        position: node.position,
-        resource: {
-            node,
-        },
-    })
 }
