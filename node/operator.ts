@@ -223,7 +223,7 @@ export class AndOperator extends Operator {
 
 export class OrOperator extends Operator {
     override toPrint() {
-        return '이거나(또는)'
+        return '이거나(거나)'
     }
 
     override call(...operands: ValueTypes[]) {
