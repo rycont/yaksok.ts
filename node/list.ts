@@ -1,5 +1,4 @@
 import {
-    InvalidNumberOfOperandsError,
     ListIndexMustBeGreaterThan1Error,
     ListIndexOutOfRangeError,
     ListIndexTypeError,
@@ -238,23 +237,9 @@ export class RangeOperator extends Operator {
     private assertProperOperands(
         operands: ValueTypes[],
     ): asserts operands is [NumberValue, NumberValue] {
-        this.assertProperOperandsLength(operands)
         this.assertProperStartType(operands[0])
         this.assertProperEndType(operands[1])
         this.assertRangeStartLessThanEnd(operands[0].value, operands[1].value)
-    }
-
-    private assertProperOperandsLength(operands: ValueTypes[]) {
-        if (operands.length === 2) return
-
-        throw new InvalidNumberOfOperandsError({
-            position: this.position,
-            resource: {
-                actual: operands.length,
-                expected: 2,
-                operator: this,
-            },
-        })
     }
 
     private assertProperStartType(

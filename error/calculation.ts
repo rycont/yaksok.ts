@@ -17,25 +17,6 @@ export class UnknownOperatorPrecedenceError extends YaksokError {
     }
 }
 
-export class InvalidNumberOfOperandsError extends YaksokError {
-    constructor(props: {
-        position?: Position
-
-        resource: {
-            operator: Operator
-            expected: number
-            actual: number
-        }
-    }) {
-        super(props)
-        this.message = `${props.resource.operator.toPrint()}(${
-            NODE_NAMES[props.resource.operator.constructor.name]
-        })는 ${props.resource.expected}개의 값을 계산할 수 있는데, ${
-            props.resource.actual
-        }개의 값이 주어졌어요.`
-    }
-}
-
 export class InvalidTypeForCompareError extends YaksokError {
     constructor(props: {
         position?: Position

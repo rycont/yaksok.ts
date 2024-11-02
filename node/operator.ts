@@ -1,8 +1,5 @@
 import { InvalidTypeForCompareError } from '../error/calculation.ts'
-import {
-    InvalidNumberOfOperandsError,
-    InvalidTypeForOperatorError,
-} from '../error/index.ts'
+import { InvalidTypeForOperatorError } from '../error/index.ts'
 import { Operator, ValueTypes } from './base.ts'
 import {
     BooleanValue,
@@ -17,17 +14,6 @@ export class PlusOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -62,17 +48,6 @@ export class MinusOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
         if (left instanceof NumberValue && right instanceof NumberValue) {
             return new NumberValue(left.value - right.value)
@@ -94,17 +69,6 @@ export class MultiplyOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
         if (left instanceof NumberValue && right instanceof NumberValue) {
             return new NumberValue(left.value * right.value)
@@ -134,17 +98,6 @@ export class DivideOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -167,17 +120,6 @@ export class ModularOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -199,17 +141,6 @@ export class PowerOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -231,17 +162,6 @@ export class IntegerDivideOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -264,17 +184,6 @@ export class EqualOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (left instanceof PrimitiveValue && right instanceof PrimitiveValue) {
@@ -293,17 +202,6 @@ export class AndOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (
@@ -329,17 +227,6 @@ export class OrOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (
@@ -365,17 +252,6 @@ export class GreaterThanOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -398,17 +274,6 @@ export class LessThanOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -431,17 +296,6 @@ export class GreaterThanOrEqualOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -464,17 +318,6 @@ export class LessThanOrEqualOperator extends Operator {
     }
 
     override call(...operands: ValueTypes[]) {
-        if (operands.length !== 2) {
-            throw new InvalidNumberOfOperandsError({
-                position: this.position,
-                resource: {
-                    operator: this,
-                    expected: 2,
-                    actual: operands.length,
-                },
-            })
-        }
-
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
