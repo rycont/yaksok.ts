@@ -144,3 +144,17 @@ CODES
         assertIsError(e, FFIResulTypeIsNotForYaksokError)
     }
 })
+
+Deno.test('구현되지 않은 FFI', () => {
+    try {
+        yaksok(
+            `번역(mock), (질문) 물어보기
+***
+CODES
+***
+(("이름이 뭐에요?") 물어보기) 보여주기`,
+        )
+    } catch (e) {
+        assertIsError(e)
+    }
+})
