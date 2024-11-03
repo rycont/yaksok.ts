@@ -1,10 +1,11 @@
 <template>
     <div>
         <textarea v-model="code"> </textarea>
-        <div>
-            <div v-for="(output, index) in stdout" :key="index" v-html="output">
-            </div>
-        </div>
+        <pre
+            v-for="(output, index) in stdout"
+            :key="index"
+            v-html="output"
+        ></pre>
         <button @click="runCode">실행</button>
         <button @click="share">코드 공유</button>
     </div>
@@ -16,6 +17,11 @@ import AnsiCode from 'ansi-to-html'
 
 const codeFromUrl = new URL(window.location.href).searchParams.get('code')
 const ansiCode = new AnsiCode()
+
+function ansiToHtml(content) {
+    const text = ansiCode.toHtml(content)
+    return text
+}
 
 export default {
     data() {
@@ -39,7 +45,7 @@ export default {
                     this.stdout = [...this.stdout, content]
                 },
                 stderr: (content) => {
-                    this.stdout = [...this.stdout, ansiCode.toHtml(content)]
+                    this.stdout = [...this.stdout, ansiToHtml(content)]
                 },
             })
         },
@@ -72,6 +78,7 @@ textarea {
     line-height: 1.5;
     box-sizing: border-box;
     transition: box-shadow 0.2s;
+    font-size: 14px;
 }
 
 textarea:focus {
@@ -100,5 +107,17 @@ button {
 
 button + button {
     margin-left: 6px;
+}
+
+pre {
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 12px;
+    font-family: var(--vp-font-family-mono);
+    box-sizing: border-box;
+    overflow-x: auto;
+    border: 1px solid var(--vp-c-border);
+    font-size: 14px;
+    line-height: 1.3;
 }
 </style>
