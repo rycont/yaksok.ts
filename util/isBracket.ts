@@ -1,4 +1,4 @@
-import { Expression, Node } from '../node/index.ts'
+import { Expression, type Node } from '../node/index.ts'
 
 export enum BRACKET_TYPE {
     OPENING = 'OPENING',

@@ -1,6 +1,6 @@
-import { YaksokError, bold } from './common.ts'
-import { Position } from '../node/base.ts'
-import { CodeRunner } from '../index.ts'
+import { type YaksokError, bold } from './common.ts'
+import type { Position } from '../node/base.ts'
+import type { CodeRunner } from '../index.ts'
 
 interface PrintErrorProps {
     error: YaksokError

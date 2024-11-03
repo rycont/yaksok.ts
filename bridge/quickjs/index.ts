@@ -1,8 +1,8 @@
-import {
-    getQuickJS,
-    type QuickJSWASMModule,
-    type QuickJSContext,
-} from 'npm:quickjs-emscripten'
+import { getQuickJS } from 'npm:quickjs-emscripten@0.31.0'
+import type {
+    QuickJSWASMModule,
+    QuickJSContext,
+} from 'npm:quickjs-emscripten-core@0.31.0'
 import type { Params } from '../../node/function.ts'
 import {
     List,

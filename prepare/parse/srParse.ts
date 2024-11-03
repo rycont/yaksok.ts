@@ -1,11 +1,11 @@
-import { Rule, internalPatternsByLevel } from './rule.ts'
+import { type Rule, internalPatternsByLevel } from './rule.ts'
 import { satisfiesPattern } from './satisfiesPattern.ts'
 import {
     Block,
     EOL,
     Evaluable,
     List,
-    Node,
+    type Node,
     Sequence,
     ValueWithBracket,
     ValueWithParenthesis,

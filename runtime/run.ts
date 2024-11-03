@@ -2,7 +2,7 @@ import {
     BreakNotInLoopError,
     CannotReturnOutsideFunctionError,
 } from '../error/index.ts'
-import { Executable } from '../node/base.ts'
+import type { Executable } from '../node/base.ts'
 import { Scope } from '../runtime/scope.ts'
 import { CallFrame } from './callFrame.ts'
 import { BreakSignal, ReturnSignal } from './signals.ts'

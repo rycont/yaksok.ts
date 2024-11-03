@@ -1,4 +1,4 @@
-import { TokenizeResult } from '../../../tokenize/index.ts'
+import type { TokenizeResult } from '../../../tokenize/index.ts'
 import { createRuleFromFunctionHeader } from './createRuleFromFunctionHeader.ts'
 
 export function createLocalDynamicRules({

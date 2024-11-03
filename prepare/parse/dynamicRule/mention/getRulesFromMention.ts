@@ -1,8 +1,8 @@
-import { Yaksok } from '../../../../index.ts'
-import { Node } from '../../../../node/base.ts'
-import { Evaluable } from '../../../../node/index.ts'
+import type { Yaksok } from '../../../../index.ts'
+import type { Node } from '../../../../node/base.ts'
+import type { Evaluable } from '../../../../node/index.ts'
 import { Mention, MentionScope } from '../../../../node/mention.ts'
-import { Rule } from '../../rule.ts'
+import type { Rule } from '../../rule.ts'
 import { getMentionedNames } from './getMentionedNames.ts'
 
 export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {

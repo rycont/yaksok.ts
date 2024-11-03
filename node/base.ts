@@ -1,8 +1,8 @@
-import { IndexedValue } from './indexed.ts'
+import type { IndexedValue } from './indexed.ts'
 
-import { CallFrame } from '../runtime/callFrame.ts'
-import { Scope } from '../runtime/scope.ts'
-import {
+import type { CallFrame } from '../runtime/callFrame.ts'
+import type { Scope } from '../runtime/scope.ts'
+import type {
     NumberValue,
     StringValue,
     BooleanValue,
@@ -19,7 +19,7 @@ export class Node {
     [key: string]: unknown
     position?: Position
 
-    toJSON() {
+    toJSON(): object {
         return {
             type: this.constructor.name,
             ...this,

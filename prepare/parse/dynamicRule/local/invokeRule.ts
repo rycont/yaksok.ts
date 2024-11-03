@@ -1,5 +1,5 @@
 import {
-    Node,
+    type Node,
     Expression,
     Identifier,
     Evaluable,
@@ -8,7 +8,7 @@ import { ValueWithParenthesis } from '../../../../node/calculation.ts'
 import { FunctionInvoke } from '../../../../node/function.ts'
 import { isParentheses, BRACKET_TYPE } from '../../../../util/isBracket.ts'
 import type { Rule, PatternUnit } from '../../rule.ts'
-import { FunctionHeaderNode } from './functionRuleByType.ts'
+import type { FunctionHeaderNode } from './functionRuleByType.ts'
 
 export function createFunctionInvokeRule(
     name: string,

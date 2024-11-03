@@ -1,5 +1,5 @@
 import { CallFrame } from '../runtime/callFrame.ts'
-import { Scope } from '../runtime/scope.ts'
+import type { Scope } from '../runtime/scope.ts'
 import {
     AndOperator,
     DivideOperator,
@@ -12,7 +12,7 @@ import {
     OrOperator,
     PlusOperator,
 } from './operator.ts'
-import { Evaluable, Operator, ValueTypes } from './base.ts'
+import { Evaluable, Operator, type ValueTypes } from './base.ts'
 import {
     EqualOperator,
     IntegerDivideOperator,

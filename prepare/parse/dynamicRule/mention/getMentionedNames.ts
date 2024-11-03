@@ -1,4 +1,4 @@
-import { Expression, Identifier, Node } from '../../../../node/base.ts'
+import { Expression, Identifier, type Node } from '../../../../node/base.ts'
 import { Block } from '../../../../node/block.ts'
 
 export function getMentionedNames(tokens: Node[]) {

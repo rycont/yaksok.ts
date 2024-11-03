@@ -5,7 +5,7 @@ import {
 } from '../../error/index.ts'
 import { Expression, Operator } from '../../node/base.ts'
 import {
-    Node,
+    type Node,
     Identifier,
     EOL,
     InlineParenthesisBlock,
@@ -15,7 +15,7 @@ import { BRACKET_TYPE, isBracket, isParentheses } from '../../util/isBracket.ts'
 import { satisfiesPattern } from '../parse/satisfiesPattern.ts'
 import { parseIndent } from '../parse/parseIndent.ts'
 import { Block } from '../../node/block.ts'
-import { FunctionHeaderNode } from '../parse/dynamicRule/local/functionRuleByType.ts'
+import type { FunctionHeaderNode } from '../parse/dynamicRule/local/functionRuleByType.ts'
 
 class Lexer {
     private tokens: Node[]

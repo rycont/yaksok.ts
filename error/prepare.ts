@@ -1,4 +1,4 @@
-import { Position, Node } from '../node/base.ts'
+import type { Position, Node } from '../node/base.ts'
 import { NODE_NAMES } from './nodeNames.ts'
 import { YaksokError, bold, dim } from './common.ts'
 

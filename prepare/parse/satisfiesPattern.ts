@@ -1,5 +1,5 @@
-import { PatternUnit } from './rule.ts'
-import { Node } from '../../node/index.ts'
+import type { PatternUnit } from './rule.ts'
+import type { Node } from '../../node/index.ts'
 
 export function satisfiesPattern(tokens: Node[], pattern: PatternUnit[]) {
     return pattern.every((pattern, index) => {
