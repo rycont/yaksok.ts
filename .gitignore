@@ -3,3 +3,5 @@ runtest.ts
 .vscode
 cov
 docs/api/
+node_modules/
+docs/.vitepress/cache/
