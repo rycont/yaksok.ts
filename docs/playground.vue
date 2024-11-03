@@ -15,7 +15,9 @@
 import { yaksok } from '../src/index.ts'
 import AnsiCode from 'ansi-to-html'
 
-const codeFromUrl = new URL(window.location.href).searchParams.get('code')
+const codeFromUrl = globalThis.location
+    ? new URL(globalThis.location.href).searchParams.get('code')
+    : ''
 const ansiCode = new AnsiCode()
 
 function ansiToHtml(content) {
@@ -52,7 +54,7 @@ export default {
             })
         },
         share() {
-            const url = new URL(window.location.href)
+            const url = new URL(globalThis.location.href)
             url.searchParams.set('code', this.code)
             navigator.clipboard.writeText(url.toString())
             alert('공유 링크가 클립보드에 복사되었습니다.')
