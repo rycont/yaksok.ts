@@ -1,6 +1,7 @@
 {
     "imports": {
-        "assert": "https://deno.land/std@0.208.0/assert/mod.ts"
+        "assert": "https://deno.land/std@0.208.0/assert/mod.ts",
+        "typedoc-plugin-markdown": "npm:typedoc-plugin-markdown@^4.2.10"
     },
     "tasks": {
         "coverage": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
