@@ -1,17 +1,29 @@
 import { defineConfig } from 'vitepress'
 import { getSidebar } from 'vitepress-plugin-auto-sidebar'
 
+const sidebar = getSidebar({
+    contentRoot: '/docs',
+    contentDirs: [''],
+    collapsible: true,
+    collapsed: false,
+    useFrontmatter: true,
+})
+
+const TOP_LEVEL_ITEMS_ORDER = ['Home', '약속 언어 이해하기', 'Api']
+
+// @ts-ignore: sidebar[0] is always an object
+sidebar[0].items = sidebar[0].items.sort((a, b) => {
+    const aIndex = TOP_LEVEL_ITEMS_ORDER.indexOf(a.text)
+    const bIndex = TOP_LEVEL_ITEMS_ORDER.indexOf(b.text)
+    return aIndex - bIndex
+})
+
 export default defineConfig({
     title: 'yaksok.ts',
     description: '약속 프로그래밍 언어의 타입스크립트 구현체',
     themeConfig: {
         nav: [{ text: 'Home', link: '/' }],
-        sidebar: getSidebar({
-            contentRoot: '/docs',
-            contentDirs: [''],
-            collapsible: true,
-            collapsed: false,
-        }),
+        sidebar,
         socialLinks: [
             { icon: 'github', link: 'https://github.com/rycont/yaksok.ts' },
             {
