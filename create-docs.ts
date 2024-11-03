@@ -1,4 +1,4 @@
-import typedoc from 'npm:typedoc@0.26.11'
+import typedoc from 'typedoc'
 
 const app = await typedoc.Application.bootstrapWithPlugins({
     entryPoints: ['./src/index.ts'],

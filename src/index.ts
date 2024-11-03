@@ -180,4 +180,3 @@ export function yaksok(
 
 export * from '../src/prepare/tokenize/index.ts'
 export * from '../src/prepare/parse/index.ts'
-export * from '../src/bridge/quickjs/index.ts'
