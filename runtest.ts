@@ -1,4 +1,4 @@
-import { QuickJS, yaksok } from './index.ts'
+import { QuickJS, yaksok } from './src/index.ts'
 
 const quickJS = new QuickJS({
     prompt: () => {

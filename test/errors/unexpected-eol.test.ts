@@ -1,6 +1,6 @@
 import { assertIsError } from 'assert'
-import { yaksok } from '../../index.ts'
-import { UnexpectedEndOfCodeError } from '../../error/index.ts'
+import { yaksok } from '../../src/index.ts'
+import { UnexpectedEndOfCodeError } from '../../src/error/index.ts'
 
 Deno.test('예상치 못한 줄바꿈', () => {
     try {

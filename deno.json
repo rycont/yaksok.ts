@@ -7,7 +7,8 @@
         "coverage": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
         "coverage-list": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage ./cov && rm -rf ./cov",
         "build": "deno run --allow-net --allow-write --allow-read --allow-env --allow-run ./bundle.ts",
-        "build-demo": "deno task build && mv ./dist/index.js ./demo/yaksok.js"
+        "build-demo": "deno task build && mv ./dist/index.js ./demo/yaksok.js",
+        "typedoc": "typedoc --out ./docs ./src"
     },
     "lint": {
         "rules": {
@@ -17,6 +18,6 @@
         }
     },
     "name": "@yaksok-ts/core",
-    "version": "0.1.10",
-    "exports": "./index.ts"
+    "version": "0.1.11",
+    "exports": "./src/index.ts"
 }

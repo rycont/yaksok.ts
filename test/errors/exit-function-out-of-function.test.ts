@@ -1,6 +1,6 @@
 import { assertIsError, unreachable } from 'assert'
-import { yaksok } from '../../index.ts'
-import { CannotReturnOutsideFunctionError } from '../../error/index.ts'
+import { yaksok } from '../../src/index.ts'
+import { CannotReturnOutsideFunctionError } from '../../src/error/index.ts'
 
 Deno.test('약속의 밖에서는 `약속 그만`을 쓸 수 없음', () => {
     try {

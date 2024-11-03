@@ -1,9 +1,9 @@
 import { assertIsError } from 'assert'
-import { yaksok } from '../../index.ts'
+import { yaksok } from '../../src/index.ts'
 import {
     ErrorInModuleError,
     FileForRunNotExistError,
-} from '../../error/index.ts'
+} from '../../src/error/index.ts'
 
 Deno.test('Cannot find entry point in files', () => {
     try {

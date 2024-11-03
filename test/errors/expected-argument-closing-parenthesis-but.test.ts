@@ -1,6 +1,6 @@
 import { assertIsError, unreachable } from 'assert'
-import { yaksok } from '../../index.ts'
-import { UnexpectedTokenError } from '../../error/index.ts'
+import { yaksok } from '../../src/index.ts'
+import { UnexpectedTokenError } from '../../src/error/index.ts'
 
 Deno.test('인자를 닫는 괄호가 필요하지만 없습니다', () => {
     try {

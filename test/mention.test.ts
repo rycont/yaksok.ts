@@ -1,5 +1,5 @@
 import { assertEquals } from 'assert'
-import { yaksok } from '../index.ts'
+import { yaksok } from '../src/index.ts'
 
 Deno.test('Mentioning', () => {
     let output = ''

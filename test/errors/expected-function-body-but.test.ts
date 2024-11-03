@@ -1,6 +1,6 @@
 import { assertIsError } from 'assert'
-import { yaksok } from '../../index.ts'
-import { UnexpectedTokenError } from '../../error/index.ts'
+import { yaksok } from '../../src/index.ts'
+import { UnexpectedTokenError } from '../../src/error/index.ts'
 
 Deno.test('온전하지 않은 약속', () => {
     try {

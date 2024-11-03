@@ -1,9 +1,9 @@
 import { assertIsError, unreachable } from 'assert'
-import { yaksok } from '../index.ts'
+import { yaksok } from '../src/index.ts'
 import {
     InvalidTypeForCompareError,
     InvalidTypeForOperatorError,
-} from '../error/index.ts'
+} from '../src/error/index.ts'
 
 const WRONG_CASES_FOR_CALCULATION = [
     {

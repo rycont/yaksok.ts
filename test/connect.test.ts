@@ -1,9 +1,9 @@
 import { assertEquals, assertIsError } from 'assert'
-import { QuickJS } from '../bridge/quickjs/index.ts'
-import { yaksok } from '../index.ts'
-import { FFIResulTypeIsNotForYaksokError } from '../error/ffi.ts'
-import { List } from '../node/list.ts'
-import { StringValue } from '../node/index.ts'
+import { QuickJS } from '../src/bridge/quickjs/index.ts'
+import { yaksok } from '../src/index.ts'
+import { FFIResulTypeIsNotForYaksokError } from '../src/error/ffi.ts'
+import { List } from '../src/node/list.ts'
+import { StringValue } from '../src/node/index.ts'
 
 const quickJS = new QuickJS({
     prompt: () => {
