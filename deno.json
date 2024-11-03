@@ -5,16 +5,17 @@
         "assert": "https://deno.land/std@0.208.0/assert/mod.ts",
         "typedoc-plugin-markdown": "npm:typedoc-plugin-markdown@^4.2.10",
         "vitepress": "npm:vitepress@^1.4.3",
-        "vitepress-plugin-auto-sidebar": "npm:vitepress-plugin-auto-sidebar@^1.2.0"
+        "vitepress-plugin-auto-sidebar": "npm:vitepress-plugin-auto-sidebar@^1.2.0",
+        "vue": "npm:vue@^3.5.12"
     },
     "tasks": {
         "coverage": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
         "coverage-list": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage ./cov && rm -rf ./cov",
-        "build": "deno run --allow-net --allow-write --allow-read --allow-env --allow-run ./bundle.ts",
-        "build-demo": "deno task build && mv ./dist/index.js ./demo/yaksok.js",
         "typedoc": "deno run --allow-read --allow-write --allow-env --allow-run ./create-docs.ts",
         "vitepress-dev": "deno run -A npm:vitepress dev docs",
-        "docs-dev": "deno task typedoc --watch & deno task vitepress-dev"
+        "vitepress-build": "deno run -A npm:vitepress build docs",
+        "docs-dev": "deno task typedoc --watch & deno task vitepress-dev",
+        "docs-build": "deno task typedoc && deno task vitepress-build"
     },
     "lint": {
         "rules": {

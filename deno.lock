@@ -24,7 +24,8 @@
     "npm:typescript@^5.5.3": "5.6.3",
     "npm:vitepress-plugin-auto-sidebar@^1.2.0": "1.2.0",
     "npm:vitepress@*": "1.4.3_vite@5.4.10__@types+node@22.5.4_vue@3.5.12__typescript@5.6.3_focus-trap@7.6.0_@types+node@22.5.4_typescript@5.6.3",
-    "npm:vitepress@^1.4.3": "1.4.3_vite@5.4.10__@types+node@22.5.4_vue@3.5.12__typescript@5.6.3_focus-trap@7.6.0_@types+node@22.5.4_typescript@5.6.3"
+    "npm:vitepress@^1.4.3": "1.4.3_vite@5.4.10__@types+node@22.5.4_vue@3.5.12__typescript@5.6.3_focus-trap@7.6.0_@types+node@22.5.4_typescript@5.6.3",
+    "npm:vue@^3.5.12": "3.5.12_typescript@5.6.3"
   },
   "jsr": {
     "@luca/esbuild-deno-loader@0.11.0": {
@@ -1489,7 +1490,8 @@
       "npm:@vueuse/core@^11.2.0",
       "npm:typedoc-plugin-markdown@^4.2.10",
       "npm:vitepress-plugin-auto-sidebar@^1.2.0",
-      "npm:vitepress@^1.4.3"
+      "npm:vitepress@^1.4.3",
+      "npm:vue@^3.5.12"
     ]
   }
 }
