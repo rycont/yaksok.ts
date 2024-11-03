@@ -1,5 +1,6 @@
 import { assertEquals, assertIsError } from 'assert'
-import { QuickJS, QuickJSInternalError, yaksok } from '../index.ts'
+import { yaksok } from '../src/index.ts'
+import { QuickJS, QuickJSInternalError } from '../src/bridge/quickjs/index.ts'
 
 Deno.test('Error in QuickJS', async () => {
     const quickJS = new QuickJS()

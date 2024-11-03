@@ -1,7 +1,7 @@
 import { assertIsError, unreachable } from 'assert'
 
-import { yaksok } from '../../index.ts'
-import { BreakNotInLoopError } from '../../error/index.ts'
+import { yaksok } from '../../src/index.ts'
+import { BreakNotInLoopError } from '../../src/error/index.ts'
 
 Deno.test('반복의 밖에서는 `반복 그만`을 쓸 수 없음', () => {
     try {

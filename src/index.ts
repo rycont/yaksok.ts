@@ -1,15 +1,15 @@
-import { FileForRunNotExistError } from './error/prepare.ts'
-import type { Evaluable, ValueTypes } from './node/base.ts'
-import { tokenize } from './prepare/tokenize/index.ts'
-import { ErrorInModuleError } from './error/index.ts'
-import type { Executable, Node } from './node/index.ts'
-import { printError } from './error/printError.ts'
-import { parse } from './prepare/parse/index.ts'
-import { YaksokError } from './error/common.ts'
-import type { Rule } from './prepare/parse/rule.ts'
-import type { Params } from './node/function.ts'
-import { Scope } from './runtime/scope.ts'
-import { run } from './runtime/run.ts'
+import { FileForRunNotExistError } from '../src/error/prepare.ts'
+import type { Evaluable, ValueTypes } from '../src/node/base.ts'
+import { tokenize } from '../src/prepare/tokenize/index.ts'
+import { ErrorInModuleError } from '../src/error/index.ts'
+import type { Executable, Node } from '../src/node/index.ts'
+import { printError } from '../src/error/printError.ts'
+import { parse } from '../src/prepare/parse/index.ts'
+import { YaksokError } from '../src/error/common.ts'
+import type { Rule } from '../src/prepare/parse/rule.ts'
+import type { Params } from '../src/node/function.ts'
+import { Scope } from '../src/runtime/scope.ts'
+import { run } from '../src/runtime/run.ts'
 
 interface YaksokConfig {
     stdout: (message: string) => void
@@ -178,6 +178,5 @@ export function yaksok(
     return yaksok
 }
 
-export * from './prepare/tokenize/index.ts'
-export * from './prepare/parse/index.ts'
-export * from './bridge/quickjs/index.ts'
+export * from '../src/prepare/tokenize/index.ts'
+export * from '../src/prepare/parse/index.ts'
