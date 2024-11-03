@@ -39,6 +39,3 @@ jobs:
                   git config --global user.email 'github-actions[bot]@users.noreply.github.com'
                   git tag -a v${{ steps.get_version.outputs.version }} -m "Release version ${{ steps.get_version.outputs.version }}"
                   git push origin v${{ steps.get_version.outputs.version }}
-
-            - name: Publish on tag
-              run: deno run -A jsr:@david/publish-on-tag@0.1.4
