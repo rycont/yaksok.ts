@@ -1,3 +1,81 @@
+<script setup>
+import { onMounted, ref, useTemplateRef, watch } from 'vue'
+import AnsiCode from 'ansi-to-html'
+import { yaksok } from '../src/index.ts'
+
+const props = defineProps({
+    code: {
+        type: String,
+        default: '',
+    },
+})
+
+const editorRef = useTemplateRef('editor')
+
+const code = ref(props.code)
+const stdout = ref([])
+
+const ansiCode = new AnsiCode()
+
+async function initializeMonaco() {
+    const editorElement = editorRef.value
+
+    const { editor, KeyCode, KeyMod } = await import(
+        'monaco-editor/esm/vs/editor/editor.api'
+    )
+
+    const editorInstance = editor.create(editorElement, {
+        automaticLayout: true,
+        value: code.value,
+        fontFamily: 'var(--vp-font-family-mono)',
+        minimap: {
+            enabled: false,
+        },
+        lineNumbersMinChars: 3,
+    })
+
+    editorInstance.onDidChangeModelContent(() => {
+        code.value = editorInstance.getValue()
+    })
+
+    editorInstance.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, runCode)
+}
+
+onMounted(() => {
+    initializeMonaco().then(runCode)
+})
+
+function ansiToHtml(content) {
+    const text = ansiCode.toHtml(content)
+    return text
+}
+
+function runCode() {
+    stdout.value = []
+
+    try {
+        yaksok(code.value, {
+            stdout: (output) => {
+                stdout.value = [...stdout.value, output]
+            },
+            stderr: (output) => {
+                stdout.value = [...stdout.value, ansiToHtml(output)]
+            },
+        })
+        stdout.value = result.stdout
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+function share() {
+    const url = new URL(window.location.href)
+    url.searchParams.set('code', code.value)
+    navigator.clipboard.writeText(url.href)
+    alert('코드가 클립보드에 복사되었습니다.')
+}
+</script>
+
 <template>
     <div class="wrapper">
         <div class="header">
@@ -35,95 +113,6 @@
             ></div></pre>
     </div>
 </template>
-
-<script>
-import { yaksok } from '../src/index.ts'
-import AnsiCode from 'ansi-to-html'
-
-const codeFromUrl = globalThis.location
-    ? new URL(globalThis.location.href).searchParams.get('code')
-    : ''
-const ansiCode = new AnsiCode()
-
-function ansiToHtml(content) {
-    const text = ansiCode.toHtml(content)
-    return text
-}
-
-export default {
-    data() {
-        return {
-            stdout: [],
-            code:
-                codeFromUrl ||
-                `약속, 키가 (키)cm이고 몸무게가 (몸무게)일 때 비만도
-    결과: 몸무게 / (키 / 100 * 키 / 100)
-
-비만도: 키가 (170)cm이고 몸무게가 (70)일 때 비만도
-
-비만도 보여주기
-비만도 보여줄까말까`,
-        }
-    },
-    methods: {
-        runCode() {
-            this.stdout = []
-
-            try {
-                yaksok(this.code, {
-                    stdout: (content) => {
-                        this.stdout = [...this.stdout, content]
-                    },
-                    stderr: (content) => {
-                        this.stdout = [...this.stdout, ansiToHtml(content)]
-                    },
-                })
-            } catch (e) {
-                console.error(e)
-            }
-        },
-        share() {
-            const url = new URL(globalThis.location.href)
-            url.searchParams.set('code', this.code)
-            navigator.clipboard.writeText(url.toString())
-            alert('공유 링크가 클립보드에 복사되었습니다.')
-        },
-    },
-    computed: {
-        stdoutText() {
-            return this.stdout.join('\n')
-        },
-    },
-    async mounted() {
-        const { editor, KeyCode, KeyMod } = await import(
-            'monaco-editor/esm/vs/editor/editor.api'
-        )
-
-        const editorInstance = editor.create(this.$refs.editor, {
-            language: 'javascript',
-            automaticLayout: true,
-            value: this.code,
-            fontFamily: 'var(--vp-font-family-mono)',
-            minimap: {
-                enabled: false,
-            },
-            lineNumbersMinChars: 3,
-        })
-
-        editorInstance.onDidChangeModelContent(() => {
-            this.code = editorInstance.getValue()
-        })
-
-        this.runCode()
-
-        // add keydown event
-
-        editorInstance.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, () => {
-            this.runCode()
-        })
-    },
-}
-</script>
 
 <style scoped>
 .wrapper {

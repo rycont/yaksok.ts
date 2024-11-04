@@ -4,13 +4,23 @@ title: 'Home'
 
 <script setup>
 import CodeRunner from "../docs-component/code-runner.vue"
+
+const DEFAULT_CODE = `약속, 키가 (키)cm이고 몸무게가 (몸무게)일 때 비만도
+    결과: 몸무게 / (키 / 100 * 키 / 100)
+
+비만도: 키가 (170)cm이고 몸무게가 (70)일 때 비만도
+
+비만도 보여주기
+비만도 보여줄까말까`
+
+const codeFromUrl = (globalThis.location && new URL(globalThis.location.href).searchParams.get('code')) || DEFAULT_CODE
 </script>
 
 # yaksok.ts
 
 교육용 프로그래밍 언어 yaksok의 타입스크립트 구현체입니다. [약속티에스]라고 읽습니다.
 
-<CodeRunner />
+<CodeRunner :code="codeFromUrl" />
 
 ## 사용하기
 
