@@ -27,7 +27,7 @@
                 실행 (Ctrl + Enter)
             </button>
         </div>
-        <textarea v-model="code" @keydown.ctrl.enter="runCode"> </textarea>
+        <div id="editor" ref="editor"></div>
         <pre><div
                 v-for="(output, index) in stdout"
                 :key="index"
@@ -50,9 +50,11 @@ function ansiToHtml(content) {
     return text
 }
 
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 export default {
     data() {
         return {
+            stdout: [],
             code:
                 codeFromUrl ||
                 `약속, 키가 (키)cm이고 몸무게가 (몸무게)일 때 비만도
@@ -62,7 +64,6 @@ export default {
 
 비만도 보여주기
 비만도 보여줄까말까`,
-            stdout: [],
         }
     },
     methods: {
@@ -95,7 +96,31 @@ export default {
         },
     },
     mounted() {
+        const editorInstance = monaco.editor.create(this.$refs.editor, {
+            language: 'javascript',
+            automaticLayout: true,
+            value: this.code,
+            fontFamily: 'var(--vp-font-family-mono)',
+            minimap: {
+                enabled: false,
+            },
+            lineNumbersMinChars: 3,
+        })
+
+        editorInstance.onDidChangeModelContent(() => {
+            this.code = editorInstance.getValue()
+        })
+
         this.runCode()
+
+        // add keydown event
+
+        editorInstance.addCommand(
+            monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+            () => {
+                this.runCode()
+            },
+        )
     },
 }
 </script>
@@ -170,6 +195,10 @@ textarea:read-only {
     border-width: 1px;
     border-style: solid;
     background-color: transparent;
+}
+
+#editor {
+    height: 300px;
 }
 
 pre {
