@@ -50,7 +50,6 @@ function ansiToHtml(content) {
     return text
 }
 
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 export default {
     data() {
         return {
@@ -95,8 +94,12 @@ export default {
             return this.stdout.join('\n')
         },
     },
-    mounted() {
-        const editorInstance = monaco.editor.create(this.$refs.editor, {
+    async mounted() {
+        const { editor, KeyCode } = await import(
+            'monaco-editor/esm/vs/editor/editor.api'
+        )
+
+        const editorInstance = editor.create(this.$refs.editor, {
             language: 'javascript',
             automaticLayout: true,
             value: this.code,
@@ -115,12 +118,9 @@ export default {
 
         // add keydown event
 
-        editorInstance.addCommand(
-            monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
-            () => {
-                this.runCode()
-            },
-        )
+        editorInstance.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, () => {
+            this.runCode()
+        })
     },
 }
 </script>

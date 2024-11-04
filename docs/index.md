@@ -3,7 +3,7 @@ title: 'Home'
 ---
 
 <script setup>
-import CodeRunner from "./code-runner.vue"
+import CodeRunner from "../docs-component/code-runner.vue"
 </script>
 
 # yaksok.ts
