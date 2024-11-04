@@ -95,7 +95,7 @@ export default {
         },
     },
     async mounted() {
-        const { editor, KeyCode } = await import(
+        const { editor, KeyCode, KeyMod } = await import(
             'monaco-editor/esm/vs/editor/editor.api'
         )
 
