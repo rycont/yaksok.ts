@@ -8,12 +8,17 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    challenge: {
+        type: Object,
+        default: null,
+    },
 })
 
 const editorRef = useTemplateRef('editor')
 
 const code = ref(props.code)
 const stdout = ref([])
+let editorInstance = null
 
 const ansiCode = new AnsiCode()
 
@@ -24,7 +29,7 @@ async function initializeMonaco() {
         'monaco-editor/esm/vs/editor/editor.api'
     )
 
-    const editorInstance = editor.create(editorElement, {
+    editorInstance = editor.create(editorElement, {
         automaticLayout: true,
         value: code.value,
         fontFamily: 'var(--vp-font-family-mono)',
@@ -50,6 +55,10 @@ function ansiToHtml(content) {
     return text
 }
 
+function viewAnswer() {
+    editorInstance.setValue(props.challenge.answerCode)
+}
+
 function runCode() {
     stdout.value = []
 
@@ -62,7 +71,6 @@ function runCode() {
                 stdout.value = [...stdout.value, ansiToHtml(output)]
             },
         })
-        stdout.value = result.stdout
     } catch (error) {
         console.error(error)
     }
@@ -74,12 +82,33 @@ function share() {
     navigator.clipboard.writeText(url.href)
     alert('코드가 클립보드에 복사되었습니다.')
 }
+
+watch(stdout, (output) => {
+    if (stdout.value.join('') === props?.challenge?.output) {
+        alert('정답입니다!')
+    }
+})
 </script>
 
 <template>
     <div class="wrapper">
         <div class="header">
             <p>약속실행기</p>
+            <button
+                v-if="props.challenge && props.challenge.answerCode"
+                @click="viewAnswer"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                >
+                    <path
+                        d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11.0026 16L6.75999 11.7574L8.17421 10.3431L11.0026 13.1716L16.6595 7.51472L18.0737 8.92893L11.0026 16Z"
+                    ></path>
+                </svg>
+                정답 보기
+            </button>
             <button @click="share">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -106,11 +135,19 @@ function share() {
             </button>
         </div>
         <div id="editor" ref="editor"></div>
-        <pre><div
+        <div class="output-box">
+            <div>
+                <pre><div
                 v-for="(output, index) in stdout"
                 :key="index"
                 v-html="output"
             ></div></pre>
+            </div>
+            <div v-if="props.challenge && props.challenge.output">
+                <h2>목표 출력</h2>
+                <pre>{{ props.challenge.output }}</pre>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -190,16 +227,35 @@ textarea:read-only {
     height: 300px;
 }
 
-pre {
+.output-box {
+    border-top: 1px solid var(--vp-c-border);
+    display: flex;
+}
+
+.output-box > div {
+    flex: 1;
     padding: 12px;
+}
+
+.output-box > div + div {
+    border-left: 1px solid var(--vp-c-border);
+}
+
+pre {
     margin: 0px;
     font-family: var(--vp-font-family-mono);
     box-sizing: border-box;
     overflow-x: auto;
-    border-top: 1px solid var(--vp-c-border);
     font-size: 14px;
     line-height: 1.3;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+}
+
+h2 {
+    font-size: 16px;
+    margin: 0px;
+    padding: 0px;
+    border: none;
+    line-height: revert;
+    margin-bottom: 6px;
 }
 </style>

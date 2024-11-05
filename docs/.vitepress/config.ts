@@ -5,8 +5,10 @@ const SIDEBAR_CONFIG: VitePressSidebarOptions = {
     documentRootPath: '/docs',
     capitalizeEachWords: true,
     hyphenToSpace: true,
-    useTitleFromFileHeading: true,
-    sortMenusByFrontmatterOrder: true
+    sortMenusOrderNumericallyFromLink: true,
+    sortFolderTo: 'bottom',
+    removePrefixAfterOrdering: true,
+    prefixSeparator: '.',
 }
 
 export default defineConfig(
@@ -40,9 +42,8 @@ export default defineConfig(
             markdown: {
                 shikiSetup(shiki) {
                     return shiki.loadLanguage()
-                }
-            }
-            
+                },
+            },
         },
         SIDEBAR_CONFIG,
     ),
