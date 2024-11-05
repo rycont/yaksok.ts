@@ -9,6 +9,7 @@ const SIDEBAR_CONFIG: VitePressSidebarOptions = {
     sortFolderTo: 'bottom',
     removePrefixAfterOrdering: true,
     prefixSeparator: '.',
+    useTitleFromFrontmatter: true,
 }
 
 export default defineConfig(
