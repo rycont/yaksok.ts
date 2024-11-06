@@ -47,7 +47,9 @@ async function initializeMonaco() {
         code.value = editorInstance.getValue()
     })
 
-    editorInstance.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, runCode)
+    editorInstance.onDidFocusEditorText(() => {
+        editorInstance.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, runCode)
+    })
 }
 
 onMounted(() => {
