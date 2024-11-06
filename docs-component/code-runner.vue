@@ -141,6 +141,7 @@ watch(stdout, (output) => {
         <div id="editor" ref="editor"></div>
         <div class="output-box">
             <div>
+                <h2>출력</h2>
                 <pre><div
                 v-for="(output, index) in stdout"
                 :key="index"
