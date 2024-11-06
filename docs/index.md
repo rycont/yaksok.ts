@@ -41,6 +41,6 @@ const DEFAULT_CODE = `약속, 키가 (키)cm이고 몸무게가 (몸무게)일 �
 const codeFromUrl = (globalThis.location && new URL(globalThis.location.href).searchParams.get('code')) || DEFAULT_CODE
 </script>
 
-<hr>
+## 지금 약속 코드 실행해보기
 
-<CodeRunner :code="codeFromUrl" />
+<CodeRunner id="demo-code-runner" :code="codeFromUrl" />

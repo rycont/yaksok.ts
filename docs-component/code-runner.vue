@@ -12,6 +12,10 @@ const props = defineProps({
         type: Object,
         default: null,
     },
+    id: {
+        type: String,
+        default: '',
+    },
 })
 
 const editorRef = useTemplateRef('editor')
@@ -91,7 +95,7 @@ watch(stdout, (output) => {
 </script>
 
 <template>
-    <div class="wrapper">
+    <div class="wrapper" :id="props.id">
         <div class="header">
             <p>약속실행기</p>
             <button
