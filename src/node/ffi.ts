@@ -4,10 +4,11 @@ import type { Scope } from '../runtime/scope.ts'
 import {
     Evaluable,
     Executable,
+    Identifier,
     type Position,
     type ValueTypes,
 } from './base.ts'
-import { Identifier, type Params } from './index.ts'
+import type { Params } from './function.ts'
 
 export class FFIBody extends Identifier {
     constructor(public code: string, public override position?: Position) {

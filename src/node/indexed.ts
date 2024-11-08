@@ -1,7 +1,6 @@
-import { Evaluable, type ValueTypes } from './index.ts'
-
 import type { Scope } from '../runtime/scope.ts'
 import type { CallFrame } from '../runtime/callFrame.ts'
+import { Evaluable, type ValueTypes } from './base.ts'
 
 export abstract class IndexedValue extends Evaluable {
     abstract getItem(

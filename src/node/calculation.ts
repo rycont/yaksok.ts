@@ -3,22 +3,20 @@ import type { Scope } from '../runtime/scope.ts'
 import {
     AndOperator,
     DivideOperator,
+    EqualOperator,
     GreaterThanOperator,
     GreaterThanOrEqualOperator,
+    IntegerDivideOperator,
     LessThanOperator,
     LessThanOrEqualOperator,
     MinusOperator,
+    ModularOperator,
     MultiplyOperator,
     OrOperator,
     PlusOperator,
+    PowerOperator,
 } from './operator.ts'
 import { Evaluable, Operator, type ValueTypes } from './base.ts'
-import {
-    EqualOperator,
-    IntegerDivideOperator,
-    ModularOperator,
-    PowerOperator,
-} from './index.ts'
 import { RangeOperator } from './list.ts'
 
 const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [

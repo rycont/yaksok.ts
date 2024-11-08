@@ -1,8 +1,8 @@
 import { CallFrame } from '../runtime/callFrame.ts'
 import { CannotParseError } from '../error/index.ts'
-import { Executable, type Node } from './index.ts'
 import type { Scope } from '../runtime/scope.ts'
 import { EOL } from './misc.ts'
+import { Executable, type Node } from './base.ts'
 
 export class Block extends Executable {
     children: Node[]
