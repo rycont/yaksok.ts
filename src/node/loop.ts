@@ -1,8 +1,8 @@
 import { CallFrame } from '../runtime/callFrame.ts'
 import type { Scope } from '../runtime/scope.ts'
-import { Executable } from './index.ts'
 import type { Block } from './block.ts'
 import { BreakSignal } from '../runtime/signals.ts'
+import { Executable } from './base.ts'
 
 export class Loop extends Executable {
     constructor(public body: Block) {

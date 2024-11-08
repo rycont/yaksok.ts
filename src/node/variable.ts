@@ -1,8 +1,7 @@
-import { Evaluable, type ValueTypes } from './index.ts'
-
 import { CallFrame } from '../runtime/callFrame.ts'
 import type { Scope } from '../runtime/scope.ts'
 import { CannotUseReservedWordForIdentifierNameError } from '../error/index.ts'
+import { Evaluable, ValueTypes } from './base.ts'
 
 export const RESERVED_WORDS = [
     '약속',

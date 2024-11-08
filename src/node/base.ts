@@ -8,7 +8,7 @@ import type {
     BooleanValue,
     PrimitiveValue,
 } from './primitive.ts'
-import { NotDefinedIdentifierError } from '../error/index.ts'
+import { NotDefinedIdentifierError } from '../error/variable.ts'
 
 export interface Position {
     line: number
