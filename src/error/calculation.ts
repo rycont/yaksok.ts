@@ -1,5 +1,5 @@
-import type { Position, Operator, Evaluable } from '../node/index.ts'
-import { YaksokError, evaluableToText, operatorToText } from './common.ts'
+import { Evaluable, Operator, Position } from '../node/base.ts'
+import { evaluableToText, operatorToText, YaksokError } from './common.ts'
 
 export class InvalidTypeForCompareError extends YaksokError {
     constructor(props: {

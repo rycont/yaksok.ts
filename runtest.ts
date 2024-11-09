@@ -1,8 +1,22 @@
 import { yaksok } from './src/index.ts'
 
-const code = `
-내_이름: "영희"
-`
+yaksok(
+    `
+약속, (음식)을/를 (사람)와/과 먹기
+    "맛있는 " + 음식 + ", " + 사람 + "의 입으로 모두 들어갑니다." 보여주기
 
-const result = yaksok(code)
-console.log(result.getRunner().scope.getVariable('내_이름').value)
+"피자"를 "철수"와 먹기
+"햄버거"를 "영희"와 먹기
+"치킨"을 "형님"과 먹기
+"초밥"을 "동생"과 먹기
+
+("피자")를 ("철수")와 먹기
+("햄버거")를 ("영희")와 먹기
+("치킨")을 ("형님")과 먹기
+("초밥")을 ("동생")과 먹기`,
+    {
+        flags: {
+            'future-function-invoke-syntax': false,
+        },
+    },
+)

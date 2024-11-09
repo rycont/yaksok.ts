@@ -3,7 +3,7 @@
         "@vue/runtime-dom": "npm:@vue/runtime-dom@^3.5.12",
         "@vueuse/core": "npm:@vueuse/core@^11.2.0",
         "ansi-to-html": "npm:ansi-to-html@^0.7.2",
-        "assert": "https://deno.land/std@0.208.0/assert/mod.ts",
+        "assert": "jsr:@std/assert@^1.0.7",
         "monaco-editor": "npm:monaco-editor@^0.52.0",
         "quickjs-emscripten": "npm:quickjs-emscripten@^0.31.0",
         "quickjs-emscripten-core": "npm:quickjs-emscripten-core@^0.31.0",
@@ -16,6 +16,7 @@
     "tasks": {
         "coverage": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
         "coverage-list": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage ./cov && rm -rf ./cov",
+        "test": "deno run -A npm:madge --circular --extensions ts ./ && deno test --allow-read --parallel",
         "typedoc": "deno run --allow-read --allow-write --allow-env --allow-run ./create-docs.ts",
         "vitepress-dev": "deno run -A npm:vitepress dev docs",
         "vitepress-build": "deno run -A npm:vitepress build docs",
@@ -26,11 +27,15 @@
         "rules": {
             "exclude": [
                 "no-explicit-any"
+            ],
+            "include": [],
+            "tags": [
+                "recommended"
             ]
         }
     },
     "name": "@yaksok-ts/core",
-    "version": "0.1.11",
+    "version": "0.1.13",
     "exports": "./src/index.ts",
     "nodeModulesDir": "auto"
 }
