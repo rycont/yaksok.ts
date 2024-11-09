@@ -6,8 +6,6 @@ const SIDEBAR_CONFIG: VitePressSidebarOptions = {
     hyphenToSpace: true,
     sortMenusOrderNumericallyFromLink: true,
     sortFolderTo: 'bottom',
-    removePrefixAfterOrdering: true,
-    prefixSeparator: '.',
     useTitleFromFrontmatter: true,
 }
 

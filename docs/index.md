@@ -7,7 +7,7 @@ hero:
 features:
     - title: 약속 문법 배우기
       icon: 📚
-      link: /language/1.getting-started
+      link: /language/1. 시작하기
       details: 간단한 예제를 통해 약속 문법을 배워보세요
       linkText: 시작하기
     - title: 라이브러리로 사용하기
