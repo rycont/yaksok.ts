@@ -1,5 +1,5 @@
 import { createRuleFromFunctionHeader } from './createRuleFromFunctionHeader.ts'
-import type { Runtime } from '../../../../runtime/index.ts'
+import type {../../../../mod.ts../../../runtime/index.ts'
 
 import type { TokenizeResult } from '../../../tokenize/index.ts'
 

@@ -1,4 +1,4 @@
-import { EnabledFlags } from '../contant/feature-flags.ts'
+import { EnabledFlags } from '../constant/feature-flags.ts'
 import { FileRunner } from './file-runner.ts'
 import { DEFAULT_RUNTIME_CONFIG, RuntimeConfig } from './env-config.ts'
 import { FileForRunNotExistError } from '../error/prepare.ts'
@@ -59,4 +59,21 @@ export class Runtime {
 
         return runner
     }
+}
+
+export function yaksok(
+    code: string | Record<string, string>,
+    config: Partial<RuntimeConfig> = {},
+): Runtime {
+    const yaksok = new Runtime(
+        typeof code === 'string'
+            ? {
+                  [DEFAULT_RUNTIME_CONFIG.entryPoint]: code,
+              }
+            : code,
+        config,
+    )
+
+    yaksok.run()
+    return yaksok
 }

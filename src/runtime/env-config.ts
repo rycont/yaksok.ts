@@ -1,5 +1,5 @@
-import type { EnabledFlags } from '../contant/feature-flags.ts'
-import type { FunctionParams } from '../contant/type.ts'
+import type { EnabledFlags } from '../constant/feature-flags.ts'
+import type { FunctionParams } from '../constant/type.ts'
 import type { ValueTypes } from '../node/base.ts'
 
 export interface RuntimeConfig {

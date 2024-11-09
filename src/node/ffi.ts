@@ -1,4 +1,4 @@
-import type { FunctionParams } from '../contant/type.ts'
+import type { FunctionParams } from '../constant/type.ts'
 import { FFIResulTypeIsNotForYaksokError } from '../error/ffi.ts'
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'

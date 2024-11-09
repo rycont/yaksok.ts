@@ -5,7 +5,7 @@ import { ReturnSignal } from '../executer/signals.ts'
 import { Evaluable, Executable, type ValueTypes } from './base.ts'
 import { NumberValue } from './primitive.ts'
 
-import type { FunctionParams } from '../contant/type.ts'
+import type { FunctionParams } from '../constant/type.ts'
 import type { Block } from './block.ts'
 
 const DEFAULT_RETURN_VALUE = new NumberValue(0)

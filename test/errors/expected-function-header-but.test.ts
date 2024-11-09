@@ -1,5 +1,5 @@
 import { assertIsError } from 'assert'
-import { yaksok } from '../../src/index.ts'
+import { yaksok } from '../../src/mod.ts'
 import {
     UnexpectedEndOfCodeError,
     UnexpectedTokenError,

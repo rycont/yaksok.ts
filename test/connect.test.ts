@@ -1,6 +1,6 @@
 import { assertEquals, assertIsError } from 'assert'
 import { QuickJS } from '../src/bridge/quickjs/index.ts'
-import { yaksok } from '../src/index.ts'
+import { yaksok } from '../src/mod.ts'
 import { FFIResulTypeIsNotForYaksokError } from '../src/error/ffi.ts'
 import { List } from '../src/node/list.ts'
 import { StringValue } from '../src/node/index.ts'
