@@ -15,12 +15,14 @@ import { run } from '../src/runtime/run.ts'
 import { parse } from './prepare/parse/index.ts'
 import { tokenize } from './prepare/tokenize/index.ts'
 import { ErrorInModuleError } from './error/mention.ts'
+import { EnabledFlags } from './contant/feature-flags.ts'
 
 interface YaksokConfig {
     stdout: (message: string) => void
     stderr: (message: string) => void
     entryPoint: string
     runFFI: (runtime: string, code: string, args: Params) => ValueTypes
+    flags: EnabledFlags
 }
 
 const defaultConfig: YaksokConfig = {
@@ -30,6 +32,7 @@ const defaultConfig: YaksokConfig = {
     runFFI: (runtime: string) => {
         throw new Error(`FFI ${runtime} not implemented`)
     },
+    flags: {},
 }
 
 export class CodeRunner {
@@ -114,6 +117,7 @@ export class Yaksok implements YaksokConfig {
     stderr: YaksokConfig['stderr']
     entryPoint: YaksokConfig['entryPoint']
     runFFI: YaksokConfig['runFFI']
+    flags: Partial<EnabledFlags> = {}
 
     runners: Record<string, CodeRunner> = {}
     ran: Record<string, boolean> = {}
@@ -126,6 +130,7 @@ export class Yaksok implements YaksokConfig {
         this.stderr = config.stderr || defaultConfig.stderr
         this.entryPoint = config.entryPoint || defaultConfig.entryPoint
         this.runFFI = config.runFFI || defaultConfig.runFFI
+        this.flags = config.flags || defaultConfig.flags
     }
 
     getRunner(fileName = this.entryPoint): CodeRunner {
