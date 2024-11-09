@@ -16,11 +16,16 @@ import { parse } from './prepare/parse/index.ts'
 import { tokenize } from './prepare/tokenize/index.ts'
 import { ErrorInModuleError } from './error/mention.ts'
 
+interface FeatureFlags {
+    'future-function-invoke-syntax': boolean
+}
+
 interface YaksokConfig {
     stdout: (message: string) => void
     stderr: (message: string) => void
     entryPoint: string
     runFFI: (runtime: string, code: string, args: Params) => ValueTypes
+    flags?: Partial<FeatureFlags>
 }
 
 const defaultConfig: YaksokConfig = {
