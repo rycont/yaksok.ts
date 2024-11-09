@@ -1,11 +1,11 @@
 import { type YaksokError, bold } from './common.ts'
 import type { Position } from '../node/base.ts'
-import type { CodeRunner } from '../index.ts'
+import type { FileRunner } from '../runtime/file-runner.ts'
 
 interface PrintErrorProps {
     error: YaksokError
     code?: string
-    runtime?: CodeRunner
+    runtime?: FileRunner
 }
 
 export function printError({ error, code }: PrintErrorProps) {

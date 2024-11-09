@@ -1,9 +1,9 @@
 import { Executable, type Evaluable } from './base.ts'
 import type { Block } from './block.ts'
 
-import { isTruthy } from '../runtime/internal/isTruthy.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
-import type { Scope } from '../runtime/scope.ts'
+import { isTruthy } from '../executer/internal/isTruthy.ts'
+import { CallFrame } from '../executer/callFrame.ts'
+import type { Scope } from '../executer/scope.ts'
 
 interface Case {
     condition?: Evaluable

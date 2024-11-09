@@ -14,7 +14,7 @@ const code = `
 `
 
 const result = yaksok(code)
-console.log(result.getRunner().scope.getVariable('내_이름').value)
+console.log(result.getFileRunner().scope.getVariable('내_이름').value)
 ```
 
 자세히 알아보려면 다음 문서를 참조하세요:

@@ -1,5 +1,5 @@
-import { CallFrame } from '../runtime/callFrame.ts'
-import type { Scope } from '../runtime/scope.ts'
+import { CallFrame } from '../executer/callFrame.ts'
+import type { Scope } from '../executer/scope.ts'
 import { CannotUseReservedWordForIdentifierNameError } from '../error/index.ts'
 import { Evaluable, ValueTypes } from './base.ts'
 

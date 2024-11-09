@@ -1,5 +1,5 @@
-import type { CallFrame } from '../runtime/callFrame.ts'
-import type { Scope } from '../runtime/scope.ts'
+import type { CallFrame } from '../executer/callFrame.ts'
+import type { Scope } from '../executer/scope.ts'
 
 import { Node, Executable, type Evaluable, type Position } from './base.ts'
 

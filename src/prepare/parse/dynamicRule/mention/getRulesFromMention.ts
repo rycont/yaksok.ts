@@ -1,11 +1,12 @@
-import type { Yaksok } from '../../../../index.ts'
-import type { Node } from '../../../../node/base.ts'
-import type { Evaluable } from '../../../../node/index.ts'
-import { Mention, MentionScope } from '../../../../node/mention.ts'
-import type { Rule } from '../../rule.ts'
 import { getMentionedNames } from './getMentionedNames.ts'
+import { Mention, MentionScope } from '../../../../node/mention.ts'
 
-export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {
+import type { Evaluable } from '../../../../node/index.ts'
+import type { Runtime } from '../../../../runtime/index.ts'
+import type { Node } from '../../../../node/base.ts'
+import type { Rule } from '../../rule.ts'
+
+export function getDynamicRulesFromMention(tokens: Node[], yaksok: Runtime) {
     const rules = getMentionedNames(tokens).flatMap((fileName) =>
         getMentioningRules(yaksok, fileName),
     )
@@ -13,8 +14,8 @@ export function getDynamicRulesFromMention(tokens: Node[], yaksok: Yaksok) {
     return rules
 }
 
-function getMentioningRules(yaksok: Yaksok, fileName: string) {
-    const runner = yaksok.getRunner(fileName)
+function getMentioningRules(yaksok: Runtime, fileName: string) {
+    const runner = yaksok.getFileRunner(fileName)
     const rules = runner.exportedRules
 
     const mentioningRules = rules

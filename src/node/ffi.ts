@@ -1,6 +1,7 @@
+import type { FunctionParams } from '../contant/type.ts'
 import { FFIResulTypeIsNotForYaksokError } from '../error/ffi.ts'
-import type { CallFrame } from '../runtime/callFrame.ts'
-import type { Scope } from '../runtime/scope.ts'
+import type { CallFrame } from '../executer/callFrame.ts'
+import type { Scope } from '../executer/scope.ts'
 import {
     Evaluable,
     Executable,
@@ -8,7 +9,6 @@ import {
     type Position,
     type ValueTypes,
 } from './base.ts'
-import type { Params } from './function.ts'
 
 export class FFIBody extends Identifier {
     constructor(public code: string, public override position?: Position) {
@@ -44,7 +44,7 @@ export class DeclareFFI extends Executable {
         return executedResult
     }
 
-    getParams(scope: Scope): Params {
+    getParams(scope: Scope): FunctionParams {
         const params = Object.fromEntries(
             this.paramNames.map((param) => [param, scope.getVariable(param)]),
         )

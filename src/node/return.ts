@@ -1,5 +1,5 @@
-import type { Scope } from '../runtime/scope.ts'
-import { ReturnSignal } from '../runtime/signals.ts'
+import type { Scope } from '../executer/scope.ts'
+import { ReturnSignal } from '../executer/signals.ts'
 import { Executable } from './base.ts'
 
 export class Return extends Executable {

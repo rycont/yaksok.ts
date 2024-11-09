@@ -1,10 +1,11 @@
-import type { TokenizeResult } from '../../../tokenize/index.ts'
-import type { Yaksok } from '../../../../index.ts'
 import { createRuleFromFunctionHeader } from './createRuleFromFunctionHeader.ts'
+import type { Runtime } from '../../../../runtime/index.ts'
+
+import type { TokenizeResult } from '../../../tokenize/index.ts'
 
 export function createLocalDynamicRules(
     { functionHeaders, ffiHeaders }: TokenizeResult,
-    runtime: Yaksok,
+    runtime: Runtime,
 ) {
     const functionRules = functionHeaders.flatMap((rule) =>
         createRuleFromFunctionHeader({
