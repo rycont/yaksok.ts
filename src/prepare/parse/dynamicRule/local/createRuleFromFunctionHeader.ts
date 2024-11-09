@@ -1,3 +1,9 @@
+import {
+    EnabledFlags,
+    FEATURE_FLAG,
+} from '../../../../contant/feature-flags.ts'
+import { Evaluable } from '../../../../node/base.ts'
+import { ValueWithParenthesis } from '../../../../node/calculation.ts'
 import { type Node, Identifier, Expression } from '../../../../node/index.ts'
 import { isParentheses } from '../../../../util/isBracket.ts'
 import { createFunctionDeclareRule } from './declareRule.ts'
@@ -8,19 +14,38 @@ import type {
 import { getVariants } from './getVariants.ts'
 import { createFunctionInvokeRule } from './invokeRule.ts'
 
-export function createRuleFromFunctionHeader(
-    subtokens: Node[],
-    type: keyof typeof functionRuleByType,
-) {
-    assertValidFunctionHeader(subtokens)
+interface Args {
+    subtokens: Node[]
+    type: keyof typeof functionRuleByType
+    flags: EnabledFlags
+}
 
-    const name = getFunctionNameFromHeader(subtokens)
-    const variants = [...getVariants(subtokens)]
+export function createRuleFromFunctionHeader(args: Args) {
+    assertValidFunctionHeader(args.subtokens)
 
-    const declareRule = createFunctionDeclareRule(name, subtokens, {
-        type,
+    const name = getFunctionNameFromHeader(args.subtokens)
+    const variants = [...getVariants(args.subtokens)]
+
+    const declareRule = createFunctionDeclareRule(name, args.subtokens, {
+        type: args.type,
     })
-    const invokeRules = variants.map((v) => createFunctionInvokeRule(name, v))
+
+    let invokeRules = variants.map((v) => createFunctionInvokeRule(name, v))
+
+    if (!args.flags[FEATURE_FLAG.FUTURE_FUNCTION_INVOKE_SYNTAX]) {
+        invokeRules = invokeRules.map((rule) => ({
+            ...rule,
+            pattern: rule.pattern.map((unit) => {
+                if (unit.type === ValueWithParenthesis) {
+                    return {
+                        type: Evaluable,
+                    }
+                }
+
+                return unit
+            }),
+        }))
+    }
 
     return [declareRule, ...invokeRules]
 }

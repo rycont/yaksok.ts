@@ -1,31 +1,22 @@
-import { QuickJS, yaksok } from './src/index.ts'
-
-const quickJS = new QuickJS({
-    prompt: () => {
-        return '10'
-    },
-})
-
-await quickJS.init()
+import { yaksok } from './src/index.ts'
 
 yaksok(
     `
-번역(QuickJS), 에러 발생
-***
-    return ("ㅁㄴㅇㄹ" as string) */ 10
-***
+약속, (음식)을/를 (사람)와/과 먹기
+    "맛있는 " + 음식 + ", " + 사람 + "의 입으로 모두 들어갑니다." 보여주기
 
-에러 발생
-        `,
+"피자"를 "철수"와 먹기
+"햄버거"를 "영희"와 먹기
+"치킨"을 "형님"과 먹기
+"초밥"을 "동생"과 먹기
+
+("피자")를 ("철수")와 먹기
+("햄버거")를 ("영희")와 먹기
+("치킨")을 ("형님")과 먹기
+("초밥")을 ("동생")과 먹기`,
     {
-        runFFI(_, code, args) {
-            const result = quickJS.run(code, args)
-
-            if (!result) {
-                throw new Error('Result is null')
-            }
-
-            return result
+        flags: {
+            'future-function-invoke-syntax': false,
         },
     },
 )
