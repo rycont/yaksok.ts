@@ -144,7 +144,7 @@ watch(stdout, (output) => {
         <div id="editor" ref="editor"></div>
         <div class="output-box">
             <div>
-                <h2>출력</h2>
+                <h2 class="output-header">출력</h2>
                 <pre><div
                 v-for="(output, index) in stdout"
                 :key="index"
@@ -152,7 +152,7 @@ watch(stdout, (output) => {
             ></div></pre>
             </div>
             <div v-if="props.challenge && props.challenge.output">
-                <h2>목표 출력</h2>
+                <h2 class="output-header">목표 출력</h2>
                 <pre>{{ props.challenge.output }}</pre>
             </div>
         </div>
@@ -258,12 +258,14 @@ pre {
     line-height: 1.3;
 }
 
-h2 {
+h2.output-header {
     font-size: 16px;
     margin: 0px;
     padding: 0px;
     border: none;
+    border-top: none;
     line-height: revert;
     margin-bottom: 6px;
+    letter-spacing: normal;
 }
 </style>
