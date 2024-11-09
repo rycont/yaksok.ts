@@ -2,11 +2,11 @@ import { createDynamicRule } from './dynamicRule/index.ts'
 import { SetVariable } from '../../node/variable.ts'
 import { callParseRecursively } from './srParse.ts'
 import { Identifier } from '../../node/index.ts'
-import { parseIndent } from './pa../../mod.ts
 import type { TokenizeResult } from '../tokenize/index.ts'
 import type { Runtime } from '../../runtime/index.ts'
 import type { Block } from '../../node/block.ts'
 import type { Rule } from './rule.ts'
+import { parseIndent } from './parseIndent.ts'
 
 interface ParseResult {
     ast: Block

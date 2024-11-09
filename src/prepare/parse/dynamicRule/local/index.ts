@@ -1,7 +1,7 @@
 import { createRuleFromFunctionHeader } from './createRuleFromFunctionHeader.ts'
-import type {../../../../mod.ts../../../runtime/index.ts'
 
 import type { TokenizeResult } from '../../../tokenize/index.ts'
+import { Runtime } from '../../../../runtime/index.ts'
 
 export function createLocalDynamicRules(
     { functionHeaders, ffiHeaders }: TokenizeResult,

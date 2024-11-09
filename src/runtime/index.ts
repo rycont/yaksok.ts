@@ -1,6 +1,6 @@
 import { EnabledFlags } from '../constant/feature-flags.ts'
 import { FileRunner } from './file-runner.ts'
-import { DEFAULT_RUNTIME_CONFIG, RuntimeConfig } from './env-config.ts'
+import { DEFAULT_RUNTIME_CONFIG, RuntimeConfig } from './runtime-config.ts'
 import { FileForRunNotExistError } from '../error/prepare.ts'
 
 export class Runtime {
