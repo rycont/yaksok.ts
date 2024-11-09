@@ -3,7 +3,6 @@ import { withSidebar, type VitePressSidebarOptions } from 'vitepress-sidebar'
 
 const SIDEBAR_CONFIG: VitePressSidebarOptions = {
     documentRootPath: '/docs',
-    capitalizeEachWords: true,
     hyphenToSpace: true,
     sortMenusOrderNumericallyFromLink: true,
     sortFolderTo: 'bottom',

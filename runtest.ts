@@ -1,31 +1,8 @@
-import { QuickJS, yaksok } from './src/index.ts'
+import { yaksok } from './src/index.ts'
 
-const quickJS = new QuickJS({
-    prompt: () => {
-        return '10'
-    },
-})
+const code = `
+내_이름: "영희"
+`
 
-await quickJS.init()
-
-yaksok(
-    `
-번역(QuickJS), 에러 발생
-***
-    return ("ㅁㄴㅇㄹ" as string) */ 10
-***
-
-에러 발생
-        `,
-    {
-        runFFI(_, code, args) {
-            const result = quickJS.run(code, args)
-
-            if (!result) {
-                throw new Error('Result is null')
-            }
-
-            return result
-        },
-    },
-)
+const result = yaksok(code)
+console.log(result.getRunner().scope.getVariable('내_이름').value)
