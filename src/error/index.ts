@@ -1,7 +1,6 @@
 export * from './calculation.ts'
 export * from './ffi.ts'
 export * from './function.ts'
-export * from './index.ts'
 export * from './list.ts'
 export * from './loop.ts'
 export * from './mention.ts'
