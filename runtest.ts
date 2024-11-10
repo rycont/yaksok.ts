@@ -1,22 +1,25 @@
+import { FunctionParams } from './src/mod.ts'
+import { StringValue } from './src/mod.ts'
+import { NumberValue } from './src/mod.ts'
 import { yaksok } from './src/mod.ts'
 
-yaksok(
-    `
-약속, (음식)을/를 (사람)와/과 먹기
-    "맛있는 " + 음식 + ", " + 사람 + "의 입으로 모두 들어갑니다." 보여주기
+function runFFI(runtime: string, code: string, params: FunctionParams) {
+    const payload = JSON.parse(code)
 
-"피자"를 "철수"와 먹기
-"햄버거"를 "영희"와 먹기
-"치킨"을 "형님"과 먹기
-"초밥"을 "동생"과 먹기
+    if (payload.action === 'getUserAgent') {
+        return new StringValue(navigator.userAgent)
+    }
+}
 
-("피자")를 ("철수")와 먹기
-("햄버거")를 ("영희")와 먹기
-("치킨")을 ("형님")과 먹기
-("초밥")을 ("동생")과 먹기`,
-    {
-        flags: {
-            'future-function-invoke-syntax': false,
-        },
-    },
-)
+const code = `
+번역(JavaScript), 브라우저의 UserAgent 가져오기
+***
+{
+    "action": "getUserAgent"
+}
+***
+
+브라우저의 UserAgent 가져오기 보여주기
+`
+
+yaksok(code, { runFFI })
