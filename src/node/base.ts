@@ -50,7 +50,7 @@ export class Identifier extends Evaluable {
         super()
     }
 
-    override toPrint() {
+    override toPrint(): string {
         return this.value
     }
 
@@ -86,7 +86,7 @@ export class Expression extends Node {
         super()
     }
 
-    override toPrint() {
+    override toPrint(): string {
         return this.value
     }
 }

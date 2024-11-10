@@ -62,7 +62,7 @@ export class FunctionInvoke extends Evaluable {
         this.params = props.params
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
         const callFrame = new CallFrame(this, _callFrame)
         const args = getParams(this.params, scope, callFrame)
 
@@ -74,7 +74,7 @@ export class FunctionInvoke extends Evaluable {
         scope: Scope,
         callFrame: CallFrame,
         args: { [key: string]: ValueTypes } | null,
-    ) {
+    ): ValueTypes {
         const func = scope.getFunction(this.name)
         const childScope = new Scope({
             parent: scope,
@@ -91,7 +91,7 @@ export function getParams(
     params: FunctionParams,
     scope: Scope,
     callFrame: CallFrame,
-) {
+): { [key: string]: ValueTypes } {
     const args: { [key: string]: ValueTypes } = {}
 
     for (const key in params) {

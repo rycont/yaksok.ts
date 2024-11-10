@@ -20,7 +20,7 @@ export class NumberValue extends PrimitiveValue<number> {
         super(content)
     }
 
-    override toPrint() {
+    override toPrint(): string {
         return this.value.toString()
     }
 }
@@ -30,13 +30,13 @@ export class StringValue extends PrimitiveValue<string> {
         super(content)
     }
 
-    override toPrint() {
+    override toPrint(): string {
         return this.value
     }
 }
 
 export class BooleanValue extends PrimitiveValue<boolean> {
-    override toPrint() {
+    override toPrint(): string {
         return this.value ? '참' : '거짓'
     }
 }

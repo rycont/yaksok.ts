@@ -31,7 +31,7 @@ export class IfStatement extends Executable {
         condition: Evaluable | undefined,
         scope: Scope,
         _callFrame: CallFrame,
-    ) {
+    ): boolean {
         const callFrame = new CallFrame(this, _callFrame)
         return !condition || isTruthy(condition.execute(scope, callFrame))
     }
