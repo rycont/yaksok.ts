@@ -37,11 +37,6 @@ export default defineConfig(
                     minify: false,
                 },
             },
-            markdown: {
-                shikiSetup(shiki) {
-                    return shiki.loadLanguage()
-                },
-            },
         },
         SIDEBAR_CONFIG,
     ),

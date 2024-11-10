@@ -12,7 +12,7 @@ features:
       linkText: 시작하기
     - title: 라이브러리로 사용하기
       icon: 📦
-      link: /library/quick-start
+      link: /library/1. 시작하기
       details: yaksok.ts를 앱에 통합하는 방법을 알아보세요
       linkText: 빠른 시작
     - title: GitHub에서 코드 보기
