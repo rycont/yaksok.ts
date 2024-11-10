@@ -29,5 +29,5 @@ jobs:
               working-directory: ${{ env.working-directory }}
 
             - name: Run tests
-              run: deno test
+              run: deno --allow-read test
               working-directory: ${{ env.working-directory }}
