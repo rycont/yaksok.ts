@@ -39,12 +39,12 @@ export class ValueWithParenthesis extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
         const callFrame = new CallFrame(this, _callFrame)
         return this.value.execute(scope, callFrame)
     }
 
-    override toPrint() {
+    override toPrint(): string {
         return '(' + this.value.toPrint() + ')'
     }
 }

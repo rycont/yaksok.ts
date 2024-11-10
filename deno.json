@@ -38,5 +38,10 @@
     "nodeModulesDir": "auto",
     "workspace": [
         "./quickjs"
-    ]
+    ],
+    "publish": {
+        "include": [
+            "./src"
+        ]
+    }
 }

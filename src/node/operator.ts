@@ -9,11 +9,11 @@ import {
 } from './primitive.ts'
 
 export class PlusOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '+'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): NumberValue | StringValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -43,11 +43,11 @@ export class PlusOperator extends Operator {
 }
 
 export class MinusOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '-'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): NumberValue {
         const [left, right] = operands
         if (left instanceof NumberValue && right instanceof NumberValue) {
             return new NumberValue(left.value - right.value)
@@ -64,11 +64,11 @@ export class MinusOperator extends Operator {
 }
 
 export class MultiplyOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '*'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): NumberValue | StringValue {
         const [left, right] = operands
         if (left instanceof NumberValue && right instanceof NumberValue) {
             return new NumberValue(left.value * right.value)
@@ -93,11 +93,11 @@ export class MultiplyOperator extends Operator {
 }
 
 export class DivideOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '/'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): NumberValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -115,11 +115,11 @@ export class DivideOperator extends Operator {
 }
 
 export class ModularOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '%'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): NumberValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -136,11 +136,11 @@ export class ModularOperator extends Operator {
     }
 }
 export class PowerOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '**'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): NumberValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -157,11 +157,11 @@ export class PowerOperator extends Operator {
     }
 }
 export class IntegerDivideOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '//'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): NumberValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -179,11 +179,11 @@ export class IntegerDivideOperator extends Operator {
 }
 
 export class EqualOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '='
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): BooleanValue {
         const [left, right] = operands
 
         if (left instanceof PrimitiveValue && right instanceof PrimitiveValue) {
@@ -197,11 +197,11 @@ export class EqualOperator extends Operator {
 }
 
 export class AndOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '이고(그리고)'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): BooleanValue {
         const [left, right] = operands
 
         if (
@@ -222,11 +222,11 @@ export class AndOperator extends Operator {
 }
 
 export class OrOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '이거나(거나)'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): BooleanValue {
         const [left, right] = operands
 
         if (
@@ -247,11 +247,11 @@ export class OrOperator extends Operator {
 }
 
 export class GreaterThanOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '>'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): BooleanValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -269,11 +269,11 @@ export class GreaterThanOperator extends Operator {
 }
 
 export class LessThanOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '<'
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): BooleanValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -291,11 +291,11 @@ export class LessThanOperator extends Operator {
 }
 
 export class GreaterThanOrEqualOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '>='
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): BooleanValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -313,11 +313,11 @@ export class GreaterThanOrEqualOperator extends Operator {
 }
 
 export class LessThanOrEqualOperator extends Operator {
-    override toPrint() {
+    override toPrint(): string {
         return '<='
     }
 
-    override call(...operands: ValueTypes[]) {
+    override call(...operands: ValueTypes[]): BooleanValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {

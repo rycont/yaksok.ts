@@ -18,7 +18,7 @@ export class Sequence extends Evaluable {
         super()
     }
 
-    override toPrint() {
+    override toPrint(): string {
         const content = this.items.map((item) => item.toPrint()).join(' ')
         return '( ' + content + ' )'
     }
@@ -31,7 +31,7 @@ export class List extends IndexedValue {
         super()
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame) {
+    override execute(_scope: Scope, _callFrame: CallFrame): List {
         const callFrame = new CallFrame(this, _callFrame)
 
         this.items = List.evaluateList(
@@ -79,13 +79,19 @@ export class List extends IndexedValue {
         return itemsList
     }
 
-    private getItemsByIndexes(list: ValueTypes[], indexes: NumberValue[]) {
+    private getItemsByIndexes(
+        list: ValueTypes[],
+        indexes: NumberValue[],
+    ): ValueTypes[] {
         return indexes.map((index) => {
             return list[index.value - 1]
         })
     }
 
-    setItem(index: PrimitiveValue<unknown>, value: PrimitiveValue<unknown>) {
+    setItem(
+        index: PrimitiveValue<unknown>,
+        value: PrimitiveValue<unknown>,
+    ): PrimitiveValue<unknown> {
         this.assertProperIndexPrimitiveType(index)
         this.assertGreaterOrEqualThan1(index.value)
 
@@ -100,7 +106,7 @@ export class List extends IndexedValue {
         items: Evaluable[],
         scope: Scope,
         callFrame: CallFrame,
-    ) {
+    ): ValueTypes[] {
         return items.map((item) => item.execute(scope, callFrame))
     }
 
@@ -148,7 +154,7 @@ export class List extends IndexedValue {
         })
     }
 
-    override toPrint() {
+    override toPrint(): string {
         const content = this.items?.map((item) => item.toPrint()).join(', ')
         return '[' + content + ']'
     }
@@ -159,7 +165,7 @@ export class IndexFetch extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
         const callFrame = new CallFrame(this, _callFrame)
 
         const target = this.target.execute(scope, callFrame)
