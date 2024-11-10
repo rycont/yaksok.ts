@@ -1,13 +1,12 @@
-name: Publish
+name: Test - QuickJS
 on:
     push:
-        branches:
-            - main
-        paths:
-            - 'quickjs/deno.json'
+        branches: ['main']
+    pull_request:
+        branches: ['main']
 
 jobs:
-    Publish:
+    Test:
         runs-on: ubuntu-latest
         env:
             working-directory: ./quickjs
