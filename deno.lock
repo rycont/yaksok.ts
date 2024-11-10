@@ -2020,13 +2020,19 @@
       "npm:@vueuse/core@^11.2.0",
       "npm:ansi-to-html@~0.7.2",
       "npm:monaco-editor@0.52",
-      "npm:quickjs-emscripten-core@0.31",
-      "npm:quickjs-emscripten@0.31",
       "npm:typedoc-plugin-markdown@^4.2.10",
       "npm:typedoc@0.26.11",
       "npm:vitepress-sidebar@^1.29.0",
       "npm:vitepress@^1.4.3",
       "npm:vue@^3.5.12"
-    ]
+    ],
+    "members": {
+      "quickjs": {
+        "dependencies": [
+          "npm:quickjs-emscripten-core@0.31",
+          "npm:quickjs-emscripten@0.31"
+        ]
+      }
+    }
   }
 }
