@@ -7,4 +7,5 @@
         'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', sans-serif;
     --vp-font-family-mono: 'Goorm Sans Code', sans-serif;
+    font-variant-ligatures: none;
 }
