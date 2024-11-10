@@ -1,5 +1,5 @@
 import { assertEquals, assertIsError } from 'assert'
-import { QuickJS } from '../quickjs/mod.ts'
+import { QuickJS } from '@yaksok-ts/quickjs'
 import { yaksok } from '../src/mod.ts'
 import { FFIResultTypeIsNotForYaksokError } from '../src/error/ffi.ts'
 import { List } from '../src/node/list.ts'
