@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, useTemplateRef, watch } from 'vue'
 import AnsiCode from 'ansi-to-html'
-import { yaksok } from '../src/index.ts'
+import { yaksok } from '../src/mod.ts'
 
 const props = defineProps({
     code: {

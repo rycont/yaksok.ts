@@ -1,7 +1,7 @@
 import type { Position } from '../node/base.ts'
 import { YaksokError, blue, bold, dim } from './common.ts'
 
-export class FFIResulTypeIsNotForYaksokError extends YaksokError {
+export class FFIResultTypeIsNotForYaksokError extends YaksokError {
     constructor(props: { position?: Position; value: any; ffiName: string }) {
         super(props)
 

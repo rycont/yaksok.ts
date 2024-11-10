@@ -1,5 +1,5 @@
 import type { FunctionParams } from '../constant/type.ts'
-import { FFIResulTypeIsNotForYaksokError } from '../error/ffi.ts'
+import { FFIResultTypeIsNotForYaksokError } from '../error/ffi.ts'
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
 import {
@@ -55,7 +55,7 @@ export class DeclareFFI extends Executable {
     assertEvaluable(value: unknown): asserts value is Evaluable {
         if (value instanceof Evaluable) return
 
-        throw new FFIResulTypeIsNotForYaksokError({
+        throw new FFIResultTypeIsNotForYaksokError({
             position: this.position,
             ffiName: this.name,
             value,
