@@ -36,6 +36,6 @@
     },
     "name": "@yaksok-ts/core",
     "version": "0.1.13",
-    "exports": "./src/index.ts",
+    "exports": "./src/mod.ts",
     "nodeModulesDir": "auto"
 }
