@@ -7,9 +7,9 @@ import {
     StringValue,
     type PrimitiveTypes,
     type ValueTypes,
-} from '../src/node/index.ts'
-import { bold, dim } from '../src/error/common.ts'
-import type { FunctionParams } from '../src/constant/type.ts'
+    type FunctionParams,
+} from '@yaksok-ts/core'
+import { bold, dim } from './util.ts'
 
 export class QuickJS {
     instance: QuickJSWASMModule | null = null
