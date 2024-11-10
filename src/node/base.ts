@@ -1,7 +1,7 @@
 import type { IndexedValue } from './indexed.ts'
 
-import type { CallFrame } from '../runtime/callFrame.ts'
-import type { Scope } from '../runtime/scope.ts'
+import type { CallFrame } from '../executer/callFrame.ts'
+import type { Scope } from '../executer/scope.ts'
 import type {
     NumberValue,
     StringValue,

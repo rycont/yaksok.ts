@@ -1,5 +1,5 @@
 import { equal } from 'assert'
-import { yaksok } from '../src/index.ts'
+import { yaksok } from '../src/mod.ts'
 
 Deno.test('미래의 약속 호출 문법', () => {
     let output = ''

@@ -1,5 +1,5 @@
 import { assertEquals } from 'assert'
-import { yaksok } from '../../src/index.ts'
+import { yaksok } from '../../src/mod.ts'
 
 for (const file of Deno.readDirSync('./test/codes')) {
     if (file.isFile && file.name.endsWith('.yak')) {

@@ -1,8 +1,9 @@
 import typedoc from 'typedoc'
 
 const app = await typedoc.Application.bootstrapWithPlugins({
-    entryPoints: ['./src/index.ts'],
+    entryPoints: ['./src/mod.ts'],
     name: 'yaksok.ts',
+    categorizeByGroup: true,
 })
 
 const outputDir = 'docs/api'

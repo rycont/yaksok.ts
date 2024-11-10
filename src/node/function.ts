@@ -1,10 +1,12 @@
 import { NotDefinedIdentifierError } from '../error/index.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
-import { Scope } from '../runtime/scope.ts'
-import { ReturnSignal } from '../runtime/signals.ts'
+import { CallFrame } from '../executer/callFrame.ts'
+import { Scope } from '../executer/scope.ts'
+import { ReturnSignal } from '../executer/signals.ts'
 import { Evaluable, Executable, type ValueTypes } from './base.ts'
-import type { Block } from './block.ts'
 import { NumberValue } from './primitive.ts'
+
+import type { FunctionParams } from '../constant/type.ts'
+import type { Block } from './block.ts'
 
 const DEFAULT_RETURN_VALUE = new NumberValue(0)
 
@@ -49,16 +51,11 @@ export class DeclareFunction extends Executable {
         }
     }
 }
-
-export interface Params {
-    [key: string]: Evaluable
-}
-
 export class FunctionInvoke extends Evaluable {
     private name: string
-    private params: Params
+    private params: FunctionParams
 
-    constructor(props: { name: string; params: Params }) {
+    constructor(props: { name: string; params: FunctionParams }) {
         super()
 
         this.name = props.name!
@@ -90,7 +87,11 @@ export class FunctionInvoke extends Evaluable {
     }
 }
 
-export function getParams(params: Params, scope: Scope, callFrame: CallFrame) {
+export function getParams(
+    params: FunctionParams,
+    scope: Scope,
+    callFrame: CallFrame,
+) {
     const args: { [key: string]: ValueTypes } = {}
 
     for (const key in params) {

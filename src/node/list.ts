@@ -7,8 +7,8 @@ import {
     RangeStartMustBeNumberError,
     TargetIsNotIndexedValueError,
 } from '../error/index.ts'
-import { CallFrame } from '../runtime/callFrame.ts'
-import { Scope } from '../runtime/scope.ts'
+import { CallFrame } from '../executer/callFrame.ts'
+import { Scope } from '../executer/scope.ts'
 import { Evaluable, type ValueTypes, Executable, Operator } from './base.ts'
 import { IndexedValue } from './indexed.ts'
 import { NumberValue, type PrimitiveValue } from './primitive.ts'

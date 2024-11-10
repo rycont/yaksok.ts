@@ -1,6 +1,6 @@
 import { getQuickJS } from 'quickjs-emscripten'
 import type { QuickJSWASMModule, QuickJSContext } from 'quickjs-emscripten-core'
-import type { Params } from '../../node/function.ts'
+
 import {
     List,
     NumberValue,
@@ -9,6 +9,7 @@ import {
     type ValueTypes,
 } from '../../node/index.ts'
 import { bold, dim } from '../../error/common.ts'
+import type { FunctionParams } from '../../constant/type.ts'
 
 export class QuickJS {
     instance: QuickJSWASMModule | null = null
@@ -21,7 +22,7 @@ export class QuickJS {
         this.instance = await getQuickJS()
     }
 
-    run(bodyCode: string, args: Params) {
+    run(bodyCode: string, args: FunctionParams) {
         const wrappedCode = createWrapperCodeFromFFICall(bodyCode, args)
         const vm = this.createContext()
 

@@ -1,6 +1,6 @@
 import { assertIsError } from 'assert'
 import { IndentIsNotMultipleOf4Error } from '../../src/error/index.ts'
-import { yaksok } from '../../src/index.ts'
+import { yaksok } from '../../src/mod.ts'
 
 Deno.test('온전하지 않은 인덴트', () => {
     try {

@@ -3,11 +3,11 @@ import {
     CannotReturnOutsideFunctionError,
 } from '../error/index.ts'
 import type { Executable } from '../node/base.ts'
-import { Scope } from '../runtime/scope.ts'
+import { Scope } from './scope.ts'
 import { CallFrame } from './callFrame.ts'
 import { BreakSignal, ReturnSignal } from './signals.ts'
 
-export function run<NodeType extends Executable>(
+export function executer<NodeType extends Executable>(
     node: NodeType,
     scope = new Scope(),
 ) {

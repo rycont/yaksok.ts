@@ -1,6 +1,6 @@
-import { CallFrame } from '../runtime/callFrame.ts'
+import { CallFrame } from '../executer/callFrame.ts'
 import { CannotParseError } from '../error/index.ts'
-import type { Scope } from '../runtime/scope.ts'
+import type { Scope } from '../executer/scope.ts'
 import { EOL } from './misc.ts'
 import { Executable, type Node } from './base.ts'
 

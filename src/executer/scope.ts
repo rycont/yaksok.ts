@@ -1,17 +1,17 @@
 import { NotDefinedIdentifierError } from '../error/index.ts'
-import type { Yaksok } from '../index.ts'
 import type { DeclareFFI, DeclareFunction, ValueTypes } from '../node/index.ts'
+import type { Runtime } from '../runtime/index.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>
     functions: Record<string, DeclareFunction | DeclareFFI> = {}
     parent: Scope | undefined
-    runtime?: Yaksok
+    runtime?: Runtime
 
     constructor(
         config: {
             parent?: Scope
-            runtime?: Yaksok
+            runtime?: Runtime
             initialVariable?: Record<string, ValueTypes> | null
         } = {},
     ) {

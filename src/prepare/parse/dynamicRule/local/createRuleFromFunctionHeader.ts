@@ -1,7 +1,7 @@
 import {
     EnabledFlags,
     FEATURE_FLAG,
-} from '../../../../contant/feature-flags.ts'
+} from '../../../../constant/feature-flags.ts'
 import { Evaluable } from '../../../../node/base.ts'
 import { ValueWithParenthesis } from '../../../../node/calculation.ts'
 import { type Node, Identifier, Expression } from '../../../../node/index.ts'

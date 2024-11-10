@@ -1,5 +1,5 @@
 import { assertEquals } from 'assert'
-import { yaksok } from '../../src/index.ts'
+import { yaksok } from '../../src/mod.ts'
 
 function createRandomValue(depth = 0): number | (string | number)[] {
     if (depth > 3 || Math.random() < 0.5) {
@@ -37,7 +37,7 @@ for (let i = 0; i < 10; i++) {
 나이: ${formula}
     `
 
-        const { scope } = yaksok(code).getRunner()
+        const { scope } = yaksok(code).getFileRunner()
         assertEquals(scope.getVariable('나이').value, eval(formula))
     })
 }

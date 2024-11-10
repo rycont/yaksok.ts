@@ -1,22 +1,41 @@
-import { yaksok } from './src/index.ts'
+import { FunctionParams } from './src/mod.ts'
+import { NumberValue } from './src/mod.ts'
+import { yaksok } from './src/mod.ts'
 
 yaksok(
     `
-약속, (음식)을/를 (사람)와/과 먹기
-    "맛있는 " + 음식 + ", " + 사람 + "의 입으로 모두 들어갑니다." 보여주기
+번역(JavaScript), (A)와 (B) 사이 랜덤 수
+***
+    return Math.floor(Math.random() * (B - A) + A)
+***
 
-"피자"를 "철수"와 먹기
-"햄버거"를 "영희"와 먹기
-"치킨"을 "형님"과 먹기
-"초밥"을 "동생"과 먹기
-
-("피자")를 ("철수")와 먹기
-("햄버거")를 ("영희")와 먹기
-("치킨")을 ("형님")과 먹기
-("초밥")을 ("동생")과 먹기`,
+(1)와 (10) 사이 랜덤 수 보여주기
+`,
     {
-        flags: {
-            'future-function-invoke-syntax': false,
+        runFFI: (runtime, code, params) => {
+            if (runtime !== 'JavaScript') {
+                throw new Error('지원하지 않는 런타임입니다')
+            }
+
+            const runnableCode = buildCodeFromCodeAndParams(code, params)
+            const resultInJS = eval(runnableCode)
+
+            if (typeof resultInJS !== 'number') {
+                throw new Error('결과값은 숫자여야 합니다')
+            }
+
+            return new NumberValue(resultInJS)
         },
     },
 )
+
+function buildCodeFromCodeAndParams(code: string, params: FunctionParams) {
+    const paramNames = Object.keys(params)
+    const paramsInJS = Object.fromEntries(
+        Object.entries(params).map(([key, value]) => [key, value.value]),
+    )
+
+    return `((${paramNames.join(', ')}) => {${code}})(${Object.values(
+        paramsInJS,
+    ).join(', ')})`
+}
