@@ -12,17 +12,17 @@ import {
 import { bold, dim } from './util.ts'
 
 export class QuickJS {
-    instance: QuickJSWASMModule | null = null
+    private instance: QuickJSWASMModule | null = null
 
     constructor(
         private functions: Record<string, (...args: any[]) => any> = {},
     ) {}
 
-    async init() {
+    async init(): Promise<void> {
         this.instance = await getQuickJS()
     }
 
-    run(bodyCode: string, args: FunctionParams) {
+    public run(bodyCode: string, args: FunctionParams): ValueTypes {
         const wrappedCode = createWrapperCodeFromFFICall(bodyCode, args)
         const vm = this.createContext()
 
