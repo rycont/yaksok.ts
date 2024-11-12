@@ -11,6 +11,8 @@ import {
     ValueWithParenthesis,
 } from '../../node/index.ts'
 import { CannotParseError } from '../../error/index.ts'
+import { InlineParenthesisBlock } from '../../node/block.ts'
+import { InlineBracketBlock } from '../../node/block.ts'
 
 export function SRParse(_tokens: Node[], rules: Rule[]) {
     const tokens = [..._tokens]
@@ -51,10 +53,15 @@ export function reduce(tokens: Node[], rule: Rule) {
     return reduced
 }
 
+type BlockType =
+    | typeof Block
+    | typeof ValueWithParenthesis
+    | typeof ValueWithBracket
+
 export function callParseRecursively(
     _tokens: Node[],
     externalPatterns: Rule[][],
-    wrapper: 'Block' | 'ValueWithParenthesis' | 'ValueWithBracket',
+    blockTypeFactory: BlockType = Block,
 ) {
     let parsedTokens = [..._tokens]
 
@@ -64,13 +71,10 @@ export function callParseRecursively(
         if (!(token instanceof Block)) continue
 
         const blockWrapper = {
-            Block: 'Block',
-            InlineParenthesisBlock: 'ValueWithParenthesis',
-            InlineBracketBlock: 'ValueWithBracket',
-        }[token.constructor.name] as
-            | 'Block'
-            | 'ValueWithParenthesis'
-            | 'ValueWithBracket'
+            [Block.name]: Block,
+            [InlineParenthesisBlock.name]: ValueWithParenthesis,
+            [InlineBracketBlock.name]: ValueWithBracket,
+        }[token.constructor.name]
 
         parsedTokens[i] = callParseRecursively(
             token.children,
@@ -94,7 +98,7 @@ export function callParseRecursively(
         break
     }
 
-    if (wrapper === 'Block') {
+    if (blockTypeFactory === Block) {
         return new Block(parsedTokens)
     }
 
@@ -111,7 +115,7 @@ export function callParseRecursively(
 
     const lastToken = validTokens[0]
 
-    if (wrapper === 'ValueWithParenthesis') {
+    if (blockTypeFactory === ValueWithParenthesis) {
         return new ValueWithParenthesis(lastToken)
     }
 
