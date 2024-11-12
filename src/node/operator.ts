@@ -9,6 +9,8 @@ import {
 } from './primitive.ts'
 
 export class PlusOperator extends Operator {
+    static override friendlyName = '더하기(+)'
+
     override toPrint(): string {
         return '+'
     }
@@ -43,6 +45,8 @@ export class PlusOperator extends Operator {
 }
 
 export class MinusOperator extends Operator {
+    static override friendlyName = '빼기(-)'
+
     override toPrint(): string {
         return '-'
     }
@@ -64,6 +68,8 @@ export class MinusOperator extends Operator {
 }
 
 export class MultiplyOperator extends Operator {
+    static override friendlyName = '곱하기(*)'
+
     override toPrint(): string {
         return '*'
     }
@@ -93,6 +99,8 @@ export class MultiplyOperator extends Operator {
 }
 
 export class DivideOperator extends Operator {
+    static override friendlyName = '나누기(/)'
+
     override toPrint(): string {
         return '/'
     }
@@ -115,6 +123,8 @@ export class DivideOperator extends Operator {
 }
 
 export class ModularOperator extends Operator {
+    static override friendlyName = '나머지(%)'
+
     override toPrint(): string {
         return '%'
     }
@@ -136,6 +146,8 @@ export class ModularOperator extends Operator {
     }
 }
 export class PowerOperator extends Operator {
+    static override friendlyName = '제곱(**)'
+
     override toPrint(): string {
         return '**'
     }
@@ -157,6 +169,8 @@ export class PowerOperator extends Operator {
     }
 }
 export class IntegerDivideOperator extends Operator {
+    static override friendlyName = '정수 나누기(//)'
+
     override toPrint(): string {
         return '//'
     }
@@ -179,6 +193,8 @@ export class IntegerDivideOperator extends Operator {
 }
 
 export class EqualOperator extends Operator {
+    static override friendlyName = '같다(=)'
+
     override toPrint(): string {
         return '='
     }
@@ -197,6 +213,8 @@ export class EqualOperator extends Operator {
 }
 
 export class AndOperator extends Operator {
+    static override friendlyName = '이고(그리고)'
+
     override toPrint(): string {
         return '이고(그리고)'
     }
@@ -222,6 +240,8 @@ export class AndOperator extends Operator {
 }
 
 export class OrOperator extends Operator {
+    static override friendlyName = '이거나(거나)'
+
     override toPrint(): string {
         return '이거나(거나)'
     }
@@ -247,6 +267,8 @@ export class OrOperator extends Operator {
 }
 
 export class GreaterThanOperator extends Operator {
+    static override friendlyName = '크다(>)'
+
     override toPrint(): string {
         return '>'
     }
@@ -269,6 +291,8 @@ export class GreaterThanOperator extends Operator {
 }
 
 export class LessThanOperator extends Operator {
+    static override friendlyName = '작다(<)'
+
     override toPrint(): string {
         return '<'
     }
@@ -291,6 +315,8 @@ export class LessThanOperator extends Operator {
 }
 
 export class GreaterThanOrEqualOperator extends Operator {
+    static override friendlyName = '크거나 같다(>=)'
+
     override toPrint(): string {
         return '>='
     }
@@ -313,6 +339,8 @@ export class GreaterThanOrEqualOperator extends Operator {
 }
 
 export class LessThanOrEqualOperator extends Operator {
+    static override friendlyName = '작거나 같다(<=)'
+
     override toPrint(): string {
         return '<='
     }

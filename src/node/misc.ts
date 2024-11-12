@@ -4,18 +4,24 @@ import type { Scope } from '../executer/scope.ts'
 import { Node, Executable, type Evaluable, type Position } from './base.ts'
 
 export class EOL extends Node {
+    static override friendlyName = '줄바꿈'
+
     constructor(public override position?: Position) {
         super()
     }
 }
 
 export class Indent extends Node {
+    static override friendlyName = '들여쓰기'
+
     constructor(public size: number, public override position?: Position) {
         super()
     }
 }
 
 export class Print extends Executable {
+    static override friendlyName = '보여주기'
+
     constructor(public value: Evaluable, public override position?: Position) {
         super()
     }

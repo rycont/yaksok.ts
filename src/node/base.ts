@@ -18,6 +18,7 @@ export interface Position {
 export class Node {
     [key: string]: unknown
     position?: Position
+    static friendlyName = '노드'
 
     toJSON(): object {
         return {
@@ -31,6 +32,8 @@ export class Node {
     }
 }
 export class Executable extends Node {
+    static override friendlyName = '실행 가능한 노드'
+
     execute(_scope: Scope, _callFrame: CallFrame) {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
@@ -40,12 +43,16 @@ export class Executable extends Node {
 }
 
 export class Evaluable extends Executable {
+    static override friendlyName = '값이 있는 노드'
+
     override execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
 }
 
 export class Identifier extends Evaluable {
+    static override friendlyName = '식별자'
+
     constructor(public value: string, override position?: Position) {
         super()
     }
@@ -68,6 +75,8 @@ export class Identifier extends Evaluable {
 }
 
 export class Operator extends Node {
+    static override friendlyName = '연산자'
+
     constructor(public value?: string, public override position?: Position) {
         super()
     }
@@ -82,6 +91,8 @@ export class Operator extends Node {
 }
 
 export class Expression extends Node {
+    static override friendlyName = '표현식'
+
     constructor(public value: string, public override position?: Position) {
         super()
     }

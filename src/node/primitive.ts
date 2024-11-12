@@ -3,6 +3,8 @@ import { Evaluable, type Position } from './base.ts'
 import type { Scope } from '../executer/scope.ts'
 
 export class PrimitiveValue<T> extends Evaluable {
+    static override friendlyName = '원시값'
+
     value: T
 
     constructor(content: T) {
@@ -16,6 +18,8 @@ export class PrimitiveValue<T> extends Evaluable {
 }
 
 export class NumberValue extends PrimitiveValue<number> {
+    static override friendlyName = '숫자'
+
     constructor(content: number, public override position?: Position) {
         super(content)
     }
@@ -26,6 +30,8 @@ export class NumberValue extends PrimitiveValue<number> {
 }
 
 export class StringValue extends PrimitiveValue<string> {
+    static override friendlyName = '문자'
+
     constructor(content: string, public override position?: Position) {
         super(content)
     }
@@ -36,6 +42,8 @@ export class StringValue extends PrimitiveValue<string> {
 }
 
 export class BooleanValue extends PrimitiveValue<boolean> {
+    static override friendlyName = '참거짓'
+
     override toPrint(): string {
         return this.value ? '참' : '거짓'
     }

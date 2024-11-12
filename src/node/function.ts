@@ -11,6 +11,8 @@ import type { Block } from './block.ts'
 const DEFAULT_RETURN_VALUE = new NumberValue(0)
 
 export class DeclareFunction extends Executable {
+    static override friendlyName = '새 약속 만들기'
+
     name: string
     body: Block
 
@@ -52,6 +54,8 @@ export class DeclareFunction extends Executable {
     }
 }
 export class FunctionInvoke extends Evaluable {
+    static override friendlyName = '약속 사용하기'
+
     private name: string
     private params: FunctionParams
 

@@ -101,7 +101,7 @@ class Lexer {
     }
 
     isBlock(token: Node): token is Block {
-        return token.constructor.name === 'Block'
+        return token.constructor === Block
     }
 
     parseBlock(token: Block) {

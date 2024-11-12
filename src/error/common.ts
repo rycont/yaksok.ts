@@ -1,5 +1,4 @@
 import type { Evaluable, Operator, Position } from '../node/base.ts'
-import { NODE_NAMES } from './nodeNames.ts'
 
 export class YaksokError<T = unknown> extends Error {
     position?: Position
@@ -15,7 +14,8 @@ export class YaksokError<T = unknown> extends Error {
 
 export function evaluableToText(evaluable: Evaluable) {
     let text =
-        NODE_NAMES[evaluable.constructor.name] || evaluable.constructor.name
+        (evaluable.constructor as typeof Evaluable).friendlyName ||
+        evaluable.constructor.name
 
     try {
         text = bold(blue(evaluable.toPrint())) + dim(`(${text})`)
@@ -28,7 +28,8 @@ export function evaluableToText(evaluable: Evaluable) {
 
 export function operatorToText(operator: Operator) {
     let text =
-        NODE_NAMES[operator.constructor.name] || operator.constructor.name
+        (operator.constructor as typeof Operator).friendlyName ||
+        operator.constructor.name
 
     const toPrint = operator.toPrint()
     if (toPrint !== 'unknown') text = blue(bold(toPrint)) + dim(`(${text})`)

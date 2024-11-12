@@ -7,6 +7,8 @@ import type { Block } from './block.ts'
 import { List } from './list.ts'
 
 export class ListLoop extends Executable {
+    static override friendlyName = '목록 반복'
+
     constructor(
         public list: Evaluable,
         public variableName: string,

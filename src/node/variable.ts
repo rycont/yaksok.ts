@@ -20,6 +20,8 @@ export const RESERVED_WORDS = [
 ]
 
 export class SetVariable extends Evaluable {
+    static override friendlyName = '변수 정하기'
+
     constructor(public name: string, public value: Evaluable) {
         super()
         this.assertValidName()

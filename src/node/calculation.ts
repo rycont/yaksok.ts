@@ -35,6 +35,8 @@ const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
 ]
 
 export class ValueWithParenthesis extends Evaluable {
+    static override friendlyName = '괄호로 묶인 값'
+
     constructor(public value: Evaluable) {
         super()
     }
@@ -50,6 +52,8 @@ export class ValueWithParenthesis extends Evaluable {
 }
 
 export class Formula extends Evaluable {
+    static override friendlyName = '계산식'
+
     constructor(public terms: (Evaluable | Operator)[]) {
         super()
     }

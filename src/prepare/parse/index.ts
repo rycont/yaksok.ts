@@ -20,11 +20,7 @@ export function parse(
     const dynamicRules = createDynamicRule(tokenized, runtime)
     const indentedNodes = parseIndent(tokenized.tokens)
 
-    const ast = callParseRecursively(
-        indentedNodes,
-        dynamicRules,
-        'Block',
-    ) as Block
+    const ast = callParseRecursively(indentedNodes, dynamicRules) as Block
     const exportedVariables = getExportedVariablesRules(ast)
 
     const exportedRules = [...dynamicRules.flat(), ...exportedVariables]
