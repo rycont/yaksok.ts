@@ -42,3 +42,7 @@ jobs:
 
             - name: Publish to JSR
               run: deno publish
+
+            - name: Publish QuickJS to JSR
+              run: deno publish
+              working-directory: ./quickjs
