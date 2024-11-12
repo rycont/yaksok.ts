@@ -5,6 +5,8 @@ import { BreakSignal } from '../executer/signals.ts'
 import { Executable } from './base.ts'
 
 export class Loop extends Executable {
+    static override friendlyName = '반복'
+
     constructor(public body: Block) {
         super()
     }
@@ -25,6 +27,8 @@ export class Loop extends Executable {
 }
 
 export class Break extends Executable {
+    static override friendlyName = '그만'
+
     override execute(_scope: Scope, _callFrame: CallFrame) {
         throw new BreakSignal(this.position)
     }

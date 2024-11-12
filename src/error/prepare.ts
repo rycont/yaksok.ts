@@ -1,5 +1,4 @@
 import type { Position, Node } from '../node/base.ts'
-import { NODE_NAMES } from './nodeNames.ts'
 import { YaksokError, bold, dim } from './common.ts'
 
 export class CannotParseError extends YaksokError {
@@ -11,18 +10,15 @@ export class CannotParseError extends YaksokError {
     }) {
         super(props)
 
-        if (
-            'toPrint' in props.resource.part &&
-            typeof props.resource.part.toPrint === 'function'
-        ) {
+        try {
             this.message = `${bold(
                 '"' + props.resource.part.toPrint() + '"',
             )}는 실행할 수 있는 코드가 아니에요.`
-        } else {
+        } catch {
+            const nodeConstructor = props.resource.part
+                .constructor as typeof Node
             this.message = `${
-                '"' +
-                bold(NODE_NAMES[props.resource.part.constructor.name]) +
-                '"'
+                '"' + bold(nodeConstructor.friendlyName) + '"'
             }는 실행할 수 있는 코드가 아니에요.`
         }
     }

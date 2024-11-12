@@ -11,12 +11,16 @@ import {
 } from './base.ts'
 
 export class FFIBody extends Identifier {
+    static override friendlyName = '번역할 내용'
+
     constructor(public code: string, public override position?: Position) {
         super(code, position)
     }
 }
 
 export class DeclareFFI extends Executable {
+    static override friendlyName = '번역 만들기'
+
     constructor(
         public name: string,
         public body: string,

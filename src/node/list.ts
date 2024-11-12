@@ -14,6 +14,8 @@ import { IndexedValue } from './indexed.ts'
 import { NumberValue, type PrimitiveValue } from './primitive.ts'
 
 export class Sequence extends Evaluable {
+    static override friendlyName = '나열된 값'
+
     constructor(public items: Evaluable[]) {
         super()
     }
@@ -25,6 +27,8 @@ export class Sequence extends Evaluable {
 }
 
 export class List extends IndexedValue {
+    static override friendlyName = '목록'
+
     items?: ValueTypes[]
 
     constructor(private initialValue: Evaluable[]) {
@@ -161,6 +165,8 @@ export class List extends IndexedValue {
 }
 
 export class IndexFetch extends Evaluable {
+    static override friendlyName = '목록에서 값 가져오기'
+
     constructor(public target: Evaluable, public index: Evaluable) {
         super()
     }
@@ -190,6 +196,8 @@ export class IndexFetch extends Evaluable {
 }
 
 export class SetToIndex extends Executable {
+    static override friendlyName = '목록에 값 넣기'
+
     constructor(public target: IndexFetch, public value: Evaluable) {
         super()
     }
@@ -218,6 +226,8 @@ export class SetToIndex extends Executable {
 }
 
 export class RangeOperator extends Operator {
+    static override friendlyName = '범위에서 목록 만들기(~)'
+
     override call(...operands: ValueTypes[]): List {
         this.assertProperOperands(operands)
 

@@ -4,6 +4,8 @@ import type { Scope } from '../executer/scope.ts'
 import { ErrorInModuleError } from '../error/index.ts'
 
 export class Mention extends Executable {
+    static override friendlyName = '불러올 파일 이름'
+
     constructor(public value: string) {
         super()
     }
@@ -14,6 +16,8 @@ export class Mention extends Executable {
 }
 
 export class MentionScope extends Evaluable {
+    static override friendlyName = '불러오기'
+
     constructor(public fileName: string, public child: Evaluable) {
         super()
     }
