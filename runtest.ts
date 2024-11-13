@@ -1,41 +1,15 @@
-import { FunctionParams } from './src/mod.ts'
-import { NumberValue } from './src/mod.ts'
-import { yaksok } from './src/mod.ts'
+import { Tokenizer } from './src/prepare/tokenize/index.ts'
 
-yaksok(
-    `
-번역(JavaScript), (A)와 (B) 사이 랜덤 수
-***
-    return Math.floor(Math.random() * (B - A) + A)
-***
+const code = `"청량리부터 안동까지 KTX 이음을 타면" 보여주기
+(@코레일 (@차종 KTX이음)으로 (@역간거리 ("청량리")부터 ("안동")까지)km을 이동할 때 운임) + "원" 보여주기
 
-(1)와 (10) 사이 랜덤 수 보여주기
-`,
-    {
-        runFFI: (runtime, code, params) => {
-            if (runtime !== 'JavaScript') {
-                throw new Error('지원하지 않는 런타임입니다')
-            }
+"판교부터 충주까지 무궁화호를 타면" 보여주기
+(@코레일 (@차종 무궁화호)으로 (@역간거리 ("판교")부터 ("충주")까지)km을 이동할 때 운임) + "원" 보여주기
 
-            const runnableCode = buildCodeFromCodeAndParams(code, params)
-            const resultInJS = eval(runnableCode)
+@코레일 출발하기`
 
-            if (typeof resultInJS !== 'number') {
-                throw new Error('결과값은 숫자여야 합니다')
-            }
+const result = Tokenizer.run(code)
 
-            return new NumberValue(resultInJS)
-        },
-    },
+console.table(
+    result.map((r) => ({ value: r.value.slice(0, 10), position: r.position })),
 )
-
-function buildCodeFromCodeAndParams(code: string, params: FunctionParams) {
-    const paramNames = Object.keys(params)
-    const paramsInJS = Object.fromEntries(
-        Object.entries(params).map(([key, value]) => [key, value.value]),
-    )
-
-    return `((${paramNames.join(', ')}) => {${code}})(${Object.values(
-        paramsInJS,
-    ).join(', ')})`
-}

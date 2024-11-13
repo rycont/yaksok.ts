@@ -1,5 +1,6 @@
 {
     "imports": {
+        "@std/fs": "jsr:@std/fs@^1.0.5",
         "@vue/runtime-dom": "npm:@vue/runtime-dom@^3.5.12",
         "@vueuse/core": "npm:@vueuse/core@^11.2.0",
         "ansi-to-html": "npm:ansi-to-html@^0.7.2",

@@ -9,11 +9,7 @@ import type {
     PrimitiveValue,
 } from './primitive.ts'
 import { NotDefinedIdentifierError } from '../error/variable.ts'
-
-export interface Position {
-    line: number
-    column: number
-}
+import { Position } from '../type/position.ts'
 
 export class Node {
     [key: string]: unknown
