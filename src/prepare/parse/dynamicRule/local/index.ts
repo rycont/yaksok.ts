@@ -23,5 +23,7 @@ export function createLocalDynamicRules(
         }),
     )
 
-    return [...functionRules, ...ffiRules].map((e) => [e])
+    return [...functionRules, ...ffiRules]
+        .toSorted((a, b) => b.pattern.length - a.pattern.length)
+        .map((e) => [e])
 }
