@@ -50,6 +50,21 @@ export const RULES: {
         },
     },
     {
+        type: TOKEN_TYPE.INDENT,
+        starter: ['\t'],
+        parse: (view, shift) => {
+            shift()
+            let tabs = 1
+
+            while (view() === '\t') {
+                tabs++
+                shift()
+            }
+
+            return '\t'.repeat(tabs)
+        },
+    },
+    {
         type: TOKEN_TYPE.SPACE,
         starter: /\s/,
         parse: (view, shift) => {

@@ -3,7 +3,7 @@ import { RULES } from './rules.ts'
 import { NotAcceptableSignal } from './signal.ts'
 import { Token } from './token.ts'
 
-export class Tokenizer {
+class Tokenizer {
     private tokens: Token[] = []
     private code: string[]
 
@@ -109,8 +109,8 @@ export class Tokenizer {
 
         return this.tokens
     }
+}
 
-    public static run(code: string) {
-        return new Tokenizer(code).tokenize()
-    }
+export function tokenize(code: string) {
+    return new Tokenizer(code).tokenize()
 }

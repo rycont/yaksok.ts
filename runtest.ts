@@ -1,15 +1,19 @@
-import { Tokenizer } from './src/prepare/tokenize/index.ts'
+import { parse } from './src/prepare/parse/index.ts'
+import { convertTokensToNodes } from './src/prepare/tokenize/convert-tokens-to-nodes.ts'
+import { tokenize } from './src/prepare/tokenize/index.ts'
+import { Runtime } from './src/runtime/index.ts'
 
-const code = `"청량리부터 안동까지 KTX 이음을 타면" 보여주기
-(@코레일 (@차종 KTX이음)으로 (@역간거리 ("청량리")부터 ("안동")까지)km을 이동할 때 운임) + "원" 보여주기
+const code = `약속, 키가 (키)cm이고 몸무게가 (몸무게)kg일 때 비만도
+    결과: 몸무게 / (키 / 100 * 키 / 100)
 
-"판교부터 충주까지 무궁화호를 타면" 보여주기
-(@코레일 (@차종 무궁화호)으로 (@역간거리 ("판교")부터 ("충주")까지)km을 이동할 때 운임) + "원" 보여주기
+비만도: 키가 (177)cm이고 몸무게가 (68)kg일 때 비만도
+비만도 보여주기`
 
-@코레일 출발하기`
-
-const result = Tokenizer.run(code)
-
-console.table(
-    result.map((r) => ({ value: r.value.slice(0, 10), position: r.position })),
+const runtime = new Runtime(
+    {
+        main: code,
+    },
+    {},
 )
+
+parse(tokenize(code), runtime)
