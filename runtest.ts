@@ -1,41 +1,38 @@
-import { FunctionParams } from './src/mod.ts'
-import { NumberValue } from './src/mod.ts'
 import { yaksok } from './src/mod.ts'
 
 yaksok(
     `
-번역(JavaScript), (A)와 (B) 사이 랜덤 수
-***
-    return Math.floor(Math.random() * (B - A) + A)
-***
+약속, 회전설정 (회전)
+    결과: "rotate:" + 회전
 
-(1)와 (10) 사이 랜덤 수 보여주기
+약속, 시간설정 (시간)
+    결과: "time:" + 시간
+
+약속, (A) 합 (B)
+    결과: A + "<join>" + B
+
+약속, (각도)도 회전하기
+    회전설정 각도 보여주기
+
+약속, (시간)초 동안 (각도)도 회전하기
+    (시간설정 시간) 합 (회전설정 각도) 보여주기
+
+각도: 45
+시간: 30
+
+(3)초 동안 (90)도 회전하기
+3 초 동안 90 도 회전하기
+(3)초 동안 90 도 회전하기
+3 초 동안 (90)도 회전하기
+
+시간 초 동안 각도 도 회전하기
+(시간)초 동안 (각도)도 회전하기
+(시간)초 동안 각도 도 회전하기
+시간 초 동안 (각도)도 회전하기
+
+(90)도 회전하기
+90 도 회전하기
+각도 도 회전하기
+(각도)도 회전하기
 `,
-    {
-        runFFI: (runtime, code, params) => {
-            if (runtime !== 'JavaScript') {
-                throw new Error('지원하지 않는 런타임입니다')
-            }
-
-            const runnableCode = buildCodeFromCodeAndParams(code, params)
-            const resultInJS = eval(runnableCode)
-
-            if (typeof resultInJS !== 'number') {
-                throw new Error('결과값은 숫자여야 합니다')
-            }
-
-            return new NumberValue(resultInJS)
-        },
-    },
 )
-
-function buildCodeFromCodeAndParams(code: string, params: FunctionParams) {
-    const paramNames = Object.keys(params)
-    const paramsInJS = Object.fromEntries(
-        Object.entries(params).map(([key, value]) => [key, value.value]),
-    )
-
-    return `((${paramNames.join(', ')}) => {${code}})(${Object.values(
-        paramsInJS,
-    ).join(', ')})`
-}

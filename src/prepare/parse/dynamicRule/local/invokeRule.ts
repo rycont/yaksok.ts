@@ -1,3 +1,4 @@
+import { FunctionParams } from '../../../../constant/type.ts'
 import {
     type Node,
     Expression,
@@ -19,10 +20,13 @@ export function createFunctionInvokeRule(
         .map(functionHeaderToInvokeMap)
         .filter(Boolean) as PatternUnit[]
 
+    const paramNameIndexMap = getParamNameIndexMapFromHeader(subtokens)
+
     return {
         pattern: invokeTemplate,
         factory(nodes: Node[]) {
-            const params = getParamsFromMatchedNodes(subtokens, nodes)
+            const params = getParamsFromMatchedNodes(paramNameIndexMap, nodes)
+
             return new FunctionInvoke({
                 name,
                 params,
@@ -35,20 +39,64 @@ export function createFunctionInvokeRule(
 }
 
 function getParamsFromMatchedNodes(
-    template: FunctionHeaderNode[],
-    matchedNodes: Node[],
+    paramNameIndexMap: Map<string, number>,
+    nodes: Node[],
 ) {
-    return Object.fromEntries(
-        template
-            .filter((token) => !(token instanceof Expression))
-            .map((token, i) => [token, matchedNodes[i]])
-            .filter(
-                (set): set is [Identifier, Evaluable] =>
-                    set[1] instanceof Evaluable &&
-                    !(set[1] instanceof Identifier),
-            )
-            .map(([token, node]) => [token.value, node]),
+    const params = {} as FunctionParams
+
+    for (const [paramName, index] of paramNameIndexMap) {
+        const node = nodes[index]
+
+        if (!(node instanceof Evaluable)) {
+            throw new Error('Node is not Evaluable')
+        }
+
+        params[paramName] = node
+    }
+
+    return params
+}
+
+function getParamNameIndexMapFromHeader(
+    functionHeaderNodes: FunctionHeaderNode[],
+) {
+    let parenthesesCount = 0
+
+    const paramNameIndexMap = new Map(
+        (
+            functionHeaderNodes
+                .map((token, index) => {
+                    if (token instanceof Expression) {
+                        parenthesesCount += 1
+                        return null
+                    }
+
+                    const prevToken = functionHeaderNodes[index - 1]
+                    const nextToken = functionHeaderNodes[index + 1]
+
+                    if (!prevToken || !nextToken) {
+                        return null
+                    }
+
+                    const isPreviousTokenOpeningParentheses =
+                        isParentheses(prevToken) === BRACKET_TYPE.OPENING
+                    const isNextTokenClosingParentheses =
+                        isParentheses(nextToken) === BRACKET_TYPE.CLOSING
+
+                    if (
+                        !isPreviousTokenOpeningParentheses ||
+                        !isNextTokenClosingParentheses
+                    ) {
+                        return null
+                    }
+
+                    return [token, index - parenthesesCount]
+                })
+                .filter(Boolean) as [FunctionHeaderNode, number][]
+        ).map(([token, index]) => [token.value, index]),
     )
+
+    return paramNameIndexMap
 }
 
 function functionHeaderToInvokeMap(
