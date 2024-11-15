@@ -8,5 +8,5 @@ export function createDynamicRule(tokens: Token[], runtime: Runtime) {
     const localRules = createLocalDynamicRules(tokens, runtime)
     const mentioningRules = getDynamicRulesFromMention(tokens, runtime)
 
-    return [...localRules, mentioningRules]
+    return [localRules, mentioningRules]
 }
