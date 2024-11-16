@@ -1,8 +1,6 @@
 import { getFunctionTemplatesFromTokens } from './get-function-templates.ts'
 import { Token, TOKEN_TYPE } from '../../../tokenize/token.ts'
 import { createFunctionInvokeRule } from './invoke-rule.ts'
-import { createDeclareRulesFromPreset } from './declare-rule.ts'
-import { FFI_PRESET, YAKSOK_PRESET } from './declare-preset.ts'
 
 export function createLocalDynamicRules(tokens: Token[]) {
     const yaksokTemplates = getFunctionTemplatesFromTokens(
@@ -20,20 +18,7 @@ export function createLocalDynamicRules(tokens: Token[]) {
     const yaksokInvokeRules = yaksokTemplates.flatMap(createFunctionInvokeRule)
     const ffiInvokeRules = ffiTemplates.flatMap(createFunctionInvokeRule)
 
-    const yaksokDeclareRules = yaksokTemplates.map((template) =>
-        createDeclareRulesFromPreset(template, YAKSOK_PRESET),
-    )
-
-    const ffiDeclareRules = ffiTemplates.map((template) =>
-        createDeclareRulesFromPreset(template, FFI_PRESET),
-    )
-
-    const allRules = [
-        ...yaksokInvokeRules,
-        ...ffiInvokeRules,
-        ...yaksokDeclareRules,
-        ...ffiDeclareRules,
-    ].toSorted(
+    const allRules = [...yaksokInvokeRules, ...ffiInvokeRules].toSorted(
         (a, b) => b.pattern.length - a.pattern.length,
     )
 

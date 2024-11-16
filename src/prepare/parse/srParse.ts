@@ -1,4 +1,4 @@
-import { type Rule, internalPatternsByLevel } from './rule.ts'
+import { type Rule, ADVANCED_RULES, BASIC_RULES } from './rule.ts'
 import { satisfiesPattern } from './satisfiesPattern.ts'
 import {
     Block,
@@ -23,8 +23,8 @@ export function SRParse(_tokens: Node[], rules: Rule[]) {
     tokenloop: while (true) {
         for (const rule of rules) {
             if (stack.length < rule.pattern.length) continue
-            const stackSlice = stack.slice(-rule.pattern.length)
 
+            const stackSlice = stack.slice(-rule.pattern.length)
             const satisfies = satisfiesPattern(stackSlice, rule.pattern)
 
             if (!satisfies) continue
@@ -60,7 +60,7 @@ type BlockType =
 
 export function callParseRecursively(
     _tokens: Node[],
-    externalPatterns: Rule[][],
+    externalPatterns: Rule[],
     blockTypeFactory: BlockType = Block,
 ) {
     let parsedTokens = [..._tokens]
@@ -85,7 +85,7 @@ export function callParseRecursively(
 
     parsedTokens.push(new EOL())
 
-    const patternsByLevel = [...externalPatterns, ...internalPatternsByLevel]
+    const patternsByLevel = [BASIC_RULES, externalPatterns, ADVANCED_RULES]
 
     loop1: while (true) {
         for (const patterns of patternsByLevel) {

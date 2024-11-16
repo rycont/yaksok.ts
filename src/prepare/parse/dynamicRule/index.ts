@@ -3,7 +3,7 @@ import { Token } from '../../tokenize/token.ts'
 
 export function createDynamicRule(tokens: Token[]) {
     const localRules = createLocalDynamicRules(tokens)
-    return [localRules]
+    return localRules
 
     // const mentioningRules = getDynamicRulesFromMention(tokens, runtime)
     // return [localRules, mentioningRules]
