@@ -5,7 +5,7 @@ import { Identifier } from '../../node/index.ts'
 import type { Runtime } from '../../runtime/index.ts'
 import type { Block } from '../../node/block.ts'
 import type { Rule } from './rule.ts'
-import { parseIndent } from './parseIndent.ts'
+import { parseIndent } from './parse-indent.ts'
 import { Token } from '../tokenize/token.ts'
 import { convertTokensToNodes } from '../tokenize/convert-tokens-to-nodes.ts'
 

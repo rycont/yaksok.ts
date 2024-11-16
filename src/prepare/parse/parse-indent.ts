@@ -2,7 +2,7 @@ import { type Node, Indent, EOL, Block } from '../../node/index.ts'
 
 export function parseIndent(_tokens: Node[], indent = 0) {
     const groups: Node[] = []
-    const tokens = [..._tokens]
+    const tokens = removeSequentialEOL([..._tokens])
 
     while (tokens.length) {
         const token = tokens.shift()!
@@ -49,4 +49,23 @@ export function parseIndent(_tokens: Node[], indent = 0) {
     }
 
     return groups
+}
+
+function removeSequentialEOL(_tokens: Node[]) {
+    const tokens = [..._tokens]
+    let index = 0
+
+    while (true) {
+        if (tokens[index] instanceof EOL && tokens[index + 1] instanceof EOL) {
+            tokens.splice(index, 1)
+        } else {
+            index++
+        }
+
+        if (index >= tokens.length) {
+            break
+        }
+    }
+
+    return tokens
 }
