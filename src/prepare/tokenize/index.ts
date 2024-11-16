@@ -1,10 +1,11 @@
-import { UnexpectedCharError } from '../../error/prepare.ts'
-import { FileRunner } from '../../runtime/file-runner.ts'
 import { getFunctionDeclareRanges } from '../../util/get-function-declare-ranges.ts'
 import { mergeArgumentBranchingTokens } from './merge-argument-branching-tokens.ts'
-import { RULES } from './rules.ts'
+import { UnexpectedCharError } from '../../error/prepare.ts'
 import { NotAcceptableSignal } from './signal.ts'
-import { Token } from './token.ts'
+import { RULES } from './rules.ts'
+
+import type { FileRunner } from '../../runtime/file-runner.ts'
+import type { Token } from './token.ts'
 
 class Tokenizer {
     private tokens: Token[] = []

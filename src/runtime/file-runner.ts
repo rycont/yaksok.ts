@@ -10,11 +10,12 @@ import type { Runtime } from './index.ts'
 import { executer } from '../executer/index.ts'
 
 export class FileRunner {
-    functionDeclaration: Node[][] = []
-    scope?: Scope
+    functionDeclareRanges?: [number, number][]
+    scope: Scope
     ast?: Executable
+
+    functionDeclaration: Node[][] = []
     exportedRules: Rule[] = []
-    functionDeclareRanges: [number, number][] = []
 
     public ran = false
     public prepared = false
@@ -23,12 +24,16 @@ export class FileRunner {
         private code: string,
         private runtime: Runtime,
         private fileName: string,
-    ) {}
-
-    prepare(): void {
+    ) {
         this.scope = new Scope({
             runtime: this.runtime,
         })
+    }
+
+    prepare(): void {
+        if (this.prepared) {
+            return
+        }
 
         try {
             const parseResult = parse(tokenize(this.code), this.runtime)
