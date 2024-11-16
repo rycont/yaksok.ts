@@ -12,31 +12,31 @@ export function convertTokensToNodes(tokens: Token[]): Node[] {
 function mapTokenToNode(token: Token) {
     switch (token.type) {
         case TOKEN_TYPE.NUMBER:
-            return new NumberValue(parseInt(token.value, 10))
+            return new NumberValue(parseInt(token.value, 10), token.position)
         case TOKEN_TYPE.STRING:
-            return new StringValue(token.value.slice(1, -1))
+            return new StringValue(token.value.slice(1, -1), token.position)
         case TOKEN_TYPE.OPERATOR:
-            return new Operator(token.value)
+            return new Operator(token.value, token.position)
         case TOKEN_TYPE.SPACE:
             return null
         case TOKEN_TYPE.INDENT:
-            return new Indent(token.value.length)
+            return new Indent(token.value.length, token.position)
         case TOKEN_TYPE.IDENTIFIER:
-            return new Identifier(token.value)
+            return new Identifier(token.value, token.position)
         case TOKEN_TYPE.COMMA:
         case TOKEN_TYPE.OPENING_PARENTHESIS:
         case TOKEN_TYPE.CLOSING_PARENTHESIS:
         case TOKEN_TYPE.OPENING_BRACKET:
         case TOKEN_TYPE.CLOSING_BRACKET:
         case TOKEN_TYPE.COLON:
-            return new Expression(token.value)
+            return new Expression(token.value, token.position)
         case TOKEN_TYPE.FFI_BODY:
-            return new FFIBody(token.value)
+            return new FFIBody(token.value, token.position)
         case TOKEN_TYPE.NEW_LINE:
-            return new EOL()
+            return new EOL(token.position)
         case TOKEN_TYPE.LINE_COMMENT:
             return null
         case TOKEN_TYPE.MENTION:
-            return new Mention(token.value)
+            return new Mention(token.value, token.position)
     }
 }
