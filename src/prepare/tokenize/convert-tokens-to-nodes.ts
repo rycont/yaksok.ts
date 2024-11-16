@@ -12,7 +12,7 @@ export function convertTokensToNodes(tokens: Token[]): Node[] {
 function mapTokenToNode(token: Token) {
     switch (token.type) {
         case TOKEN_TYPE.NUMBER:
-            return new NumberValue(parseInt(token.value, 10), token.position)
+            return new NumberValue(parseFloat(token.value), token.position)
         case TOKEN_TYPE.STRING:
             return new StringValue(token.value.slice(1, -1), token.position)
         case TOKEN_TYPE.OPERATOR:

@@ -33,8 +33,17 @@ export const RULES: {
         starter: /\d/,
         parse: (view, shift) => {
             let value = shift()!
+            let hasDot = false
 
-            while (view()?.match(/\d/)) {
+            while (view()?.match(/\d|\./)) {
+                if (view() === '.') {
+                    if (hasDot) {
+                        throw new NotAcceptableSignal()
+                    }
+
+                    hasDot = true
+                }
+
                 value += shift()!
             }
 

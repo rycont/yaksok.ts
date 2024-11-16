@@ -38,7 +38,7 @@ class Tokenizer {
                 throw new UnexpectedCharError({
                     resource: {
                         char,
-                        parts: 'tokenizer',
+                        parts: '코드',
                     },
                     position: {
                         column: this.column,
@@ -101,8 +101,8 @@ class Tokenizer {
 
             throw new UnexpectedCharError({
                 resource: {
-                    char,
-                    parts: 'tokenizer',
+                    char: this.code.slice(0, 5).join(''),
+                    parts: '코드',
                 },
                 position: {
                     column: this.column,
