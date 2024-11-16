@@ -6,8 +6,13 @@ export function parseIndent(_tokens: Node[], indent = 0) {
 
     while (tokens.length) {
         const token = tokens.shift()!
+        const prevToken = groups[groups.length - 1]
 
         if (token instanceof Indent) {
+            if (!(prevToken instanceof EOL)) {
+                continue
+            }
+
             if (token.size !== indent + 1) {
                 continue
             }
