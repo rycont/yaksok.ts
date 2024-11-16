@@ -14,6 +14,8 @@ export class FileRunner {
     scope: Scope
     ast: Executable
     exportedRules: Rule[] = []
+    functionDeclareRanges: [number, number][] = []
+
     public ran = false
 
     constructor(

@@ -6,30 +6,10 @@ import { Token, TOKEN_TYPE } from '../../../tokenize/token.ts'
 
 export function getFunctionTemplatesFromTokens(
     tokens: Token[],
-    isFunctionStartingPattern: (
-        token: Token,
-        index: number,
-        allTokens: Token[],
-    ) => boolean,
+    functionDeclareRanges: [number, number][],
     type: string,
 ) {
-    const functionStartingIndexes = tokens
-        .map(isFunctionStartingPattern)
-        .map((isStarting, index) => (isStarting ? index : -1))
-        .filter((index) => index !== -1)
-
-    const functionEndingIndexesByStartingIndex = functionStartingIndexes.map(
-        (startingIndex) => getFunctionEndingIndex(tokens, startingIndex),
-    )
-
-    const functionRanges = functionStartingIndexes.map(
-        (startingIndex, index) => [
-            startingIndex,
-            functionEndingIndexesByStartingIndex[index],
-        ],
-    )
-
-    const functionTemplatesTokens = functionRanges.map(([start, end]) =>
+    const functionTemplatesTokens = functionDeclareRanges.map(([start, end]) =>
         tokens.slice(start, end),
     )
 
@@ -58,20 +38,6 @@ function convertTokensToFunctionTemplate(
                 return null
             }
 
-            const isNextTokenSlash =
-                nextToken.type === TOKEN_TYPE.OPERATOR &&
-                nextToken.value === '/'
-
-            if (isNextTokenSlash) {
-                const mergeTargetToken = tokens[index + 2]
-
-                const mergedIdentifier =
-                    token.value + '/' + mergeTargetToken.value
-                mergeTargetToken.value = mergedIdentifier
-
-                return null
-            }
-
             const isPrevTokenOpeningParenthesis =
                 tokens[index - 1]?.type === TOKEN_TYPE.OPENING_PARENTHESIS
             const isNextTokenClosingParenthesis =
@@ -90,7 +56,7 @@ function convertTokensToFunctionTemplate(
 
             return {
                 type: 'static',
-                value: token.value.split('/'),
+                value: [...token.value.split('/'), token.value],
             }
         })
         .filter(Boolean) as FunctionTemplatePiece[]
@@ -105,17 +71,4 @@ function convertTokensToFunctionTemplate(
         pieces,
         type,
     }
-}
-
-function getFunctionEndingIndex(tokens: Token[], startingIndex: number) {
-    const tokensFromStartingIndex = tokens.slice(startingIndex)
-    const nearestNewLineIndexFromStart = tokensFromStartingIndex.findIndex(
-        (token) => token.type === TOKEN_TYPE.NEW_LINE,
-    )
-
-    if (!nearestNewLineIndexFromStart) {
-        throw new Error('약속이 끝나지 않았습니다.')
-    }
-
-    return nearestNewLineIndexFromStart + startingIndex + 1
 }

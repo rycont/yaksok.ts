@@ -1,4 +1,7 @@
 import { UnexpectedCharError } from '../../error/prepare.ts'
+import { FileRunner } from '../../runtime/file-runner.ts'
+import { getFunctionDeclareRanges } from '../../util/get-function-declare-ranges.ts'
+import { mergeArgumentBranchingTokens } from './merge-argument-branching-tokens.ts'
 import { RULES } from './rules.ts'
 import { NotAcceptableSignal } from './signal.ts'
 import { Token } from './token.ts'
@@ -111,6 +114,18 @@ class Tokenizer {
     }
 }
 
-export function tokenize(code: string) {
-    return new Tokenizer(code).tokenize()
+export function tokenize(code: string, fileRunner?: FileRunner) {
+    const tokens = new Tokenizer(code).tokenize()
+    const functionDeclareRanges = getFunctionDeclareRanges(tokens)
+
+    if (fileRunner) {
+        fileRunner.functionDeclareRanges = functionDeclareRanges
+    }
+
+    const argumentBranchingTokensMerged = mergeArgumentBranchingTokens(
+        tokens,
+        functionDeclareRanges,
+    )
+
+    return argumentBranchingTokensMerged
 }
