@@ -1,4 +1,5 @@
-import type { Position, Node } from '../node/base.ts'
+import { Node } from '../node/base.ts'
+import type { Position } from '../type/position.ts'
 import { YaksokError, bold, dim } from './common.ts'
 
 export class CannotParseError extends YaksokError {

@@ -1,5 +1,6 @@
+import { Position } from '../type/position.ts'
+
 import { type YaksokError, bold } from './common.ts'
-import type { Position } from '../node/base.ts'
 import type { FileRunner } from '../runtime/file-runner.ts'
 
 interface PrintErrorProps {

@@ -1,4 +1,5 @@
-import type { Position, Evaluable } from '../node/base.ts'
+import type { Evaluable } from '../node/base.ts'
+import type { Position } from '../type/position.ts'
 import { YaksokError, evaluableToText } from './common.ts'
 
 export class ListIndexOutOfRangeError extends YaksokError {
