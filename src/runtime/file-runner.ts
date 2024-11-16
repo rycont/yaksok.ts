@@ -11,24 +11,27 @@ import { executer } from '../executer/index.ts'
 
 export class FileRunner {
     functionDeclaration: Node[][] = []
-    scope: Scope
-    ast: Executable
+    scope?: Scope
+    ast?: Executable
     exportedRules: Rule[] = []
     functionDeclareRanges: [number, number][] = []
 
     public ran = false
+    public prepared = false
 
     constructor(
         private code: string,
         private runtime: Runtime,
         private fileName: string,
-    ) {
+    ) {}
+
+    prepare(): void {
         this.scope = new Scope({
             runtime: this.runtime,
         })
 
         try {
-            const parseResult = parse(tokenize(code), this.runtime)
+            const parseResult = parse(tokenize(this.code), this.runtime)
 
             this.ast = parseResult.ast
             this.exportedRules = parseResult.exportedRules
@@ -45,13 +48,18 @@ export class FileRunner {
 
             throw error
         }
+
+        this.prepared = true
     }
 
     run(): void {
         this.ran = true
+        if (!this.prepared) {
+            this.prepare()
+        }
 
         try {
-            return executer(this.ast, this.scope)
+            return executer(this.ast!, this.scope)
         } catch (error) {
             if (error instanceof YaksokError) {
                 this.runtime.stderr(
