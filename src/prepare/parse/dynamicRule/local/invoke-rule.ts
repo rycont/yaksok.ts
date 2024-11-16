@@ -86,7 +86,6 @@ function createRuleFromFunctionTemplate(
     return {
         pattern,
         factory(matchedNodes) {
-            console.log(matchedNodes, functionTemplate.pieces)
             const params = parseParameterFromTemplate(
                 functionTemplate,
                 matchedNodes,

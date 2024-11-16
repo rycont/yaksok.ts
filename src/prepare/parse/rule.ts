@@ -1,4 +1,4 @@
-import { Formula } from '../../node/calculation.ts'
+import { Formula, ValueWithParenthesis } from '../../node/calculation.ts'
 import {
     AndOperator,
     Block,
@@ -55,6 +55,27 @@ export type Rule = {
 
 export const internalPatternsByLevel: Rule[][] = [
     [
+        {
+            pattern: [
+                {
+                    type: Expression,
+                    value: '(',
+                },
+                {
+                    type: Evaluable,
+                },
+                {
+                    type: Expression,
+                    value: ')',
+                },
+            ],
+            factory: (nodes) => {
+                const newNode = new ValueWithParenthesis(nodes[1] as Evaluable)
+                newNode.position = nodes[0].position
+
+                return newNode
+            },
+        },
         {
             pattern: [
                 {

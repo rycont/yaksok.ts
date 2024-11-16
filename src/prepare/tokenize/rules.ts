@@ -65,6 +65,25 @@ export const RULES: {
         },
     },
     {
+        type: TOKEN_TYPE.INDENT,
+        starter: [' '],
+        parse: (view, shift) => {
+            shift()
+            let spaces = 1
+
+            while (view() === ' ') {
+                spaces++
+                shift()
+            }
+
+            if (spaces % 4 !== 0) {
+                throw new NotAcceptableSignal()
+            }
+
+            return '\t'.repeat(spaces / 4)
+        },
+    },
+    {
         type: TOKEN_TYPE.SPACE,
         starter: /\s/,
         parse: (view, shift) => {
