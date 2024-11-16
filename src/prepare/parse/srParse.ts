@@ -85,7 +85,7 @@ export function callParseRecursively(
 
     parsedTokens.push(new EOL())
 
-    const patternsByLevel = [BASIC_RULES, externalPatterns, ADVANCED_RULES]
+    const patternsByLevel = [...BASIC_RULES, externalPatterns, ADVANCED_RULES]
 
     loop1: while (true) {
         for (const patterns of patternsByLevel) {

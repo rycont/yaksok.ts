@@ -53,276 +53,304 @@ export type Rule = {
     config?: Record<string, unknown>
 }
 
-export const BASIC_RULES: Rule[] = [
-    {
-        pattern: [
-            {
-                type: Expression,
-                value: '(',
-            },
-            {
-                type: Evaluable,
-            },
-            {
-                type: Expression,
-                value: ')',
-            },
-        ],
-        factory: (nodes) => {
-            const newNode = new ValueWithParenthesis(nodes[1] as Evaluable)
-            newNode.position = nodes[0].position
+export const BASIC_RULES: Rule[][] = [
+    [
+        {
+            pattern: [
+                {
+                    type: Evaluable,
+                },
+                {
+                    type: Expression,
+                    value: '[',
+                },
+                {
+                    type: Evaluable,
+                },
+                {
+                    type: Expression,
+                    value: ']',
+                },
+            ],
+            factory: (nodes) => {
+                const target = nodes[0] as Evaluable
+                const index = nodes[2] as Evaluable
 
-            return newNode
+                return new IndexFetch(target, index)
+            },
         },
-    },
-    {
-        pattern: [
-            {
-                type: Evaluable,
-            },
-            {
-                type: Operator,
-            },
-            {
-                type: Evaluable,
-            },
-        ],
-        factory: (nodes) => {
-            const left = nodes[0] as Evaluable
-            const operator = nodes[1] as Operator
-            const right = nodes[2] as Evaluable
+    ],
+    [
+        {
+            pattern: [
+                {
+                    type: Expression,
+                    value: '(',
+                },
+                {
+                    type: Evaluable,
+                },
+                {
+                    type: Expression,
+                    value: ')',
+                },
+            ],
+            factory: (nodes) => {
+                const newNode = new ValueWithParenthesis(nodes[1] as Evaluable)
+                newNode.position = nodes[0].position
 
-            if (left instanceof Formula) {
-                return new Formula([...left.terms, operator, right])
-            }
+                return newNode
+            },
+        },
+        {
+            pattern: [
+                {
+                    type: Expression,
+                    value: '[',
+                },
+                {
+                    type: Sequence,
+                },
+                {
+                    type: Expression,
+                    value: ']',
+                },
+            ],
+            factory: (nodes) => {
+                const sequence = nodes[1] as Sequence
+                return new List(sequence.items)
+            },
+        },
+        {
+            pattern: [
+                {
+                    type: Evaluable,
+                },
+                {
+                    type: Operator,
+                },
+                {
+                    type: Evaluable,
+                },
+            ],
+            factory: (nodes) => {
+                const left = nodes[0] as Evaluable
+                const operator = nodes[1] as Operator
+                const right = nodes[2] as Evaluable
 
-            return new Formula([left, operator, right])
-        },
-    },
-    {
-        pattern: [
-            {
-                type: Expression,
-                value: '[',
-            },
-            {
-                type: Sequence,
-            },
-            {
-                type: Expression,
-                value: ']',
-            },
-        ],
-        factory: (nodes) => {
-            const sequence = nodes[1] as Sequence
-            return new List(sequence.items)
-        },
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '=',
-            },
-        ],
-        factory: () => new EqualOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '>',
-            },
-        ],
-        factory: () => new GreaterThanOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '<',
-            },
-        ],
-        factory: () => new LessThanOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '>=',
-            },
-        ],
-        factory: () => new GreaterThanOrEqualOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '<=',
-            },
-        ],
-        factory: () => new LessThanOrEqualOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '//',
-            },
-        ],
-        factory: () => new IntegerDivideOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '%',
-            },
-        ],
-        factory: () => new ModularOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '**',
-            },
-        ],
-        factory: () => new PowerOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '/',
-            },
-        ],
-        factory: () => new DivideOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '*',
-            },
-        ],
-        factory: () => new MultiplyOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '+',
-            },
-        ],
-        factory: () => new PlusOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '-',
-            },
-        ],
-        factory: () => new MinusOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Identifier,
-                value: '이고',
-            },
-        ],
-        factory: () => new AndOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Identifier,
-                value: '고',
-            },
-        ],
-        factory: () => new AndOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Identifier,
-                value: '이거나',
-            },
-        ],
-        factory: () => new OrOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Identifier,
-                value: '거나',
-            },
-        ],
-        factory: () => new OrOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Operator,
-                value: '~',
-            },
-        ],
-        factory: () => new RangeOperator(),
-    },
-    {
-        pattern: [
-            {
-                type: Expression,
-                value: '@',
-            },
-            {
-                type: Identifier,
-            },
-        ],
-        factory: (nodes) => {
-            const name = (nodes[1] as Identifier).value
-            return new Mention(name)
-        },
-    },
-    {
-        pattern: [
-            {
-                type: Identifier,
-                value: '약속',
-            },
-            {
-                type: Expression,
-                value: ',',
-            },
-            {
-                type: FunctionInvoke,
-            },
-            {
-                type: EOL,
-            },
-            {
-                type: Block,
-            },
-        ],
-        factory: (nodes) => {
-            const [_, __, functionInvoke, ___, body] = nodes as [
-                unknown,
-                unknown,
-                FunctionInvoke,
-                unknown,
-                Block,
-            ]
+                if (left instanceof Formula) {
+                    return new Formula([...left.terms, operator, right])
+                }
 
-            const functionName = functionInvoke.name
-
-            return new DeclareFunction({
-                body,
-                name: functionName,
-            })
+                return new Formula([left, operator, right])
+            },
         },
-    },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '=',
+                },
+            ],
+            factory: () => new EqualOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '>',
+                },
+            ],
+            factory: () => new GreaterThanOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '<',
+                },
+            ],
+            factory: () => new LessThanOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '>=',
+                },
+            ],
+            factory: () => new GreaterThanOrEqualOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '<=',
+                },
+            ],
+            factory: () => new LessThanOrEqualOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '//',
+                },
+            ],
+            factory: () => new IntegerDivideOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '%',
+                },
+            ],
+            factory: () => new ModularOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '**',
+                },
+            ],
+            factory: () => new PowerOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '/',
+                },
+            ],
+            factory: () => new DivideOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '*',
+                },
+            ],
+            factory: () => new MultiplyOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '+',
+                },
+            ],
+            factory: () => new PlusOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '-',
+                },
+            ],
+            factory: () => new MinusOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Identifier,
+                    value: '이고',
+                },
+            ],
+            factory: () => new AndOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Identifier,
+                    value: '고',
+                },
+            ],
+            factory: () => new AndOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Identifier,
+                    value: '이거나',
+                },
+            ],
+            factory: () => new OrOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Identifier,
+                    value: '거나',
+                },
+            ],
+            factory: () => new OrOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '~',
+                },
+            ],
+            factory: () => new RangeOperator(),
+        },
+        {
+            pattern: [
+                {
+                    type: Expression,
+                    value: '@',
+                },
+                {
+                    type: Identifier,
+                },
+            ],
+            factory: (nodes) => {
+                const name = (nodes[1] as Identifier).value
+                return new Mention(name)
+            },
+        },
+        {
+            pattern: [
+                {
+                    type: Identifier,
+                    value: '약속',
+                },
+                {
+                    type: Expression,
+                    value: ',',
+                },
+                {
+                    type: FunctionInvoke,
+                },
+                {
+                    type: EOL,
+                },
+                {
+                    type: Block,
+                },
+            ],
+            factory: (nodes) => {
+                const [_, __, functionInvoke, ___, body] = nodes as [
+                    unknown,
+                    unknown,
+                    FunctionInvoke,
+                    unknown,
+                    Block,
+                ]
+
+                const functionName = functionInvoke.name
+
+                return new DeclareFunction({
+                    body,
+                    name: functionName,
+                })
+            },
+        },
+    ],
 ]
 
 export const ADVANCED_RULES: Rule[] = [
@@ -348,30 +376,6 @@ export const ADVANCED_RULES: Rule[] = [
             }
 
             return new Sequence([a, b])
-        },
-    },
-    {
-        pattern: [
-            {
-                type: Evaluable,
-            },
-            {
-                type: Expression,
-                value: '[',
-            },
-            {
-                type: Evaluable,
-            },
-            {
-                type: Expression,
-                value: ']',
-            },
-        ],
-        factory: (nodes) => {
-            const target = nodes[0] as Evaluable
-            const index = nodes[2] as Evaluable
-
-            return new IndexFetch(target, index)
         },
     },
     {
