@@ -103,7 +103,7 @@ function assertValidFunctionHeader(
                 position: nextToken?.position,
                 resource: {
                     node: nextToken,
-                    parts: '함수 인자',
+                    parts: '약속 인자',
                 },
             })
         }
@@ -117,7 +117,7 @@ function assertValidFunctionHeader(
                 position: nextNextToken?.position,
                 resource: {
                     node: nextNextToken,
-                    parts: '함수 이름',
+                    parts: '약속 이름',
                 },
             })
         }

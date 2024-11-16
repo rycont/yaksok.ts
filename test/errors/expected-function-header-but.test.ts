@@ -9,7 +9,7 @@ Deno.test('온전하지 않은 약속 정의', () => {
     try {
         yaksok(`약속, (A)와 (`)
     } catch (error) {
-        assertIsError(error, UnexpectedTokenError)
+        assertIsError(error, UnexpectedEndOfCodeError)
     }
 })
 

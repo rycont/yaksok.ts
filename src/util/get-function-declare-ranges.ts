@@ -4,6 +4,7 @@ import {
 } from './is-function-starting.ts'
 import { TOKEN_TYPE } from '../prepare/tokenize/token.ts'
 import { Token } from '../prepare/tokenize/token.ts'
+import { UnexpectedEndOfCodeError } from '../error/prepare.ts'
 
 export function getFunctionDeclareRanges(_tokens: Token[]) {
     const tokens = [..._tokens]
@@ -38,8 +39,16 @@ function getFunctionEndingIndex(tokens: Token[], startingIndex: number) {
         (token) => token.type === TOKEN_TYPE.NEW_LINE,
     )
 
-    if (!nearestNewLineIndexFromStart) {
-        throw new Error('약속이 끝나지 않았습니다.')
+    if (nearestNewLineIndexFromStart === -1) {
+        const lastToken =
+            tokensFromStartingIndex[tokensFromStartingIndex.length - 1]
+
+        throw new UnexpectedEndOfCodeError({
+            resource: {
+                parts: '약속 이름',
+            },
+            position: lastToken.position,
+        })
     }
 
     return nearestNewLineIndexFromStart + startingIndex + 1
