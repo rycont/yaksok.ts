@@ -33,7 +33,9 @@ export function createLocalDynamicRules(tokens: Token[]) {
         ...ffiInvokeRules,
         ...yaksokDeclareRules,
         ...ffiDeclareRules,
-    ]
+    ].toSorted(
+        (a, b) => b.pattern.length - a.pattern.length,
+    )
 
     return allRules
 }
