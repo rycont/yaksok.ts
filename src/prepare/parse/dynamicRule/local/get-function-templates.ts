@@ -30,7 +30,7 @@ export function getFunctionTemplatesFromTokens(
     )
 
     const functionTemplatesTokens = functionRanges.map(([start, end]) =>
-        tokens.slice(start, end + 1),
+        tokens.slice(start, end),
     )
 
     const functionTemplates = functionTemplatesTokens.map((tokens) =>
@@ -117,5 +117,5 @@ function getFunctionEndingIndex(tokens: Token[], startingIndex: number) {
         throw new Error('약속이 끝나지 않았습니다.')
     }
 
-    return nearestNewLineIndexFromStart + startingIndex - 1
+    return nearestNewLineIndexFromStart + startingIndex + 1
 }

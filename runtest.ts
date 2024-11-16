@@ -1,5 +1,3 @@
-import { parse } from './src/prepare/parse/index.ts'
-import { tokenize } from './src/prepare/tokenize/index.ts'
 import { Runtime } from './src/runtime/index.ts'
 
 const code = `약속, 키가 (키)cm이고 몸무게가 (몸무게)kg일 때 비만도
@@ -26,4 +24,4 @@ const runtime = new Runtime(
     {},
 )
 
-console.log(parse(tokenize(code), runtime).ast)
+runtime.run()

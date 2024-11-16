@@ -15,7 +15,7 @@ interface ParseResult {
 }
 
 export function parse(tokens: Token[], runtime: Runtime): ParseResult {
-    const dynamicRules = createDynamicRule(tokens, runtime)
+    const dynamicRules = createDynamicRule(tokens)
     const indentedNodes = parseIndent(convertTokensToNodes(tokens))
 
     const ast = callParseRecursively(indentedNodes, dynamicRules) as Block

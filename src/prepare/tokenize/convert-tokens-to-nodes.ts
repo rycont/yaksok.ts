@@ -14,7 +14,7 @@ function mapTokenToNode(token: Token) {
         case TOKEN_TYPE.NUMBER:
             return new NumberValue(parseInt(token.value, 10))
         case TOKEN_TYPE.STRING:
-            return new StringValue(token.value)
+            return new StringValue(token.value.slice(1, -1))
         case TOKEN_TYPE.OPERATOR:
             return new Operator(token.value)
         case TOKEN_TYPE.SPACE:

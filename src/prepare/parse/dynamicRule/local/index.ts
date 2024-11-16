@@ -1,6 +1,8 @@
 import { getFunctionTemplatesFromTokens } from './get-function-templates.ts'
 import { Token, TOKEN_TYPE } from '../../../tokenize/token.ts'
 import { createFunctionInvokeRule } from './invoke-rule.ts'
+import { createDeclareRulesFromPreset } from './declare-rule.ts'
+import { FFI_PRESET, YAKSOK_PRESET } from './declare-preset.ts'
 
 export function createLocalDynamicRules(tokens: Token[]) {
     const yaksokTemplates = getFunctionTemplatesFromTokens(
@@ -15,11 +17,25 @@ export function createLocalDynamicRules(tokens: Token[]) {
         'ffi',
     )
 
-    const invokeRules = [...yaksokTemplates, ...ffiTemplates].flatMap(
-        createFunctionInvokeRule,
+    const yaksokInvokeRules = yaksokTemplates.flatMap(createFunctionInvokeRule)
+    const ffiInvokeRules = ffiTemplates.flatMap(createFunctionInvokeRule)
+
+    const yaksokDeclareRules = yaksokTemplates.map((template) =>
+        createDeclareRulesFromPreset(template, YAKSOK_PRESET),
     )
 
-    return invokeRules
+    const ffiDeclareRules = ffiTemplates.map((template) =>
+        createDeclareRulesFromPreset(template, FFI_PRESET),
+    )
+
+    const allRules = [
+        ...yaksokInvokeRules,
+        ...ffiInvokeRules,
+        ...yaksokDeclareRules,
+        ...ffiDeclareRules,
+    ]
+
+    return allRules
 }
 
 function isYaksokStartingPattern(_: Token, index: number, allTokens: Token[]) {
