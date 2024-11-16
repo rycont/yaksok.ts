@@ -4,7 +4,10 @@ import {
 } from './is-function-starting.ts'
 import { TOKEN_TYPE } from '../prepare/tokenize/token.ts'
 import { Token } from '../prepare/tokenize/token.ts'
-import { UnexpectedEndOfCodeError } from '../error/prepare.ts'
+import {
+    UnexpectedEndOfCodeError,
+    UnexpectedTokenError,
+} from '../error/prepare.ts'
 
 export function getFunctionDeclareRanges(_tokens: Token[]) {
     const tokens = [..._tokens]
@@ -30,6 +33,8 @@ export function getFunctionDeclareRanges(_tokens: Token[]) {
             ],
     )
 
+    assertValidFunctionDeclare(tokens, functionDeclareRanges)
+
     return functionDeclareRanges
 }
 
@@ -52,4 +57,44 @@ function getFunctionEndingIndex(tokens: Token[], startingIndex: number) {
     }
 
     return nearestNewLineIndexFromStart + startingIndex + 1
+}
+
+function assertValidFunctionDeclare(
+    tokens: Token[],
+    functionDeclareRanges: [number, number][],
+) {
+    for (const [_, end] of functionDeclareRanges) {
+        const nextToken = tokens[end]
+
+        if (nextToken?.type !== TOKEN_TYPE.NEW_LINE) {
+            throw new UnexpectedTokenError({
+                resource: {
+                    token: nextToken,
+                    parts: '줄 넘김',
+                },
+                position: nextToken.position,
+            })
+        }
+
+        const nextNextToken = tokens[end + 1]
+
+        if (!nextNextToken) {
+            throw new UnexpectedEndOfCodeError({
+                resource: {
+                    parts: '들여쓰기',
+                },
+                position: nextToken.position,
+            })
+        }
+
+        if (nextNextToken.type !== TOKEN_TYPE.INDENT) {
+            throw new UnexpectedTokenError({
+                resource: {
+                    token: nextNextToken,
+                    parts: '들여쓰기',
+                },
+                position: nextNextToken.position,
+            })
+        }
+    }
 }

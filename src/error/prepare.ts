@@ -66,15 +66,15 @@ export class UnexpectedEndOfCodeError extends YaksokError {
 export class UnexpectedTokenError extends YaksokError {
     constructor(props: {
         resource: {
-            node: Token
+            token: Token
             parts: string
         }
         position?: Position
     }) {
         super(props)
 
-        this.message = `${bold(`'${props.resource.node.value}'`)}${dim(
-            `(${props.resource.node.type})`,
+        this.message = `${bold(`'${props.resource.token.value}'`)}${dim(
+            `(${props.resource.token.type})`,
         )}은 ${bold(props.resource.parts)}에 사용할 수 없어요.`
     }
 }

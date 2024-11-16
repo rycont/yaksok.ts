@@ -102,7 +102,7 @@ function assertValidFunctionHeader(
             throw new UnexpectedTokenError({
                 position: nextToken?.position,
                 resource: {
-                    node: nextToken,
+                    token: nextToken,
                     parts: '약속 인자',
                 },
             })
@@ -116,7 +116,7 @@ function assertValidFunctionHeader(
             throw new UnexpectedTokenError({
                 position: nextNextToken?.position,
                 resource: {
-                    node: nextNextToken,
+                    token: nextNextToken,
                     parts: '약속 이름',
                 },
             })
