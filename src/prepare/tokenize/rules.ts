@@ -17,8 +17,8 @@ const OPERATORS = [
     '>=',
 ]
 
-const IDENTIFIER_STARTER_REGEX = /[a-zA-Z_0-9가-힣ㄱ-ㅎ]/
-const IDENTIFIER_REGEX = /[a-zA-Z_가-힣ㄱ-ㅎ]/
+const IDENTIFIER_STARTER_REGEX = /[a-zA-Z_가-힣ㄱ-ㅎ]/
+const IDENTIFIER_REGEX = /[a-zA-Z_가-힣ㄱ-ㅎ0-9]/
 
 export const RULES: {
     starter: RegExp | string[]
