@@ -12,13 +12,15 @@ export class CannotParseError extends YaksokError {
     }) {
         super(props)
 
+        const nodeConstructor = props.resource.part.constructor as typeof Node
+
         try {
             this.message = `${bold(
                 '"' + props.resource.part.toPrint() + '"',
+            )}${dim(
+                `(${nodeConstructor.friendlyName})`,
             )}는 실행할 수 있는 코드가 아니에요.`
         } catch {
-            const nodeConstructor = props.resource.part
-                .constructor as typeof Node
             this.message = `${
                 '"' + bold(nodeConstructor.friendlyName) + '"'
             }는 실행할 수 있는 코드가 아니에요.`

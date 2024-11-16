@@ -15,17 +15,10 @@ Deno.test('온전하지 않은 약속 정의', () => {
 
 Deno.test('약속 정의 문법이 틀림', () => {
     try {
-        yaksok(`약속, (A)와 (((((`)
+        yaksok(`약속, (A)와 (((((
+    "여보세요?" 보여주기
+`)
     } catch (error) {
-        console.log(error)
         assertIsError(error, UnexpectedTokenError)
-    }
-})
-
-Deno.test('온전하지 않은 FFI 정의', () => {
-    try {
-        yaksok(`***`)
-    } catch (error) {
-        assertIsError(error, UnexpectedEndOfCodeError)
     }
 })

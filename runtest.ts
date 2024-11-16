@@ -1,6 +1,6 @@
 import { Runtime } from './src/runtime/index.ts'
 
-const code = `약속, (A)와 (`
+const code = `***`
 
 const runtime = new Runtime(
     {
