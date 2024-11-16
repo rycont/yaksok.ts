@@ -381,6 +381,46 @@ export const ADVANCED_RULES: Rule[] = [
     {
         pattern: [
             {
+                type: Sequence,
+            },
+            {
+                type: Expression,
+                value: ',',
+            },
+            {
+                type: Evaluable,
+            },
+        ],
+        factory: (nodes) => {
+            const a = nodes[0] as Sequence
+            const b = nodes[2] as Evaluable
+
+            return new Sequence([...a.items, b])
+        },
+    },
+    {
+        pattern: [
+            {
+                type: Evaluable,
+            },
+            {
+                type: Expression,
+                value: ',',
+            },
+            {
+                type: Sequence,
+            },
+        ],
+        factory: (nodes) => {
+            const a = nodes[0] as Evaluable
+            const b = nodes[2] as Sequence
+
+            return new Sequence([a, ...b.items])
+        },
+    },
+    {
+        pattern: [
+            {
                 type: Expression,
                 value: '[',
             },

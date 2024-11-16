@@ -64,7 +64,7 @@ function assertValidFunctionDeclare(
     functionDeclareRanges: [number, number][],
 ) {
     for (const [_, end] of functionDeclareRanges) {
-        const nextToken = tokens[end]
+        const nextToken = tokens[end - 1]
 
         if (nextToken?.type !== TOKEN_TYPE.NEW_LINE) {
             throw new UnexpectedTokenError({
@@ -76,7 +76,7 @@ function assertValidFunctionDeclare(
             })
         }
 
-        const nextNextToken = tokens[end + 1]
+        const nextNextToken = tokens[end]
 
         if (!nextNextToken) {
             throw new UnexpectedEndOfCodeError({
