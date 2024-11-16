@@ -2,11 +2,12 @@ import { Evaluable, Executable, type ValueTypes } from './base.ts'
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
 import { ErrorInModuleError } from '../error/index.ts'
+import type { Position } from '../type/position.ts'
 
 export class Mention extends Executable {
     static override friendlyName = '불러올 파일 이름'
 
-    constructor(public value: string) {
+    constructor(public value: string, public override position?: Position) {
         super()
     }
 
