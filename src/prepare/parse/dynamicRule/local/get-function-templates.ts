@@ -1,3 +1,5 @@
+import { FunctionMustHaveOneOrMoreStringPartError } from '../../../../error/function.ts'
+import { UnexpectedTokenError } from '../../../../error/prepare.ts'
 import {
     FunctionTemplate,
     FunctionTemplatePiece,
@@ -61,6 +63,8 @@ function convertTokensToFunctionTemplate(
         })
         .filter(Boolean) as FunctionTemplatePiece[]
 
+    assertValidFunctionHeader(pieces, tokens)
+
     const functionName = _tokens
         .map((token) => token.value)
         .join('')
@@ -70,5 +74,52 @@ function convertTokensToFunctionTemplate(
         name: functionName,
         pieces,
         type,
+    }
+}
+
+function assertValidFunctionHeader(
+    pieces: FunctionTemplatePiece[],
+    tokens: Token[],
+) {
+    const position = tokens[0].position
+
+    const hasStaticPiece = pieces.some((piece) => piece.type === 'static')
+    if (!hasStaticPiece) {
+        throw new FunctionMustHaveOneOrMoreStringPartError({
+            position,
+        })
+    }
+
+    for (const [index, token] of tokens.entries()) {
+        if (token.type !== TOKEN_TYPE.OPENING_PARENTHESIS) {
+            continue
+        }
+
+        const nextToken = tokens[index + 1]
+        const isNextTokenValid = nextToken?.type === TOKEN_TYPE.IDENTIFIER
+
+        if (!isNextTokenValid) {
+            throw new UnexpectedTokenError({
+                position: nextToken?.position,
+                resource: {
+                    node: nextToken,
+                    parts: '함수 인자',
+                },
+            })
+        }
+
+        const nextNextToken = tokens[index + 2]
+        const isNextNextTokenValid =
+            nextNextToken?.type === TOKEN_TYPE.CLOSING_PARENTHESIS
+
+        if (!isNextNextTokenValid) {
+            throw new UnexpectedTokenError({
+                position: nextNextToken?.position,
+                resource: {
+                    node: nextNextToken,
+                    parts: '함수 이름',
+                },
+            })
+        }
     }
 }

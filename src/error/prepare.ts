@@ -1,4 +1,5 @@
 import { Node } from '../node/base.ts'
+import { Token } from '../prepare/tokenize/token.ts'
 import type { Position } from '../type/position.ts'
 import { YaksokError, bold, dim } from './common.ts'
 
@@ -63,18 +64,16 @@ export class UnexpectedEndOfCodeError extends YaksokError {
 export class UnexpectedTokenError extends YaksokError {
     constructor(props: {
         resource: {
-            node: Node
+            node: Token
             parts: string
         }
         position?: Position
     }) {
         super(props)
 
-        this.message = `토큰 ${
-            props.resource.node.constructor.name
-        }(${JSON.stringify(props.resource.node)})는 ${
-            props.resource.parts
-        }에 사용할 수 없어요.`
+        this.message = `${bold(`'${props.resource.node.value}'`)}${dim(
+            `(${props.resource.node.type})`,
+        )}은 ${bold(props.resource.parts)}에 사용할 수 없어요.`
     }
 }
 

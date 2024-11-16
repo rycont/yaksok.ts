@@ -1,8 +1,8 @@
 import { Runtime } from './src/runtime/index.ts'
 
 const code = `
-약속, (음식)을/를 (사람)와/과 먹기
-    "진짜요" 보여주기
+약속, (음식 10)을 맛있게 만들기
+    음식 + "을/를 맛있게 만들었습니다." 보여주기
 `
 
 const runtime = new Runtime(
