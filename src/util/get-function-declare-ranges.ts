@@ -9,15 +9,32 @@ import {
     UnexpectedTokenError,
 } from '../error/prepare.ts'
 
-export function getFunctionDeclareRanges(_tokens: Token[]) {
+export function getFunctionDeclareRanges(tokens: Token[]) {
+    const yaksokFunctionDeclareRanges = getFunctionDeclareRangesByType(
+        tokens,
+        'yaksok',
+    )
+    const ffiFunctionDeclareRanges = getFunctionDeclareRangesByType(
+        tokens,
+        'ffi',
+    )
+
+    const functionDeclareRanges = [
+        ...yaksokFunctionDeclareRanges,
+        ...ffiFunctionDeclareRanges,
+    ]
+
+    return functionDeclareRanges
+}
+
+function getFunctionDeclareRangesByType(
+    _tokens: Token[],
+    type: 'yaksok' | 'ffi',
+) {
     const tokens = [..._tokens]
 
     const functionStartingIndexes = tokens
-        .map(
-            (token, index, allTokens) =>
-                isFfiStartingPattern(token, index, allTokens) ||
-                isYaksokStartingPattern(token, index, allTokens),
-        )
+        .map(type === 'yaksok' ? isYaksokStartingPattern : isFfiStartingPattern)
         .map((isStarting, index) => (isStarting ? index : -1))
         .filter((index) => index !== -1)
 
@@ -33,7 +50,11 @@ export function getFunctionDeclareRanges(_tokens: Token[]) {
             ],
     )
 
-    assertValidFunctionDeclare(tokens, functionDeclareRanges)
+    if (type === 'yaksok') {
+        assertValidYaksokDeclare(tokens, functionDeclareRanges)
+    } else {
+        assertValidFfiDeclare(tokens, functionDeclareRanges)
+    }
 
     return functionDeclareRanges
 }
@@ -59,7 +80,7 @@ function getFunctionEndingIndex(tokens: Token[], startingIndex: number) {
     return nearestNewLineIndexFromStart + startingIndex + 1
 }
 
-function assertValidFunctionDeclare(
+function assertValidYaksokDeclare(
     tokens: Token[],
     functionDeclareRanges: [number, number][],
 ) {
@@ -92,6 +113,46 @@ function assertValidFunctionDeclare(
                 resource: {
                     token: nextNextToken,
                     parts: '들여쓰기',
+                },
+                position: nextNextToken.position,
+            })
+        }
+    }
+}
+
+function assertValidFfiDeclare(
+    tokens: Token[],
+    functionDeclareRanges: [number, number][],
+) {
+    for (const [_, end] of functionDeclareRanges) {
+        const nextToken = tokens[end - 1]
+
+        if (nextToken?.type !== TOKEN_TYPE.NEW_LINE) {
+            throw new UnexpectedTokenError({
+                resource: {
+                    token: nextToken,
+                    parts: '줄 넘김',
+                },
+                position: nextToken.position,
+            })
+        }
+
+        const nextNextToken = tokens[end]
+
+        if (!nextNextToken) {
+            throw new UnexpectedEndOfCodeError({
+                resource: {
+                    parts: '번역 본문',
+                },
+                position: nextToken.position,
+            })
+        }
+
+        if (nextNextToken.type !== TOKEN_TYPE.FFI_BODY) {
+            throw new UnexpectedTokenError({
+                resource: {
+                    token: nextNextToken,
+                    parts: '번역 본문',
                 },
                 position: nextNextToken.position,
             })

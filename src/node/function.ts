@@ -57,7 +57,7 @@ export class FunctionInvoke extends Evaluable {
     static override friendlyName = '약속 사용하기'
 
     public name: string
-    private params: FunctionParams
+    public params: FunctionParams
 
     constructor(props: { name: string; params: FunctionParams }) {
         super()

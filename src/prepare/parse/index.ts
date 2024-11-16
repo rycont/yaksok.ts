@@ -21,8 +21,6 @@ export function parse(tokens: Token[], runtime: Runtime): ParseResult {
     const ast = callParseRecursively(indentedNodes, dynamicRules) as Block
     const exportedVariables = getExportedVariablesRules(ast)
 
-    console.log(ast)
-
     const exportedRules = [...dynamicRules.flat(), ...exportedVariables]
 
     return { ast, exportedRules }

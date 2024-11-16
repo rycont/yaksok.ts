@@ -33,18 +33,30 @@ export const RULES: {
         starter: /\d/,
         parse: (view, shift) => {
             let value = shift()!
-            let hasDot = false
 
-            while (view()?.match(/\d|\./)) {
-                if (view() === '.') {
-                    if (hasDot) {
-                        throw new NotAcceptableSignal()
-                    }
-
-                    hasDot = true
-                }
-
+            while (
+                view() &&
+                [
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '.',
+                ].includes(view()!)
+            ) {
                 value += shift()!
+            }
+
+            const hasOneOrLessDot = value.split('.').length <= 2
+
+            if (!hasOneOrLessDot) {
+                throw new NotAcceptableSignal()
             }
 
             return value

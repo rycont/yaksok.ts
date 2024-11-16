@@ -1,4 +1,5 @@
 import { Formula, ValueWithParenthesis } from '../../node/calculation.ts'
+import { DeclareFFI, FFIBody } from '../../node/ffi.ts'
 import { DeclareFunction, FunctionInvoke } from '../../node/function.ts'
 import {
     AndOperator,
@@ -347,6 +348,52 @@ export const BASIC_RULES: Rule[][] = [
                 return new DeclareFunction({
                     body,
                     name: functionName,
+                })
+            },
+        },
+        {
+            pattern: [
+                {
+                    type: Identifier,
+                    value: '번역',
+                },
+                {
+                    type: ValueWithParenthesis,
+                },
+                {
+                    type: Expression,
+                    value: ',',
+                },
+                {
+                    type: FunctionInvoke,
+                },
+                {
+                    type: EOL,
+                },
+                {
+                    type: FFIBody,
+                },
+            ],
+            factory: (nodes) => {
+                const [_, runtimeNode, __, functionInvoke, ___, body] =
+                    nodes as [
+                        unknown,
+                        ValueWithParenthesis,
+                        unknown,
+                        FunctionInvoke,
+                        unknown,
+                        FFIBody,
+                    ]
+
+                const functionName = functionInvoke.name
+                const paramNames = Object.keys(functionInvoke.params)
+                const runtime = (runtimeNode.value as Identifier).value
+
+                return new DeclareFFI({
+                    body: body.code,
+                    name: functionName,
+                    paramNames,
+                    runtime,
                 })
             },
         },
