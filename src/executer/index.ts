@@ -2,19 +2,31 @@ import {
     BreakNotInLoopError,
     CannotReturnOutsideFunctionError,
 } from '../error/index.ts'
-import type { Executable } from '../node/base.ts'
 import { Scope } from './scope.ts'
 import { CallFrame } from './callFrame.ts'
 import { BreakSignal, ReturnSignal } from './signals.ts'
 
+import type { CodeFile } from '../type/code-file.ts'
+import type { Executable } from '../node/base.ts'
+import { YaksokError } from '../error/common.ts'
+
 export function executer<NodeType extends Executable>(
     node: NodeType,
-    scope = new Scope(),
-) {
+    codeFile?: CodeFile,
+): ExecuteResult<NodeType> {
+    const scope =
+        codeFile?.runResult?.scope ||
+        new Scope({
+            runtime: codeFile?.runtime || undefined,
+        })
+
     const callFrame = new CallFrame(node, undefined)
 
     try {
-        return node.execute(scope, callFrame) as ReturnType<NodeType['execute']>
+        const result = node.execute(scope, callFrame) as ReturnType<
+            NodeType['execute']
+        >
+        return { scope, result }
     } catch (e) {
         if (e instanceof ReturnSignal) {
             throw new CannotReturnOutsideFunctionError({
@@ -28,6 +40,15 @@ export function executer<NodeType extends Executable>(
             })
         }
 
+        if (e instanceof YaksokError && !e.codeFile) {
+            e.codeFile = codeFile
+        }
+
         throw e
     }
+}
+
+export interface ExecuteResult<NodeType extends Executable> {
+    scope: Scope
+    result: ReturnType<NodeType['execute']>
 }

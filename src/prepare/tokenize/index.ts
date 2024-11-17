@@ -1,11 +1,11 @@
-import { getFunctionDeclareRanges } from '../../util/get-function-declare-ranges.ts'
 import { mergeArgumentBranchingTokens } from './merge-argument-branching-tokens.ts'
 import { UnexpectedCharError } from '../../error/prepare.ts'
 import { NotAcceptableSignal } from './signal.ts'
 import { RULES } from './rules.ts'
 
-import type { FileRunner } from '../../runtime/file-runner.ts'
 import type { Token } from './token.ts'
+import type { CodeFile } from '../../type/code-file.ts'
+import { getFunctionDeclareRanges } from '../../util/get-function-declare-ranges.ts'
 
 class Tokenizer {
     private tokens: Token[] = []
@@ -115,18 +115,10 @@ class Tokenizer {
     }
 }
 
-export function tokenize(code: string, fileRunner?: FileRunner): Token[] {
-    const tokens = new Tokenizer(code).tokenize()
+export function tokenize(codeFile: CodeFile): Token[] {
+    const tokens = new Tokenizer(codeFile.text).tokenize()
     const functionDeclareRanges = getFunctionDeclareRanges(tokens)
+    const merged = mergeArgumentBranchingTokens(tokens, functionDeclareRanges)
 
-    if (fileRunner) {
-        fileRunner.functionDeclareRanges = functionDeclareRanges
-    }
-
-    const argumentBranchingTokensMerged = mergeArgumentBranchingTokens(
-        tokens,
-        functionDeclareRanges,
-    )
-
-    return argumentBranchingTokensMerged
+    return merged
 }

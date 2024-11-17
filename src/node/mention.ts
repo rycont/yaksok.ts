@@ -26,27 +26,10 @@ export class MentionScope extends Evaluable {
     override execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
         this.setChildPosition()
 
-        const scope = _scope.createChild()
+        const moduleCodeFile = _scope.runtime!.getCodeFile(this.fileName)
+        const { result } = moduleCodeFile.evaluate(this.child)
 
-        try {
-            const runner = _scope.runtime!.runOnce(this.fileName)
-            const moduleScope = runner.scope
-
-            moduleScope.parent = scope
-
-            const result = runner.evaluateFromExtern(this.child)
-
-            moduleScope.parent = undefined
-
-            return result
-        } catch (_) {
-            throw new ErrorInModuleError({
-                resource: {
-                    fileName: this.fileName,
-                },
-                position: this.position,
-            })
-        }
+        return result
     }
 
     override toPrint(): string {

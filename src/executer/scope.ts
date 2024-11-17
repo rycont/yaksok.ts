@@ -63,7 +63,15 @@ export class Scope {
         const fetched = this.functions[name]
         if (fetched) return fetched
 
-        return this.parent!.getFunction(name)
+        if (this.parent) {
+            return this.parent.getFunction(name)
+        }
+
+        throw new NotDefinedIdentifierError({
+            resource: {
+                name,
+            },
+        })
     }
 
     createChild(initialVariable?: Record<string, ValueTypes>): Scope {

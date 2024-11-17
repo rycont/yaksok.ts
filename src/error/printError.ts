@@ -1,15 +1,9 @@
 import { Position } from '../type/position.ts'
 
 import { type YaksokError, bold } from './common.ts'
-import type { FileRunner } from '../runtime/file-runner.ts'
 
-interface PrintErrorProps {
-    error: YaksokError
-    code?: string
-    runtime?: FileRunner
-}
-
-export function printError({ error, code }: PrintErrorProps) {
+export function printError(error: YaksokError) {
+    const code = error.codeFile?.text
     let output = ''
 
     output += '─────\n\n'

@@ -1,6 +1,5 @@
 export { yaksok, Runtime } from './runtime/index.ts'
 export type { RuntimeConfig } from './runtime/runtime-config.ts'
-export { FileRunner } from './runtime/file-runner.ts'
 
 export { Scope } from './executer/scope.ts'
 export * from './node/index.ts'

@@ -37,7 +37,7 @@ for (let i = 0; i < 10; i++) {
 나이: ${formula}
     `
 
-        const { scope } = yaksok(code).getFileRunner()
+        const { scope } = yaksok(code)
         assertEquals(scope.getVariable('나이').value, eval(formula))
     })
 }
