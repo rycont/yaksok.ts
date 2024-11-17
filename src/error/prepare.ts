@@ -99,7 +99,9 @@ export class FileForRunNotExistError extends YaksokError {
         } else {
             this.message = `주어진 코드(${dim(
                 props.resource.files.join(', '),
-            )})에서 ${bold(props.resource.fileName)} 파일을 찾을 수 없어요. `
+            )})에서 ${bold(
+                `"${props.resource.fileName}"`,
+            )} 파일을 찾을 수 없어요. `
         }
     }
 }

@@ -63,7 +63,7 @@ export class Runtime {
         if (!this.files[fileName]) {
             throw new FileForRunNotExistError({
                 resource: {
-                    fileName: this.entryPoint,
+                    fileName: fileName,
                     files: Object.keys(this.files),
                 },
             })

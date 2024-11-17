@@ -2,6 +2,7 @@
   "version": "4",
   "specifiers": {
     "jsr:@std/assert@^1.0.7": "1.0.7",
+    "jsr:@std/assert@^1.0.8": "1.0.8",
     "jsr:@std/fs@^1.0.5": "1.0.5",
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "jsr:@std/path@^1.0.7": "1.0.8",
@@ -22,6 +23,12 @@
   "jsr": {
     "@std/assert@1.0.7": {
       "integrity": "64ce9fac879e0b9f3042a89b3c3f8ccfc9c984391af19e2087513a79d73e28c3",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/assert@1.0.8": {
+      "integrity": "ebe0bd7eb488ee39686f77003992f389a06c3da1bbd8022184804852b2fa641b",
       "dependencies": [
         "jsr:@std/internal"
       ]
@@ -2027,6 +2034,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@^1.0.7",
+      "jsr:@std/assert@^1.0.8",
       "jsr:@std/fs@^1.0.5",
       "npm:@vue/runtime-dom@^3.5.12",
       "npm:@vueuse/core@^11.2.0",
