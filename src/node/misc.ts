@@ -1,7 +1,8 @@
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
+import { Position } from '../type/position.ts'
 
-import { Node, Executable, type Evaluable, type Position } from './base.ts'
+import { Node, Executable, type Evaluable } from './base.ts'
 
 export class EOL extends Node {
     static override friendlyName = '줄바꿈'

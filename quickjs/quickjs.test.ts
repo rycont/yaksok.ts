@@ -89,7 +89,7 @@ Deno.test('QuickJS passed number', async () => {
         },
     )
 
-    assertEquals(result.getFileRunner().scope.getVariable('숫자').value, 20)
+    assertEquals(result.scope.getVariable('숫자').value, 20)
 })
 
 Deno.test('QuickJS passed Array<number>', async () => {
@@ -118,10 +118,7 @@ Deno.test('QuickJS passed Array<number>', async () => {
         },
     )
 
-    assertEquals(
-        result.getFileRunner().scope.getVariable('숫자').toPrint(),
-        '[20, 30]',
-    )
+    assertEquals(result.scope.getVariable('숫자').toPrint(), '[20, 30]')
 })
 
 Deno.test('JavaScript bridge function passed object', async () => {
@@ -184,21 +181,12 @@ Deno.test('JavaScript bridge function passed object', async () => {
         },
     )
 
+    assertEquals(result.scope.getVariable('학생').toPrint(), '홍길동')
+    assertEquals(result.scope.getVariable('이름').toPrint(), '홍길동')
+    assertEquals(result.scope.getVariable('나이').value, 20)
+    assertEquals(result.scope.getVariable('더한_결과').value, 30)
     assertEquals(
-        result.getFileRunner().scope.getVariable('학생').toPrint(),
-        '홍길동',
-    )
-    assertEquals(
-        result.getFileRunner().scope.getVariable('이름').toPrint(),
-        '홍길동',
-    )
-    assertEquals(result.getFileRunner().scope.getVariable('나이').value, 20)
-    assertEquals(
-        result.getFileRunner().scope.getVariable('더한_결과').value,
-        30,
-    )
-    assertEquals(
-        result.getFileRunner().scope.getVariable('모든_이름').toPrint(),
+        result.scope.getVariable('모든_이름').toPrint(),
         '[홍길동, 임꺽정, 김철수]',
     )
 })

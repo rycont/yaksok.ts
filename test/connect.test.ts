@@ -122,7 +122,7 @@ CODES
     assertEquals(output, '[황선형, 도지석]\n')
 })
 
-Deno.test('올바르지 않은 연결 반환값', () => {
+Deno.test('올바르지 않은 연결 반환값: JS String', () => {
     try {
         yaksok(
             `번역(mock), (질문) 물어보기
@@ -134,6 +134,52 @@ CODES
                 runFFI(runtime) {
                     if (runtime === 'mock') {
                         return 'invalid value' as any
+                    }
+
+                    throw new Error(`Unknown runtime: ${runtime}`)
+                },
+            },
+        )
+    } catch (e) {
+        assertIsError(e, FFIResultTypeIsNotForYaksokError)
+    }
+})
+
+Deno.test('올바르지 않은 연결 반환값: JS Object', () => {
+    try {
+        yaksok(
+            `번역(mock), (질문) 물어보기
+***
+CODES
+***
+(("이름이 뭐에요?") 물어보기) 보여주기`,
+            {
+                runFFI(runtime) {
+                    if (runtime === 'mock') {
+                        return {} as any
+                    }
+
+                    throw new Error(`Unknown runtime: ${runtime}`)
+                },
+            },
+        )
+    } catch (e) {
+        assertIsError(e, FFIResultTypeIsNotForYaksokError)
+    }
+})
+
+Deno.test('연결 반환값이 없음', () => {
+    try {
+        yaksok(
+            `번역(mock), (질문) 물어보기
+***
+CODES
+***
+(("이름이 뭐에요?") 물어보기) 보여주기`,
+            {
+                runFFI(runtime) {
+                    if (runtime === 'mock') {
+                        return undefined as any
                     }
 
                     throw new Error(`Unknown runtime: ${runtime}`)

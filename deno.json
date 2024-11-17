@@ -1,5 +1,7 @@
 {
     "imports": {
+        "@std/assert": "jsr:@std/assert@^1.0.8",
+        "@std/fs": "jsr:@std/fs@^1.0.5",
         "@vue/runtime-dom": "npm:@vue/runtime-dom@^3.5.12",
         "@vueuse/core": "npm:@vueuse/core@^11.2.0",
         "ansi-to-html": "npm:ansi-to-html@^0.7.2",
@@ -14,7 +16,7 @@
     "tasks": {
         "coverage": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
         "coverage-list": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage ./cov && rm -rf ./cov",
-        "test": "deno run -A npm:madge --circular --extensions ts ./ && deno test --allow-read --parallel && deno publish --dry-run",
+        "test": "deno run -A npm:madge --circular --extensions ts ./ && deno test --allow-read --parallel && deno publish --dry-run && deno lint",
         "typedoc": "deno run --allow-read --allow-write --allow-env --allow-run ./create-docs.ts",
         "vitepress-dev": "deno run -A npm:vitepress dev docs",
         "vitepress-build": "deno run -A npm:vitepress build docs",
@@ -33,7 +35,7 @@
         }
     },
     "name": "@yaksok-ts/core",
-    "version": "0.1.17",
+    "version": "0.2.0-alpha.1+20241117",
     "exports": "./src/mod.ts",
     "nodeModulesDir": "auto",
     "workspace": [

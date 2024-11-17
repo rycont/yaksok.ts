@@ -13,7 +13,7 @@ import { Evaluable, type ValueTypes, Executable, Operator } from './base.ts'
 import { IndexedValue } from './indexed.ts'
 import { NumberValue, type PrimitiveValue } from './primitive.ts'
 
-export class Sequence extends Evaluable {
+export class Sequence extends Executable {
     static override friendlyName = '나열된 값'
 
     constructor(public items: Evaluable[]) {

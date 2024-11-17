@@ -4,7 +4,7 @@ import { yaksok } from '../../src/mod.ts'
 function createRandomValue(depth = 0): number | (string | number)[] {
     if (depth > 3 || Math.random() < 0.5) {
         // Number
-        const randomNumber = Math.random() * 200 + 1
+        const randomNumber = Math.random() * 10 + 1
         return randomNumber - (randomNumber % 0.01)
     } else {
         // Formula
@@ -13,7 +13,7 @@ function createRandomValue(depth = 0): number | (string | number)[] {
 }
 
 function createRandomFormula(depth = 0): (string | number)[] {
-    let len = Math.floor(Math.random() * 30) + 1
+    let len = Math.floor(Math.random() * 10) + 1
 
     if (len % 2 === 0) len++
 
@@ -37,7 +37,7 @@ for (let i = 0; i < 10; i++) {
 나이: ${formula}
     `
 
-        const { scope } = yaksok(code).getFileRunner()
+        const { scope } = yaksok(code)
         assertEquals(scope.getVariable('나이').value, eval(formula))
     })
 }

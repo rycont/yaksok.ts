@@ -1,28 +1,26 @@
+import { convertTokensToNodes } from '../tokenize/convert-tokens-to-nodes.ts'
 import { createDynamicRule } from './dynamicRule/index.ts'
 import { SetVariable } from '../../node/variable.ts'
 import { callParseRecursively } from './srParse.ts'
 import { Identifier } from '../../node/index.ts'
-import type { TokenizeResult } from '../tokenize/index.ts'
-import type { Runtime } from '../../runtime/index.ts'
-import type { Block } from '../../node/block.ts'
+import { parseIndent } from './parse-indent.ts'
+import { Block } from '../../node/block.ts'
+
+import type { CodeFile } from '../../type/code-file.ts'
 import type { Rule } from './rule.ts'
-import { parseIndent } from './parseIndent.ts'
 
 interface ParseResult {
     ast: Block
     exportedRules: Rule[]
 }
 
-export function parse(
-    tokenized: TokenizeResult,
-    runtime: Runtime,
-): ParseResult {
-    const dynamicRules = createDynamicRule(tokenized, runtime)
-    const indentedNodes = parseIndent(tokenized.tokens)
+export function parse(codeFile: CodeFile): ParseResult {
+    const dynamicRules = createDynamicRule(codeFile)
+    const indentedNodes = parseIndent(convertTokensToNodes(codeFile.tokens))
 
-    const ast = callParseRecursively(indentedNodes, dynamicRules) as Block
+    const ast = new Block(callParseRecursively(indentedNodes, dynamicRules))
+
     const exportedVariables = getExportedVariablesRules(ast)
-
     const exportedRules = [...dynamicRules.flat(), ...exportedVariables]
 
     return { ast, exportedRules }

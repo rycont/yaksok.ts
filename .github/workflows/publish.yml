@@ -23,9 +23,6 @@ jobs:
               with:
                   deno-version: v2.x
 
-            - name: Run linter
-              run: deno lint
-
             - name: Run tests
               run: deno task test
 

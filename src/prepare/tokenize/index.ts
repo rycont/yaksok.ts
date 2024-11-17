@@ -1,339 +1,131 @@
-import {
-    IndentIsNotMultipleOf4Error,
-    UnexpectedEndOfCodeError,
-    UnexpectedCharError,
-} from '../../error/index.ts'
-import {
-    StringValue,
-    NumberValue,
-    Expression,
-    Operator,
-    Identifier,
-    Indent,
-    EOL,
-    type Node,
-    FFIBody,
-    type Position,
-} from '../../node/index.ts'
-import { lex } from './lex.ts'
-import {
-    isValidFirstCharForIdentifier,
-    isValidCharForIdentifier,
-} from './isValidCharForIdentifier.ts'
+import { mergeArgumentBranchingTokens } from './merge-argument-branching-tokens.ts'
+import { UnexpectedCharError } from '../../error/prepare.ts'
+import { NotAcceptableSignal } from './signal.ts'
+import { RULES } from './rules.ts'
 
-export class Tokenizer {
-    functionHeaders: Node[][] | undefined = undefined
-    ffiHeaders: Node[][] | undefined = undefined
+import type { Token } from './token.ts'
+import type { CodeFile } from '../../type/code-file.ts'
+import { getFunctionDeclareRanges } from '../../util/get-function-declare-ranges.ts'
+import { assertIndentValidity } from './indent-validity.ts'
 
-    tokens: Node[] = []
-    chars: string[]
+class Tokenizer {
+    private tokens: Token[] = []
+    private code: string[]
 
-    line = 0
-    column = 0
-
-    static OPERATORS = [
-        '+',
-        '-',
-        '*',
-        '/',
-        '>',
-        '=',
-        '<',
-        '~',
-        '%',
-        '**',
-        '//',
-        '<=',
-        '>=',
-    ]
-    static EXPRESSIONS = ['{', '}', ':', '[', ']', ',', '(', ')', '@']
+    private column = 1
+    private line = 1
 
     constructor(code: string) {
-        this.chars = this.preprocess(code)
-        this.tokenize()
-        this.postprocess()
+        this.code = preprocess(code).split('')
     }
 
     tokenize() {
-        while (this.chars.length) {
-            const char = this.chars[0]
+        while (this.code) {
+            const char = this.code[0]
 
-            if (char === '#') {
-                this.comment()
-                continue
+            if (!char) {
+                break
             }
 
-            if (char === ' ') {
-                this.indent()
-                continue
+            const starterMatchedRules = RULES.filter((rule) => {
+                if (Array.isArray(rule.starter)) {
+                    return rule.starter.includes(char)
+                }
+
+                return char.match(rule.starter)
+            })
+
+            if (starterMatchedRules.length === 0) {
+                throw new UnexpectedCharError({
+                    resource: {
+                        char,
+                        parts: '코드',
+                    },
+                    position: {
+                        column: this.column,
+                        line: this.line,
+                    },
+                })
             }
 
-            if (char === '\n' || char === '\r' || char === '\r\n') {
-                this.EOL()
-                continue
+            let accepted = false
+
+            for (const rule of starterMatchedRules) {
+                const codeCheckpoint = [...this.code]
+
+                let columnCheckpoint = this.column
+                let lineCheckpoint = this.line
+
+                try {
+                    const view = () => codeCheckpoint[0]
+                    const shift = () => {
+                        const shifted = codeCheckpoint.shift()
+
+                        if (shifted === '\n') {
+                            lineCheckpoint++
+                            columnCheckpoint = 1
+                        } else {
+                            columnCheckpoint++
+                        }
+
+                        return shifted
+                    }
+
+                    const value = rule.parse(view, shift)
+
+                    this.tokens.push({
+                        type: rule.type,
+                        value,
+                        position: {
+                            column: this.column,
+                            line: this.line,
+                        },
+                    })
+
+                    this.code = codeCheckpoint
+                    this.column = columnCheckpoint
+                    this.line = lineCheckpoint
+
+                    accepted = true
+
+                    break
+                } catch (e) {
+                    if (e instanceof NotAcceptableSignal) {
+                        continue
+                    }
+                }
             }
 
-            if (this.isFFI()) {
-                this.ffi()
-                continue
-            }
-
-            if (this.canBeFisrtCharOfNumber(char)) {
-                this.number()
-                continue
-            }
-
-            if (char === '"') {
-                this.string('"')
-                continue
-            }
-
-            if (char === "'") {
-                this.string("'")
-                continue
-            }
-
-            if (isValidFirstCharForIdentifier(char)) {
-                this.identifier()
-                continue
-            }
-
-            if (Tokenizer.OPERATORS.includes(char)) {
-                this.operator()
-                continue
-            }
-
-            if (Tokenizer.EXPRESSIONS.includes(char)) {
-                this.expression()
+            if (accepted) {
                 continue
             }
 
             throw new UnexpectedCharError({
-                position: this.position,
                 resource: {
-                    char,
+                    char: this.code.slice(0, 5).join(''),
                     parts: '코드',
                 },
-            })
-        }
-    }
-
-    isFFI(): boolean {
-        const isFFIBlock =
-            this.chars[0] === '*' &&
-            this.chars[1] === '*' &&
-            this.chars[2] === '*'
-
-        return isFFIBlock
-    }
-
-    isNumeric(char: string): boolean {
-        return '0' <= char && char <= '9'
-    }
-
-    canBeFisrtCharOfNumber(char: string): boolean {
-        if ('0' <= char && char <= '9') return true
-
-        const isNegativeSign = char === '-'
-        const isNextCharNumeric =
-            this.chars.length > 0 && this.isNumeric(this.chars[1])
-
-        const lastToken = this.tokens[this.tokens.length - 1]
-        const isLastTokenOperator = lastToken instanceof Operator
-        const isLastTokenExpression = lastToken instanceof Expression
-
-        const isValidNegativeSign =
-            isNegativeSign &&
-            isNextCharNumeric &&
-            (isLastTokenOperator || isLastTokenExpression)
-
-        return isValidNegativeSign
-    }
-
-    ffi() {
-        this.shift()
-        this.shift()
-        this.shift()
-
-        let ffi = ''
-
-        while (true) {
-            const nextChar = this.shift()
-
-            if (
-                nextChar === '*' &&
-                this.chars[0] === '*' &&
-                this.chars[1] === '*'
-            )
-                break
-
-            ffi += nextChar
-        }
-
-        this.tokens.push(new FFIBody(ffi, this.position))
-        this.shift()
-        this.shift()
-    }
-
-    comment() {
-        while (this.chars.length && this.chars[0] !== '\n') {
-            this.shift()
-        }
-    }
-
-    indent() {
-        let spaces = 0
-        while (this.chars[0] === ' ') {
-            this.shift()
-            spaces++
-        }
-
-        if (!(this.tokens[this.tokens.length - 1] instanceof EOL)) {
-            return
-        }
-
-        if (spaces % 4)
-            throw new IndentIsNotMultipleOf4Error({
-                position: this.position,
-                resource: {
-                    indent: spaces,
-                },
-            })
-        this.tokens.push(new Indent(spaces / 4, this.position))
-    }
-
-    EOL() {
-        this.shift()
-        if (!(this.tokens[this.tokens.length - 1] instanceof EOL))
-            this.tokens.push(new EOL(this.position))
-    }
-
-    number() {
-        let number = this.shift()!
-        let hasDot = false
-
-        while (true) {
-            const isNum =
-                this.chars.length &&
-                '0' <= this.chars[0] &&
-                this.chars[0] <= '9'
-            const isAllowedDot =
-                this.chars.length && this.chars[0] === '.' && !hasDot
-
-            if (!isNum && !isAllowedDot) break
-            if (isAllowedDot) hasDot = true
-
-            number += this.shift()
-        }
-
-        this.tokens.push(new NumberValue(parseFloat(number), this.position))
-    }
-
-    string(openingChar: string) {
-        this.shift()
-        let word = ''
-
-        while (true) {
-            const nextChar = this.shift()
-            if (nextChar === openingChar) break
-
-            word += nextChar
-        }
-
-        this.tokens.push(new StringValue(word, this.position))
-    }
-
-    identifier() {
-        let word = ''
-
-        while (this.chars.length && isValidCharForIdentifier(this.chars[0])) {
-            word += this.shift()
-        }
-
-        this.tokens.push(new Identifier(word, this.position))
-    }
-
-    operator() {
-        let operator = this.shift()!
-
-        while (true) {
-            const nextChar = this.chars[0]
-
-            const nextOperator = operator + nextChar
-            const isValidStartingSequence = Tokenizer.OPERATORS.some((op) =>
-                op.startsWith(nextOperator),
-            )
-
-            if (!isValidStartingSequence) break
-            operator = nextOperator
-            this.shift()
-        }
-
-        this.tokens.push(new Operator(operator, this.position))
-    }
-
-    expression() {
-        const char = this.shift()!
-        this.tokens.push(new Expression(char, this.position))
-    }
-
-    preprocess(code: string): string[] {
-        const trimmed = '\n' + code + '\n'
-        return [...trimmed]
-    }
-
-    postprocess(): Node[] {
-        const { functionHeaders, ffiHeaders, tokens } = lex(this.tokens)
-
-        this.functionHeaders = functionHeaders
-        this.ffiHeaders = ffiHeaders
-        this.tokens = tokens
-
-        return tokens
-    }
-
-    shift(): string {
-        const char = this.chars.shift()
-
-        if (!char) {
-            throw new UnexpectedEndOfCodeError({
-                position: this.position,
-                resource: {
-                    parts: '코드',
+                position: {
+                    column: this.column,
+                    line: this.line,
                 },
             })
         }
 
-        if (char === '\n') {
-            this.line++
-            this.column = 1
-        } else {
-            this.column++
-        }
-
-        return char
-    }
-
-    get position(): Position {
-        return {
-            line: this.line,
-            column: this.column,
-        }
+        return this.tokens
     }
 }
 
-export function tokenize(code: string): TokenizeResult {
-    const tokenizer = new Tokenizer(code)
+export function tokenize(codeFile: CodeFile): Token[] {
+    const tokens = new Tokenizer(codeFile.text).tokenize()
+    const functionDeclareRanges = getFunctionDeclareRanges(tokens)
+    const merged = mergeArgumentBranchingTokens(tokens, functionDeclareRanges)
 
-    return {
-        tokens: tokenizer.tokens!,
-        functionHeaders: tokenizer.functionHeaders!,
-        ffiHeaders: tokenizer.ffiHeaders!,
-    }
+    assertIndentValidity(merged)
+
+    return merged
 }
 
-export interface TokenizeResult {
-    tokens: Node[]
-    functionHeaders: Node[][]
-    ffiHeaders: Node[][]
+function preprocess(code: string) {
+    return code.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
 }

@@ -2,11 +2,13 @@ import { Evaluable, Executable, type ValueTypes } from './base.ts'
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
 import { ErrorInModuleError } from '../error/index.ts'
+import type { Position } from '../type/position.ts'
+import { YaksokError } from '../error/common.ts'
 
 export class Mention extends Executable {
     static override friendlyName = '불러올 파일 이름'
 
-    constructor(public value: string) {
+    constructor(public value: string, public override position?: Position) {
         super()
     }
 
@@ -25,26 +27,23 @@ export class MentionScope extends Evaluable {
     override execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
         this.setChildPosition()
 
-        const scope = _scope.createChild()
-
         try {
-            const runner = _scope.runtime!.runOnce(this.fileName)
-            const moduleScope = runner.scope
-
-            moduleScope.parent = scope
-
-            const result = runner.evaluateFromExtern(this.child)
-
-            moduleScope.parent = undefined
+            const moduleCodeFile = _scope.runtime!.getCodeFile(this.fileName)
+            const { result } = moduleCodeFile.evaluate(this.child)
 
             return result
-        } catch (_) {
-            throw new ErrorInModuleError({
-                resource: {
-                    fileName: this.fileName,
-                },
-                position: this.position,
-            })
+        } catch (error) {
+            if (error instanceof YaksokError) {
+                throw new ErrorInModuleError({
+                    resource: {
+                        fileName: this.fileName,
+                    },
+                    position: this.position,
+                    child: error,
+                })
+            }
+
+            throw error
         }
     }
 

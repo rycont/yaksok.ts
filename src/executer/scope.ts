@@ -63,13 +63,6 @@ export class Scope {
         const fetched = this.functions[name]
         if (fetched) return fetched
 
-        return this.parent!.getFunction(name)
-    }
-
-    createChild(initialVariable?: Record<string, ValueTypes>): Scope {
-        return new Scope({
-            parent: this,
-            initialVariable,
-        })
+        return this.parent!.getFunction(name)!
     }
 }

@@ -1,15 +1,15 @@
-import { getDynamicRulesFromMention } from './mention/getRulesFromMention.ts'
-import { createLocalDynamicRules } from './local/index.ts'
+import { createLocalDynamicRules } from './functions/index.ts'
+import { getRulesFromMentioningFile } from './mention/index.ts'
 
-import type { TokenizeResult } from '../../tokenize/index.ts'
-import type { Runtime } from '../../../runtime/index.ts'
+import type { CodeFile } from '../../../type/code-file.ts'
 
-export function createDynamicRule(tokenized: TokenizeResult, runtime: Runtime) {
-    const localRules = createLocalDynamicRules(tokenized, runtime)
-    const mentioningRules = getDynamicRulesFromMention(
-        tokenized.tokens,
-        runtime,
+export function createDynamicRule(codeFile: CodeFile) {
+    const localRules = createLocalDynamicRules(
+        codeFile.tokens,
+        codeFile.functionDeclareRanges,
     )
 
-    return [...localRules, mentioningRules]
+    const mentioningRules = getRulesFromMentioningFile(codeFile)
+
+    return [...mentioningRules, ...localRules]
 }

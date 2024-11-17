@@ -1,4 +1,4 @@
-import type { Position } from '../node/base.ts'
+import type { Position } from '../type/position.ts'
 import { YaksokError } from './common.ts'
 
 export class CannotReturnOutsideFunctionError extends YaksokError {
@@ -11,6 +11,6 @@ export class CannotReturnOutsideFunctionError extends YaksokError {
 export class FunctionMustHaveOneOrMoreStringPartError extends YaksokError {
     constructor(props: { position?: Position }) {
         super(props)
-        this.message = `함수를 선언할 때엔 적어도 하나의 고정되는 부분이 있어야 해요.`
+        this.message = `약속(번역)을 선언할 때엔 적어도 하나의 고정되는 부분이 있어야 해요.`
     }
 }

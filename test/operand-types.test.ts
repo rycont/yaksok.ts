@@ -110,7 +110,7 @@ for (const { a, b, operator } of WRONG_CASES_FOR_CALCULATION) {
     Deno.test(`Invalid type for calculation operator ${operator}`, () => {
         const code = `
             ${a} ${operator} ${b}
-        `
+        `.trim()
         try {
             yaksok(code)
             unreachable()
@@ -124,7 +124,7 @@ for (const { a, b, operator } of WRONG_CASES_FOR_COMPARISON) {
     Deno.test(`Invalid type for comparison operator ${operator}`, () => {
         const code = `
             ${a} ${operator} ${b}
-        `
+        `.trim()
         try {
             yaksok(code)
             unreachable()

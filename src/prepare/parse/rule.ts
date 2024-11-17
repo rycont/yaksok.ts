@@ -1,4 +1,6 @@
-import { Formula } from '../../node/calculation.ts'
+import { Formula, ValueWithParenthesis } from '../../node/calculation.ts'
+import { DeclareFFI, FFIBody } from '../../node/ffi.ts'
+import { DeclareFunction, FunctionInvoke } from '../../node/function.ts'
 import {
     AndOperator,
     Block,
@@ -14,13 +16,11 @@ import {
     GreaterThanOrEqualOperator,
     IfStatement,
     IndexFetch,
-    ValueWithBracket,
     Identifier,
     LessThanOperator,
     LessThanOrEqualOperator,
     List,
     Loop,
-    Mention,
     MinusOperator,
     MultiplyOperator,
     type Node,
@@ -53,34 +53,8 @@ export type Rule = {
     config?: Record<string, unknown>
 }
 
-export const internalPatternsByLevel: Rule[][] = [
+export const BASIC_RULES: Rule[][] = [
     [
-        {
-            pattern: [
-                {
-                    type: Evaluable,
-                },
-                {
-                    type: ValueWithBracket,
-                },
-            ],
-            factory: (nodes) => {
-                const target = nodes[0] as Evaluable
-                const index = nodes[1] as ValueWithBracket
-                return new IndexFetch(target, index.value)
-            },
-        },
-    ],
-    [
-        {
-            pattern: [
-                {
-                    type: Operator,
-                    value: '=',
-                },
-            ],
-            factory: () => new EqualOperator(),
-        },
         {
             pattern: [
                 {
@@ -88,21 +62,44 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
                 {
                     type: Expression,
-                    value: ',',
+                    value: '[',
                 },
                 {
                     type: Evaluable,
                 },
+                {
+                    type: Expression,
+                    value: ']',
+                },
             ],
             factory: (nodes) => {
-                const a = nodes[0] as Evaluable
-                const b = nodes[2] as Evaluable
+                const target = nodes[0] as Evaluable
+                const index = nodes[2] as Evaluable
 
-                if (a instanceof Sequence) {
-                    return new Sequence([...a.items, b])
-                }
+                return new IndexFetch(target, index)
+            },
+        },
+    ],
+    [
+        {
+            pattern: [
+                {
+                    type: Expression,
+                    value: '(',
+                },
+                {
+                    type: Evaluable,
+                },
+                {
+                    type: Expression,
+                    value: ')',
+                },
+            ],
+            factory: (nodes) => {
+                const newNode = new ValueWithParenthesis(nodes[1] as Evaluable)
+                newNode.position = nodes[0].position
 
-                return new Sequence([a, b])
+                return newNode
             },
         },
         {
@@ -112,31 +109,50 @@ export const internalPatternsByLevel: Rule[][] = [
                     value: '[',
                 },
                 {
+                    type: Sequence,
+                },
+                {
                     type: Expression,
                     value: ']',
                 },
             ],
-            factory: () => new List([]),
+            factory: (nodes) => {
+                const sequence = nodes[1] as Sequence
+                return new List(sequence.items)
+            },
         },
         {
             pattern: [
                 {
-                    type: IndexFetch,
+                    type: Evaluable,
                 },
                 {
-                    type: Expression,
-                    value: ':',
+                    type: Operator,
                 },
                 {
                     type: Evaluable,
                 },
             ],
             factory: (nodes) => {
-                const target = nodes[0] as IndexFetch
-                const value = nodes[2] as Evaluable
+                const left = nodes[0] as Evaluable
+                const operator = nodes[1] as Operator
+                const right = nodes[2] as Evaluable
 
-                return new SetToIndex(target, value)
+                if (left instanceof Formula) {
+                    return new Formula([...left.terms, operator, right])
+                }
+
+                return new Formula([left, operator, right])
             },
+        },
+        {
+            pattern: [
+                {
+                    type: Operator,
+                    value: '=',
+                },
+            ],
+            factory: () => new EqualOperator(),
         },
         {
             pattern: [
@@ -173,29 +189,6 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
             factory: () => new LessThanOrEqualOperator(),
-        },
-        {
-            pattern: [
-                {
-                    type: Identifier,
-                },
-                {
-                    type: Expression,
-                    value: ':',
-                },
-                {
-                    type: Evaluable,
-                },
-                {
-                    type: EOL,
-                },
-            ],
-            factory: (nodes) => {
-                const name = (nodes[0] as Identifier).value
-                const value = nodes[2] as Evaluable
-
-                return new SetVariable(name, value)
-            },
         },
         {
             pattern: [
@@ -308,199 +301,15 @@ export const internalPatternsByLevel: Rule[][] = [
         {
             pattern: [
                 {
-                    type: IfStatement,
-                },
-                {
-                    type: ElseIfStatement,
-                },
-            ],
-            factory: (nodes) => {
-                const [ifStatement, elseIfStatement] = nodes as [
-                    IfStatement,
-                    ElseIfStatement,
-                ]
-
-                const elseIfCase = elseIfStatement.elseIfCase
-                ifStatement.cases.push(elseIfCase)
-
-                return ifStatement
-            },
-        },
-        {
-            pattern: [
-                {
-                    type: IfStatement,
-                },
-                {
-                    type: ElseStatement,
-                },
-            ],
-            factory: (nodes) => {
-                const [ifStatement, elseStatement] = nodes as [
-                    IfStatement,
-                    ElseStatement,
-                ]
-
-                const elseCase = {
-                    body: elseStatement.body,
-                }
-                ifStatement.cases.push(elseCase)
-
-                return ifStatement
-            },
-        },
-        {
-            pattern: [
-                {
-                    type: Identifier,
-                    value: '아니면',
-                },
-                {
-                    type: Identifier,
-                    value: '만약',
-                },
-                {
-                    type: Evaluable,
-                },
-                {
-                    type: Identifier,
-                    value: '이면',
-                },
-                {
-                    type: EOL,
-                },
-                {
-                    type: Block,
-                },
-            ],
-            factory: (nodes) => {
-                const condition = nodes[2] as Evaluable
-                const body = nodes[5] as Block
-
-                return new ElseIfStatement({ condition, body })
-            },
-        },
-        {
-            pattern: [
-                {
-                    type: Identifier,
-                    value: '아니면',
-                },
-                {
-                    type: EOL,
-                },
-                {
-                    type: Block,
-                },
-            ],
-            factory: (nodes) => {
-                const body = nodes[2] as Block
-
-                return new ElseStatement(body)
-            },
-        },
-        {
-            pattern: [
-                {
-                    type: Identifier,
-                    value: '만약',
-                },
-                {
-                    type: Evaluable,
-                },
-                {
-                    type: Identifier,
-                    value: '이면',
-                },
-                {
-                    type: EOL,
-                },
-                {
-                    type: Block,
-                },
-            ],
-            factory: (nodes) => {
-                const condition = nodes[1] as Evaluable
-                const body = nodes[4] as Block
-
-                return new IfStatement([{ condition, body }])
-            },
-        },
-        {
-            pattern: [
-                {
-                    type: Evaluable,
-                },
-                {
-                    type: Identifier,
-                    value: '보여주기',
-                },
-            ],
-            factory: (nodes) => {
-                const value = nodes[0] as Evaluable
-                return new Print(value)
-            },
-        },
-        {
-            pattern: [
-                {
-                    type: Identifier,
-                    value: '반복',
-                },
-                {
-                    type: EOL,
-                },
-                {
-                    type: Block,
-                },
-            ],
-            factory: (nodes) => new Loop(nodes[2] as Block),
-        },
-        {
-            pattern: [
-                {
-                    type: Identifier,
-                    value: '반복',
-                },
-                {
-                    type: Identifier,
-                    value: '그만',
-                },
-            ],
-            factory: () => new Break(),
-        },
-        {
-            pattern: [
-                {
                     type: Identifier,
                     value: '약속',
                 },
                 {
-                    type: Identifier,
-                    value: '그만',
-                },
-            ],
-            factory: () => new Return(),
-        },
-        {
-            pattern: [
-                {
-                    type: Identifier,
-                    value: '반복',
+                    type: Expression,
+                    value: ',',
                 },
                 {
-                    type: Evaluable,
-                },
-                {
-                    type: Identifier,
-                    value: '의',
-                },
-                {
-                    type: Identifier,
-                },
-                {
-                    type: Identifier,
-                    value: '마다',
+                    type: FunctionInvoke,
                 },
                 {
                     type: EOL,
@@ -510,51 +319,378 @@ export const internalPatternsByLevel: Rule[][] = [
                 },
             ],
             factory: (nodes) => {
-                const list = nodes[1] as Evaluable
-                const name = (nodes[3] as Identifier).value
-                const body = nodes[6] as Block
+                const [_, __, functionInvoke, ___, body] = nodes as [
+                    unknown,
+                    unknown,
+                    FunctionInvoke,
+                    unknown,
+                    Block,
+                ]
 
-                return new ListLoop(list, name, body)
+                const functionName = functionInvoke.name
+
+                return new DeclareFunction({
+                    body,
+                    name: functionName,
+                })
             },
         },
         {
             pattern: [
-                {
-                    type: Evaluable,
-                },
-                {
-                    type: Operator,
-                },
-                {
-                    type: Evaluable,
-                },
-            ],
-            factory: (nodes) => {
-                const left = nodes[0] as Evaluable
-                const operator = nodes[1] as Operator
-                const right = nodes[2] as Evaluable
-
-                if (left instanceof Formula) {
-                    return new Formula([...left.terms, operator, right])
-                }
-
-                return new Formula([left, operator, right])
-            },
-        },
-        {
-            pattern: [
-                {
-                    type: Expression,
-                    value: '@',
-                },
                 {
                     type: Identifier,
+                    value: '번역',
+                },
+                {
+                    type: ValueWithParenthesis,
+                },
+                {
+                    type: Expression,
+                    value: ',',
+                },
+                {
+                    type: FunctionInvoke,
+                },
+                {
+                    type: EOL,
+                },
+                {
+                    type: FFIBody,
                 },
             ],
             factory: (nodes) => {
-                const name = (nodes[1] as Identifier).value
-                return new Mention(name)
+                const [_, runtimeNode, __, functionInvoke, ___, body] =
+                    nodes as [
+                        unknown,
+                        ValueWithParenthesis,
+                        unknown,
+                        FunctionInvoke,
+                        unknown,
+                        FFIBody,
+                    ]
+
+                const functionName = functionInvoke.name
+                const paramNames = Object.keys(functionInvoke.params)
+                const runtime = (runtimeNode.value as Identifier).value
+
+                return new DeclareFFI({
+                    body: body.code,
+                    name: functionName,
+                    paramNames,
+                    runtime,
+                })
             },
         },
     ],
+]
+
+export const ADVANCED_RULES: Rule[] = [
+    {
+        pattern: [
+            {
+                type: Evaluable,
+            },
+            {
+                type: Expression,
+                value: ',',
+            },
+            {
+                type: Evaluable,
+            },
+        ],
+        factory: (nodes) => {
+            const a = nodes[0] as Evaluable
+            const b = nodes[2] as Evaluable
+
+            return new Sequence([a, b])
+        },
+    },
+    {
+        pattern: [
+            {
+                type: Sequence,
+            },
+            {
+                type: Expression,
+                value: ',',
+            },
+            {
+                type: Evaluable,
+            },
+        ],
+        factory: (nodes) => {
+            const a = nodes[0] as Sequence
+            const b = nodes[2] as Evaluable
+
+            return new Sequence([...a.items, b])
+        },
+    },
+    {
+        pattern: [
+            {
+                type: Expression,
+                value: '[',
+            },
+            {
+                type: Expression,
+                value: ']',
+            },
+        ],
+        factory: () => new List([]),
+    },
+    {
+        pattern: [
+            {
+                type: IndexFetch,
+            },
+            {
+                type: Expression,
+                value: ':',
+            },
+            {
+                type: Evaluable,
+            },
+        ],
+        factory: (nodes) => {
+            const target = nodes[0] as IndexFetch
+            const value = nodes[2] as Evaluable
+
+            return new SetToIndex(target, value)
+        },
+    },
+    {
+        pattern: [
+            {
+                type: Identifier,
+            },
+            {
+                type: Expression,
+                value: ':',
+            },
+            {
+                type: Evaluable,
+            },
+            {
+                type: EOL,
+            },
+        ],
+        factory: (nodes) => {
+            const name = (nodes[0] as Identifier).value
+            const value = nodes[2] as Evaluable
+
+            return new SetVariable(name, value)
+        },
+    },
+    {
+        pattern: [
+            {
+                type: IfStatement,
+            },
+            {
+                type: ElseIfStatement,
+            },
+        ],
+        factory: (nodes) => {
+            const [ifStatement, elseIfStatement] = nodes as [
+                IfStatement,
+                ElseIfStatement,
+            ]
+
+            const elseIfCase = elseIfStatement.elseIfCase
+            ifStatement.cases.push(elseIfCase)
+
+            return ifStatement
+        },
+    },
+    {
+        pattern: [
+            {
+                type: IfStatement,
+            },
+            {
+                type: ElseStatement,
+            },
+        ],
+        factory: (nodes) => {
+            const [ifStatement, elseStatement] = nodes as [
+                IfStatement,
+                ElseStatement,
+            ]
+
+            const elseCase = {
+                body: elseStatement.body,
+            }
+            ifStatement.cases.push(elseCase)
+
+            return ifStatement
+        },
+    },
+    {
+        pattern: [
+            {
+                type: Identifier,
+                value: '아니면',
+            },
+            {
+                type: Identifier,
+                value: '만약',
+            },
+            {
+                type: Evaluable,
+            },
+            {
+                type: Identifier,
+                value: '이면',
+            },
+            {
+                type: EOL,
+            },
+            {
+                type: Block,
+            },
+        ],
+        factory: (nodes) => {
+            const condition = nodes[2] as Evaluable
+            const body = nodes[5] as Block
+
+            return new ElseIfStatement({ condition, body })
+        },
+    },
+    {
+        pattern: [
+            {
+                type: Identifier,
+                value: '아니면',
+            },
+            {
+                type: EOL,
+            },
+            {
+                type: Block,
+            },
+        ],
+        factory: (nodes) => {
+            const body = nodes[2] as Block
+
+            return new ElseStatement(body)
+        },
+    },
+    {
+        pattern: [
+            {
+                type: Identifier,
+                value: '만약',
+            },
+            {
+                type: Evaluable,
+            },
+            {
+                type: Identifier,
+                value: '이면',
+            },
+            {
+                type: EOL,
+            },
+            {
+                type: Block,
+            },
+        ],
+        factory: (nodes) => {
+            const condition = nodes[1] as Evaluable
+            const body = nodes[4] as Block
+
+            return new IfStatement([{ condition, body }])
+        },
+    },
+    {
+        pattern: [
+            {
+                type: Evaluable,
+            },
+            {
+                type: Identifier,
+                value: '보여주기',
+            },
+        ],
+        factory: (nodes) => {
+            const value = nodes[0] as Evaluable
+            return new Print(value)
+        },
+    },
+    {
+        pattern: [
+            {
+                type: Identifier,
+                value: '반복',
+            },
+            {
+                type: EOL,
+            },
+            {
+                type: Block,
+            },
+        ],
+        factory: (nodes) => new Loop(nodes[2] as Block),
+    },
+    {
+        pattern: [
+            {
+                type: Identifier,
+                value: '반복',
+            },
+            {
+                type: Identifier,
+                value: '그만',
+            },
+        ],
+        factory: () => new Break(),
+    },
+    {
+        pattern: [
+            {
+                type: Identifier,
+                value: '약속',
+            },
+            {
+                type: Identifier,
+                value: '그만',
+            },
+        ],
+        factory: () => new Return(),
+    },
+    {
+        pattern: [
+            {
+                type: Identifier,
+                value: '반복',
+            },
+            {
+                type: Evaluable,
+            },
+            {
+                type: Identifier,
+                value: '의',
+            },
+            {
+                type: Identifier,
+            },
+            {
+                type: Identifier,
+                value: '마다',
+            },
+            {
+                type: EOL,
+            },
+            {
+                type: Block,
+            },
+        ],
+        factory: (nodes) => {
+            const list = nodes[1] as Evaluable
+            const name = (nodes[3] as Identifier).value
+            const body = nodes[6] as Block
+
+            return new ListLoop(list, name, body)
+        },
+    },
 ]

@@ -1,6 +1,7 @@
 import type { CallFrame } from '../executer/callFrame.ts'
-import { Evaluable, type Position } from './base.ts'
 import type { Scope } from '../executer/scope.ts'
+import { Position } from '../type/position.ts'
+import { Evaluable } from './base.ts'
 
 export class PrimitiveValue<T> extends Evaluable {
     static override friendlyName = '원시값'

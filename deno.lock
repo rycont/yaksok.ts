@@ -2,7 +2,10 @@
   "version": "4",
   "specifiers": {
     "jsr:@std/assert@^1.0.7": "1.0.7",
+    "jsr:@std/assert@^1.0.8": "1.0.8",
+    "jsr:@std/fs@^1.0.5": "1.0.5",
     "jsr:@std/internal@^1.0.5": "1.0.5",
+    "jsr:@std/path@^1.0.7": "1.0.8",
     "npm:@vue/runtime-dom@^3.5.12": "3.5.12",
     "npm:@vueuse/core@^11.2.0": "11.2.0_vue@3.5.12",
     "npm:ansi-to-html@~0.7.2": "0.7.2",
@@ -24,8 +27,23 @@
         "jsr:@std/internal"
       ]
     },
+    "@std/assert@1.0.8": {
+      "integrity": "ebe0bd7eb488ee39686f77003992f389a06c3da1bbd8022184804852b2fa641b",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/fs@1.0.5": {
+      "integrity": "41806ad6823d0b5f275f9849a2640d87e4ef67c51ee1b8fb02426f55e02fd44e",
+      "dependencies": [
+        "jsr:@std/path"
+      ]
+    },
     "@std/internal@1.0.5": {
       "integrity": "54a546004f769c1ac9e025abd15a76b6671ddc9687e2313b67376125650dc7ba"
+    },
+    "@std/path@1.0.8": {
+      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     }
   },
   "npm": {
@@ -2016,6 +2034,8 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@^1.0.7",
+      "jsr:@std/assert@^1.0.8",
+      "jsr:@std/fs@^1.0.5",
       "npm:@vue/runtime-dom@^3.5.12",
       "npm:@vueuse/core@^11.2.0",
       "npm:ansi-to-html@~0.7.2",

@@ -1,8 +1,12 @@
-import type { Evaluable, Operator, Position } from '../node/base.ts'
+import type { Evaluable, Operator } from '../node/base.ts'
+import type { CodeFile } from '../type/code-file.ts'
+import type { Position } from '../type/position.ts'
 
 export class YaksokError<T = unknown> extends Error {
     position?: Position
     resource?: T
+    codeFile?: CodeFile
+    child?: YaksokError
 
     constructor(props: { position?: Position; resource?: T }) {
         super()

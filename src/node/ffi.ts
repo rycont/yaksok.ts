@@ -2,32 +2,38 @@ import type { FunctionParams } from '../constant/type.ts'
 import { FFIResultTypeIsNotForYaksokError } from '../error/ffi.ts'
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
-import {
-    Evaluable,
-    Executable,
-    Identifier,
-    type Position,
-    type ValueTypes,
-} from './base.ts'
+import { Position } from '../type/position.ts'
+import { Evaluable, Executable, Node, type ValueTypes } from './base.ts'
 
-export class FFIBody extends Identifier {
+export class FFIBody extends Node {
     static override friendlyName = '번역할 내용'
 
     constructor(public code: string, public override position?: Position) {
-        super(code, position)
+        super()
     }
 }
 
 export class DeclareFFI extends Executable {
     static override friendlyName = '번역 만들기'
 
-    constructor(
-        public name: string,
-        public body: string,
-        public runtime: string,
-        public paramNames: string[],
-    ) {
+    public name: string
+    public body: string
+    public runtime: string
+    public paramNames: string[]
+
+    constructor(props: {
+        name: string
+        body: string
+        runtime: string
+        paramNames: string[]
+        position?: Position
+    }) {
         super()
+        this.name = props.name
+        this.body = props.body
+        this.runtime = props.runtime
+        this.paramNames = props.paramNames
+        this.position = props.position
     }
 
     override execute(scope: Scope): void {

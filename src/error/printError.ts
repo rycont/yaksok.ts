@@ -1,18 +1,19 @@
-import { type YaksokError, bold } from './common.ts'
-import type { Position } from '../node/base.ts'
-import type { FileRunner } from '../runtime/file-runner.ts'
+import { Position } from '../type/position.ts'
 
-interface PrintErrorProps {
-    error: YaksokError
-    code?: string
-    runtime?: FileRunner
-}
+import { type YaksokError, bold, dim } from './common.ts'
 
-export function printError({ error, code }: PrintErrorProps) {
+export function printError(error: YaksokError) {
+    const code = error.codeFile?.text
+    const fileName = error.codeFile?.fileName
+
     let output = ''
 
     output += '─────\n\n'
-    output += `🚨  ${bold(`문제가 발생했어요`)}  🚨` + '\n'
+
+    output +=
+        `🚨  ${bold(`문제가 발생했어요`)}${
+            fileName ? dim(` (${fileName} 파일)`) : ''
+        } 🚨` + '\n'
 
     if (error.position)
         output +=
@@ -26,6 +27,11 @@ export function printError({ error, code }: PrintErrorProps) {
     output += '┌─────\n'
     output += getHintCode(error.position, code)
     output += '└─────\n'
+
+    if (error.child) {
+        output += '\n'
+        output = printError(error.child) + '\n' + output
+    }
 
     return output
 }

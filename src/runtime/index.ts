@@ -1,79 +1,105 @@
-import { EnabledFlags } from '../constant/feature-flags.ts'
-import { FileRunner } from './file-runner.ts'
-import { DEFAULT_RUNTIME_CONFIG, RuntimeConfig } from './runtime-config.ts'
+import { DEFAULT_RUNTIME_CONFIG, type RuntimeConfig } from './runtime-config.ts'
 import { FileForRunNotExistError } from '../error/prepare.ts'
+import { printError } from '../error/printError.ts'
+import { YaksokError } from '../error/common.ts'
+import { CodeFile } from '../type/code-file.ts'
+
+import type { EnabledFlags } from '../constant/feature-flags.ts'
+import type { ExecuteResult } from '../executer/index.ts'
+import type { Block } from '../node/block.ts'
 
 export class Runtime {
-    stdout: RuntimeConfig['stdout']
-    stderr: RuntimeConfig['stderr']
-    entryPoint: RuntimeConfig['entryPoint']
-    runFFI: RuntimeConfig['runFFI']
-    flags: Partial<EnabledFlags> = {}
+    public stdout: RuntimeConfig['stdout']
+    public stderr: RuntimeConfig['stderr']
+    public entryPoint: RuntimeConfig['entryPoint']
+    public runFFI: RuntimeConfig['runFFI']
+    public flags: Partial<EnabledFlags> = {}
 
-    runners: Record<string, FileRunner> = {}
+    private files: Record<string, CodeFile> = {}
 
     constructor(
-        public files: Record<string, string>,
+        codeTexts: Record<string, string>,
         config: Partial<RuntimeConfig>,
     ) {
         this.stdout = config.stdout || DEFAULT_RUNTIME_CONFIG.stdout
         this.stderr = config.stderr || DEFAULT_RUNTIME_CONFIG.stderr
-        this.entryPoint = config.entryPoint || DEFAULT_RUNTIME_CONFIG.entryPoint
         this.runFFI = config.runFFI || DEFAULT_RUNTIME_CONFIG.runFFI
+
+        this.entryPoint = config.entryPoint || DEFAULT_RUNTIME_CONFIG.entryPoint
         this.flags = config.flags || DEFAULT_RUNTIME_CONFIG.flags
+
+        for (const [fileName, text] of Object.entries(codeTexts)) {
+            const codeFile = new CodeFile(text, fileName)
+            codeFile.mount(this)
+
+            this.files[fileName] = codeFile
+        }
     }
 
-    getFileRunner(fileName = this.entryPoint): FileRunner {
-        if (!(fileName in this.files)) {
+    run(fileName = this.entryPoint): ExecuteResult<Block> {
+        const codeFile = this.files[fileName]
+
+        if (!codeFile) {
             throw new FileForRunNotExistError({
                 resource: {
-                    entryPoint: this.entryPoint,
+                    fileName: fileName,
                     files: Object.keys(this.files),
                 },
             })
         }
 
-        if (fileName in this.runners) {
-            return this.runners[fileName]
+        try {
+            return codeFile.run()
+        } catch (e) {
+            if (e instanceof YaksokError && !e.codeFile) {
+                e.codeFile = codeFile
+            }
+
+            throw e
+        }
+    }
+
+    public getCodeFile(fileName: string = this.entryPoint): CodeFile {
+        if (!this.files[fileName]) {
+            throw new FileForRunNotExistError({
+                resource: {
+                    fileName: fileName,
+                    files: Object.keys(this.files),
+                },
+            })
         }
 
-        this.runners[fileName] = new FileRunner(
-            this.files[fileName],
-            this,
-            fileName,
-        )
-
-        return this.runners[fileName]
-    }
-
-    run(fileName = this.entryPoint): FileRunner {
-        const runner = this.getFileRunner(fileName)
-        runner.run()
-
-        return runner
-    }
-
-    runOnce(fileName = this.entryPoint): FileRunner {
-        const runner = this.getFileRunner(fileName)
-        if (!runner.ran) runner.run()
-
-        return runner
+        return this.files[fileName]
     }
 }
 
 export function yaksok(
     code: string | Record<string, string>,
     config: Partial<RuntimeConfig> = {},
-): Runtime {
-    const yaksok = new Runtime(
-        typeof code === 'string'
-            ? {
-                  [DEFAULT_RUNTIME_CONFIG.entryPoint]: code,
-              }
-            : code,
-        config,
-    )
+): {
+    runtime: Runtime
+    scope: Record<string, any>
+} {
+    let runtime: Runtime
 
-    yaksok.run()
-    return yaksok
+    if (typeof code === 'string') {
+        runtime = new Runtime({ main: code }, config)
+    } else {
+        runtime = new Runtime(code, config)
+    }
+
+    try {
+        runtime.run()
+
+        return {
+            runtime,
+            scope: runtime.getCodeFile().runResult!.scope,
+        }
+    } catch (e) {
+        if (e instanceof YaksokError) {
+            console.error(printError(e))
+        }
+
+        throw e
+    }
 }

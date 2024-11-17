@@ -56,8 +56,8 @@ export class DeclareFunction extends Executable {
 export class FunctionInvoke extends Evaluable {
     static override friendlyName = '약속 사용하기'
 
-    private name: string
-    private params: FunctionParams
+    public name: string
+    public params: FunctionParams
 
     constructor(props: { name: string; params: FunctionParams }) {
         super()
