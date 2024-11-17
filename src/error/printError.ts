@@ -2,7 +2,7 @@ import { Position } from '../type/position.ts'
 
 import { type YaksokError, bold, dim } from './common.ts'
 
-export function printError(error: YaksokError, isChild = false) {
+export function printError(error: YaksokError) {
     const code = error.codeFile?.text
     const fileName = error.codeFile?.fileName
 
@@ -13,7 +13,7 @@ export function printError(error: YaksokError, isChild = false) {
     output +=
         `🚨  ${bold(`문제가 발생했어요`)}${
             fileName ? dim(` (${fileName} 파일)`) : ''
-        }  🚨` + '\n'
+        } 🚨` + '\n'
 
     if (error.position)
         output +=
@@ -30,7 +30,7 @@ export function printError(error: YaksokError, isChild = false) {
 
     if (error.child) {
         output += '\n'
-        output = printError(error.child, true) + '\n' + output
+        output = printError(error.child) + '\n' + output
     }
 
     return output

@@ -1,18 +1,9 @@
 import { type Rule, ADVANCED_RULES, BASIC_RULES } from './rule.ts'
 import { satisfiesPattern } from './satisfiesPattern.ts'
-import {
-    Block,
-    EOL,
-    Evaluable,
-    List,
-    type Node,
-    Sequence,
-    ValueWithBracket,
-    ValueWithParenthesis,
-} from '../../node/index.ts'
-import { CannotParseError } from '../../error/index.ts'
-import { InlineParenthesisBlock } from '../../node/block.ts'
-import { InlineBracketBlock } from '../../node/block.ts'
+
+import { Block } from '../../node/block.ts'
+import { EOL } from '../../node/misc.ts'
+import type { Node } from '../../node/base.ts'
 
 export function SRParse(_tokens: Node[], rules: Rule[]) {
     const tokens = [..._tokens]
@@ -66,7 +57,6 @@ export function callParseRecursively(
 
         token.children = callParseRecursively(token.children, externalPatterns)
     }
-
     parsedTokens.push(new EOL())
 
     const patternsByLevel = [...BASIC_RULES, externalPatterns, ADVANCED_RULES]
