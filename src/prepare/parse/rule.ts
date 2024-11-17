@@ -302,21 +302,6 @@ export const BASIC_RULES: Rule[][] = [
         {
             pattern: [
                 {
-                    type: Expression,
-                    value: '@',
-                },
-                {
-                    type: Identifier,
-                },
-            ],
-            factory: (nodes) => {
-                const name = (nodes[1] as Identifier).value
-                return new Mention(name)
-            },
-        },
-        {
-            pattern: [
-                {
                     type: Identifier,
                     value: '약속',
                 },
@@ -418,10 +403,6 @@ export const ADVANCED_RULES: Rule[] = [
             const a = nodes[0] as Evaluable
             const b = nodes[2] as Evaluable
 
-            if (a instanceof Sequence) {
-                return new Sequence([...a.items, b])
-            }
-
             return new Sequence([a, b])
         },
     },
@@ -443,26 +424,6 @@ export const ADVANCED_RULES: Rule[] = [
             const b = nodes[2] as Evaluable
 
             return new Sequence([...a.items, b])
-        },
-    },
-    {
-        pattern: [
-            {
-                type: Evaluable,
-            },
-            {
-                type: Expression,
-                value: ',',
-            },
-            {
-                type: Sequence,
-            },
-        ],
-        factory: (nodes) => {
-            const a = nodes[0] as Evaluable
-            const b = nodes[2] as Sequence
-
-            return new Sequence([a, ...b.items])
         },
     },
     {
