@@ -1,7 +1,7 @@
-import { createLocalDynamicRules } from './local/index.ts'
+import { createLocalDynamicRules } from './functions/index.ts'
 import { Token } from '../../tokenize/token.ts'
 import type { FileRunner } from '../../../runtime/file-runner.ts'
-import { getDynamicRulesFromMention } from './mention/getRulesFromMention.ts'
+import { getRulesFromMentioningFile } from './mention/index.ts'
 
 export function createDynamicRule(tokens: Token[], fileRunner?: FileRunner) {
     const localRules = createLocalDynamicRules(
@@ -10,7 +10,7 @@ export function createDynamicRule(tokens: Token[], fileRunner?: FileRunner) {
     )
 
     const mentioningRules = fileRunner
-        ? getDynamicRulesFromMention(tokens, fileRunner.runtime)
+        ? getRulesFromMentioningFile(tokens, fileRunner.runtime)
         : []
 
     return [...mentioningRules, ...localRules]

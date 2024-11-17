@@ -1,6 +1,6 @@
 import { Token, TOKEN_TYPE } from '../../../tokenize/token.ts'
 
-export function getMentionedNames(tokens: Token[]) {
+export function getMentioningFiles(tokens: Token[]) {
     const mentioningNames = tokens
         .filter(isMention)
         .map((token) => token.value.slice(1))
