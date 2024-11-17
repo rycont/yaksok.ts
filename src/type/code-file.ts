@@ -8,7 +8,6 @@ import type { Rule } from '../prepare/parse/rule.ts'
 import type { Runtime } from '../runtime/index.ts'
 import type { Evaluable } from '../node/base.ts'
 import type { Block } from '../node/block.ts'
-import { mergeArgumentBranchingTokens } from '../prepare/tokenize/merge-argument-branching-tokens.ts'
 
 export class CodeFile {
     private tokenized: Token[] | null = null
@@ -25,11 +24,11 @@ export class CodeFile {
         this.runtime = runtime
     }
 
-    get mounted() {
+    public get mounted(): boolean {
         return this.runtime !== null
     }
 
-    get tokens(): Token[] {
+    public get tokens(): Token[] {
         if (this.tokenized === null) {
             this.tokenized = tokenize(this)
         }
@@ -37,7 +36,7 @@ export class CodeFile {
         return this.tokenized
     }
 
-    get ast() {
+    public get ast(): Block {
         if (!this.parsed) {
             this.parse()
         }
@@ -45,7 +44,7 @@ export class CodeFile {
         return this.parsed as Block
     }
 
-    get functionDeclareRanges(): [number, number][] {
+    public get functionDeclareRanges(): [number, number][] {
         if (this.functionDeclareRangesCache === null) {
             this.functionDeclareRangesCache = getFunctionDeclareRanges(
                 this.tokens,
@@ -55,7 +54,7 @@ export class CodeFile {
         return this.functionDeclareRangesCache
     }
 
-    get exportedRules(): Rule[] {
+    public get exportedRules(): Rule[] {
         if (!this.exportedRulesCache) {
             this.parse()
         }
@@ -69,8 +68,10 @@ export class CodeFile {
         this.exportedRulesCache = parseResult.exportedRules
     }
 
-    public run() {
-        if (this.runResult) return
+    public run(): ExecuteResult<Block> {
+        if (this.runResult) {
+            return this.runResult
+        }
 
         const result = executer(this.ast, this)
         this.runResult = result
@@ -78,7 +79,7 @@ export class CodeFile {
         return result
     }
 
-    public evaluate(node: Evaluable) {
+    public evaluate(node: Evaluable): ExecuteResult<Evaluable> {
         this.run()
         return executer(node, this)
     }

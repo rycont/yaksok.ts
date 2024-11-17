@@ -1,19 +1,21 @@
-import { DEFAULT_RUNTIME_CONFIG, RuntimeConfig } from './runtime-config.ts'
-import { EnabledFlags } from '../constant/feature-flags.ts'
-
+import { DEFAULT_RUNTIME_CONFIG, type RuntimeConfig } from './runtime-config.ts'
 import { FileForRunNotExistError } from '../error/prepare.ts'
-import { CodeFile } from '../type/code-file.ts'
 import { printError } from '../error/printError.ts'
 import { YaksokError } from '../error/common.ts'
+import { CodeFile } from '../type/code-file.ts'
+
+import type { EnabledFlags } from '../constant/feature-flags.ts'
+import type { ExecuteResult } from '../executer/index.ts'
+import type { Block } from '../node/block.ts'
 
 export class Runtime {
-    stdout: RuntimeConfig['stdout']
-    stderr: RuntimeConfig['stderr']
-    entryPoint: RuntimeConfig['entryPoint']
-    runFFI: RuntimeConfig['runFFI']
-    flags: Partial<EnabledFlags> = {}
+    public stdout: RuntimeConfig['stdout']
+    public stderr: RuntimeConfig['stderr']
+    public entryPoint: RuntimeConfig['entryPoint']
+    public runFFI: RuntimeConfig['runFFI']
+    public flags: Partial<EnabledFlags> = {}
 
-    files: Record<string, CodeFile> = {}
+    private files: Record<string, CodeFile> = {}
 
     constructor(
         codeTexts: Record<string, string>,
@@ -34,7 +36,7 @@ export class Runtime {
         }
     }
 
-    run(fileName = this.entryPoint) {
+    run(fileName = this.entryPoint): ExecuteResult<Block> {
         const codeFile = this.files[fileName]
 
         if (!codeFile) {
@@ -53,7 +55,7 @@ export class Runtime {
         }
     }
 
-    public getCodeFile(fileName: string = this.entryPoint) {
+    public getCodeFile(fileName: string = this.entryPoint): CodeFile {
         if (!this.files[fileName]) {
             throw new FileForRunNotExistError({
                 resource: {
@@ -70,7 +72,10 @@ export class Runtime {
 export function yaksok(
     code: string | Record<string, string>,
     config: Partial<RuntimeConfig> = {},
-) {
+): {
+    runtime: Runtime
+    scope: Record<string, any>
+} {
     let runtime: Runtime
 
     if (typeof code === 'string') {
