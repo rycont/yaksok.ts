@@ -53,16 +53,10 @@ export function reduce(tokens: Node[], rule: Rule) {
     return reduced
 }
 
-type BlockType =
-    | typeof Block
-    | typeof ValueWithParenthesis
-    | typeof ValueWithBracket
-
 export function callParseRecursively(
     _tokens: Node[],
     externalPatterns: Rule[],
-    blockTypeFactory: BlockType = Block,
-) {
+): Node[] {
     let parsedTokens = [..._tokens]
 
     for (let i = 0; i < parsedTokens.length; i++) {
@@ -70,17 +64,7 @@ export function callParseRecursively(
 
         if (!(token instanceof Block)) continue
 
-        const blockWrapper = {
-            [Block.name]: Block,
-            [InlineParenthesisBlock.name]: ValueWithParenthesis,
-            [InlineBracketBlock.name]: ValueWithBracket,
-        }[token.constructor.name]
-
-        parsedTokens[i] = callParseRecursively(
-            token.children,
-            externalPatterns,
-            blockWrapper,
-        )
+        token.children = callParseRecursively(token.children, externalPatterns)
     }
 
     parsedTokens.push(new EOL())
@@ -98,31 +82,5 @@ export function callParseRecursively(
         break
     }
 
-    if (blockTypeFactory === Block) {
-        return new Block(parsedTokens)
-    }
-
-    const validTokens = parsedTokens.filter((token) => !(token instanceof EOL))
-
-    if (validTokens.length !== 1 || !(validTokens[0] instanceof Evaluable)) {
-        throw new CannotParseError({
-            position: validTokens[0].position,
-            resource: {
-                part: validTokens[0],
-            },
-        })
-    }
-
-    const lastToken = validTokens[0]
-
-    if (blockTypeFactory === ValueWithParenthesis) {
-        return new ValueWithParenthesis(lastToken)
-    }
-
-    if (lastToken instanceof Sequence) {
-        const list = new List(lastToken.items)
-        return list
-    }
-
-    return new ValueWithBracket(lastToken)
+    return parsedTokens
 }

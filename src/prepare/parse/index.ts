@@ -7,7 +7,7 @@ import { Token } from '../tokenize/token.ts'
 import { convertTokensToNodes } from '../tokenize/convert-tokens-to-nodes.ts'
 
 import type { FileRunner } from '../../runtime/file-runner.ts'
-import type { Block } from '../../node/block.ts'
+import { Block } from '../../node/block.ts'
 import type { Rule } from './rule.ts'
 
 interface ParseResult {
@@ -19,9 +19,9 @@ export function parse(tokens: Token[], fileRunner?: FileRunner): ParseResult {
     const dynamicRules = createDynamicRule(tokens, fileRunner)
     const indentedNodes = parseIndent(convertTokensToNodes(tokens))
 
-    const ast = callParseRecursively(indentedNodes, dynamicRules) as Block
-    const exportedVariables = getExportedVariablesRules(ast)
+    const ast = new Block(callParseRecursively(indentedNodes, dynamicRules))
 
+    const exportedVariables = getExportedVariablesRules(ast)
     const exportedRules = [...dynamicRules.flat(), ...exportedVariables]
 
     return { ast, exportedRules }
