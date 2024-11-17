@@ -106,10 +106,6 @@ function createPatternFromTemplatePieces(
     pieces: FunctionTemplatePiece[],
 ): PatternUnit[] {
     return pieces.map((piece) => {
-        if (piece.value.length !== 1) {
-            throw new Error('piece.value.length is not 1')
-        }
-
         if (piece.type === 'static') {
             return {
                 type: Identifier,
@@ -133,12 +129,10 @@ function parseParameterFromTemplate(
                 return null
             }
 
+            const paramName = piece.value[0]
             const matchedNode = matchedNodes[index]
-            if (!(matchedNode instanceof Evaluable)) {
-                throw new Error('matchedNode is not Evaluable')
-            }
 
-            return [piece.value[0], matchedNode]
+            return [paramName, matchedNode]
         })
         .filter(Boolean) as [string, Identifier][]
 
