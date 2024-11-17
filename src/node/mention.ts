@@ -3,6 +3,7 @@ import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
 import { ErrorInModuleError } from '../error/index.ts'
 import type { Position } from '../type/position.ts'
+import { YaksokError } from '../error/common.ts'
 
 export class Mention extends Executable {
     static override friendlyName = '불러올 파일 이름'
@@ -26,10 +27,24 @@ export class MentionScope extends Evaluable {
     override execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
         this.setChildPosition()
 
-        const moduleCodeFile = _scope.runtime!.getCodeFile(this.fileName)
-        const { result } = moduleCodeFile.evaluate(this.child)
+        try {
+            const moduleCodeFile = _scope.runtime!.getCodeFile(this.fileName)
+            const { result } = moduleCodeFile.evaluate(this.child)
 
-        return result
+            return result
+        } catch (error) {
+            if (error instanceof YaksokError) {
+                throw new ErrorInModuleError({
+                    resource: {
+                        fileName: this.fileName,
+                    },
+                    position: this.position,
+                    child: error,
+                })
+            }
+
+            throw error
+        }
     }
 
     override toPrint(): string {
