@@ -37,6 +37,6 @@ function mapTokenToNode(token: Token) {
         case TOKEN_TYPE.LINE_COMMENT:
             return null
         case TOKEN_TYPE.MENTION:
-            return new Mention(token.value, token.position)
+            return new Mention(token.value.slice(1), token.position)
     }
 }

@@ -115,7 +115,7 @@ class Tokenizer {
     }
 }
 
-export function tokenize(code: string, fileRunner?: FileRunner) {
+export function tokenize(code: string, fileRunner?: FileRunner): Token[] {
     const tokens = new Tokenizer(code).tokenize()
     const functionDeclareRanges = getFunctionDeclareRanges(tokens)
 

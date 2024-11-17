@@ -22,7 +22,7 @@ export class FileRunner {
 
     constructor(
         private code: string,
-        private runtime: Runtime,
+        public runtime: Runtime,
         private fileName: string,
     ) {
         this.scope = new Scope({
@@ -36,7 +36,7 @@ export class FileRunner {
         }
 
         try {
-            const parseResult = parse(tokenize(this.code), this.runtime)
+            const parseResult = parse(tokenize(this.code), this)
 
             this.ast = parseResult.ast
             this.exportedRules = parseResult.exportedRules

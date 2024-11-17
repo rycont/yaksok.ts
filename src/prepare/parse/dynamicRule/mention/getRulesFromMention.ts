@@ -5,17 +5,20 @@ import type { Evaluable } from '../../../../node/index.ts'
 import type { Runtime } from '../../../../runtime/index.ts'
 import type { Node } from '../../../../node/base.ts'
 import type { Rule } from '../../rule.ts'
+import { Token } from '../../../tokenize/token.ts'
 
-export function getDynamicRulesFromMention(tokens: Node[], yaksok: Runtime) {
+export function getDynamicRulesFromMention(tokens: Token[], runtime: Runtime) {
     const rules = getMentionedNames(tokens).flatMap((fileName) =>
-        getMentioningRules(yaksok, fileName),
+        getMentioningRules(runtime, fileName),
     )
 
     return rules
 }
 
-function getMentioningRules(yaksok: Runtime, fileName: string) {
-    const runner = yaksok.getFileRunner(fileName)
+function getMentioningRules(runtime: Runtime, fileName: string) {
+    const runner = runtime.getFileRunner(fileName)
+    runner.prepare()
+
     const rules = runner.exportedRules
 
     const mentioningRules = rules

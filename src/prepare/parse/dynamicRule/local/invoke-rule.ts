@@ -97,7 +97,7 @@ function createRuleFromFunctionTemplate(
             })
         },
         config: {
-            isExported: true,
+            exported: true,
         },
     }
 }
