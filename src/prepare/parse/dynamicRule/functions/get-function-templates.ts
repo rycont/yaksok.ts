@@ -34,12 +34,6 @@ function convertTokensToFunctionTemplate(
                 return null
             }
 
-            const nextToken = tokens[index + 1]
-
-            if (!nextToken) {
-                return null
-            }
-
             const isPrevTokenOpeningParenthesis =
                 tokens[index - 1]?.type === TOKEN_TYPE.OPENING_PARENTHESIS
             const isNextTokenClosingParenthesis =

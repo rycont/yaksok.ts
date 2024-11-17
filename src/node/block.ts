@@ -33,19 +33,3 @@ export class Block extends Executable {
         }
     }
 }
-
-export class InlineParenthesisBlock extends Block {
-    static override friendlyName = '괄호에 묶인 코드 덩어리'
-
-    constructor(content: Node[]) {
-        super(content)
-    }
-}
-
-export class InlineBracketBlock extends Block {
-    static override friendlyName = '대괄호에 묶인 코드 덩어리'
-
-    constructor(content: Node[]) {
-        super(content)
-    }
-}

@@ -73,11 +73,4 @@ export class Scope {
             },
         })
     }
-
-    createChild(initialVariable?: Record<string, ValueTypes>): Scope {
-        return new Scope({
-            parent: this,
-            initialVariable,
-        })
-    }
 }
