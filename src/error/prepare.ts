@@ -27,6 +27,7 @@ export class CannotParseError extends YaksokError {
         }
     }
 }
+
 export class IndentIsNotMultipleOf4Error extends YaksokError {
     constructor(props: {
         position?: Position
@@ -38,6 +39,25 @@ export class IndentIsNotMultipleOf4Error extends YaksokError {
         this.message = `들여쓰기는 4의 배수여야 해요. ${props.resource.indent}는 4의 배수가 아니에요.`
     }
 }
+
+export class IndentLevelMismatchError extends YaksokError {
+    constructor(props: {
+        position?: Position
+        resource: {
+            expected?: number
+        }
+    }) {
+        super(props)
+        this.message = `들여쓰기가 잘못되었어요.`
+
+        if (props.resource.expected !== undefined) {
+            this.message += ` 여기서는 ${bold(
+                `"${props.resource.expected}"`,
+            )}만큼 들여쓰기를 해야해요.`
+        }
+    }
+}
+
 interface UnexpectedCharErrorResource {
     char: string
     parts: string
@@ -52,6 +72,7 @@ export class UnexpectedCharError extends YaksokError<UnexpectedCharErrorResource
         this.message = `문자 ${props.resource.char}는 ${props.resource.parts}에 사용할 수 없어요.`
     }
 }
+
 export class UnexpectedEndOfCodeError extends YaksokError {
     constructor(props: {
         resource?: {
@@ -69,6 +90,7 @@ export class UnexpectedEndOfCodeError extends YaksokError {
         }
     }
 }
+
 export class UnexpectedTokenError extends YaksokError {
     constructor(props: {
         resource: {

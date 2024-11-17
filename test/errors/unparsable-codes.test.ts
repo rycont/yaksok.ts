@@ -5,11 +5,7 @@ import { UnexpectedCharError } from '../../src/error/prepare.ts'
 
 Deno.test('Unparsable codes', () => {
     try {
-        yaksok(
-            `
-        ]]
-        `,
-        )
+        yaksok(`]]`)
     } catch (e) {
         assertIsError(e, CannotParseError)
     }

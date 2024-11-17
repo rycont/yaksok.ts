@@ -6,6 +6,7 @@ import { RULES } from './rules.ts'
 import type { Token } from './token.ts'
 import type { CodeFile } from '../../type/code-file.ts'
 import { getFunctionDeclareRanges } from '../../util/get-function-declare-ranges.ts'
+import { assertIndentValidity } from './indent-validity.ts'
 
 class Tokenizer {
     private tokens: Token[] = []
@@ -15,7 +16,7 @@ class Tokenizer {
     private line = 1
 
     constructor(code: string) {
-        this.code = code.split('')
+        this.code = preprocess(code).split('')
     }
 
     tokenize() {
@@ -120,5 +121,11 @@ export function tokenize(codeFile: CodeFile): Token[] {
     const functionDeclareRanges = getFunctionDeclareRanges(tokens)
     const merged = mergeArgumentBranchingTokens(tokens, functionDeclareRanges)
 
+    assertIndentValidity(merged)
+
     return merged
+}
+
+function preprocess(code: string) {
+    return code.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
 }
