@@ -54,13 +54,13 @@ export class UnexpectedCharError extends YaksokError<UnexpectedCharErrorResource
 }
 export class UnexpectedEndOfCodeError extends YaksokError {
     constructor(props: {
-        resource: {
+        resource?: {
             expected?: string
         }
         position?: Position
     }) {
         super(props)
-        if (props.resource.expected) {
+        if (props.resource?.expected) {
             this.message = `${bold(
                 `"${props.resource.expected}"`,
             )}가 나와야 했지만 코드가 끝났어요.`

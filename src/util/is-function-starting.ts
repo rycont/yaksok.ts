@@ -1,3 +1,4 @@
+import { UnexpectedEndOfCodeError } from '../error/prepare.ts'
 import { Token, TOKEN_TYPE } from '../prepare/tokenize/token.ts'
 
 export function isYaksokStartingPattern(
@@ -26,18 +27,13 @@ export function isFfiStartingPattern(
     index: number,
     allTokens: Token[],
 ) {
-    const prev5Tokens = allTokens.slice(index - 5)
+    const prev5Tokens = allTokens
+        .slice(index - 5)
+        .filter((token) => token.type !== TOKEN_TYPE.SPACE)
     if (prev5Tokens.length < 5) return false
 
     function shift() {
         const shifted = prev5Tokens.shift()!
-
-        if (shifted?.type === TOKEN_TYPE.SPACE) {
-            return shift()
-        }
-
-        if (!shifted) return null
-
         return shifted
     }
 
