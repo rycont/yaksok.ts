@@ -3,13 +3,13 @@ import { FFIResultTypeIsNotForYaksokError } from '../error/ffi.ts'
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
 import { Position } from '../type/position.ts'
-import { Evaluable, Executable, Identifier, type ValueTypes } from './base.ts'
+import { Evaluable, Executable, Node, type ValueTypes } from './base.ts'
 
-export class FFIBody extends Identifier {
+export class FFIBody extends Node {
     static override friendlyName = '번역할 내용'
 
     constructor(public code: string, public override position?: Position) {
-        super(code, position)
+        super()
     }
 }
 

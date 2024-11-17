@@ -31,7 +31,7 @@ function mapTokenToNode(token: Token) {
         case TOKEN_TYPE.COLON:
             return new Expression(token.value, token.position)
         case TOKEN_TYPE.FFI_BODY:
-            return new FFIBody(token.value, token.position)
+            return new FFIBody(token.value.slice(3, -3), token.position)
         case TOKEN_TYPE.NEW_LINE:
             return new EOL(token.position)
         case TOKEN_TYPE.LINE_COMMENT:

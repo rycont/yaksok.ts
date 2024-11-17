@@ -1,19 +1,29 @@
-import { Runtime } from './src/runtime/index.ts'
+import { QuickJS } from '@yaksok-ts/quickjs'
+import { yaksok } from '@yaksok-ts/core'
 
-const code = `번역(QuickJS), (질문) 물어보기
+const quickJS = new QuickJS()
+await quickJS.init()
+
+const result = yaksok(
+    `
+번역(QuickJS), 랜덤 수
 ***
-    return prompt()
+    return 20
 ***
 
-약속, (문자열)을 말하기
-    "싫어염" 보여주기
-`
-
-const runtime = new Runtime(
+숫자: 랜덤 수
+        `,
     {
-        main: code,
+        runFFI(_, code, args) {
+            const result = quickJS.run(code, args)
+
+            if (!result) {
+                throw new Error('Result is null')
+            }
+
+            return result
+        },
     },
-    {},
 )
 
-runtime.run()
+console.log(result.getFileRunner().scope.getVariable('숫자'))
