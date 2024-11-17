@@ -1,8 +1,4 @@
 import { yaksok } from '@yaksok-ts/core'
 
-yaksok({
-    아두이노: `
-이름: "아두이노" / 2
-`,
-    main: '(@아두이노 이름) 보여주기',
-})
+yaksok(`약속, (A)와 (B)를 더하기
+`)

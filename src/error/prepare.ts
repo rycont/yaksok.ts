@@ -55,12 +55,18 @@ export class UnexpectedCharError extends YaksokError<UnexpectedCharErrorResource
 export class UnexpectedEndOfCodeError extends YaksokError {
     constructor(props: {
         resource: {
-            parts: string
+            expected?: string
         }
         position?: Position
     }) {
         super(props)
-        this.message = `${props.resource.parts}가 끝나지 않았어요.`
+        if (props.resource.expected) {
+            this.message = `${bold(
+                `"${props.resource.expected}"`,
+            )}가 나와야 했지만 코드가 끝났어요.`
+        } else {
+            this.message = `코드 완성되지 않고 끝났어요.`
+        }
     }
 }
 export class UnexpectedTokenError extends YaksokError {

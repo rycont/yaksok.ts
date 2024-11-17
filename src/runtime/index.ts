@@ -51,6 +51,10 @@ export class Runtime {
         try {
             return codeFile.run()
         } catch (e) {
+            if (e instanceof YaksokError && !e.codeFile) {
+                e.codeFile = codeFile
+            }
+
             throw e
         }
     }

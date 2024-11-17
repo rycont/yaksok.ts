@@ -8,7 +8,6 @@ import { BreakSignal, ReturnSignal } from './signals.ts'
 
 import type { CodeFile } from '../type/code-file.ts'
 import type { Executable } from '../node/base.ts'
-import { YaksokError } from '../error/common.ts'
 
 export function executer<NodeType extends Executable>(
     node: NodeType,
@@ -38,10 +37,6 @@ export function executer<NodeType extends Executable>(
             throw new BreakNotInLoopError({
                 position: e.position,
             })
-        }
-
-        if (e instanceof YaksokError && !e.codeFile) {
-            e.codeFile = codeFile
         }
 
         throw e

@@ -71,7 +71,7 @@ function getFunctionEndingIndex(tokens: Token[], startingIndex: number) {
 
         throw new UnexpectedEndOfCodeError({
             resource: {
-                parts: '약속 이름',
+                expected: '줄넘김',
             },
             position: lastToken.position,
         })
@@ -86,23 +86,12 @@ function assertValidYaksokDeclare(
 ) {
     for (const [_, end] of functionDeclareRanges) {
         const nextToken = tokens[end - 1]
-
-        if (nextToken?.type !== TOKEN_TYPE.NEW_LINE) {
-            throw new UnexpectedTokenError({
-                resource: {
-                    token: nextToken,
-                    parts: '줄 넘김',
-                },
-                position: nextToken.position,
-            })
-        }
-
         const nextNextToken = tokens[end]
 
         if (!nextNextToken) {
             throw new UnexpectedEndOfCodeError({
                 resource: {
-                    parts: '들여쓰기',
+                    expected: '들여쓰기',
                 },
                 position: nextToken.position,
             })
@@ -142,7 +131,7 @@ function assertValidFfiDeclare(
         if (!nextNextToken) {
             throw new UnexpectedEndOfCodeError({
                 resource: {
-                    parts: '번역 본문',
+                    expected: '번역 본문',
                 },
                 position: nextToken.position,
             })
