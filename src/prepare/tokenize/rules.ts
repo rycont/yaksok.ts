@@ -171,8 +171,6 @@ export const RULES: {
                     value += shift()!
                     continue
                 }
-
-                throw new NotAcceptableSignal()
             }
 
             return value

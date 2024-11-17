@@ -1,3 +1,3 @@
 import { yaksok } from '@yaksok-ts/core'
 
-yaksok(`1.2.3`)
+yaksok(`약속, (음식)을/`)

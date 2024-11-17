@@ -65,7 +65,7 @@ export class UnexpectedEndOfCodeError extends YaksokError {
                 `"${props.resource.expected}"`,
             )}가 나와야 했지만 코드가 끝났어요.`
         } else {
-            this.message = `코드 완성되지 않고 끝났어요.`
+            this.message = `코드가 완성되지 않고 끝났어요.`
         }
     }
 }

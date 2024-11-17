@@ -1,4 +1,4 @@
-import { assertIsError } from 'assert'
+import { assertIsError } from '@std/assert'
 import { yaksok } from '../../src/mod.ts'
 import { CannotParseError } from '../../src/error/index.ts'
 import { UnexpectedCharError } from '../../src/error/prepare.ts'

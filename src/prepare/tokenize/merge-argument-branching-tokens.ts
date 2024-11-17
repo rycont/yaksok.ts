@@ -1,3 +1,4 @@
+import { UnexpectedEndOfCodeError } from '../../error/prepare.ts'
 import { Token, TOKEN_TYPE } from './token.ts'
 
 export function mergeArgumentBranchingTokens(
@@ -17,13 +18,17 @@ export function mergeArgumentBranchingTokens(
                 break
             }
 
+            const slashPosition = functionHeader[slashIndex]!.position
+
             const leftValue = functionHeader[slashIndex - 1]?.value
             functionHeader[slashIndex - 1] = null
             functionHeader[slashIndex] = null
 
             const nextSlash = functionHeader[slashIndex + 1]
-            if (!nextSlash) {
-                continue
+            if (!nextSlash || nextSlash.type !== TOKEN_TYPE.IDENTIFIER) {
+                throw new UnexpectedEndOfCodeError({
+                    position: slashPosition,
+                })
             }
 
             const rightValue = leftValue + '/' + nextSlash.value

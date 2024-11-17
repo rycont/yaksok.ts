@@ -1,4 +1,4 @@
-import { assertIsError } from 'assert'
+import { assertIsError } from '@std/assert'
 import { yaksok } from '../../src/mod.ts'
 import {
     UnexpectedEndOfCodeError,
@@ -8,6 +8,15 @@ import {
 Deno.test('온전하지 않은 약속 정의', () => {
     try {
         yaksok(`약속, (A)와 (`)
+    } catch (error) {
+        assertIsError(error, UnexpectedEndOfCodeError)
+    }
+})
+
+Deno.test('온전하지 않은 약속 정의: 조사 변형이 안끝남', () => {
+    try {
+        yaksok(`약속, (A)와/
+    A 보여주기`)
     } catch (error) {
         assertIsError(error, UnexpectedEndOfCodeError)
     }
