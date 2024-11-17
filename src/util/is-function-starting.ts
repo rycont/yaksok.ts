@@ -1,4 +1,3 @@
-import { UnexpectedEndOfCodeError } from '../error/prepare.ts'
 import { Token, TOKEN_TYPE } from '../prepare/tokenize/token.ts'
 
 export function isYaksokStartingPattern(

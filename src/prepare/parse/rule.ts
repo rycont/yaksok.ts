@@ -21,7 +21,6 @@ import {
     LessThanOrEqualOperator,
     List,
     Loop,
-    Mention,
     MinusOperator,
     MultiplyOperator,
     type Node,
