@@ -1,7 +1,7 @@
 import { Node } from '../node/base.ts'
 import { Token } from '../prepare/tokenize/token.ts'
 import type { Position } from '../type/position.ts'
-import { YaksokError, bold, dim } from './common.ts'
+import { YaksokError, blue, bold, dim } from './common.ts'
 
 export class CannotParseError extends YaksokError {
     constructor(props: {
@@ -107,7 +107,9 @@ export class UnexpectedTokenError extends YaksokError {
     }
 }
 
-export class FileForRunNotExistError extends YaksokError {
+export class FileForRunNotExistError extends YaksokError<{
+    fileName: string
+}> {
     constructor(props: {
         resource: {
             fileName: string
@@ -121,7 +123,7 @@ export class FileForRunNotExistError extends YaksokError {
         } else {
             this.message = `주어진 코드(${dim(
                 props.resource.files.join(', '),
-            )})에서 ${bold(
+            )})에서 ${blue(
                 `"${props.resource.fileName}"`,
             )} 파일을 찾을 수 없어요. `
         }

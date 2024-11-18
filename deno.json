@@ -16,7 +16,7 @@
     "tasks": {
         "coverage": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
         "coverage-list": "rm -rf ./cov && deno test --allow-read --parallel --coverage=cov && deno coverage ./cov && rm -rf ./cov",
-        "test": "deno run -A npm:madge --circular --extensions ts ./ && deno test --allow-read --parallel && deno publish --dry-run && deno lint",
+        "test": "rm -rf ./docs/.vitepress/dist && rm -rf ./docs/.vitepress/cache && deno run -A npm:madge --circular --extensions ts ./ && deno test --allow-read --parallel && deno publish --dry-run --allow-dirty && deno lint && deno task docs-build",
         "typedoc": "deno run --allow-read --allow-write --allow-env --allow-run ./create-docs.ts",
         "vitepress-dev": "deno run -A npm:vitepress dev docs",
         "vitepress-build": "deno run -A npm:vitepress build docs",
@@ -35,7 +35,7 @@
         }
     },
     "name": "@yaksok-ts/core",
-    "version": "0.2.0-alpha.1+20241117",
+    "version": "0.2.0-alpha.2+20241118",
     "exports": "./src/mod.ts",
     "nodeModulesDir": "auto",
     "workspace": [
