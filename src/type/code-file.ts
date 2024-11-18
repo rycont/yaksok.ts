@@ -2,6 +2,7 @@ import { getFunctionDeclareRanges } from '../util/get-function-declare-ranges.ts
 import { executer, type ExecuteResult } from '../executer/index.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { parse } from '../prepare/parse/index.ts'
+import { YaksokError } from '../error/common.ts'
 
 import type { Token } from '../prepare/tokenize/token.ts'
 import type { Rule } from '../prepare/parse/rule.ts'
@@ -55,11 +56,19 @@ export class CodeFile {
     }
 
     public get exportedRules(): Rule[] {
-        if (!this.exportedRulesCache) {
-            this.parse()
-        }
+        try {
+            if (!this.exportedRulesCache) {
+                this.parse()
+            }
 
-        return this.exportedRulesCache as Rule[]
+            return this.exportedRulesCache as Rule[]
+        } catch (e) {
+            if (e instanceof YaksokError && !e.codeFile) {
+                e.codeFile = this
+            }
+
+            throw e
+        }
     }
 
     private parse() {
