@@ -1,5 +1,6 @@
 import { YaksokError } from '../../../../error/common.ts'
 import { ErrorInModuleError } from '../../../../error/mention.ts'
+import { FileForRunNotExistError } from '../../../../error/prepare.ts'
 import type { Runtime } from '../../../../runtime/index.ts'
 import { createMentioningRule } from './create-mentioning-rules.ts'
 
@@ -15,7 +16,10 @@ export function getExportedRules(runtime: Runtime, fileName: string) {
 
         return mentioningRules
     } catch (e) {
-        if (e instanceof YaksokError) {
+        if (
+            e instanceof YaksokError &&
+            !(e instanceof FileForRunNotExistError)
+        ) {
             throw new ErrorInModuleError({
                 resource: {
                     fileName,
@@ -23,5 +27,7 @@ export function getExportedRules(runtime: Runtime, fileName: string) {
                 child: e,
             })
         }
+
+        throw e
     }
 }
