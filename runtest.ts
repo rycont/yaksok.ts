@@ -1,8 +1,16 @@
 import { yaksok } from '@yaksok-ts/core'
 
-const code = `
-내_이름: "영희"
-`
+yaksok({
+    main: `
+맛있는_음식: "피자"
+@배민 (맛있는_음식)을 "나"와 먹기
+`,
+    배민: `
+두번째_음식: "이게 나오면 안돼"
 
-const result = yaksok(code)
-console.log(result.scope.getVariable('내_이름').value)
+약속, (두번째_음식)을/를 (사람)와/과 먹기
+    "맛있는 " + 두번째_음식 + ", " + 사람 + "의 입으로 모두 들어갑니다." 보여주기
+
+맛있는_음식: "치킨"
+`,
+})

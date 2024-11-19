@@ -87,9 +87,4 @@ export class CodeFile {
 
         return result
     }
-
-    public evaluate(node: Evaluable): ExecuteResult<Evaluable> {
-        this.run()
-        return executer(node, this)
-    }
 }

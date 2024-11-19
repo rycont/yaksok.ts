@@ -1,5 +1,6 @@
 import { Mention, MentionScope } from '../../../../node/mention.ts'
-import { Evaluable, Node } from '../../../../node/base.ts'
+import { FunctionInvoke } from '../../../../node/function.ts'
+import { Identifier, Node } from '../../../../node/base.ts'
 import { Rule } from '../../rule.ts'
 
 export function createMentioningRule(
@@ -23,9 +24,11 @@ export function createMentioningRule(
 
 function createFactory(fileName: string, rule: Rule) {
     return (nodes: Node[]) => {
-        const child = rule.factory(nodes.slice(1))
+        const child = rule.factory(nodes.slice(1)) as
+            | Identifier
+            | FunctionInvoke
         child.position = nodes[1].position
 
-        return new MentionScope(fileName, child as Evaluable)
+        return new MentionScope(fileName, child)
     }
 }
