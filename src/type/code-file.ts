@@ -7,7 +7,6 @@ import { YaksokError } from '../error/common.ts'
 import type { Token } from '../prepare/tokenize/token.ts'
 import type { Rule } from '../prepare/parse/rule.ts'
 import type { Runtime } from '../runtime/index.ts'
-import type { Evaluable } from '../node/base.ts'
 import type { Block } from '../node/block.ts'
 
 export class CodeFile {

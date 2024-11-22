@@ -370,13 +370,11 @@ export const BASIC_RULES: Rule[][] = [
                     ]
 
                 const functionName = functionInvoke.name
-                const paramNames = Object.keys(functionInvoke.params)
                 const runtime = (runtimeNode.value as Identifier).value
 
                 return new DeclareFFI({
                     body: body.code,
                     name: functionName,
-                    paramNames,
                     runtime,
                 })
             },

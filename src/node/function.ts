@@ -5,6 +5,7 @@ import { Scope } from '../executer/scope.ts'
 import type { FunctionParams } from '../constant/type.ts'
 import type { Block } from './block.ts'
 import { FunctionObject } from '../value/function.ts'
+import { FFIResultTypeIsNotForYaksokError } from '../error/ffi.ts'
 
 export class DeclareFunction extends Executable {
     static override friendlyName = '새 약속 만들기'
@@ -20,11 +21,7 @@ export class DeclareFunction extends Executable {
     }
 
     override execute(scope: Scope, _callFrame: CallFrame) {
-        const functionObject = new FunctionObject(
-            this.name,
-            this.body,
-            scope.codeFile,
-        )
+        const functionObject = new FunctionObject(this.name, this.body, scope)
 
         scope.addFunctionObject(functionObject)
     }
@@ -46,11 +43,17 @@ export class FunctionInvoke extends Evaluable {
     override execute(
         scope: Scope,
         callFrame: CallFrame,
-        args = evaluateParams(this.params, scope, callFrame),
+        args: {
+            [key: string]: ValueTypes
+        } = evaluateParams(this.params, scope, callFrame),
     ): ValueTypes {
         const functionObject = scope.getFunctionObject(this.name)
+        const returnValue = functionObject.run(args)
 
-        return functionObject.run(args)
+        assertValidReturnValue(this, returnValue)
+
+        const evaluated = returnValue.execute(scope, callFrame)
+        return evaluated
     }
 }
 
@@ -67,4 +70,16 @@ export function evaluateParams(
     }
 
     return args
+}
+
+function assertValidReturnValue(node: FunctionInvoke, returnValue: ValueTypes) {
+    if (returnValue instanceof Evaluable) {
+        return
+    }
+
+    throw new FFIResultTypeIsNotForYaksokError({
+        ffiName: node.name,
+        value: returnValue,
+        position: node.position,
+    })
 }

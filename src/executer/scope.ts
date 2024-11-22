@@ -2,13 +2,13 @@ import { NotDefinedIdentifierError } from '../error/index.ts'
 
 import type { ValueTypes } from '../node/index.ts'
 import type { CodeFile } from '../type/code-file.ts'
-import type { FunctionObject } from '../value/function.ts'
+import type { RunnableObject } from '../value/function.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>
     parent: Scope | undefined
     codeFile?: CodeFile
-    private functions: Map<string, FunctionObject> = new Map()
+    private functions: Map<string, RunnableObject> = new Map()
 
     constructor(
         config: {
@@ -57,11 +57,11 @@ export class Scope {
         })
     }
 
-    addFunctionObject(functionObject: FunctionObject) {
+    addFunctionObject(functionObject: RunnableObject) {
         this.functions.set(functionObject.name, functionObject)
     }
 
-    getFunctionObject(name: string): FunctionObject {
+    getFunctionObject(name: string): RunnableObject {
         const fromCurrentScope = this.functions.get(name)
         if (fromCurrentScope) return fromCurrentScope
 
