@@ -1,14 +1,11 @@
-import { NotDefinedIdentifierError } from '../error/index.ts'
+import { Evaluable, Executable, type ValueTypes } from './base.ts'
 import { CallFrame } from '../executer/callFrame.ts'
 import { Scope } from '../executer/scope.ts'
-import { ReturnSignal } from '../executer/signals.ts'
-import { Evaluable, Executable, type ValueTypes } from './base.ts'
-import { NumberValue } from './primitive.ts'
 
 import type { FunctionParams } from '../constant/type.ts'
 import type { Block } from './block.ts'
-
-const DEFAULT_RETURN_VALUE = new NumberValue(0)
+import { FunctionObject } from '../value/function.ts'
+import { FFIResultTypeIsNotForYaksokError } from '../error/ffi.ts'
 
 export class DeclareFunction extends Executable {
     static override friendlyName = '새 약속 만들기'
@@ -23,36 +20,13 @@ export class DeclareFunction extends Executable {
         this.body = props.body
     }
 
-    override execute(scope: Scope) {
-        scope.setFunction(this.name, this)
-    }
+    override execute(scope: Scope, _callFrame: CallFrame) {
+        const functionObject = new FunctionObject(this.name, this.body, scope)
 
-    run(scope: Scope, _callFrame: CallFrame): ValueTypes {
-        const callFrame = new CallFrame(this, _callFrame)
-
-        try {
-            this.body.execute(scope, callFrame)
-        } catch (e) {
-            if (!(e instanceof ReturnSignal)) {
-                throw e
-            }
-        }
-
-        return this.getReturnValue(scope)
-    }
-
-    getReturnValue(scope: Scope): ValueTypes {
-        try {
-            return scope.getVariable('결과')
-        } catch (e) {
-            if (e instanceof NotDefinedIdentifierError) {
-                return DEFAULT_RETURN_VALUE
-            }
-
-            throw e
-        }
+        scope.addFunctionObject(functionObject)
     }
 }
+
 export class FunctionInvoke extends Evaluable {
     static override friendlyName = '약속 사용하기'
 
@@ -66,32 +40,24 @@ export class FunctionInvoke extends Evaluable {
         this.params = props.params
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
-        const callFrame = new CallFrame(this, _callFrame)
-        const args = getParams(this.params, scope, callFrame)
-
-        const result = this.invoke(scope, callFrame, args)
-        return result
-    }
-
-    invoke(
+    override execute(
         scope: Scope,
         callFrame: CallFrame,
-        args: { [key: string]: ValueTypes } | null,
+        args: {
+            [key: string]: ValueTypes
+        } = evaluateParams(this.params, scope, callFrame),
     ): ValueTypes {
-        const func = scope.getFunction(this.name)
-        const childScope = new Scope({
-            parent: scope,
-            initialVariable: args,
-        })
+        const functionObject = scope.getFunctionObject(this.name)
+        const returnValue = functionObject.run(args)
 
-        const result = func.run(childScope, callFrame)
+        assertValidReturnValue(this, returnValue)
 
-        return result
+        const evaluated = returnValue.execute(scope, callFrame)
+        return evaluated
     }
 }
 
-export function getParams(
+export function evaluateParams(
     params: FunctionParams,
     scope: Scope,
     callFrame: CallFrame,
@@ -104,4 +70,16 @@ export function getParams(
     }
 
     return args
+}
+
+function assertValidReturnValue(node: FunctionInvoke, returnValue: ValueTypes) {
+    if (returnValue instanceof Evaluable) {
+        return
+    }
+
+    throw new FFIResultTypeIsNotForYaksokError({
+        ffiName: node.name,
+        value: returnValue,
+        position: node.position,
+    })
 }

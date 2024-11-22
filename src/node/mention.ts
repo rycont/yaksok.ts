@@ -1,9 +1,11 @@
-import { Evaluable, Executable, type ValueTypes } from './base.ts'
+import { Evaluable, Executable, Identifier, type ValueTypes } from './base.ts'
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
 import { ErrorInModuleError } from '../error/index.ts'
 import type { Position } from '../type/position.ts'
 import { YaksokError } from '../error/common.ts'
+import { FunctionInvoke } from './function.ts'
+import { evaluateParams } from './function.ts'
 
 export class Mention extends Executable {
     static override friendlyName = '불러올 파일 이름'
@@ -20,18 +22,39 @@ export class Mention extends Executable {
 export class MentionScope extends Evaluable {
     static override friendlyName = '불러오기'
 
-    constructor(public fileName: string, public child: Evaluable) {
+    constructor(
+        public fileName: string,
+        public child: FunctionInvoke | Identifier,
+    ) {
         super()
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, callFrame: CallFrame): ValueTypes {
         this.setChildPosition()
 
         try {
-            const moduleCodeFile = _scope.runtime!.getCodeFile(this.fileName)
-            const { result } = moduleCodeFile.evaluate(this.child)
+            const moduleCodeFile = scope.codeFile!.runtime!.getCodeFile(
+                this.fileName,
+            )
+            moduleCodeFile.run()
 
-            return result
+            const moduleFileScope = moduleCodeFile.runResult!.scope
+
+            if (this.child instanceof FunctionInvoke) {
+                const evaluatedParams = evaluateParams(
+                    this.child.params,
+                    scope,
+                    callFrame,
+                )
+
+                return this.child.execute(
+                    moduleFileScope,
+                    callFrame,
+                    evaluatedParams,
+                )
+            }
+
+            return this.child.execute(moduleFileScope, callFrame)
         } catch (error) {
             if (error instanceof YaksokError) {
                 throw new ErrorInModuleError({

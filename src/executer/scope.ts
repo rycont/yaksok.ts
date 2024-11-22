@@ -1,26 +1,28 @@
 import { NotDefinedIdentifierError } from '../error/index.ts'
-import type { DeclareFFI, DeclareFunction, ValueTypes } from '../node/index.ts'
-import type { Runtime } from '../runtime/index.ts'
+
+import type { ValueTypes } from '../node/index.ts'
+import type { CodeFile } from '../type/code-file.ts'
+import type { RunnableObject } from '../value/function.ts'
 
 export class Scope {
     variables: Record<string, ValueTypes>
-    functions: Record<string, DeclareFunction | DeclareFFI> = {}
     parent: Scope | undefined
-    runtime?: Runtime
+    codeFile?: CodeFile
+    private functions: Map<string, RunnableObject> = new Map()
 
     constructor(
         config: {
             parent?: Scope
-            runtime?: Runtime
+            codeFile?: CodeFile
             initialVariable?: Record<string, ValueTypes> | null
         } = {},
     ) {
         this.variables = config.initialVariable || {}
         this.parent = config.parent
-        this.runtime = config.runtime
+        this.codeFile = config.codeFile
 
-        if (config.parent?.runtime) {
-            this.runtime = config.parent.runtime
+        if (config.parent?.codeFile) {
+            this.codeFile = config.parent.codeFile
         }
     }
 
@@ -55,14 +57,22 @@ export class Scope {
         })
     }
 
-    setFunction(name: string, functionBody: DeclareFunction | DeclareFFI) {
-        this.functions[name] = functionBody
+    addFunctionObject(functionObject: RunnableObject) {
+        this.functions.set(functionObject.name, functionObject)
     }
 
-    getFunction(name: string): DeclareFunction | DeclareFFI {
-        const fetched = this.functions[name]
-        if (fetched) return fetched
+    getFunctionObject(name: string): RunnableObject {
+        const fromCurrentScope = this.functions.get(name)
+        if (fromCurrentScope) return fromCurrentScope
 
-        return this.parent!.getFunction(name)!
+        if (this.parent) {
+            return this.parent.getFunctionObject(name)
+        }
+
+        throw new NotDefinedIdentifierError({
+            resource: {
+                name,
+            },
+        })
     }
 }

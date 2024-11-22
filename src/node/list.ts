@@ -38,11 +38,7 @@ export class List extends IndexedValue {
     override execute(_scope: Scope, _callFrame: CallFrame): List {
         const callFrame = new CallFrame(this, _callFrame)
 
-        this.items = List.evaluateList(
-            this.initialValue,
-            new Scope(),
-            callFrame,
-        )
+        this.items = List.evaluateList(this.initialValue, _scope, callFrame)
 
         return this
     }

@@ -2,7 +2,7 @@ import { convertTokensToNodes } from '../tokenize/convert-tokens-to-nodes.ts'
 import { createDynamicRule } from './dynamicRule/index.ts'
 import { SetVariable } from '../../node/variable.ts'
 import { callParseRecursively } from './srParse.ts'
-import { Identifier } from '../../node/index.ts'
+import { Identifier } from '../../node/base.ts'
 import { parseIndent } from './parse-indent.ts'
 import { Block } from '../../node/block.ts'
 

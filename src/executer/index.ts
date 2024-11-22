@@ -16,7 +16,7 @@ export function executer<NodeType extends Executable>(
     const scope =
         codeFile?.runResult?.scope ||
         new Scope({
-            runtime: codeFile?.runtime || undefined,
+            codeFile,
         })
 
     const callFrame = new CallFrame(node, undefined)
