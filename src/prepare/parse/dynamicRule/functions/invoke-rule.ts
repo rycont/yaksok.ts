@@ -1,13 +1,13 @@
-import { FunctionInvokingParams } from '../../../../constant/type.ts'
-import { Evaluable, Identifier, Node } from '../../../../node/base.ts'
+import { Evaluable, Identifier, type Node } from '../../../../node/base.ts'
 import { FunctionInvoke } from '../../../../node/function.ts'
-import {
+import { getCombination } from './combination.ts'
+
+import type {
     FunctionTemplate,
     FunctionTemplatePiece,
 } from '../../../../type/function-template.ts'
-import { PatternUnit } from '../../rule.ts'
-import { Rule } from '../../rule.ts'
-import { getCombination } from './combination.ts'
+import type { PatternUnit } from '../../rule.ts'
+import type { Rule } from '../../rule.ts'
 
 interface VariantedPart {
     index: number
