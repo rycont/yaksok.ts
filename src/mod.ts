@@ -1,3 +1,7 @@
+export { NumberValue, BooleanValue, StringValue } from './value/primitive.ts'
+export { ValueType, ObjectValue } from './value/base.ts'
+export { ListValue } from './value/list.ts'
+
 export { CodeFile } from './type/code-file.ts'
 export { yaksok, Runtime } from './runtime/index.ts'
 
