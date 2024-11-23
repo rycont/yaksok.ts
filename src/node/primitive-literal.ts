@@ -3,7 +3,7 @@ import { Evaluable } from './base.ts'
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
 import type { Position } from '../type/position.ts'
-import type { ValueType } from '../value/index.ts'
+import type { ValueType } from '../value/base.ts'
 import { BooleanValue, NumberValue, StringValue } from '../value/primitive.ts'
 
 export class NumberLiteral extends Evaluable {

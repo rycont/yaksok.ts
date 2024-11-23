@@ -1,6 +1,6 @@
 import { InvalidTypeForCompareError } from '../error/calculation.ts'
 import { InvalidTypeForOperatorError } from '../error/index.ts'
-import { PrimitiveValue, ValueType } from '../value/index.ts'
+import { PrimitiveValue, ValueType } from '../value/base.ts'
 import { BooleanValue, NumberValue, StringValue } from '../value/primitive.ts'
 import { Operator } from './base.ts'
 

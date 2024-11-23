@@ -1,4 +1,4 @@
-import { PrimitiveValue } from './index.ts'
+import { PrimitiveValue } from './base.ts'
 
 export class StringValue extends PrimitiveValue<string> {
     static override friendlyName = '문자'

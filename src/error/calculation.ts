@@ -2,7 +2,7 @@ import { Operator } from '../node/base.ts'
 import { operatorToText, valueTypeToText, YaksokError } from './common.ts'
 
 import type { Position } from '../type/position.ts'
-import { ValueType } from '../value/index.ts'
+import { ValueType } from '../value/base.ts'
 
 export class InvalidTypeForCompareError extends YaksokError {
     constructor(props: {

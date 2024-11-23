@@ -2,7 +2,7 @@ import { CannotUseReservedWordForIdentifierNameError } from '../error/index.ts'
 import { CallFrame } from '../executer/callFrame.ts'
 import { Evaluable } from './base.ts'
 
-import type { ValueType } from '../value/index.ts'
+import type { ValueType } from '../value/base.ts'
 import type { Scope } from '../executer/scope.ts'
 
 export const RESERVED_WORDS = [

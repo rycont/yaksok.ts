@@ -9,7 +9,7 @@ import {
 } from '../error/index.ts'
 import { CallFrame } from '../executer/callFrame.ts'
 import { Scope } from '../executer/scope.ts'
-import { ValueType } from '../value/index.ts'
+import { ValueType } from '../value/base.ts'
 import { NumberValue } from '../value/primitive.ts'
 import { Evaluable, Executable, Operator } from './base.ts'
 import { IndexedValue } from './indexed.ts'

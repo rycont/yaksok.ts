@@ -1,7 +1,7 @@
 import type { Evaluable, Operator } from '../node/base.ts'
 import type { CodeFile } from '../type/code-file.ts'
 import type { Position } from '../type/position.ts'
-import { ValueType } from '../value/index.ts'
+import { ValueType } from '../value/base.ts'
 
 export class YaksokError<T = unknown> extends Error {
     position?: Position

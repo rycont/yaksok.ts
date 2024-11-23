@@ -3,7 +3,7 @@ import {
     NumberLiteral,
     StringLiteral,
 } from '../../node/primitive-literal.ts'
-import { ValueType } from '../../value/index.ts'
+import { ValueType } from '../../value/base.ts'
 
 export function isTruthy(value: ValueType) {
     if (value instanceof BooleanLiteral) {

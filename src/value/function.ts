@@ -2,7 +2,7 @@ import { NotDefinedIdentifierError } from '../error/variable.ts'
 import { ReturnSignal } from '../executer/signals.ts'
 import { CallFrame } from '../executer/callFrame.ts'
 import { Scope } from '../executer/scope.ts'
-import { ObjectValue, ValueType } from './index.ts'
+import { ObjectValue, ValueType } from './base.ts'
 
 import type { Block } from '../node/block.ts'
 import { NumberValue } from './primitive.ts'

@@ -2,7 +2,7 @@ import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
 import { NotDefinedIdentifierError } from '../error/variable.ts'
 import { Position } from '../type/position.ts'
-import { ValueType } from '../value/index.ts'
+import { ValueType } from '../value/base.ts'
 
 export class Node {
     [key: string]: unknown

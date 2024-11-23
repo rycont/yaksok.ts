@@ -6,7 +6,7 @@ import type { Position } from '../type/position.ts'
 import { YaksokError } from '../error/common.ts'
 import { FunctionInvoke } from './function.ts'
 import { evaluateParams } from './function.ts'
-import { ValueType } from '../value/index.ts'
+import { ValueType } from '../value/base.ts'
 
 export class Mention extends Executable {
     static override friendlyName = '불러올 파일 이름'

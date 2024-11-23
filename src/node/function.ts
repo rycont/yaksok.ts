@@ -6,7 +6,7 @@ import type { FunctionParams } from '../constant/type.ts'
 import type { Block } from './block.ts'
 import { FunctionObject } from '../value/function.ts'
 import { FFIResultTypeIsNotForYaksokError } from '../error/ffi.ts'
-import { ValueType } from '../value/index.ts'
+import { ValueType } from '../value/base.ts'
 
 export class DeclareFunction extends Executable {
     static override friendlyName = '새 약속 만들기'

@@ -1,4 +1,4 @@
-import { ObjectValue, ValueType } from './index.ts'
+import { ObjectValue, ValueType } from './base.ts'
 
 import type { CodeFile } from '../type/code-file.ts'
 import type { RunnableObject } from './function.ts'

@@ -18,7 +18,7 @@ import {
 } from './operator.ts'
 import { Evaluable, Operator } from './base.ts'
 import { RangeOperator } from './list.ts'
-import { ValueType } from '../value/index.ts'
+import { ValueType } from '../value/base.ts'
 
 const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
     [AndOperator, OrOperator],
