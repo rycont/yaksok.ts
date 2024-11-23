@@ -32,6 +32,6 @@ export class Print extends Executable {
         const evaluated = this.value.execute(scope, _callFrame)
 
         console.log(this.value, evaluated)
-        printFunction(evaluated.toString())
+        printFunction(evaluated.toPrint())
     }
 }

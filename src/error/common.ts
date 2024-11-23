@@ -33,7 +33,7 @@ export function evaluableToText(evaluable: Evaluable) {
 
 export function valueTypeToText(valueType: ValueType) {
     return (
-        bold(blue(valueType.toString())) +
+        bold(blue(valueType.toPrint())) +
         dim(`(${(valueType.constructor as typeof ValueType).friendlyName})`)
     )
 }

@@ -1,7 +1,7 @@
 export class ValueType {
     static friendlyName = '값'
 
-    toString(): string {
+    toPrint(): string {
         return `${
             (this.constructor as typeof ValueType).friendlyName
         } (${JSON.stringify(this)})`
@@ -17,7 +17,7 @@ export class PrimitiveValue<T> extends ValueType {
 export class ObjectValue extends ValueType {
     static override friendlyName = '객체'
 
-    override toString(): string {
+    override toPrint(): string {
         return JSON.stringify(this)
     }
 }

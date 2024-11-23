@@ -97,11 +97,18 @@ export class Formula extends Evaluable {
 
             if (!isOperator || !isCurrentPrecedence) continue
 
-            const leftTerm: Evaluable = terms[i - 1] as Evaluable
-            const rightTerm: Evaluable = terms[i + 1] as Evaluable
+            const leftTerm = terms[i - 1] as Evaluable | ValueType
+            const rightTerm = terms[i + 1] as Evaluable | ValueType
 
-            const left = leftTerm.execute(scope, callFrame)
-            const right = rightTerm.execute(scope, callFrame)
+            const left =
+                leftTerm instanceof ValueType
+                    ? leftTerm
+                    : leftTerm.execute(scope, callFrame)
+
+            const right =
+                rightTerm instanceof ValueType
+                    ? rightTerm
+                    : rightTerm.execute(scope, callFrame)
 
             const result = term.call(left, right)
             terms.splice(i - 1, 3, result)

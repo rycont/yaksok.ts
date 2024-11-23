@@ -1,10 +1,5 @@
 import { Operator } from '../node/base.ts'
-import {
-    evaluableToText,
-    operatorToText,
-    valueTypeToText,
-    YaksokError,
-} from './common.ts'
+import { operatorToText, valueTypeToText, YaksokError } from './common.ts'
 
 import type { Position } from '../type/position.ts'
 import { ValueType } from '../value/index.ts'

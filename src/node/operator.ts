@@ -1,7 +1,7 @@
 import { InvalidTypeForCompareError } from '../error/calculation.ts'
 import { InvalidTypeForOperatorError } from '../error/index.ts'
-import { ValueType } from '../value/index.ts'
-import { NumberValue, StringValue } from '../value/primitive.ts'
+import { PrimitiveValue, ValueType } from '../value/index.ts'
+import { BooleanValue, NumberValue, StringValue } from '../value/primitive.ts'
 import { Operator } from './base.ts'
 
 export class PlusOperator extends Operator {
@@ -198,13 +198,21 @@ export class EqualOperator extends Operator {
     override call(...operands: ValueType[]): BooleanValue {
         const [left, right] = operands
 
-        if (left instanceof ValueType && right instanceof ValueType) {
-            return new BooleanValue(left.value === right.value)
+        const isSameType = left.constructor === right.constructor
+        const isBothPrimitive =
+            left instanceof PrimitiveValue && right instanceof PrimitiveValue
+
+        if (!isSameType || !isBothPrimitive) {
+            throw new InvalidTypeForCompareError({
+                resource: {
+                    left,
+                    right,
+                },
+                position: this.position,
+            })
         }
 
-        throw new Error(
-            "Evaluation equality between non-primitive values isn't supported yet.",
-        )
+        return new BooleanValue(left.value === right.value)
     }
 }
 
