@@ -1,15 +1,11 @@
 import { getQuickJS } from 'quickjs-emscripten'
 import type { QuickJSWASMModule, QuickJSContext } from 'quickjs-emscripten-core'
 
-import {
-    ListLiteral,
-    NumberLiteral,
-    StringLiteral,
-    type FunctionInvokingParams,
-} from '@yaksok-ts/core'
+import { type FunctionInvokingParams } from '@yaksok-ts/core'
 import { bold, dim } from './util.ts'
 import { PrimitiveValue, ValueType } from '../src/value/base.ts'
 import { ListValue } from '../src/value/list.ts'
+import { NumberValue, StringValue } from '../src/value/primitive.ts'
 
 export class QuickJS {
     private instance: QuickJSWASMModule | null = null
@@ -79,7 +75,7 @@ function createWrapperCodeFromFFICall(
 }
 
 function convertYaksokDataIntoQuickJSData(data: PrimitiveValue) {
-    if (data instanceof StringLiteral) {
+    if (data instanceof StringValue) {
         return `"${data.value}"`
     } else {
         return data.value
@@ -123,9 +119,9 @@ function convertJSDataIntoQuickJSData(data: any, context: QuickJSContext) {
 
 function convertJSDataIntoYaksok(data: unknown): ValueType {
     if (typeof data === 'string') {
-        return new StringLiteral(data)
+        return new StringValue(data)
     } else if (typeof data === 'number') {
-        return new NumberLiteral(data)
+        return new NumberValue(data)
     } else if (Array.isArray(data)) {
         return new ListValue(data.map(convertJSDataIntoYaksok))
     }

@@ -1,4 +1,7 @@
-import { ListIndexMustBeGreaterThan1Error } from '../error/indexed.ts'
+import {
+    ListIndexTypeError,
+    ListIndexMustBeGreaterThan1Error,
+} from '../error/indexed.ts'
 import { ValueType } from './base.ts'
 import { IndexedValue } from './indexed.ts'
 
@@ -31,7 +34,15 @@ export class ListValue extends IndexedValue {
     }
 
     static assertProperIndex(index: number): void {
-        const isProperIndex = index >= 1 && Number.isSafeInteger(index)
+        if (!Number.isSafeInteger(index)) {
+            throw new ListIndexTypeError({
+                resource: {
+                    index,
+                },
+            })
+        }
+
+        const isProperIndex = index >= 1
 
         if (isProperIndex) {
             return

@@ -1,9 +1,9 @@
-import { assertIsError, unreachable } from 'assert'
+import { assertIsError, unreachable } from '@std/assert'
 import { yaksok } from '../../src/mod.ts'
 import {
     InvalidTypeForOperatorError,
     IndexOutOfRangeError,
-    ListIndexError,
+    ListIndexTypeError,
     NotEnumerableValueForListLoopError,
     RangeEndMustBeNumberError,
     RangeStartMustBeLessThanEndError,
@@ -117,7 +117,7 @@ Deno.test('List index must be number', () => {
 `)
         unreachable()
     } catch (e) {
-        assertIsError(e, ListIndexError)
+        assertIsError(e, ListIndexTypeError)
     }
 })
 
@@ -129,7 +129,7 @@ Deno.test('List index must be integer', () => {
         unreachable()
     } catch (e) {
         console.log(e)
-        assertIsError(e, ListIndexError)
+        assertIsError(e, ListIndexTypeError)
     }
 })
 

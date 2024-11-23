@@ -1,9 +1,9 @@
-import { assertEquals, assertIsError } from 'assert'
+import { assertEquals, assertIsError } from '@std/assert'
 import { QuickJS } from '@yaksok-ts/quickjs'
 import { yaksok } from '../src/mod.ts'
 import { FFIResultTypeIsNotForYaksokError } from '../src/error/ffi.ts'
-import { ListLiteral } from '../src/node/list.ts'
-import { StringLiteral } from '../src/node/index.ts'
+import { StringValue } from '../src/value/primitive.ts'
+import { ListValue } from '../src/value/list.ts'
 
 const quickJS = new QuickJS({
     prompt: () => {
@@ -108,9 +108,9 @@ CODES
 (("이름이 뭐에요?") 물어보기) 보여주기`,
         {
             runFFI() {
-                return new ListLiteral([
-                    new StringLiteral('황선형'),
-                    new StringLiteral('도지석'),
+                return new ListValue([
+                    new StringValue('황선형'),
+                    new StringValue('도지석'),
                 ])
             },
             stdout(value) {
