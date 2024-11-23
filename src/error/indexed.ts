@@ -1,23 +1,24 @@
 import type { Evaluable } from '../node/base.ts'
 import type { Position } from '../type/position.ts'
-import { YaksokError, evaluableToText } from './common.ts'
+import { ValueType } from '../value/base.ts'
+import { YaksokError, evaluableToText, valueTypeToText } from './common.ts'
 
-export class ListIndexOutOfRangeError extends YaksokError {
+export class IndexOutOfRangeError extends YaksokError {
     constructor(props: {
         position?: Position
         resource: {
-            index: number
+            index: string
+            target: string
         }
     }) {
         super(props)
-        this.message = `인덱스 ${props.resource.index}는 목록의 범위를 벗어났어요.`
+        this.message = `${props.resource.target}에는 ${props.resource.index}라는 값이 없어요`
     }
 }
 
 export class NotEnumerableValueForListLoopError extends YaksokError {
     constructor(props: {
         position?: Position
-
         resource: {
             value: Evaluable
         }
@@ -43,13 +44,12 @@ export class ListIndexMustBeGreaterThan1Error extends YaksokError {
 export class RangeEndMustBeNumberError extends YaksokError {
     constructor(props: {
         position?: Position
-
         resource: {
-            end: Evaluable
+            end: ValueType
         }
     }) {
         super(props)
-        this.message = `범위의 끝은 숫자여야 해요. ${evaluableToText(
+        this.message = `범위의 끝은 숫자여야 해요. ${valueTypeToText(
             props.resource.end,
         )}는 숫자가 아니에요.`
     }
@@ -89,11 +89,11 @@ export class RangeStartMustBeNumberError extends YaksokError {
         position?: Position
 
         resource: {
-            start: Evaluable
+            start: ValueType
         }
     }) {
         super(props)
-        this.message = `범위의 시작은 숫자여야 해요. ${evaluableToText(
+        this.message = `범위의 시작은 숫자여야 해요. ${valueTypeToText(
             props.resource.start,
         )}는 숫자가 아니에요.`
     }

@@ -2,7 +2,7 @@ import { assertIsError, unreachable } from 'assert'
 import { yaksok } from '../../src/mod.ts'
 import {
     InvalidTypeForOperatorError,
-    ListIndexOutOfRangeError,
+    IndexOutOfRangeError,
     ListIndexError,
     NotEnumerableValueForListLoopError,
     RangeEndMustBeNumberError,
@@ -106,7 +106,7 @@ Deno.test('List out of range', () => {
 `)
         unreachable()
     } catch (e) {
-        assertIsError(e, ListIndexOutOfRangeError)
+        assertIsError(e, IndexOutOfRangeError)
     }
 })
 

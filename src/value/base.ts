@@ -8,7 +8,7 @@ export class ValueType {
     }
 }
 
-export class PrimitiveValue<T> extends ValueType {
+export class PrimitiveValue<T = unknown> extends ValueType {
     constructor(public value: T) {
         super()
     }
