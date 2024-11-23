@@ -3,8 +3,8 @@ import type { QuickJSWASMModule, QuickJSContext } from 'quickjs-emscripten-core'
 
 import {
     List,
-    NumberValue,
-    StringValue,
+    NumberLiteral,
+    StringLiteral,
     type PrimitiveTypes,
     type ValueTypes,
     type FunctionParams,
@@ -79,7 +79,7 @@ function createWrapperCodeFromFFICall(
 }
 
 function convertYaksokDataIntoQuickJSData(data: PrimitiveTypes) {
-    if (data instanceof StringValue) {
+    if (data instanceof StringLiteral) {
         return `"${data.value}"`
     } else {
         return data.value
@@ -123,9 +123,9 @@ function convertJSDataIntoQuickJSData(data: any, context: QuickJSContext) {
 
 function convertJSDataIntoYaksok(data: unknown): ValueTypes {
     if (typeof data === 'string') {
-        return new StringValue(data)
+        return new StringLiteral(data)
     } else if (typeof data === 'number') {
-        return new NumberValue(data)
+        return new NumberLiteral(data)
     } else if (Array.isArray(data)) {
         return new List(data.map(convertJSDataIntoYaksok))
     }

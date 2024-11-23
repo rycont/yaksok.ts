@@ -1,4 +1,4 @@
-import { Evaluable, Executable, Identifier, type ValueTypes } from './base.ts'
+import { Evaluable, Executable, Identifier } from './base.ts'
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
 import { ErrorInModuleError } from '../error/index.ts'
@@ -6,6 +6,7 @@ import type { Position } from '../type/position.ts'
 import { YaksokError } from '../error/common.ts'
 import { FunctionInvoke } from './function.ts'
 import { evaluateParams } from './function.ts'
+import { ValueType } from '../value/index.ts'
 
 export class Mention extends Executable {
     static override friendlyName = '불러올 파일 이름'
@@ -29,7 +30,7 @@ export class MentionScope extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, callFrame: CallFrame): ValueType {
         this.setChildPosition()
 
         try {

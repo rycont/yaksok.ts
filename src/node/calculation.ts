@@ -16,8 +16,9 @@ import {
     PlusOperator,
     PowerOperator,
 } from './operator.ts'
-import { Evaluable, Operator, type ValueTypes } from './base.ts'
+import { Evaluable, Operator } from './base.ts'
 import { RangeOperator } from './list.ts'
+import { ValueType } from '../value/index.ts'
 
 const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
     [AndOperator, OrOperator],
@@ -41,7 +42,7 @@ export class ValueWithParenthesis extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueType {
         const callFrame = new CallFrame(this, _callFrame)
         return this.value.execute(scope, callFrame)
     }
@@ -58,7 +59,7 @@ export class Formula extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueType {
         const callFrame = new CallFrame(this, _callFrame)
         const terms = [...this.terms]
 
@@ -75,11 +76,11 @@ export class Formula extends Evaluable {
             )
         }
 
-        return terms[0] as ValueTypes
+        return terms[0] as ValueType
     }
 
     calculateOperatorWithPrecedence(
-        terms: (Evaluable | Operator)[],
+        terms: (Evaluable | Operator | ValueType)[],
         precedence: number,
         scope: Scope,
         callFrame: CallFrame,

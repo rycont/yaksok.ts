@@ -3,22 +3,25 @@ import type { Scope } from '../executer/scope.ts'
 import { Position } from '../type/position.ts'
 import { Evaluable } from './base.ts'
 
-export class PrimitiveValue<T> extends Evaluable {
+export class PrimitiveLiteral<JSType> extends Evaluable {
     static override friendlyName = '원시값'
 
-    value: T
+    value: JSType
 
-    constructor(content: T) {
+    constructor(content: JSType) {
         super()
         this.value = content
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): PrimitiveValue<T> {
+    override execute(
+        _scope: Scope,
+        _callFrame: CallFrame,
+    ): PrimitiveLiteral<JSType> {
         return this
     }
 }
 
-export class NumberValue extends PrimitiveValue<number> {
+export class NumberLiteral extends PrimitiveLiteral<number> {
     static override friendlyName = '숫자'
 
     constructor(content: number, public override position?: Position) {
@@ -30,7 +33,7 @@ export class NumberValue extends PrimitiveValue<number> {
     }
 }
 
-export class StringValue extends PrimitiveValue<string> {
+export class StringLiteral extends PrimitiveLiteral<string> {
     static override friendlyName = '문자'
 
     constructor(content: string, public override position?: Position) {
@@ -42,7 +45,7 @@ export class StringValue extends PrimitiveValue<string> {
     }
 }
 
-export class BooleanValue extends PrimitiveValue<boolean> {
+export class BooleanLiteral extends PrimitiveLiteral<boolean> {
     static override friendlyName = '참거짓'
 
     override toPrint(): string {

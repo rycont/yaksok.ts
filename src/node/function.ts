@@ -1,4 +1,4 @@
-import { Evaluable, Executable, type ValueTypes } from './base.ts'
+import { Evaluable, Executable } from './base.ts'
 import { CallFrame } from '../executer/callFrame.ts'
 import { Scope } from '../executer/scope.ts'
 
@@ -6,6 +6,7 @@ import type { FunctionParams } from '../constant/type.ts'
 import type { Block } from './block.ts'
 import { FunctionObject } from '../value/function.ts'
 import { FFIResultTypeIsNotForYaksokError } from '../error/ffi.ts'
+import { ValueType } from '../value/index.ts'
 
 export class DeclareFunction extends Executable {
     static override friendlyName = '새 약속 만들기'
@@ -31,9 +32,9 @@ export class FunctionInvoke extends Evaluable {
     static override friendlyName = '약속 사용하기'
 
     public name: string
-    public params: FunctionParams
+    public params: Record<string, Evaluable>
 
-    constructor(props: { name: string; params: FunctionParams }) {
+    constructor(props: { name: string; params: Record<string, Evaluable> }) {
         super()
 
         this.name = props.name!
@@ -43,26 +44,25 @@ export class FunctionInvoke extends Evaluable {
     override execute(
         scope: Scope,
         callFrame: CallFrame,
-        args: {
-            [key: string]: ValueTypes
-        } = evaluateParams(this.params, scope, callFrame),
-    ): ValueTypes {
+        args: FunctionParams = evaluateParams(this.params, scope, callFrame),
+    ): ValueType {
         const functionObject = scope.getFunctionObject(this.name)
         const returnValue = functionObject.run(args)
 
         assertValidReturnValue(this, returnValue)
 
-        const evaluated = returnValue.execute(scope, callFrame)
-        return evaluated
+        return returnValue
     }
 }
 
 export function evaluateParams(
-    params: FunctionParams,
+    params: {
+        [key: string]: Evaluable
+    },
     scope: Scope,
     callFrame: CallFrame,
-): { [key: string]: ValueTypes } {
-    const args: { [key: string]: ValueTypes } = {}
+): { [key: string]: ValueType } {
+    const args: FunctionParams = {}
 
     for (const key in params) {
         const value = params[key]
@@ -72,8 +72,8 @@ export function evaluateParams(
     return args
 }
 
-function assertValidReturnValue(node: FunctionInvoke, returnValue: ValueTypes) {
-    if (returnValue instanceof Evaluable) {
+function assertValidReturnValue(node: FunctionInvoke, returnValue: ValueType) {
+    if (returnValue instanceof ValueType) {
         return
     }
 

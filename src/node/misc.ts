@@ -29,6 +29,9 @@ export class Print extends Executable {
 
     override execute(scope: Scope, _callFrame: CallFrame) {
         const printFunction = scope.codeFile?.runtime?.stdout || console.log
-        printFunction(this.value.execute(scope, _callFrame).toPrint())
+        const evaluated = this.value.execute(scope, _callFrame)
+
+        console.log(this.value, evaluated)
+        printFunction(evaluated.toString())
     }
 }

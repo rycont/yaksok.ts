@@ -3,7 +3,7 @@ import { QuickJS } from '@yaksok-ts/quickjs'
 import { yaksok } from '../src/mod.ts'
 import { FFIResultTypeIsNotForYaksokError } from '../src/error/ffi.ts'
 import { List } from '../src/node/list.ts'
-import { StringValue } from '../src/node/index.ts'
+import { StringLiteral } from '../src/node/index.ts'
 
 const quickJS = new QuickJS({
     prompt: () => {
@@ -109,8 +109,8 @@ CODES
         {
             runFFI() {
                 return new List([
-                    new StringValue('황선형'),
-                    new StringValue('도지석'),
+                    new StringLiteral('황선형'),
+                    new StringLiteral('도지석'),
                 ])
             },
             stdout(value) {

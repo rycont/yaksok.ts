@@ -1,20 +1,26 @@
-import { Evaluable, Operator } from '../node/base.ts'
-import { evaluableToText, operatorToText, YaksokError } from './common.ts'
+import { Operator } from '../node/base.ts'
+import {
+    evaluableToText,
+    operatorToText,
+    valueTypeToText,
+    YaksokError,
+} from './common.ts'
 
 import type { Position } from '../type/position.ts'
+import { ValueType } from '../value/index.ts'
 
 export class InvalidTypeForCompareError extends YaksokError {
     constructor(props: {
         position?: Position
         resource: {
-            left: Evaluable
-            right: Evaluable
+            left: ValueType
+            right: ValueType
         }
     }) {
         super(props)
 
-        const leftText = evaluableToText(props.resource.left)
-        const rightText = evaluableToText(props.resource.right)
+        const leftText = valueTypeToText(props.resource.left)
+        const rightText = valueTypeToText(props.resource.right)
 
         this.message = `${leftText}와 ${rightText}는 비교할 수 없어요.`
     }
@@ -25,13 +31,13 @@ export class InvalidTypeForOperatorError extends YaksokError {
         position?: Position
         resource: {
             operator: Operator
-            operands: Evaluable[]
+            operands: ValueType[]
         }
     }) {
         super(props)
 
         const operandsText = props.resource.operands
-            .map(evaluableToText)
+            .map(valueTypeToText)
             .join('와 ')
         this.message = `${operandsText}는 ${operatorToText(
             props.resource.operator,

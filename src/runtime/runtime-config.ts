@@ -1,6 +1,6 @@
 import type { EnabledFlags } from '../constant/feature-flags.ts'
 import type { FunctionParams } from '../constant/type.ts'
-import type { ValueTypes } from '../node/base.ts'
+import type { ValueType } from '../value/index.ts'
 
 /**
  * RuntimeConfig 객체를 사용하여 약속 런타임을 설정합니다.
@@ -39,7 +39,7 @@ export interface RuntimeConfig {
      * @param args 함수 인자
      * @returns 함수 실행 결과
      */
-    runFFI: (runtime: string, code: string, args: FunctionParams) => ValueTypes
+    runFFI: (runtime: string, code: string, args: FunctionParams) => ValueType
     flags: EnabledFlags
 }
 
