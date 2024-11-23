@@ -51,7 +51,8 @@ export class IndexFetch extends Evaluable {
         const list = this.list.execute(scope, callFrame)
         const index = this.index.execute(scope, callFrame).value
 
-        return list.getItem(index)
+        const value = list.getItem(index)
+        return value
     }
 
     public setValue(scope: Scope, callFrame: CallFrame, value: ValueType) {
@@ -59,6 +60,7 @@ export class IndexFetch extends Evaluable {
         const index = this.index.execute(scope, callFrame).value
 
         list.setItem(index, value)
+        console.log(list, index)
     }
 }
 

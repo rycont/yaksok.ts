@@ -11,7 +11,7 @@ export class IndexedValue extends ObjectValue {
     }
 
     getItem(index: string | number): ValueType {
-        if (!this.entries.has(index.toString())) {
+        if (!this.entries.has(index)) {
             throw new IndexOutOfRangeError({
                 resource: {
                     target: (this.constructor as typeof IndexedValue)
@@ -25,6 +25,6 @@ export class IndexedValue extends ObjectValue {
     }
 
     setItem(index: string | number, value: ValueType): void {
-        this.entries.set(index.toString(), value)
+        this.entries.set(index, value)
     }
 }
