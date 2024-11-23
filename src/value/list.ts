@@ -4,21 +4,19 @@ import {
 } from '../error/indexed.ts'
 import { ValueType } from './base.ts'
 import { IndexedValue } from './indexed.ts'
+import { NumberValue } from './primitive.ts'
 
 export class ListValue extends IndexedValue {
     static override friendlyName = '목록'
+    override entries: Map<number, ValueType> = new Map()
 
-    constructor(entries: Map<number, ValueType> | ValueType[]) {
-        if (Array.isArray(entries)) {
-            const entriesMap = new Map(
-                entries.map((entry, index) => [index + 1, entry]),
-            )
+    constructor(entries: ValueType[]) {
+        const entriesMap = new Map(
+            entries.map((entry, index) => [index + 1, entry]),
+        )
 
-            super(entriesMap)
-            return
-        }
-
-        super(entries)
+        super(entriesMap)
+        this.entries = entriesMap
     }
 
     override getItem(index: number): ValueType {
@@ -63,5 +61,27 @@ export class ListValue extends IndexedValue {
 
     public enumerate(): Iterable<ValueType> {
         return this.entries.values()
+    }
+
+    public override getItemsFromKeys(keysListValue: ListValue): ListValue {
+        const keys = [...keysListValue.entries.values()]
+        const list = []
+
+        for (const keyValue of keys) {
+            if (!(keyValue instanceof NumberValue)) {
+                throw new ListIndexTypeError({
+                    resource: {
+                        index: keyValue.toPrint(),
+                    },
+                })
+            }
+
+            const key = keyValue.value
+
+            const value = this.getItem(key)
+            list.push(value)
+        }
+
+        return new ListValue(list)
     }
 }

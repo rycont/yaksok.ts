@@ -41,6 +41,7 @@ export class ListIndexMustBeGreaterThan1Error extends YaksokError {
         this.message = `목록의 인덱스는 1보다 크거나 같아야 해요. ${props.resource.index}는 그렇지 않아요.`
     }
 }
+
 export class RangeEndMustBeNumberError extends YaksokError {
     constructor(props: {
         position?: Position
@@ -79,7 +80,7 @@ export class ListIndexTypeError extends YaksokError {
     }) {
         super(props)
 
-        this.message = `목록의 인덱스는 정수나 목록여야 해요. ${props.resource.index}는 정수나 목록가 아니에요.`
+        this.message = `목록의 인덱스는 정수여야 해요. ${props.resource.index}는 정수가 아니에요.`
     }
 }
 

@@ -1,4 +1,6 @@
+import { TargetIsNotIndexedValueError } from '../error/indexed.ts'
 import {
+    ListIndexTypeError,
     RangeEndMustBeNumberError,
     RangeStartMustBeLessThanEndError,
     RangeStartMustBeNumberError,
@@ -27,13 +29,12 @@ export class ListLiteral extends Evaluable {
     }
 
     override execute(scope: Scope, callFrame: CallFrame): ListValue {
-        const entries = new Map<number, ValueType>()
+        const evaluatedItems = this.items.map((item) =>
+            item.execute(scope, callFrame),
+        )
 
-        for (const [index, item] of this.items.entries()) {
-            entries.set(index + 1, item.execute(scope, callFrame))
-        }
-
-        return new ListValue(entries)
+        const value = new ListValue(evaluatedItems)
+        return value
     }
 }
 
@@ -42,25 +43,59 @@ export class IndexFetch extends Evaluable {
 
     constructor(
         public list: Evaluable<IndexedValue>,
-        public index: Evaluable<StringValue | NumberValue>,
+        public index: Evaluable<StringValue | NumberValue | ListValue>,
     ) {
         super()
     }
 
     override execute(scope: Scope, callFrame: CallFrame): ValueType {
         const list = this.list.execute(scope, callFrame)
-        const index = this.index.execute(scope, callFrame).value
+        const index = this.index.execute(scope, callFrame)
 
-        const value = list.getItem(index)
+        if (!(list instanceof IndexedValue)) {
+            throw new TargetIsNotIndexedValueError({
+                position: this.position,
+                resource: {
+                    target: list,
+                },
+            })
+        }
+
+        if (index instanceof ListValue) {
+            const values = list.getItemsFromKeys(index)
+            return values
+        }
+
+        const value = list.getItem(index.value)
         return value
     }
 
     public setValue(scope: Scope, callFrame: CallFrame, value: ValueType) {
         const list = this.list.execute(scope, callFrame)
-        const index = this.index.execute(scope, callFrame).value
+        const index = this.index.execute(scope, callFrame)
 
-        list.setItem(index, value)
-        console.log(list, index)
+        if (!(list instanceof IndexedValue)) {
+            throw new TargetIsNotIndexedValueError({
+                position: this.position,
+                resource: {
+                    target: list,
+                },
+            })
+        }
+
+        if (
+            !(index instanceof NumberValue) &&
+            !(index instanceof StringValue)
+        ) {
+            throw new ListIndexTypeError({
+                position: this.position,
+                resource: {
+                    index: index.toPrint(),
+                },
+            })
+        }
+
+        list.setItem(index.value, value)
     }
 }
 
@@ -90,13 +125,11 @@ export class RangeOperator extends Operator {
         this.assertProperOperands(operands)
 
         const [start, end] = operands
-        const entries = new Map<number, ValueType>()
+        const items = new Array(end.value - start.value + 1)
+            .fill(null)
+            .map((_, index) => new NumberValue(start.value + index))
 
-        for (let i = start.value; i <= end.value; i++) {
-            entries.set(i, new NumberValue(i))
-        }
-
-        return new ListValue(entries)
+        return new ListValue(items)
     }
 
     private assertProperOperands(
