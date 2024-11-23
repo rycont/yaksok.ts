@@ -1,5 +1,5 @@
 import type { EnabledFlags } from '../constant/feature-flags.ts'
-import type { FunctionParams } from '../constant/type.ts'
+import type { FunctionInvokingParams } from '../constant/type.ts'
 import type { ValueType } from '../value/base.ts'
 
 /**
@@ -39,7 +39,11 @@ export interface RuntimeConfig {
      * @param args 함수 인자
      * @returns 함수 실행 결과
      */
-    runFFI: (runtime: string, code: string, args: FunctionParams) => ValueType
+    runFFI: (
+        runtime: string,
+        code: string,
+        args: FunctionInvokingParams,
+    ) => ValueType
     flags: EnabledFlags
 }
 

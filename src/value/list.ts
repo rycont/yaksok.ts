@@ -5,7 +5,16 @@ import { IndexedValue } from './indexed.ts'
 export class ListValue extends IndexedValue {
     static override friendlyName = '목록'
 
-    constructor(entries: Map<number, ValueType>) {
+    constructor(entries: Map<number, ValueType> | ValueType[]) {
+        if (Array.isArray(entries)) {
+            const entriesMap = new Map(
+                entries.map((entry, index) => [index + 1, entry]),
+            )
+
+            super(entriesMap)
+            return
+        }
+
         super(entries)
     }
 
@@ -39,5 +48,9 @@ export class ListValue extends IndexedValue {
         return `[${[...this.entries.values()]
             .map((value) => value.toPrint())
             .join(', ')}]`
+    }
+
+    public enumerate(): Iterable<ValueType> {
+        return this.entries.values()
     }
 }

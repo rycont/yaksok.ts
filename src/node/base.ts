@@ -31,10 +31,10 @@ export class Executable extends Node {
     }
 }
 
-export class Evaluable extends Executable {
+export class Evaluable<T extends ValueType = ValueType> extends Executable {
     static override friendlyName = '값이 있는 노드'
 
-    override execute(_scope: Scope, _callFrame: CallFrame): ValueType {
+    override execute(_scope: Scope, _callFrame: CallFrame): T {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
 }

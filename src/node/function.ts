@@ -2,7 +2,7 @@ import { Evaluable, Executable } from './base.ts'
 import { CallFrame } from '../executer/callFrame.ts'
 import { Scope } from '../executer/scope.ts'
 
-import type { FunctionParams } from '../constant/type.ts'
+import type { FunctionInvokingParams } from '../constant/type.ts'
 import type { Block } from './block.ts'
 import { FunctionObject } from '../value/function.ts'
 import { FFIResultTypeIsNotForYaksokError } from '../error/ffi.ts'
@@ -44,7 +44,11 @@ export class FunctionInvoke extends Evaluable {
     override execute(
         scope: Scope,
         callFrame: CallFrame,
-        args: FunctionParams = evaluateParams(this.params, scope, callFrame),
+        args: FunctionInvokingParams = evaluateParams(
+            this.params,
+            scope,
+            callFrame,
+        ),
     ): ValueType {
         const functionObject = scope.getFunctionObject(this.name)
         const returnValue = functionObject.run(args)
@@ -62,7 +66,7 @@ export function evaluateParams(
     scope: Scope,
     callFrame: CallFrame,
 ): { [key: string]: ValueType } {
-    const args: FunctionParams = {}
+    const args: FunctionInvokingParams = {}
 
     for (const key in params) {
         const value = params[key]

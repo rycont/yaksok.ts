@@ -19,7 +19,7 @@ import {
     Identifier,
     LessThanOperator,
     LessThanOrEqualOperator,
-    List,
+    ListLiteral,
     Loop,
     MinusOperator,
     MultiplyOperator,
@@ -38,6 +38,8 @@ import {
     OrOperator,
 } from '../../node/index.ts'
 import { ListLoop } from '../../node/listLoop.ts'
+import { IndexedValue } from '../../value/indexed.ts'
+import { NumberValue, StringValue } from '../../value/primitive.ts'
 
 export interface PatternUnit {
     type: {
@@ -73,8 +75,8 @@ export const BASIC_RULES: Rule[][] = [
                 },
             ],
             factory: (nodes) => {
-                const target = nodes[0] as Evaluable
-                const index = nodes[2] as Evaluable
+                const target = nodes[0] as Evaluable<IndexedValue>
+                const index = nodes[2] as Evaluable<StringValue | NumberValue>
 
                 return new IndexFetch(target, index)
             },
@@ -118,7 +120,7 @@ export const BASIC_RULES: Rule[][] = [
             ],
             factory: (nodes) => {
                 const sequence = nodes[1] as Sequence
-                return new List(sequence.items)
+                return new ListLiteral(sequence.items)
             },
         },
         {
@@ -434,7 +436,7 @@ export const ADVANCED_RULES: Rule[] = [
                 value: ']',
             },
         ],
-        factory: () => new List([]),
+        factory: () => new ListLiteral([]),
     },
     {
         pattern: [

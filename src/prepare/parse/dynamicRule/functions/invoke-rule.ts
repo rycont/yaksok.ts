@@ -1,4 +1,4 @@
-import { FunctionParams } from '../../../../constant/type.ts'
+import { FunctionInvokingParams } from '../../../../constant/type.ts'
 import { Evaluable, Identifier, Node } from '../../../../node/base.ts'
 import { FunctionInvoke } from '../../../../node/function.ts'
 import {
@@ -122,7 +122,7 @@ function createPatternFromTemplatePieces(
 function parseParameterFromTemplate(
     template: FunctionTemplate,
     matchedNodes: Node[],
-): FunctionParams {
+): Record<string, Evaluable> {
     const parameters = template.pieces
         .map((piece, index) => {
             if (piece.type === 'static') {

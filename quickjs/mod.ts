@@ -2,14 +2,14 @@ import { getQuickJS } from 'quickjs-emscripten'
 import type { QuickJSWASMModule, QuickJSContext } from 'quickjs-emscripten-core'
 
 import {
-    List,
+    ListLiteral,
     NumberLiteral,
     StringLiteral,
-    type PrimitiveTypes,
-    type ValueTypes,
-    type FunctionParams,
+    type FunctionInvokingParams,
 } from '@yaksok-ts/core'
 import { bold, dim } from './util.ts'
+import { PrimitiveValue, ValueType } from '../src/value/base.ts'
+import { ListValue } from '../src/value/list.ts'
 
 export class QuickJS {
     private instance: QuickJSWASMModule | null = null
@@ -22,7 +22,7 @@ export class QuickJS {
         this.instance = await getQuickJS()
     }
 
-    public run(bodyCode: string, args: FunctionParams): ValueTypes {
+    public run(bodyCode: string, args: FunctionInvokingParams): ValueType {
         const wrappedCode = createWrapperCodeFromFFICall(bodyCode, args)
         const vm = this.createContext()
 
@@ -78,7 +78,7 @@ function createWrapperCodeFromFFICall(
     )}) => {${bodyCode}})(${parameterValues.join(', ')})`
 }
 
-function convertYaksokDataIntoQuickJSData(data: PrimitiveTypes) {
+function convertYaksokDataIntoQuickJSData(data: PrimitiveValue) {
     if (data instanceof StringLiteral) {
         return `"${data.value}"`
     } else {
@@ -121,13 +121,13 @@ function convertJSDataIntoQuickJSData(data: any, context: QuickJSContext) {
     throw new Error('Unsupported data type: ' + typeof data)
 }
 
-function convertJSDataIntoYaksok(data: unknown): ValueTypes {
+function convertJSDataIntoYaksok(data: unknown): ValueType {
     if (typeof data === 'string') {
         return new StringLiteral(data)
     } else if (typeof data === 'number') {
         return new NumberLiteral(data)
     } else if (Array.isArray(data)) {
-        return new List(data.map(convertJSDataIntoYaksok))
+        return new ListValue(data.map(convertJSDataIntoYaksok))
     }
 
     throw new Error('Unsupported data type: ' + typeof data)

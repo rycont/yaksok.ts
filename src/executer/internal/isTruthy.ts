@@ -1,20 +1,20 @@
-import {
-    BooleanLiteral,
-    NumberLiteral,
-    StringLiteral,
-} from '../../node/primitive-literal.ts'
 import { ValueType } from '../../value/base.ts'
+import {
+    BooleanValue,
+    NumberValue,
+    StringValue,
+} from '../../value/primitive.ts'
 
 export function isTruthy(value: ValueType) {
-    if (value instanceof BooleanLiteral) {
+    if (value instanceof BooleanValue) {
         return value.value
     }
 
-    if (value instanceof NumberLiteral) {
+    if (value instanceof NumberValue) {
         return value.value !== 0
     }
 
-    if (value instanceof StringLiteral) {
+    if (value instanceof StringValue) {
         return value.value !== ''
     }
 

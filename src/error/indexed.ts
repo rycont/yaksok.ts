@@ -20,11 +20,11 @@ export class NotEnumerableValueForListLoopError extends YaksokError {
     constructor(props: {
         position?: Position
         resource: {
-            value: Evaluable
+            value: ValueType
         }
     }) {
         super(props)
-        this.message = `${evaluableToText(
+        this.message = `${valueTypeToText(
             props.resource.value,
         )}는 목록 반복문에서 사용할 수 없어요. 목록 반복문에서는 목록을 사용해야 해요.`
     }

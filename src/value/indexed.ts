@@ -1,6 +1,8 @@
 import { IndexOutOfRangeError } from '../error/indexed.ts'
 import { ObjectValue, ValueType } from './base.ts'
 
+export type IndexKeyType = string | number
+
 export class IndexedValue extends ObjectValue {
     static override friendlyName = '사전'
 
