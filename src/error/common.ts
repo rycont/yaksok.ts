@@ -1,6 +1,7 @@
 import type { Evaluable, Operator } from '../node/base.ts'
 import type { CodeFile } from '../type/code-file.ts'
 import type { Position } from '../type/position.ts'
+import { ValueType } from '../value/base.ts'
 
 export class YaksokError<T = unknown> extends Error {
     position?: Position
@@ -28,6 +29,13 @@ export function evaluableToText(evaluable: Evaluable) {
     }
 
     return text
+}
+
+export function valueTypeToText(valueType: ValueType) {
+    return (
+        bold(blue(valueType.toPrint())) +
+        dim(`(${(valueType.constructor as typeof ValueType).friendlyName})`)
+    )
 }
 
 export function operatorToText(operator: Operator) {

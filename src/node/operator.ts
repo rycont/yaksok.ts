@@ -1,12 +1,8 @@
 import { InvalidTypeForCompareError } from '../error/calculation.ts'
 import { InvalidTypeForOperatorError } from '../error/index.ts'
-import { Operator, type ValueTypes } from './base.ts'
-import {
-    BooleanValue,
-    NumberValue,
-    PrimitiveValue,
-    StringValue,
-} from './primitive.ts'
+import { PrimitiveValue, ValueType } from '../value/base.ts'
+import { BooleanValue, NumberValue, StringValue } from '../value/primitive.ts'
+import { Operator } from './base.ts'
 
 export class PlusOperator extends Operator {
     static override friendlyName = '더하기(+)'
@@ -15,7 +11,7 @@ export class PlusOperator extends Operator {
         return '+'
     }
 
-    override call(...operands: ValueTypes[]): NumberValue | StringValue {
+    override call(...operands: ValueType[]): NumberValue | StringValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -51,7 +47,7 @@ export class MinusOperator extends Operator {
         return '-'
     }
 
-    override call(...operands: ValueTypes[]): NumberValue {
+    override call(...operands: ValueType[]): NumberValue {
         const [left, right] = operands
         if (left instanceof NumberValue && right instanceof NumberValue) {
             return new NumberValue(left.value - right.value)
@@ -74,7 +70,7 @@ export class MultiplyOperator extends Operator {
         return '*'
     }
 
-    override call(...operands: ValueTypes[]): NumberValue | StringValue {
+    override call(...operands: ValueType[]): NumberValue | StringValue {
         const [left, right] = operands
         if (left instanceof NumberValue && right instanceof NumberValue) {
             return new NumberValue(left.value * right.value)
@@ -105,7 +101,7 @@ export class DivideOperator extends Operator {
         return '/'
     }
 
-    override call(...operands: ValueTypes[]): NumberValue {
+    override call(...operands: ValueType[]): NumberValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -129,7 +125,7 @@ export class ModularOperator extends Operator {
         return '%'
     }
 
-    override call(...operands: ValueTypes[]): NumberValue {
+    override call(...operands: ValueType[]): NumberValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -152,7 +148,7 @@ export class PowerOperator extends Operator {
         return '**'
     }
 
-    override call(...operands: ValueTypes[]): NumberValue {
+    override call(...operands: ValueType[]): NumberValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -175,7 +171,7 @@ export class IntegerDivideOperator extends Operator {
         return '//'
     }
 
-    override call(...operands: ValueTypes[]): NumberValue {
+    override call(...operands: ValueType[]): NumberValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -199,16 +195,24 @@ export class EqualOperator extends Operator {
         return '='
     }
 
-    override call(...operands: ValueTypes[]): BooleanValue {
+    override call(...operands: ValueType[]): BooleanValue {
         const [left, right] = operands
 
-        if (left instanceof PrimitiveValue && right instanceof PrimitiveValue) {
-            return new BooleanValue(left.value === right.value)
+        const isSameType = left.constructor === right.constructor
+        const isBothPrimitive =
+            left instanceof PrimitiveValue && right instanceof PrimitiveValue
+
+        if (!isSameType || !isBothPrimitive) {
+            throw new InvalidTypeForCompareError({
+                resource: {
+                    left,
+                    right,
+                },
+                position: this.position,
+            })
         }
 
-        throw new Error(
-            "Evaluation equality between non-primitive values isn't supported yet.",
-        )
+        return new BooleanValue(left.value === right.value)
     }
 }
 
@@ -219,7 +223,7 @@ export class AndOperator extends Operator {
         return '이고(그리고)'
     }
 
-    override call(...operands: ValueTypes[]): BooleanValue {
+    override call(...operands: ValueType[]): BooleanValue {
         const [left, right] = operands
 
         if (
@@ -246,7 +250,7 @@ export class OrOperator extends Operator {
         return '이거나(거나)'
     }
 
-    override call(...operands: ValueTypes[]): BooleanValue {
+    override call(...operands: ValueType[]): BooleanValue {
         const [left, right] = operands
 
         if (
@@ -273,7 +277,7 @@ export class GreaterThanOperator extends Operator {
         return '>'
     }
 
-    override call(...operands: ValueTypes[]): BooleanValue {
+    override call(...operands: ValueType[]): BooleanValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -297,7 +301,7 @@ export class LessThanOperator extends Operator {
         return '<'
     }
 
-    override call(...operands: ValueTypes[]): BooleanValue {
+    override call(...operands: ValueType[]): BooleanValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -321,7 +325,7 @@ export class GreaterThanOrEqualOperator extends Operator {
         return '>='
     }
 
-    override call(...operands: ValueTypes[]): BooleanValue {
+    override call(...operands: ValueType[]): BooleanValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {
@@ -345,7 +349,7 @@ export class LessThanOrEqualOperator extends Operator {
         return '<='
     }
 
-    override call(...operands: ValueTypes[]): BooleanValue {
+    override call(...operands: ValueType[]): BooleanValue {
         const [left, right] = operands
 
         if (left instanceof NumberValue && right instanceof NumberValue) {

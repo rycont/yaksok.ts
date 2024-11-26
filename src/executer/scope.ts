@@ -1,11 +1,11 @@
 import { NotDefinedIdentifierError } from '../error/index.ts'
+import { ValueType } from '../value/base.ts'
 
-import type { ValueTypes } from '../node/index.ts'
 import type { CodeFile } from '../type/code-file.ts'
 import type { RunnableObject } from '../value/function.ts'
 
 export class Scope {
-    variables: Record<string, ValueTypes>
+    variables: Record<string, ValueType>
     parent: Scope | undefined
     codeFile?: CodeFile
     private functions: Map<string, RunnableObject> = new Map()
@@ -14,7 +14,7 @@ export class Scope {
         config: {
             parent?: Scope
             codeFile?: CodeFile
-            initialVariable?: Record<string, ValueTypes> | null
+            initialVariable?: Record<string, ValueType> | null
         } = {},
     ) {
         this.variables = config.initialVariable || {}
@@ -26,12 +26,12 @@ export class Scope {
         }
     }
 
-    setVariable(name: string, value: ValueTypes) {
+    setVariable(name: string, value: ValueType) {
         if (this.parent?.askSetVariable(name, value)) return
         this.variables[name] = value
     }
 
-    askSetVariable(name: string, value: ValueTypes): boolean {
+    askSetVariable(name: string, value: ValueType): boolean {
         if (name in this.variables) {
             this.variables[name] = value
             return true
@@ -41,7 +41,7 @@ export class Scope {
         return false
     }
 
-    getVariable(name: string): ValueTypes {
+    getVariable(name: string): ValueType {
         if (name in this.variables) {
             return this.variables[name]
         }

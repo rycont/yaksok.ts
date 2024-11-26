@@ -1,8 +1,5 @@
-import type { Evaluable } from '../node/base.ts'
+import { ValueType } from '../value/base.ts'
 
-/**
- * 번역(FFI)에 전달되는 인자 타입
- */
-export interface FunctionParams {
-    [key: string]: Evaluable
+export interface FunctionInvokingParams {
+    [key: string]: ValueType
 }

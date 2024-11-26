@@ -1,7 +1,9 @@
-import { CallFrame } from '../executer/callFrame.ts'
-import type { Scope } from '../executer/scope.ts'
 import { CannotUseReservedWordForIdentifierNameError } from '../error/index.ts'
-import { Evaluable, ValueTypes } from './base.ts'
+import { CallFrame } from '../executer/callFrame.ts'
+import { Evaluable } from './base.ts'
+
+import type { ValueType } from '../value/base.ts'
+import type { Scope } from '../executer/scope.ts'
 
 export const RESERVED_WORDS = [
     '약속',
@@ -27,7 +29,7 @@ export class SetVariable extends Evaluable {
         this.assertValidName()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueType {
         const { name, value } = this
         const callFrame = new CallFrame(this, _callFrame)
 

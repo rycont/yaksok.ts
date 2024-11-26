@@ -1,255 +1,149 @@
+import { TargetIsNotIndexedValueError } from '../error/indexed.ts'
 import {
-    ListIndexMustBeGreaterThan1Error,
-    ListIndexOutOfRangeError,
-    ListIndexError,
+    ListIndexTypeError,
     RangeEndMustBeNumberError,
     RangeStartMustBeLessThanEndError,
     RangeStartMustBeNumberError,
-    TargetIsNotIndexedValueError,
-} from '../error/index.ts'
+} from '../error/indexed.ts'
 import { CallFrame } from '../executer/callFrame.ts'
 import { Scope } from '../executer/scope.ts'
-import { Evaluable, type ValueTypes, Executable, Operator } from './base.ts'
-import { IndexedValue } from './indexed.ts'
-import { NumberValue, type PrimitiveValue } from './primitive.ts'
+import { ValueType } from '../value/base.ts'
+import { IndexedValue } from '../value/indexed.ts'
+import { ListValue } from '../value/list.ts'
+import { NumberValue, StringValue } from '../value/primitive.ts'
+import { Evaluable, Executable, Node, Operator } from './base.ts'
 
-export class Sequence extends Executable {
+export class Sequence extends Node {
     static override friendlyName = '나열된 값'
 
     constructor(public items: Evaluable[]) {
         super()
     }
-
-    override toPrint(): string {
-        const content = this.items.map((item) => item.toPrint()).join(' ')
-        return '( ' + content + ' )'
-    }
 }
 
-export class List extends IndexedValue {
+export class ListLiteral extends Evaluable {
     static override friendlyName = '목록'
 
-    items?: ValueTypes[]
-
-    constructor(private initialValue: Evaluable[]) {
+    constructor(public items: Evaluable[]) {
         super()
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): List {
-        const callFrame = new CallFrame(this, _callFrame)
+    override execute(scope: Scope, callFrame: CallFrame): ListValue {
+        const evaluatedItems = this.items.map((item) =>
+            item.execute(scope, callFrame),
+        )
 
-        this.items = List.evaluateList(this.initialValue, _scope, callFrame)
-
-        return this
-    }
-
-    getItem(index: ValueTypes, scope: Scope, callFrame: CallFrame): ValueTypes {
-        this.assertProperIndexPrimitiveType(index)
-
-        if (index instanceof NumberValue) {
-            return this.getItemByNumberIndex(index.value)
-        }
-
-        return this.getItemsByListIndex(index, scope, callFrame)
-    }
-
-    private getItemByNumberIndex(index: number) {
-        this.assertGreaterOrEqualThan1(index)
-        this.assertIndexLessThanLength(index)
-
-        const indexValue = index - 1
-        const list = this.items!
-
-        return list[indexValue]
-    }
-
-    private getItemsByListIndex(
-        index: List,
-        scope: Scope,
-        callFrame: CallFrame,
-    ) {
-        const list = this.items!
-        const indexes = index.items! as NumberValue[]
-
-        const items = this.getItemsByIndexes(list, indexes)
-        const itemsList = new List(items)
-
-        itemsList.execute(scope, callFrame)
-
-        return itemsList
-    }
-
-    private getItemsByIndexes(
-        list: ValueTypes[],
-        indexes: NumberValue[],
-    ): ValueTypes[] {
-        return indexes.map((index) => {
-            return list[index.value - 1]
-        })
-    }
-
-    setItem(
-        index: PrimitiveValue<unknown>,
-        value: PrimitiveValue<unknown>,
-    ): PrimitiveValue<unknown> {
-        this.assertProperIndexPrimitiveType(index)
-        this.assertGreaterOrEqualThan1(index.value)
-
-        const indexValue = index.value - 1
-
-        this.items![indexValue] = value
-
+        const value = new ListValue(evaluatedItems)
         return value
-    }
-
-    static evaluateList(
-        items: Evaluable[],
-        scope: Scope,
-        callFrame: CallFrame,
-    ): ValueTypes[] {
-        return items.map((item) => item.execute(scope, callFrame))
-    }
-
-    private assertGreaterOrEqualThan1(index: number) {
-        if (index >= 1) return
-
-        throw new ListIndexMustBeGreaterThan1Error({
-            position: this.position,
-            resource: {
-                index,
-            },
-        })
-    }
-
-    private assertProperIndexPrimitiveType(
-        index: ValueTypes,
-    ): asserts index is NumberValue | List {
-        if (index instanceof List) {
-            for (const item of index.items!) {
-                this.assertProperIndexPrimitiveType(item)
-            }
-
-            return
-        }
-
-        if (index instanceof NumberValue && Number.isInteger(index.value))
-            return
-
-        throw new ListIndexError({
-            position: this.position,
-            resource: {
-                index,
-            },
-        })
-    }
-
-    private assertIndexLessThanLength(index: number) {
-        if (index <= this.items!.length) return
-
-        throw new ListIndexOutOfRangeError({
-            resource: {
-                index,
-            },
-            position: this.position,
-        })
-    }
-
-    override toPrint(): string {
-        const content = this.items?.map((item) => item.toPrint()).join(', ')
-        return '[' + content + ']'
     }
 }
 
 export class IndexFetch extends Evaluable {
-    static override friendlyName = '목록에서 값 가져오기'
+    static override friendlyName = '사전에서 값 가져오기'
 
-    constructor(public target: Evaluable, public index: Evaluable) {
+    constructor(
+        public list: Evaluable<IndexedValue>,
+        public index: Evaluable<StringValue | NumberValue | ListValue>,
+    ) {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
-        const callFrame = new CallFrame(this, _callFrame)
-
-        const target = this.target.execute(scope, callFrame)
-        this.assertProperTargetType(target)
-
+    override execute(scope: Scope, callFrame: CallFrame): ValueType {
+        const list = this.list.execute(scope, callFrame)
         const index = this.index.execute(scope, callFrame)
-        const value = target.getItem(index, scope, callFrame)
 
+        if (!(list instanceof IndexedValue)) {
+            throw new TargetIsNotIndexedValueError({
+                position: this.position,
+                resource: {
+                    target: list,
+                },
+            })
+        }
+
+        if (index instanceof ListValue) {
+            const values = list.getItemsFromKeys(index)
+            return values
+        }
+
+        const value = list.getItem(index.value)
         return value
     }
 
-    assertProperTargetType(target: ValueTypes): asserts target is IndexedValue {
-        if (target instanceof IndexedValue) return
+    public setValue(scope: Scope, callFrame: CallFrame, value: ValueType) {
+        const list = this.list.execute(scope, callFrame)
+        const index = this.index.execute(scope, callFrame)
 
-        throw new TargetIsNotIndexedValueError({
-            position: this.position,
-            resource: {
-                target,
-            },
-        })
+        if (!(list instanceof IndexedValue)) {
+            throw new TargetIsNotIndexedValueError({
+                position: this.position,
+                resource: {
+                    target: list,
+                },
+            })
+        }
+
+        if (
+            !(index instanceof NumberValue) &&
+            !(index instanceof StringValue)
+        ) {
+            throw new ListIndexTypeError({
+                position: this.position,
+                resource: {
+                    index: index.toPrint(),
+                },
+            })
+        }
+
+        list.setItem(index.value, value)
     }
 }
 
 export class SetToIndex extends Executable {
     static override friendlyName = '목록에 값 넣기'
 
-    constructor(public target: IndexFetch, public value: Evaluable) {
+    constructor(private target: IndexFetch, private value: Evaluable) {
         super()
-    }
-    override execute(scope: Scope, _callFrame: CallFrame) {
-        const callFrame = new CallFrame(this, _callFrame)
 
+        this.position = target.position
+    }
+
+    override execute(scope: Scope, callFrame: CallFrame): void {
         const value = this.value.execute(scope, callFrame)
-
-        const targetList = this.target.target.execute(scope, callFrame)
-        const targetIndex = this.target.index.execute(scope, callFrame)
-
-        this.assertProperTargetType(targetList)
-        targetList.setItem(targetIndex, value, scope, callFrame)
-    }
-
-    assertProperTargetType(target: ValueTypes): asserts target is IndexedValue {
-        if (target instanceof IndexedValue) return
-
-        throw new TargetIsNotIndexedValueError({
-            position: this.position,
-            resource: {
-                target,
-            },
-        })
+        this.target.setValue(scope, callFrame, value)
     }
 }
 
 export class RangeOperator extends Operator {
     static override friendlyName = '범위에서 목록 만들기(~)'
 
-    override call(...operands: ValueTypes[]): List {
+    override toPrint(): string {
+        return '~'
+    }
+
+    override call(...operands: ValueType[]): ListValue {
         this.assertProperOperands(operands)
 
         const [start, end] = operands
+        const items = new Array(end.value - start.value + 1)
+            .fill(null)
+            .map((_, index) => new NumberValue(start.value + index))
 
-        const items = Array.from(
-            { length: end.value - start.value + 1 },
-            (_, i) => new NumberValue(i + start.value),
-        )
-
-        const list = new List(items)
-        list.items = items
-
-        return list
+        return new ListValue(items)
     }
 
     private assertProperOperands(
-        operands: ValueTypes[],
+        operands: ValueType[],
     ): asserts operands is [NumberValue, NumberValue] {
-        this.assertProperStartType(operands[0])
-        this.assertProperEndType(operands[1])
-        this.assertRangeStartLessThanEnd(operands[0].value, operands[1].value)
+        const [start, end] = operands
+        this.assertProperStartType(start)
+        this.assertProperEndType(end)
+
+        this.assertRangeStartLessThanEnd(start.value, end.value)
     }
 
     private assertProperStartType(
-        start: ValueTypes,
+        start: ValueType,
     ): asserts start is NumberValue {
         if (start instanceof NumberValue) return
 
@@ -261,7 +155,7 @@ export class RangeOperator extends Operator {
         })
     }
 
-    private assertProperEndType(end: ValueTypes): asserts end is NumberValue {
+    private assertProperEndType(end: ValueType): asserts end is NumberValue {
         if (end instanceof NumberValue) return
 
         throw new RangeEndMustBeNumberError({

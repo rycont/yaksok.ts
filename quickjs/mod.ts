@@ -1,15 +1,11 @@
 import { getQuickJS } from 'quickjs-emscripten'
 import type { QuickJSWASMModule, QuickJSContext } from 'quickjs-emscripten-core'
 
-import {
-    List,
-    NumberValue,
-    StringValue,
-    type PrimitiveTypes,
-    type ValueTypes,
-    type FunctionParams,
-} from '@yaksok-ts/core'
+import { type FunctionInvokingParams } from '@yaksok-ts/core'
 import { bold, dim } from './util.ts'
+import { PrimitiveValue, ValueType } from '../src/value/base.ts'
+import { ListValue } from '../src/value/list.ts'
+import { NumberValue, StringValue } from '../src/value/primitive.ts'
 
 export class QuickJS {
     private instance: QuickJSWASMModule | null = null
@@ -22,7 +18,7 @@ export class QuickJS {
         this.instance = await getQuickJS()
     }
 
-    public run(bodyCode: string, args: FunctionParams): ValueTypes {
+    public run(bodyCode: string, args: FunctionInvokingParams): ValueType {
         const wrappedCode = createWrapperCodeFromFFICall(bodyCode, args)
         const vm = this.createContext()
 
@@ -78,7 +74,7 @@ function createWrapperCodeFromFFICall(
     )}) => {${bodyCode}})(${parameterValues.join(', ')})`
 }
 
-function convertYaksokDataIntoQuickJSData(data: PrimitiveTypes) {
+function convertYaksokDataIntoQuickJSData(data: PrimitiveValue) {
     if (data instanceof StringValue) {
         return `"${data.value}"`
     } else {
@@ -121,13 +117,13 @@ function convertJSDataIntoQuickJSData(data: any, context: QuickJSContext) {
     throw new Error('Unsupported data type: ' + typeof data)
 }
 
-function convertJSDataIntoYaksok(data: unknown): ValueTypes {
+function convertJSDataIntoYaksok(data: unknown): ValueType {
     if (typeof data === 'string') {
         return new StringValue(data)
     } else if (typeof data === 'number') {
         return new NumberValue(data)
     } else if (Array.isArray(data)) {
-        return new List(data.map(convertJSDataIntoYaksok))
+        return new ListValue(data.map(convertJSDataIntoYaksok))
     }
 
     throw new Error('Unsupported data type: ' + typeof data)

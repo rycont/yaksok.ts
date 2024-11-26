@@ -16,8 +16,9 @@ import {
     PlusOperator,
     PowerOperator,
 } from './operator.ts'
-import { Evaluable, Operator, type ValueTypes } from './base.ts'
+import { Evaluable, Operator } from './base.ts'
 import { RangeOperator } from './list.ts'
+import { ValueType } from '../value/base.ts'
 
 const OPERATOR_PRECEDENCES: Array<(typeof Operator)[]> = [
     [AndOperator, OrOperator],
@@ -41,7 +42,7 @@ export class ValueWithParenthesis extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueType {
         const callFrame = new CallFrame(this, _callFrame)
         return this.value.execute(scope, callFrame)
     }
@@ -58,7 +59,7 @@ export class Formula extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueType {
         const callFrame = new CallFrame(this, _callFrame)
         const terms = [...this.terms]
 
@@ -75,11 +76,11 @@ export class Formula extends Evaluable {
             )
         }
 
-        return terms[0] as ValueTypes
+        return terms[0] as ValueType
     }
 
     calculateOperatorWithPrecedence(
-        terms: (Evaluable | Operator)[],
+        terms: (Evaluable | Operator | ValueType)[],
         precedence: number,
         scope: Scope,
         callFrame: CallFrame,
@@ -96,11 +97,18 @@ export class Formula extends Evaluable {
 
             if (!isOperator || !isCurrentPrecedence) continue
 
-            const leftTerm: Evaluable = terms[i - 1] as Evaluable
-            const rightTerm: Evaluable = terms[i + 1] as Evaluable
+            const leftTerm = terms[i - 1] as Evaluable | ValueType
+            const rightTerm = terms[i + 1] as Evaluable | ValueType
 
-            const left = leftTerm.execute(scope, callFrame)
-            const right = rightTerm.execute(scope, callFrame)
+            const left =
+                leftTerm instanceof ValueType
+                    ? leftTerm
+                    : leftTerm.execute(scope, callFrame)
+
+            const right =
+                rightTerm instanceof ValueType
+                    ? rightTerm
+                    : rightTerm.execute(scope, callFrame)
 
             const result = term.call(left, right)
             terms.splice(i - 1, 3, result)

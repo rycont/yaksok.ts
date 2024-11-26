@@ -1,15 +1,8 @@
-import type { IndexedValue } from './indexed.ts'
-
 import type { CallFrame } from '../executer/callFrame.ts'
 import type { Scope } from '../executer/scope.ts'
-import type {
-    NumberValue,
-    StringValue,
-    BooleanValue,
-    PrimitiveValue,
-} from './primitive.ts'
 import { NotDefinedIdentifierError } from '../error/variable.ts'
 import { Position } from '../type/position.ts'
+import { ValueType } from '../value/base.ts'
 
 export class Node {
     [key: string]: unknown
@@ -38,10 +31,10 @@ export class Executable extends Node {
     }
 }
 
-export class Evaluable extends Executable {
+export class Evaluable<T extends ValueType = ValueType> extends Executable {
     static override friendlyName = '값이 있는 노드'
 
-    override execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(_scope: Scope, _callFrame: CallFrame): T {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
 }
@@ -57,7 +50,7 @@ export class Identifier extends Evaluable {
         return this.value
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): ValueType {
         try {
             return scope.getVariable(this.value)
         } catch (e) {
@@ -81,7 +74,7 @@ export class Operator extends Node {
         return this.value ?? 'unknown'
     }
 
-    call(..._operands: ValueTypes[]): ValueTypes {
+    call(..._operands: ValueType[]): ValueType {
         throw new Error(`${this.constructor.name} has no call method`)
     }
 }
@@ -97,6 +90,3 @@ export class Expression extends Node {
         return this.value
     }
 }
-
-export type PrimitiveTypes = NumberValue | StringValue | BooleanValue
-export type ValueTypes = PrimitiveValue<unknown> | IndexedValue

@@ -2,7 +2,7 @@ import { Expression, Identifier, Node, Operator } from '../../node/base.ts'
 import { FFIBody } from '../../node/ffi.ts'
 import { Mention } from '../../node/mention.ts'
 import { Indent, EOL } from '../../node/misc.ts'
-import { NumberValue, StringValue } from '../../node/primitive.ts'
+import { NumberLiteral, StringLiteral } from '../../node/primitive-literal.ts'
 import { Token, TOKEN_TYPE } from './token.ts'
 
 export function convertTokensToNodes(tokens: Token[]): Node[] {
@@ -12,9 +12,9 @@ export function convertTokensToNodes(tokens: Token[]): Node[] {
 function mapTokenToNode(token: Token) {
     switch (token.type) {
         case TOKEN_TYPE.NUMBER:
-            return new NumberValue(parseFloat(token.value), token.position)
+            return new NumberLiteral(parseFloat(token.value), token.position)
         case TOKEN_TYPE.STRING:
-            return new StringValue(token.value.slice(1, -1), token.position)
+            return new StringLiteral(token.value.slice(1, -1), token.position)
         case TOKEN_TYPE.OPERATOR:
             return new Operator(token.value, token.position)
         case TOKEN_TYPE.SPACE:
