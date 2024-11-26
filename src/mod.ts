@@ -13,4 +13,5 @@ export { tokenize } from './prepare/tokenize/index.ts'
 export type { RuntimeConfig } from './runtime/runtime-config.ts'
 export type { FunctionInvokingParams } from './constant/type.ts'
 export type { FEATURE_FLAG } from './constant/feature-flags.ts'
-export type * from './error/index.ts'
+
+export * from './error/index.ts'
