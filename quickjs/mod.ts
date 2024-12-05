@@ -5,15 +5,6 @@ import {
     newVariant,
 } from 'quickjs-emscripten'
 
-const wasmPath =
-    'https://unpkg.com/@jitl/quickjs-wasmfile-release-sync@0.31.0/dist/emscripten-module.wasm'
-
-const wasmModule = await WebAssembly.compileStreaming(fetch(wasmPath))
-
-const variant = newVariant(RELEASE_SYNC, {
-    wasmModule,
-})
-
 import {
     List,
     NumberValue,
@@ -32,6 +23,15 @@ export class QuickJS {
     ) {}
 
     async init(): Promise<void> {
+        const wasmPath =
+            'https://unpkg.com/@jitl/quickjs-wasmfile-release-sync@0.31.0/dist/emscripten-module.wasm'
+
+        const wasmModule = await WebAssembly.compileStreaming(fetch(wasmPath))
+
+        const variant = newVariant(RELEASE_SYNC, {
+            wasmModule,
+        })
+
         this.instance = await newQuickJSWASMModuleFromVariant(variant)
     }
 
