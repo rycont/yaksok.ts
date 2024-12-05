@@ -1,38 +1,25 @@
-import { yaksok } from './src/mod.ts'
+import { QuickJS } from '@yaksok-ts/quickjs'
+import { yaksok } from '@yaksok-ts/core'
+
+const quickjs = new QuickJS({
+    prompt,
+})
+await quickjs.init()
 
 yaksok(
     `
-약속, 회전설정 (회전)
-    결과: "rotate:" + 회전
+번역(QuickJS), (질문) 물어보기
+***
+    return prompt(질문)
+***
 
-약속, 시간설정 (시간)
-    결과: "time:" + 시간
-
-약속, (A) 합 (B)
-    결과: A + "<join>" + B
-
-약속, (각도)도 회전하기
-    회전설정 각도 보여주기
-
-약속, (시간)초 동안 (각도)도 회전하기
-    (시간설정 시간) 합 (회전설정 각도) 보여주기
-
-각도: 45
-시간: 30
-
-(3)초 동안 (90)도 회전하기
-3 초 동안 90 도 회전하기
-(3)초 동안 90 도 회전하기
-3 초 동안 (90)도 회전하기
-
-시간 초 동안 각도 도 회전하기
-(시간)초 동안 (각도)도 회전하기
-(시간)초 동안 각도 도 회전하기
-시간 초 동안 (각도)도 회전하기
-
-(90)도 회전하기
-90 도 회전하기
-각도 도 회전하기
-(각도)도 회전하기
+입력받은_이름: "이름이 뭐에요?" 물어보기
+입력받은_이름 + "님 안녕하세요!" 보여주기
 `,
+    {
+        runFFI(r, code, args) {
+            const result = quickjs.run(code, args)
+            return result
+        },
+    },
 )

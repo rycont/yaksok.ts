@@ -1,5 +1,6 @@
-import { getQuickJS } from 'quickjs-emscripten'
 import type { QuickJSWASMModule, QuickJSContext } from 'quickjs-emscripten-core'
+import { newQuickJSWASMModuleFromVariant } from 'quickjs-emscripten'
+import quickJSVariant from '@jitl/quickjs-ng-wasmfile-release-sync'
 
 import {
     List,
@@ -19,7 +20,9 @@ export class QuickJS {
     ) {}
 
     async init(): Promise<void> {
-        this.instance = await getQuickJS()
+        this.instance = await newQuickJSWASMModuleFromVariant(
+            Promise.resolve(quickJSVariant),
+        )
     }
 
     public run(bodyCode: string, args: FunctionParams): ValueTypes {
