@@ -34,7 +34,7 @@
         }
     },
     "name": "@yaksok-ts/core",
-    "version": "0.1.18-alpha.1",
+    "version": "0.1.18-alpha.2",
     "exports": "./src/mod.ts",
     "nodeModulesDir": "auto",
     "workspace": [
