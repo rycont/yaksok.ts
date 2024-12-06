@@ -7,14 +7,16 @@ import { Scope } from './scope.ts'
 import { CallFrame } from './callFrame.ts'
 import { BreakSignal, ReturnSignal } from './signals.ts'
 
-export function executer<NodeType extends Executable>(
+export async function executer<NodeType extends Executable>(
     node: NodeType,
     scope = new Scope(),
-) {
+): Promise<Awaited<ReturnType<NodeType['execute']>>> {
     const callFrame = new CallFrame(node, undefined)
 
     try {
-        return node.execute(scope, callFrame) as ReturnType<NodeType['execute']>
+        return (await node.execute(scope, callFrame)) as Awaited<
+            ReturnType<NodeType['execute']>
+        >
     } catch (e) {
         if (e instanceof ReturnSignal) {
             throw new CannotReturnOutsideFunctionError({

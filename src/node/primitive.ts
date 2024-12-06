@@ -12,8 +12,11 @@ export class PrimitiveValue<T> extends Evaluable {
         this.value = content
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): PrimitiveValue<T> {
-        return this
+    override execute(
+        _scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<PrimitiveValue<T>> {
+        return Promise.resolve(this)
     }
 }
 

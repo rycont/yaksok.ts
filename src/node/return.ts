@@ -5,7 +5,7 @@ import { Executable } from './base.ts'
 export class Return extends Executable {
     static override friendlyName = '결과'
 
-    override execute(_scope: Scope) {
+    override execute(_scope: Scope): Promise<never> {
         throw new ReturnSignal(this.position)
     }
 }
