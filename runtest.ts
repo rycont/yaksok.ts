@@ -1,25 +1,8 @@
-import { QuickJS } from '@yaksok-ts/quickjs'
 import { yaksok } from '@yaksok-ts/core'
 
-const quickjs = new QuickJS({
-    prompt,
-})
-await quickjs.init()
+const code = `
+내_이름: "영희"
+`
 
-yaksok(
-    `
-번역(QuickJS), (질문) 물어보기
-***
-    return prompt(질문)
-***
-
-입력받은_이름: "이름이 뭐에요?" 물어보기
-입력받은_이름 + "님 안녕하세요!" 보여주기
-`,
-    {
-        runFFI(r, code, args) {
-            const result = quickjs.run(code, args)
-            return result
-        },
-    },
-)
+const result = await yaksok(code)
+console.log(result.getFileRunner().scope.getVariable('내_이름').value)

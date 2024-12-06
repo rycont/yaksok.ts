@@ -11,7 +11,7 @@ for (const file of Deno.readDirSync('./test/codes')) {
                 `./test/codes/${file.name}.out`,
             )
 
-            yaksok(code, {
+            await yaksok(code, {
                 stdout: (message) => (printed += message + '\n'),
             })
 

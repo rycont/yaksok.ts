@@ -2,9 +2,9 @@ import { assertIsError, unreachable } from 'assert'
 import { yaksok } from '../../src/mod.ts'
 import { CannotParseError } from '../../src/error/index.ts'
 
-Deno.test('올바르지 않은 괄호 묶음', () => {
+Deno.test('올바르지 않은 괄호 묶음', async () => {
     try {
-        yaksok(`(이고)`)
+        await yaksok(`(이고)`)
         unreachable()
     } catch (error) {
         assertIsError(error, CannotParseError)

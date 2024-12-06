@@ -39,7 +39,7 @@ export interface RuntimeConfig {
      * @param args 함수 인자
      * @returns 함수 실행 결과
      */
-    runFFI: (runtime: string, code: string, args: FunctionParams) => ValueTypes
+    runFFI: (runtime: string, code: string, args: FunctionParams) => ValueTypes | Promise<ValueTypes>
     flags: EnabledFlags
 }
 

@@ -1,9 +1,10 @@
-import { assertEquals, assertIsError } from 'assert'
+import { assertEquals, assertIsError, assert } from 'assert'
 import { QuickJS } from '@yaksok-ts/quickjs'
 import { yaksok } from '../src/mod.ts'
 import { FFIResultTypeIsNotForYaksokError } from '../src/error/ffi.ts'
 import { List } from '../src/node/list.ts'
 import { StringValue } from '../src/node/index.ts'
+import { NumberValue } from '../src/node/primitive.ts'
 
 const quickJS = new QuickJS({
     prompt: () => {
@@ -13,9 +14,9 @@ const quickJS = new QuickJS({
 
 await quickJS.init()
 
-Deno.test('연결 문법을 사용하여 자바스크립트 함수 호출', () => {
+Deno.test('연결 문법을 사용하여 자바스크립트 함수 호출', async () => {
     let output = ''
-    yaksok(
+    await yaksok(
         `
 번역(QuickJS), (질문) 물어보기
 ***
@@ -62,9 +63,9 @@ Deno.test('연결 문법을 사용하여 자바스크립트 함수 호출', () =
     )
 })
 
-Deno.test('다른 파일에 있는 연결 호출', () => {
+Deno.test('다른 파일에 있는 연결 호출', async () => {
     let output = ''
-    yaksok(
+    await yaksok(
         {
             유틸: `번역(QuickJS), (질문) 물어보기
 ***
@@ -96,9 +97,9 @@ Deno.test('다른 파일에 있는 연결 호출', () => {
     assertEquals(output, '황선형\n')
 })
 
-Deno.test('배열을 반환하는 연결', () => {
+Deno.test('배열을 반환하는 연결', async () => {
     let output = ''
-    yaksok(
+    await yaksok(
         `
 번역(QuickJS), (질문) 물어보기
 ***
@@ -122,9 +123,9 @@ CODES
     assertEquals(output, '[황선형, 도지석]\n')
 })
 
-Deno.test('올바르지 않은 연결 반환값', () => {
+Deno.test('올바르지 않은 연결 반환값', async () => {
     try {
-        yaksok(
+        await yaksok(
             `번역(mock), (질문) 물어보기
 ***
 CODES
@@ -145,9 +146,9 @@ CODES
     }
 })
 
-Deno.test('구현되지 않은 FFI', () => {
+Deno.test('구현되지 않은 FFI', async () => {
     try {
-        yaksok(
+        await yaksok(
             `번역(mock), (질문) 물어보기
 ***
 CODES
@@ -157,4 +158,42 @@ CODES
     } catch (e) {
         assertIsError(e)
     }
+})
+
+Deno.test('Promise를 반환하는 FFI', async () => {
+    const output: string[] = []
+
+    const startTime = +new Date()
+
+    await yaksok(
+        `
+번역(Runtime), (숫자)초 기다리기
+***
+wait
+***
+
+"안녕!" 보여주기
+1초 기다리기
+"반가워!" 보여주기
+`,
+        {
+            async runFFI(_runtime, _code, args) {
+                await new Promise((ok) =>
+                    setTimeout(ok, (args.숫자 as NumberValue).value * 1000),
+                )
+
+                return new NumberValue(0)
+            },
+            stdout(message) {
+                output.push(message)
+            },
+        },
+    )
+
+    const timeDelta = +new Date() - startTime
+
+    assert(timeDelta < 2000)
+    assert(1000 < timeDelta)
+
+    assertEquals(output, ['안녕!', '반가워!'])
 })

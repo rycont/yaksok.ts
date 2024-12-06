@@ -23,15 +23,16 @@ export class DeclareFunction extends Executable {
         this.body = props.body
     }
 
-    override execute(scope: Scope) {
+    override execute(scope: Scope): Promise<void> {
         scope.setFunction(this.name, this)
+        return Promise.resolve()
     }
 
-    run(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    async run(scope: Scope, _callFrame: CallFrame): Promise<ValueTypes> {
         const callFrame = new CallFrame(this, _callFrame)
 
         try {
-            this.body.execute(scope, callFrame)
+            await this.body.execute(scope, callFrame)
         } catch (e) {
             if (!(e instanceof ReturnSignal)) {
                 throw e
@@ -66,41 +67,44 @@ export class FunctionInvoke extends Evaluable {
         this.params = props.params
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override async execute(
+        scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<ValueTypes> {
         const callFrame = new CallFrame(this, _callFrame)
-        const args = getParams(this.params, scope, callFrame)
+        const args = await getParams(this.params, scope, callFrame)
 
-        const result = this.invoke(scope, callFrame, args)
+        const result = await this.invoke(scope, callFrame, args)
         return result
     }
 
-    invoke(
+    async invoke(
         scope: Scope,
         callFrame: CallFrame,
         args: { [key: string]: ValueTypes } | null,
-    ): ValueTypes {
+    ): Promise<ValueTypes> {
         const func = scope.getFunction(this.name)
         const childScope = new Scope({
             parent: scope,
             initialVariable: args,
         })
 
-        const result = func.run(childScope, callFrame)
+        const result = await func.run(childScope, callFrame)
 
         return result
     }
 }
 
-export function getParams(
+export async function getParams(
     params: FunctionParams,
     scope: Scope,
     callFrame: CallFrame,
-): { [key: string]: ValueTypes } {
+): Promise<{ [key: string]: ValueTypes }> {
     const args: { [key: string]: ValueTypes } = {}
 
     for (const key in params) {
         const value = params[key]
-        args[key] = value.execute(scope, callFrame)
+        args[key] = await value.execute(scope, callFrame)
     }
 
     return args

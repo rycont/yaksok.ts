@@ -45,7 +45,7 @@ export class FileRunner {
         }
     }
 
-    run(): void {
+    run(): Promise<unknown> {
         this.ran = true
 
         try {
@@ -65,7 +65,7 @@ export class FileRunner {
         }
     }
 
-    evaluateFromExtern(node: Evaluable): ValueTypes {
+    evaluateFromExtern(node: Evaluable): Promise<ValueTypes> {
         try {
             return executer(node, this.scope)
         } catch (error) {

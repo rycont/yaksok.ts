@@ -5,26 +5,26 @@ import {
     UnexpectedTokenError,
 } from '../../src/error/index.ts'
 
-Deno.test('온전하지 않은 약속 정의', () => {
+Deno.test('온전하지 않은 약속 정의', async () => {
     try {
-        yaksok(`약속, (A)와 (`)
+        await yaksok(`약속, (A)와 (`)
     } catch (error) {
         assertIsError(error, UnexpectedTokenError)
     }
 })
 
-Deno.test('약속 정의 문법이 틀림', () => {
+Deno.test('약속 정의 문법이 틀림', async () => {
     try {
-        yaksok(`약속, (A)와 (((((`)
+        await yaksok(`약속, (A)와 (((((`)
     } catch (error) {
         console.log(error)
         assertIsError(error, UnexpectedTokenError)
     }
 })
 
-Deno.test('온전하지 않은 FFI 정의', () => {
+Deno.test('온전하지 않은 FFI 정의', async () => {
     try {
-        yaksok(`***`)
+        await yaksok(`***`)
     } catch (error) {
         assertIsError(error, UnexpectedEndOfCodeError)
     }
