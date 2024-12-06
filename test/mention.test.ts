@@ -1,10 +1,10 @@
 import { assertEquals } from 'assert'
 import { yaksok } from '../src/mod.ts'
 
-Deno.test('Mentioning', () => {
+Deno.test('Mentioning', async () => {
     let output = ''
 
-    yaksok(
+    await yaksok(
         {
             코레일: `
 약속, (차종)으로 (거리)km을 이동할 때 운임

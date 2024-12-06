@@ -12,9 +12,9 @@ import {
     ListIndexMustBeGreaterThan1Error,
 } from '../../src/error/index.ts'
 
-Deno.test('Error raised in loop', () => {
+Deno.test('Error raised in loop', async () => {
     try {
-        yaksok(`
+        await yaksok(`
 반복
     "Hello, world!" * "Hello, world!" 보여주기
 `)
@@ -24,9 +24,9 @@ Deno.test('Error raised in loop', () => {
     }
 })
 
-Deno.test('Error raised in list loop', () => {
+Deno.test('Error raised in list loop', async () => {
     try {
-        yaksok(`
+        await yaksok(`
 반복 [1, 2, 3]의 숫자 마다
     "Hello, world!" * "Hello, world!" 보여주기
 `)
@@ -36,9 +36,9 @@ Deno.test('Error raised in list loop', () => {
     }
 })
 
-Deno.test('Loop target is not enumerable', () => {
+Deno.test('Loop target is not enumerable', async () => {
     try {
-        yaksok(`
+        await yaksok(`
 반복 10의 숫자 마다
     숫자 보여주기
 `)
@@ -48,36 +48,36 @@ Deno.test('Loop target is not enumerable', () => {
     }
 })
 
-Deno.test('Range start is less than end', () => {
+Deno.test('Range start is less than end', async () => {
     try {
-        yaksok(`10 ~ 5`)
+        await yaksok(`10 ~ 5`)
         unreachable()
     } catch (e) {
         assertIsError(e, RangeStartMustBeLessThanEndError)
     }
 })
 
-Deno.test('Range start must be number', () => {
+Deno.test('Range start must be number', async () => {
     try {
-        yaksok(`"Hello" ~ 5`)
+        await yaksok(`"Hello" ~ 5`)
         unreachable()
     } catch (e) {
         assertIsError(e, RangeStartMustBeNumberError)
     }
 })
 
-Deno.test('Range end must be number', () => {
+Deno.test('Range end must be number', async () => {
     try {
-        yaksok(`5 ~ "Hello"`)
+        await yaksok(`5 ~ "Hello"`)
         unreachable()
     } catch (e) {
         assertIsError(e, RangeEndMustBeNumberError)
     }
 })
 
-Deno.test('Index set target is must be indexable', () => {
+Deno.test('Index set target is must be indexable', async () => {
     try {
-        yaksok(`목록: 5
+        await yaksok(`목록: 5
 목록[1]: 10
 
 목록 보여주기
@@ -88,9 +88,9 @@ Deno.test('Index set target is must be indexable', () => {
     }
 })
 
-Deno.test('Index get target is must be indexable', () => {
+Deno.test('Index get target is must be indexable', async () => {
     try {
-        yaksok(`목록: 5
+        await yaksok(`목록: 5
 목록[2] 보여주기
 `)
         unreachable()
@@ -99,9 +99,9 @@ Deno.test('Index get target is must be indexable', () => {
     }
 })
 
-Deno.test('List out of range', () => {
+Deno.test('List out of range', async () => {
     try {
-        yaksok(`목록: [1, 2, 3]
+        await yaksok(`목록: [1, 2, 3]
 목록[4] 보여주기
 `)
         unreachable()
@@ -110,9 +110,9 @@ Deno.test('List out of range', () => {
     }
 })
 
-Deno.test('List index must be number', () => {
+Deno.test('List index must be number', async () => {
     try {
-        yaksok(`목록: [1, 2, 3]
+        await yaksok(`목록: [1, 2, 3]
 목록["Hello"] 보여주기
 `)
         unreachable()
@@ -121,9 +121,9 @@ Deno.test('List index must be number', () => {
     }
 })
 
-Deno.test('List index must be integer', () => {
+Deno.test('List index must be integer', async () => {
     try {
-        yaksok(`목록: [1, 2, 3]
+        await yaksok(`목록: [1, 2, 3]
 목록[1.5] 보여주기
 `)
         unreachable()
@@ -133,9 +133,9 @@ Deno.test('List index must be integer', () => {
     }
 })
 
-Deno.test('List index must bigger than 1', () => {
+Deno.test('List index must bigger than 1', async () => {
     try {
-        yaksok(`목록: [1, 2, 3]
+        await yaksok(`목록: [1, 2, 3]
 목록[0] 보여주기
 `)
         unreachable()

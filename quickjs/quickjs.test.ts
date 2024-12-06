@@ -7,7 +7,7 @@ Deno.test('Error in QuickJS', async () => {
     await quickJS.init()
 
     try {
-        yaksok(
+        await yaksok(
             `
 번역(QuickJS), 에러 발생
 ***
@@ -36,7 +36,7 @@ Deno.test('QuickJS passed number', async () => {
     const quickJS = new QuickJS()
     await quickJS.init()
 
-    const result = yaksok(
+    const result = await yaksok(
         `
 번역(QuickJS), 랜덤 수
 ***
@@ -65,7 +65,7 @@ Deno.test('QuickJS passed Array<number>', async () => {
     const quickJS = new QuickJS()
     await quickJS.init()
 
-    const result = yaksok(
+    const result = await yaksok(
         `
 번역(QuickJS), 랜덤 수
 ***
@@ -105,7 +105,7 @@ Deno.test('JavaScript bridge function passed object', async () => {
     })
     await quickJS.init()
 
-    const result = yaksok(
+    const result = await yaksok(
         `
 번역(QuickJS), 학생 정보
 ***
@@ -153,21 +153,14 @@ Deno.test('JavaScript bridge function passed object', async () => {
         },
     )
 
+    const scope = result.getFileRunner().scope
+
+    assertEquals(scope.getVariable('학생').toPrint(), '홍길동')
+    assertEquals(scope.getVariable('이름').toPrint(), '홍길동')
+    assertEquals(scope.getVariable('나이').value, 20)
+    assertEquals(scope.getVariable('더한_결과').value, 30)
     assertEquals(
-        result.getFileRunner().scope.getVariable('학생').toPrint(),
-        '홍길동',
-    )
-    assertEquals(
-        result.getFileRunner().scope.getVariable('이름').toPrint(),
-        '홍길동',
-    )
-    assertEquals(result.getFileRunner().scope.getVariable('나이').value, 20)
-    assertEquals(
-        result.getFileRunner().scope.getVariable('더한_결과').value,
-        30,
-    )
-    assertEquals(
-        result.getFileRunner().scope.getVariable('모든_이름').toPrint(),
+        scope.getVariable('모든_이름').toPrint(),
         '[홍길동, 임꺽정, 김철수]',
     )
 })
