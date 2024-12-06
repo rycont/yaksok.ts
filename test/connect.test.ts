@@ -13,9 +13,9 @@ const quickJS = new QuickJS({
 
 await quickJS.init()
 
-Deno.test('연결 문법을 사용하여 자바스크립트 함수 호출', () => {
+Deno.test('연결 문법을 사용하여 자바스크립트 함수 호출', async () => {
     let output = ''
-    yaksok(
+    await yaksok(
         `
 번역(QuickJS), (질문) 물어보기
 ***
@@ -62,9 +62,9 @@ Deno.test('연결 문법을 사용하여 자바스크립트 함수 호출', () =
     )
 })
 
-Deno.test('다른 파일에 있는 연결 호출', () => {
+Deno.test('다른 파일에 있는 연결 호출', async () => {
     let output = ''
-    yaksok(
+    await yaksok(
         {
             유틸: `번역(QuickJS), (질문) 물어보기
 ***
@@ -96,9 +96,9 @@ Deno.test('다른 파일에 있는 연결 호출', () => {
     assertEquals(output, '황선형\n')
 })
 
-Deno.test('배열을 반환하는 연결', () => {
+Deno.test('배열을 반환하는 연결', async () => {
     let output = ''
-    yaksok(
+    await yaksok(
         `
 번역(QuickJS), (질문) 물어보기
 ***
@@ -122,9 +122,9 @@ CODES
     assertEquals(output, '[황선형, 도지석]\n')
 })
 
-Deno.test('올바르지 않은 연결 반환값: JS String', () => {
+Deno.test('올바르지 않은 연결 반환값: JS String', async () => {
     try {
-        yaksok(
+        await yaksok(
             `번역(mock), (질문) 물어보기
 ***
 CODES
@@ -145,9 +145,9 @@ CODES
     }
 })
 
-Deno.test('올바르지 않은 연결 반환값: JS Object', () => {
+Deno.test('올바르지 않은 연결 반환값: JS Object', async () => {
     try {
-        yaksok(
+        await yaksok(
             `번역(mock), (질문) 물어보기
 ***
 CODES
@@ -168,9 +168,9 @@ CODES
     }
 })
 
-Deno.test('연결 반환값이 없음', () => {
+Deno.test('연결 반환값이 없음', async () => {
     try {
-        yaksok(
+        await yaksok(
             `번역(mock), (질문) 물어보기
 ***
 CODES
@@ -191,9 +191,9 @@ CODES
     }
 })
 
-Deno.test('구현되지 않은 FFI', () => {
+Deno.test('구현되지 않은 FFI', async () => {
     try {
-        yaksok(
+        await yaksok(
             `번역(mock), (질문) 물어보기
 ***
 CODES

@@ -2,9 +2,9 @@ import { assertIsError, unreachable } from 'assert'
 import { yaksok } from '../../src/mod.ts'
 import { FunctionMustHaveOneOrMoreStringPartError } from '../../src/error/index.ts'
 
-Deno.test('고정된 부분이 없는 함수', () => {
+Deno.test('고정된 부분이 없는 함수', async () => {
     try {
-        yaksok(`
+        await yaksok(`
 약속, (A) (B) (C)
     결과: A + B + C
 

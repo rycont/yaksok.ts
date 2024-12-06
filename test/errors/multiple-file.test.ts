@@ -5,9 +5,9 @@ import {
     FileForRunNotExistError,
 } from '../../src/error/index.ts'
 
-Deno.test('Cannot find entry point in files', () => {
+Deno.test('Cannot find entry point in files', async () => {
     try {
-        yaksok({
+        await yaksok({
             dummy1: '',
             dummy2: '',
         })
@@ -16,17 +16,17 @@ Deno.test('Cannot find entry point in files', () => {
     }
 })
 
-Deno.test('No files to run', () => {
+Deno.test('No files to run', async () => {
     try {
-        yaksok({})
+        await yaksok({})
     } catch (error) {
         assertIsError(error, FileForRunNotExistError)
     }
 })
 
-Deno.test('Error in importing module', () => {
+Deno.test('Error in importing module', async () => {
     try {
-        yaksok({
+        await yaksok({
             아두이노: `
 이름: "아두이노" / 2
 `,
@@ -37,9 +37,9 @@ Deno.test('Error in importing module', () => {
     }
 })
 
-Deno.test('Error in using module function', () => {
+Deno.test('Error in using module function', async () => {
     try {
-        yaksok({
+        await yaksok({
             아두이노: `
 약속, 이름
     결과: "아두이노" / 2

@@ -1,9 +1,9 @@
 import { yaksok, ListIndexTypeError } from '@yaksok-ts/core'
 import { assertIsError, unreachable } from '@std/assert'
 
-Deno.test('Key for list fancy indexing is not a number', () => {
+Deno.test('Key for list fancy indexing is not a number', async () => {
     try {
-        yaksok(`
+        await yaksok(`
 목록: [1, 2, 3]
 목록[[3, "a"]] 보여주기`)
         unreachable()
