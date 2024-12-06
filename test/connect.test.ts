@@ -1,8 +1,8 @@
-import { assertEquals, assertIsError } from '@std/assert'
+import { assertEquals, assertIsError, assert } from '@std/assert'
 import { QuickJS } from '@yaksok-ts/quickjs'
 import { yaksok } from '../src/mod.ts'
 import { FFIResultTypeIsNotForYaksokError } from '../src/error/ffi.ts'
-import { StringValue } from '../src/value/primitive.ts'
+import { NumberValue, StringValue } from '../src/value/primitive.ts'
 import { ListValue } from '../src/value/list.ts'
 
 const quickJS = new QuickJS({
@@ -203,4 +203,42 @@ CODES
     } catch (e) {
         assertIsError(e)
     }
+})
+
+Deno.test('Promise를 반환하는 FFI', async () => {
+    const output: string[] = []
+
+    const startTime = +new Date()
+
+    await yaksok(
+        `
+번역(Runtime), (숫자)초 기다리기
+***
+wait
+***
+
+"안녕!" 보여주기
+1초 기다리기
+"반가워!" 보여주기
+`,
+        {
+            async runFFI(_runtime, _code, args) {
+                await new Promise((ok) =>
+                    setTimeout(ok, (args.숫자 as NumberValue).value * 1000),
+                )
+
+                return new NumberValue(0)
+            },
+            stdout(message) {
+                output.push(message)
+            },
+        },
+    )
+
+    const timeDelta = +new Date() - startTime
+
+    assert(timeDelta < 2000)
+    assert(1000 < timeDelta)
+
+    assertEquals(output, ['안녕!', '반가워!'])
 })
