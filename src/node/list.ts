@@ -28,9 +28,12 @@ export class ListLiteral extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, callFrame: CallFrame): ListValue {
-        const evaluatedItems = this.items.map((item) =>
-            item.execute(scope, callFrame),
+    override async execute(
+        scope: Scope,
+        callFrame: CallFrame,
+    ): Promise<ListValue> {
+        const evaluatedItems = await Promise.all(
+            this.items.map((item) => item.execute(scope, callFrame)),
         )
 
         const value = new ListValue(evaluatedItems)
@@ -48,9 +51,12 @@ export class IndexFetch extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, callFrame: CallFrame): ValueType {
-        const list = this.list.execute(scope, callFrame)
-        const index = this.index.execute(scope, callFrame)
+    override async execute(
+        scope: Scope,
+        callFrame: CallFrame,
+    ): Promise<ValueType> {
+        const list = await this.list.execute(scope, callFrame)
+        const index = await this.index.execute(scope, callFrame)
 
         if (!(list instanceof IndexedValue)) {
             throw new TargetIsNotIndexedValueError({
@@ -70,9 +76,13 @@ export class IndexFetch extends Evaluable {
         return value
     }
 
-    public setValue(scope: Scope, callFrame: CallFrame, value: ValueType) {
-        const list = this.list.execute(scope, callFrame)
-        const index = this.index.execute(scope, callFrame)
+    public async setValue(
+        scope: Scope,
+        callFrame: CallFrame,
+        value: ValueType,
+    ) {
+        const list = await this.list.execute(scope, callFrame)
+        const index = await this.index.execute(scope, callFrame)
 
         if (!(list instanceof IndexedValue)) {
             throw new TargetIsNotIndexedValueError({
@@ -108,9 +118,9 @@ export class SetToIndex extends Executable {
         this.position = target.position
     }
 
-    override execute(scope: Scope, callFrame: CallFrame): void {
-        const value = this.value.execute(scope, callFrame)
-        this.target.setValue(scope, callFrame, value)
+    override async execute(scope: Scope, callFrame: CallFrame): Promise<void> {
+        const value = await this.value.execute(scope, callFrame)
+        await this.target.setValue(scope, callFrame, value)
     }
 }
 

@@ -22,11 +22,11 @@ export function printError(error: YaksokError) {
 
     output += '> ' + error.message + '\n\n'
 
-    if (!code || !error.position) return output
-
-    output += '┌─────\n'
-    output += getHintCode(error.position, code)
-    output += '└─────\n'
+    if (code && error.position) {
+        output += '┌─────\n'
+        output += getHintCode(error.position, code)
+        output += '└─────\n'
+    }
 
     if (error.child) {
         output += '\n'

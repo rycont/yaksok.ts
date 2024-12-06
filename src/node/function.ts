@@ -21,10 +21,11 @@ export class DeclareFunction extends Executable {
         this.body = props.body
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame) {
+    override execute(scope: Scope, _callFrame: CallFrame): Promise<void> {
         const functionObject = new FunctionObject(this.name, this.body, scope)
-
         scope.addFunctionObject(functionObject)
+
+        return Promise.resolve()
     }
 }
 
@@ -41,17 +42,17 @@ export class FunctionInvoke extends Evaluable {
         this.params = props.params
     }
 
-    override execute(
+    override async execute(
         scope: Scope,
         callFrame: CallFrame,
-        args: FunctionInvokingParams = evaluateParams(
-            this.params,
-            scope,
-            callFrame,
-        ),
-    ): ValueType {
+        args?: FunctionInvokingParams,
+    ): Promise<ValueType> {
+        if (!args) {
+            args = await evaluateParams(this.params, scope, callFrame)
+        }
+
         const functionObject = scope.getFunctionObject(this.name)
-        const returnValue = functionObject.run(args)
+        const returnValue = await functionObject.run(args)
 
         assertValidReturnValue(this, returnValue)
 
@@ -59,18 +60,18 @@ export class FunctionInvoke extends Evaluable {
     }
 }
 
-export function evaluateParams(
+export async function evaluateParams(
     params: {
         [key: string]: Evaluable
     },
     scope: Scope,
     callFrame: CallFrame,
-): { [key: string]: ValueType } {
+): Promise<{ [key: string]: ValueType }> {
     const args: FunctionInvokingParams = {}
 
     for (const key in params) {
         const value = params[key]
-        args[key] = value.execute(scope, callFrame)
+        args[key] = await value.execute(scope, callFrame)
     }
 
     return args

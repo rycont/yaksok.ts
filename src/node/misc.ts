@@ -27,9 +27,9 @@ export class Print extends Executable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame) {
+    override async execute(scope: Scope, _callFrame: CallFrame): Promise<void> {
         const printFunction = scope.codeFile?.runtime?.stdout || console.log
-        const evaluated = this.value.execute(scope, _callFrame)
+        const evaluated = await this.value.execute(scope, _callFrame)
 
         printFunction(evaluated.toPrint())
     }

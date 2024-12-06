@@ -36,7 +36,7 @@ export class Runtime {
         }
     }
 
-    run(fileName = this.entryPoint): ExecuteResult<Block> {
+    run(fileName = this.entryPoint): Promise<ExecuteResult<Block>> {
         const codeFile = this.files[fileName]
 
         if (!codeFile) {
@@ -73,13 +73,13 @@ export class Runtime {
     }
 }
 
-export function yaksok(
+export async function yaksok(
     code: string | Record<string, string>,
     config: Partial<RuntimeConfig> = {},
-): {
+): Promise<{
     runtime: Runtime
     scope: Record<string, any>
-} {
+}> {
     let runtime: Runtime
 
     if (typeof code === 'string') {
@@ -89,7 +89,7 @@ export function yaksok(
     }
 
     try {
-        runtime.run()
+        await runtime.run()
 
         return {
             runtime,

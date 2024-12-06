@@ -15,8 +15,8 @@ export class FFIObject extends ObjectValue implements RunnableObject {
         super()
     }
 
-    run(args: Record<string, ValueType>): ValueType {
-        const result = this.delcaredIn!.runtime!.runFFI(
+    async run(args: Record<string, ValueType>): Promise<ValueType> {
+        const result = await this.delcaredIn!.runtime!.runFFI(
             this.runtime,
             this.code,
             args,

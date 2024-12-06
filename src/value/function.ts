@@ -21,7 +21,7 @@ export class FunctionObject extends ObjectValue implements RunnableObject {
         super()
     }
 
-    public run(
+    public async run(
         args: Record<string, ValueType>,
         fileScope: Scope | undefined = this.delcaredScope,
     ) {
@@ -33,7 +33,7 @@ export class FunctionObject extends ObjectValue implements RunnableObject {
         const callFrame = new CallFrame(this.body)
 
         try {
-            this.body.execute(functionScope, callFrame)
+            await this.body.execute(functionScope, callFrame)
         } catch (e) {
             if (!(e instanceof ReturnSignal)) {
                 throw e
@@ -55,6 +55,6 @@ export class FunctionObject extends ObjectValue implements RunnableObject {
 }
 
 export interface RunnableObject extends ObjectValue {
-    run(args: Record<string, ValueType>, fileScope?: Scope): ValueType
+    run(args: Record<string, ValueType>, fileScope?: Scope): Promise<ValueType>
     name: string
 }

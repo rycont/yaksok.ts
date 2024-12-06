@@ -14,12 +14,12 @@ export class Block extends Executable {
         this.children = content
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame) {
+    override async execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         for (const child of this.children) {
             if (child instanceof Executable) {
-                child.execute(scope, callFrame)
+                await child.execute(scope, callFrame)
             } else if (child instanceof EOL) {
                 continue
             } else {

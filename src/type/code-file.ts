@@ -76,12 +76,12 @@ export class CodeFile {
         this.exportedRulesCache = parseResult.exportedRules
     }
 
-    public run(): ExecuteResult<Block> {
+    public async run(): Promise<ExecuteResult<Block>> {
         if (this.runResult) {
-            return this.runResult
+            return Promise.resolve(this.runResult)
         }
 
-        const result = executer(this.ast, this)
+        const result = await executer(this.ast, this)
         this.runResult = result
 
         return result

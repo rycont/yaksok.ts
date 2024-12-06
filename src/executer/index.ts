@@ -9,10 +9,10 @@ import { BreakSignal, ReturnSignal } from './signals.ts'
 import type { CodeFile } from '../type/code-file.ts'
 import type { Executable } from '../node/base.ts'
 
-export function executer<NodeType extends Executable>(
+export async function executer<NodeType extends Executable>(
     node: NodeType,
     codeFile?: CodeFile,
-): ExecuteResult<NodeType> {
+): Promise<ExecuteResult<NodeType>> {
     const scope =
         codeFile?.runResult?.scope ||
         new Scope({
@@ -22,7 +22,7 @@ export function executer<NodeType extends Executable>(
     const callFrame = new CallFrame(node, undefined)
 
     try {
-        const result = node.execute(scope, callFrame) as ReturnType<
+        const result = (await node.execute(scope, callFrame)) as ReturnType<
             NodeType['execute']
         >
         return { scope, result }

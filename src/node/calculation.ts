@@ -42,7 +42,7 @@ export class ValueWithParenthesis extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueType {
+    override execute(scope: Scope, _callFrame: CallFrame): Promise<ValueType> {
         const callFrame = new CallFrame(this, _callFrame)
         return this.value.execute(scope, callFrame)
     }
@@ -59,7 +59,10 @@ export class Formula extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueType {
+    override async execute(
+        scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<ValueType> {
         const callFrame = new CallFrame(this, _callFrame)
         const terms = [...this.terms]
 
@@ -68,7 +71,7 @@ export class Formula extends Evaluable {
             currentPrecedence >= 0;
             currentPrecedence--
         ) {
-            this.calculateOperatorWithPrecedence(
+            await this.calculateOperatorWithPrecedence(
                 terms,
                 currentPrecedence,
                 scope,
@@ -79,7 +82,7 @@ export class Formula extends Evaluable {
         return terms[0] as ValueType
     }
 
-    calculateOperatorWithPrecedence(
+    async calculateOperatorWithPrecedence(
         terms: (Evaluable | Operator | ValueType)[],
         precedence: number,
         scope: Scope,
@@ -103,12 +106,12 @@ export class Formula extends Evaluable {
             const left =
                 leftTerm instanceof ValueType
                     ? leftTerm
-                    : leftTerm.execute(scope, callFrame)
+                    : await leftTerm.execute(scope, callFrame)
 
             const right =
                 rightTerm instanceof ValueType
                     ? rightTerm
-                    : rightTerm.execute(scope, callFrame)
+                    : await rightTerm.execute(scope, callFrame)
 
             const result = term.call(left, right)
             terms.splice(i - 1, 3, result)

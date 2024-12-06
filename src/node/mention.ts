@@ -30,32 +30,35 @@ export class MentionScope extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, callFrame: CallFrame): ValueType {
+    override async execute(
+        scope: Scope,
+        callFrame: CallFrame,
+    ): Promise<ValueType> {
         this.setChildPosition()
 
         try {
             const moduleCodeFile = scope.codeFile!.runtime!.getCodeFile(
                 this.fileName,
             )
-            moduleCodeFile.run()
+            await moduleCodeFile.run()
 
             const moduleFileScope = moduleCodeFile.runResult!.scope
 
             if (this.child instanceof FunctionInvoke) {
-                const evaluatedParams = evaluateParams(
+                const evaluatedParams = await evaluateParams(
                     this.child.params,
                     scope,
                     callFrame,
                 )
 
-                return this.child.execute(
+                return await this.child.execute(
                     moduleFileScope,
                     callFrame,
                     evaluatedParams,
                 )
             }
 
-            return this.child.execute(moduleFileScope, callFrame)
+            return await this.child.execute(moduleFileScope, callFrame)
         } catch (error) {
             if (error instanceof YaksokError) {
                 throw new ErrorInModuleError({
