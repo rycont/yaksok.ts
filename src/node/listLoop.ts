@@ -33,7 +33,7 @@ export class ListLoop extends Executable {
         try {
             for (const value of list.items!) {
                 scope.setVariable(this.variableName, value)
-                this.body.execute(scope, callFrame)
+                await this.body.execute(scope, callFrame)
             }
         } catch (e) {
             if (!(e instanceof BreakSignal)) throw e

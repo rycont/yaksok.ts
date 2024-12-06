@@ -31,7 +31,7 @@ export class MentionScope extends Evaluable {
         const scope = _scope.createChild()
 
         try {
-            const runner = _scope.runtime!.runOnce(this.fileName)
+            const runner = await _scope.runtime!.runOnce(this.fileName)
             const moduleScope = runner.scope
 
             moduleScope.parent = scope

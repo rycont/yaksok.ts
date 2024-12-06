@@ -65,7 +65,7 @@ export class FileRunner {
         }
     }
 
-    evaluateFromExtern(node: Evaluable): Promise<ValueTypes> | ValueTypes {
+    evaluateFromExtern(node: Evaluable): Promise<ValueTypes> {
         try {
             return executer(node, this.scope)
         } catch (error) {

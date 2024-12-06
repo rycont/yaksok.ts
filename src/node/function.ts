@@ -28,11 +28,11 @@ export class DeclareFunction extends Executable {
         return Promise.resolve()
     }
 
-    run(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    async run(scope: Scope, _callFrame: CallFrame): Promise<ValueTypes> {
         const callFrame = new CallFrame(this, _callFrame)
 
         try {
-            this.body.execute(scope, callFrame)
+            await this.body.execute(scope, callFrame)
         } catch (e) {
             if (!(e instanceof ReturnSignal)) {
                 throw e

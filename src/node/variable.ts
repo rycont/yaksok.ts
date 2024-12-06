@@ -27,7 +27,10 @@ export class SetVariable extends Evaluable {
         this.assertValidName()
     }
 
-    override async execute(scope: Scope, _callFrame: CallFrame) {
+    override async execute(
+        scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<ValueTypes> {
         const { name, value } = this
         const callFrame = new CallFrame(this, _callFrame)
 

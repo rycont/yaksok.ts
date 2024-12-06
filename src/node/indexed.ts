@@ -9,11 +9,12 @@ export abstract class IndexedValue extends Evaluable {
         index: ValueTypes,
         scope: Scope,
         callFrame: CallFrame,
-    ): ValueTypes
+    ): Promise<ValueTypes>
+
     abstract setItem(
         index: ValueTypes,
         value: ValueTypes,
         scope: Scope,
         callFrame: CallFrame,
-    ): void
+    ): Promise<void>
 }

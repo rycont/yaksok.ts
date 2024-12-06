@@ -50,11 +50,15 @@ export class List extends IndexedValue {
         return this
     }
 
-    getItem(index: ValueTypes, scope: Scope, callFrame: CallFrame): ValueTypes {
+    getItem(
+        index: ValueTypes,
+        scope: Scope,
+        callFrame: CallFrame,
+    ): Promise<ValueTypes> {
         this.assertProperIndexPrimitiveType(index)
 
         if (index instanceof NumberValue) {
-            return this.getItemByNumberIndex(index.value)
+            return Promise.resolve(this.getItemByNumberIndex(index.value))
         }
 
         return this.getItemsByListIndex(index, scope, callFrame)
@@ -70,7 +74,7 @@ export class List extends IndexedValue {
         return list[indexValue]
     }
 
-    private getItemsByListIndex(
+    private async getItemsByListIndex(
         index: List,
         scope: Scope,
         callFrame: CallFrame,
@@ -81,7 +85,7 @@ export class List extends IndexedValue {
         const items = this.getItemsByIndexes(list, indexes)
         const itemsList = new List(items)
 
-        itemsList.execute(scope, callFrame)
+        await itemsList.execute(scope, callFrame)
 
         return itemsList
     }
@@ -98,15 +102,14 @@ export class List extends IndexedValue {
     setItem(
         index: PrimitiveValue<unknown>,
         value: PrimitiveValue<unknown>,
-    ): PrimitiveValue<unknown> {
+    ): Promise<void> {
         this.assertProperIndexPrimitiveType(index)
         this.assertGreaterOrEqualThan1(index.value)
 
         const indexValue = index.value - 1
 
         this.items![indexValue] = value
-
-        return value
+        return Promise.resolve()
     }
 
     static evaluateList(

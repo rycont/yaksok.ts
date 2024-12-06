@@ -46,25 +46,25 @@ export class Runtime {
         return this.runners[fileName]
     }
 
-    run(fileName = this.entryPoint): FileRunner {
+    async run(fileName = this.entryPoint): Promise<FileRunner> {
         const runner = this.getFileRunner(fileName)
-        runner.run()
+        await runner.run()
 
         return runner
     }
 
-    runOnce(fileName = this.entryPoint): FileRunner {
+    async runOnce(fileName = this.entryPoint): Promise<FileRunner> {
         const runner = this.getFileRunner(fileName)
-        if (!runner.ran) runner.run()
+        if (!runner.ran) await runner.run()
 
         return runner
     }
 }
 
-export function yaksok(
+export async function yaksok(
     code: string | Record<string, string>,
     config: Partial<RuntimeConfig> = {},
-): Runtime {
+): Promise<Runtime> {
     const yaksok = new Runtime(
         typeof code === 'string'
             ? {
@@ -74,6 +74,7 @@ export function yaksok(
         config,
     )
 
-    yaksok.run()
+    await yaksok.run()
+
     return yaksok
 }
