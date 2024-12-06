@@ -5,5 +5,5 @@
         "quickjs-emscripten": "npm:quickjs-emscripten@^0.31.0",
         "quickjs-emscripten-core": "npm:quickjs-emscripten-core@^0.31.0"
     },
-    "version": "0.1.19-alpha.1"
+    "version": "0.1.19"
 }
