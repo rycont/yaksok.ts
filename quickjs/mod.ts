@@ -1,4 +1,8 @@
-import { getQuickJS } from 'quickjs-emscripten'
+import {
+    newVariant,
+    RELEASE_SYNC,
+    newQuickJSWASMModuleFromVariant,
+} from 'quickjs-emscripten'
 import type { QuickJSWASMModule, QuickJSContext } from 'quickjs-emscripten-core'
 
 import { type FunctionInvokingParams } from '@yaksok-ts/core'
@@ -15,7 +19,16 @@ export class QuickJS {
     ) {}
 
     async init(): Promise<void> {
-        this.instance = await getQuickJS()
+        const wasmPath =
+            'https://unpkg.com/@jitl/quickjs-wasmfile-release-sync@0.31.0/dist/emscripten-module.wasm'
+
+        const wasmModule = await WebAssembly.compileStreaming(fetch(wasmPath))
+
+        const variant = newVariant(RELEASE_SYNC, {
+            wasmModule,
+        })
+
+        this.instance = await newQuickJSWASMModuleFromVariant(variant)
     }
 
     public run(bodyCode: string, args: FunctionInvokingParams): ValueType {
