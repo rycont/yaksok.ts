@@ -3,6 +3,7 @@ on:
     push:
         branches:
             - main
+            - 0.1.x
         paths:
             - 'deno.json'
 

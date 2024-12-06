@@ -3,6 +3,7 @@ on:
     push:
         branches:
             - main
+            - 0.1.x
         paths:
             - 'quickjs/deno.json'
 
@@ -30,7 +31,7 @@ jobs:
               working-directory: ${{ env.working-directory }}
 
             - name: Run tests
-              run: deno test --allow-read
+              run: deno test --allow-read --allow-net
               working-directory: ${{ env.working-directory }}
 
             - name: Publish to JSR

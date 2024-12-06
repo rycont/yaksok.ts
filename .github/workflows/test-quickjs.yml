@@ -1,9 +1,9 @@
 name: Test - QuickJS
 on:
     push:
-        branches: ['main']
+        branches: ['main', '0.1.x']
     pull_request:
-        branches: ['main']
+        branches: ['main', '0.1.x']
 
 jobs:
     Test:
@@ -29,5 +29,5 @@ jobs:
               working-directory: ${{ env.working-directory }}
 
             - name: Run tests
-              run: deno test --allow-read
+              run: deno test --allow-read --allow-net
               working-directory: ${{ env.working-directory }}
