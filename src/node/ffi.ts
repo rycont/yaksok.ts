@@ -30,8 +30,9 @@ export class DeclareFFI extends Executable {
         super()
     }
 
-    override execute(scope: Scope): void {
+    override execute(scope: Scope): Promise<void> {
         scope.setFunction(this.name, this)
+        return Promise.resolve()
     }
 
     async run(scope: Scope, _callFrame: CallFrame): Promise<ValueTypes> {

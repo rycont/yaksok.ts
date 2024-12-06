@@ -66,9 +66,9 @@ export class Identifier extends Evaluable {
         return this.value
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): Promise<ValueTypes> {
         try {
-            return scope.getVariable(this.value)
+            return Promise.resolve(scope.getVariable(this.value))
         } catch (e) {
             if (e instanceof NotDefinedIdentifierError) {
                 e.position = this.position

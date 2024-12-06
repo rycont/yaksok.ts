@@ -11,12 +11,12 @@ export class Loop extends Executable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame) {
+    override async execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         try {
             while (true) {
-                this.body.execute(scope, callFrame)
+                await this.body.execute(scope, callFrame)
             }
         } catch (e) {
             if (!(e instanceof BreakSignal)) {
@@ -29,7 +29,7 @@ export class Loop extends Executable {
 export class Break extends Executable {
     static override friendlyName = '그만'
 
-    override execute(_scope: Scope, _callFrame: CallFrame) {
+    override execute(_scope: Scope, _callFrame: CallFrame): Promise<never> {
         throw new BreakSignal(this.position)
     }
 }

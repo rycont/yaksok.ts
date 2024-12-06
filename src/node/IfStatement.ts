@@ -17,14 +17,18 @@ export class IfStatement extends Executable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame) {
+    override async execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         for (const { condition, body } of this.cases) {
-            const shouldStop = this.shouldStop(condition, scope, callFrame)
+            const shouldStop = await this.shouldStop(
+                condition,
+                scope,
+                callFrame,
+            )
             if (!shouldStop) continue
 
-            body.execute(scope, callFrame)
+            await body.execute(scope, callFrame)
             break
         }
     }

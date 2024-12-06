@@ -41,10 +41,7 @@ export class ValueWithParenthesis extends Evaluable {
         super()
     }
 
-    override execute(
-        scope: Scope,
-        _callFrame: CallFrame,
-    ): Promise<ValueTypes> | ValueTypes {
+    override execute(scope: Scope, _callFrame: CallFrame): Promise<ValueTypes> {
         const callFrame = new CallFrame(this, _callFrame)
         return this.value.execute(scope, callFrame)
     }
@@ -61,7 +58,10 @@ export class Formula extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override async execute(
+        scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<ValueTypes> {
         const callFrame = new CallFrame(this, _callFrame)
         const terms = [...this.terms]
 
@@ -70,7 +70,7 @@ export class Formula extends Evaluable {
             currentPrecedence >= 0;
             currentPrecedence--
         ) {
-            this.calculateOperatorWithPrecedence(
+            await this.calculateOperatorWithPrecedence(
                 terms,
                 currentPrecedence,
                 scope,

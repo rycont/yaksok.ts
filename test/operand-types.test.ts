@@ -107,7 +107,7 @@ const WRONG_CASES_FOR_COMPARISON = [
 ]
 
 for (const { a, b, operator } of WRONG_CASES_FOR_CALCULATION) {
-    Deno.test(`Invalid type for calculation operator ${operator}`, () => {
+    Deno.test(`Invalid type for calculation operator ${operator}`, async () => {
         const code = `
             ${a} ${operator} ${b}
         `
@@ -121,7 +121,7 @@ for (const { a, b, operator } of WRONG_CASES_FOR_CALCULATION) {
 }
 
 for (const { a, b, operator } of WRONG_CASES_FOR_COMPARISON) {
-    Deno.test(`Invalid type for comparison operator ${operator}`, () => {
+    Deno.test(`Invalid type for comparison operator ${operator}`, async () => {
         const code = `
             ${a} ${operator} ${b}
         `

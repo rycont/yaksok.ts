@@ -23,8 +23,9 @@ export class DeclareFunction extends Executable {
         this.body = props.body
     }
 
-    override execute(scope: Scope) {
+    override execute(scope: Scope): Promise<void> {
         scope.setFunction(this.name, this)
+        return Promise.resolve()
     }
 
     run(scope: Scope, _callFrame: CallFrame): ValueTypes {

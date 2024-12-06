@@ -45,7 +45,7 @@ export class FileRunner {
         }
     }
 
-    run(): void {
+    run(): Promise<unknown> {
         this.ran = true
 
         try {

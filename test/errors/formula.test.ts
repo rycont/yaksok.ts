@@ -32,7 +32,7 @@ function createRandomFormula(depth = 0): (string | number)[] {
 
 for (let i = 0; i < 10; i++) {
     const formula = createRandomFormula().join(' ')
-    Deno.test(`Compute complex formula: ${i}`, () => {
+    Deno.test(`Compute complex formula: ${i}`, async () => {
         const code = `
 나이: ${formula}
     `
