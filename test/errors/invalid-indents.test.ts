@@ -2,9 +2,9 @@ import { assertIsError } from 'assert'
 import { IndentIsNotMultipleOf4Error } from '../../src/error/index.ts'
 import { yaksok } from '../../src/mod.ts'
 
-Deno.test('온전하지 않은 인덴트', () => {
+Deno.test('온전하지 않은 인덴트', async () => {
     try {
-        yaksok(`
+        await yaksok(`
    이름: '홍길동'
     나이: 20
 `)

@@ -112,7 +112,7 @@ for (const { a, b, operator } of WRONG_CASES_FOR_CALCULATION) {
             ${a} ${operator} ${b}
         `
         try {
-            yaksok(code)
+            await yaksok(code)
             unreachable()
         } catch (error) {
             assertIsError(error, InvalidTypeForOperatorError)
@@ -126,7 +126,7 @@ for (const { a, b, operator } of WRONG_CASES_FOR_COMPARISON) {
             ${a} ${operator} ${b}
         `
         try {
-            yaksok(code)
+            await yaksok(code)
             unreachable()
         } catch (error) {
             assertIsError(error, InvalidTypeForCompareError)
