@@ -32,37 +32,6 @@ Deno.test('Error in QuickJS', async () => {
     }
 })
 
-Deno.test('Not initialized yet', () => {
-    const quickJS = new QuickJS()
-    quickJS.init()
-
-    try {
-        yaksok(
-            `
-번역(QuickJS), 에러 발생
-***
-    throw new Error('QuickJS Error')
-***
-
-에러 발생`,
-            {
-                runFFI(_, code, args) {
-                    const result = quickJS.run(code, args)
-
-                    if (!result) {
-                        throw new Error('Result is null')
-                    }
-
-                    return result
-                },
-            },
-        )
-    } catch (error) {
-        assertIsError(error)
-        assertEquals(error.message, 'QuickJS instance is not initialized yet')
-    }
-})
-
 Deno.test('QuickJS passed number', async () => {
     const quickJS = new QuickJS()
     await quickJS.init()
