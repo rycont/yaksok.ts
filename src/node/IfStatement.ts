@@ -29,13 +29,13 @@ export class IfStatement extends Executable {
         }
     }
 
-    shouldStop(
+    async shouldStop(
         condition: Evaluable | undefined,
         scope: Scope,
         _callFrame: CallFrame,
-    ): boolean {
+    ): Promise<boolean> {
         const callFrame = new CallFrame(this, _callFrame)
-        return !condition || isTruthy(condition.execute(scope, callFrame))
+        return !condition || isTruthy(await condition.execute(scope, callFrame))
     }
 }
 

@@ -22,7 +22,10 @@ export class MentionScope extends Evaluable {
         super()
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override async execute(
+        _scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<ValueTypes> {
         this.setChildPosition()
 
         const scope = _scope.createChild()
@@ -33,7 +36,7 @@ export class MentionScope extends Evaluable {
 
             moduleScope.parent = scope
 
-            const result = runner.evaluateFromExtern(this.child)
+            const result = await runner.evaluateFromExtern(this.child)
 
             moduleScope.parent = undefined
 

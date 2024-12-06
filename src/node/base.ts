@@ -31,12 +31,14 @@ export class Node {
         throw new Error(`${this.constructor.name} has no toPrint method`)
     }
 }
+
 export class Executable extends Node {
     static override friendlyName = '실행 가능한 노드'
 
     execute(_scope: Scope, _callFrame: CallFrame) {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
+
     override toPrint(): string {
         throw new Error(`${this.constructor.name} has no toPrint method`)
     }
@@ -45,7 +47,10 @@ export class Executable extends Node {
 export class Evaluable extends Executable {
     static override friendlyName = '값이 있는 노드'
 
-    override execute(_scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(
+        _scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<ValueTypes> | ValueTypes {
         throw new Error(`${this.constructor.name} has no execute method`)
     }
 }

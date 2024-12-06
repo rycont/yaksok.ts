@@ -1,10 +1,4 @@
-import { QuickJS } from '@yaksok-ts/quickjs'
-import { yaksok } from '@yaksok-ts/core'
-
-const quickjs = new QuickJS({
-    prompt,
-})
-await quickjs.init()
+import { StringValue, yaksok } from '@yaksok-ts/core'
 
 yaksok(
     `
@@ -14,12 +8,12 @@ yaksok(
 ***
 
 입력받은_이름: "이름이 뭐에요?" 물어보기
-입력받은_이름 + "님 안녕하세요!" 보여주기
+(입력받은_이름 + "님 안녕하세요!") 보여주기
 `,
     {
-        runFFI(r, code, args) {
-            const result = quickjs.run(code, args)
-            return result
+        async runFFI(r, code, args) {
+            await new Promise((ok) => setTimeout(ok, 3000))
+            return new StringValue('아 진짜요?')
         },
     },
 )

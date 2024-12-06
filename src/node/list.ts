@@ -35,10 +35,13 @@ export class List extends IndexedValue {
         super()
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): List {
+    override async execute(
+        _scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<List> {
         const callFrame = new CallFrame(this, _callFrame)
 
-        this.items = List.evaluateList(
+        this.items = await List.evaluateList(
             this.initialValue,
             new Scope(),
             callFrame,
@@ -110,8 +113,8 @@ export class List extends IndexedValue {
         items: Evaluable[],
         scope: Scope,
         callFrame: CallFrame,
-    ): ValueTypes[] {
-        return items.map((item) => item.execute(scope, callFrame))
+    ): Promise<ValueTypes[]> {
+        return Promise.all(items.map((item) => item.execute(scope, callFrame)))
     }
 
     private assertGreaterOrEqualThan1(index: number) {
@@ -171,13 +174,16 @@ export class IndexFetch extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override async execute(
+        scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<ValueTypes> {
         const callFrame = new CallFrame(this, _callFrame)
 
-        const target = this.target.execute(scope, callFrame)
+        const target = await this.target.execute(scope, callFrame)
         this.assertProperTargetType(target)
 
-        const index = this.index.execute(scope, callFrame)
+        const index = await this.index.execute(scope, callFrame)
         const value = target.getItem(index, scope, callFrame)
 
         return value
@@ -201,13 +207,13 @@ export class SetToIndex extends Executable {
     constructor(public target: IndexFetch, public value: Evaluable) {
         super()
     }
-    override execute(scope: Scope, _callFrame: CallFrame) {
+    override async execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
-        const value = this.value.execute(scope, callFrame)
+        const value = await this.value.execute(scope, callFrame)
 
-        const targetList = this.target.target.execute(scope, callFrame)
-        const targetIndex = this.target.index.execute(scope, callFrame)
+        const targetList = await this.target.target.execute(scope, callFrame)
+        const targetIndex = await this.target.index.execute(scope, callFrame)
 
         this.assertProperTargetType(targetList)
         targetList.setItem(targetIndex, value, scope, callFrame)

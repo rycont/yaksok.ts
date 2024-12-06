@@ -41,7 +41,10 @@ export class ValueWithParenthesis extends Evaluable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    override execute(
+        scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<ValueTypes> | ValueTypes {
         const callFrame = new CallFrame(this, _callFrame)
         return this.value.execute(scope, callFrame)
     }
@@ -78,7 +81,7 @@ export class Formula extends Evaluable {
         return terms[0] as ValueTypes
     }
 
-    calculateOperatorWithPrecedence(
+    async calculateOperatorWithPrecedence(
         terms: (Evaluable | Operator)[],
         precedence: number,
         scope: Scope,
@@ -99,8 +102,8 @@ export class Formula extends Evaluable {
             const leftTerm: Evaluable = terms[i - 1] as Evaluable
             const rightTerm: Evaluable = terms[i + 1] as Evaluable
 
-            const left = leftTerm.execute(scope, callFrame)
-            const right = rightTerm.execute(scope, callFrame)
+            const left = await leftTerm.execute(scope, callFrame)
+            const right = await rightTerm.execute(scope, callFrame)
 
             const result = term.call(left, right)
             terms.splice(i - 1, 3, result)

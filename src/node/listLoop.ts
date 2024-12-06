@@ -17,13 +17,16 @@ export class ListLoop extends Executable {
         super()
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): void {
+    override async execute(
+        _scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<void> {
         const scope = new Scope({
             parent: _scope,
         })
         const callFrame = new CallFrame(this, _callFrame)
 
-        const list = this.list.execute(scope, callFrame)
+        const list = await this.list.execute(scope, callFrame)
 
         this.assertRepeatTargetIsList(list)
 

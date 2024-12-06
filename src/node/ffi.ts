@@ -34,9 +34,9 @@ export class DeclareFFI extends Executable {
         scope.setFunction(this.name, this)
     }
 
-    run(scope: Scope, _callFrame: CallFrame): ValueTypes {
+    async run(scope: Scope, _callFrame: CallFrame): Promise<ValueTypes> {
         const params = this.getParams(scope)
-        const returnValue = scope.runtime!.runFFI(
+        const returnValue = await scope.runtime!.runFFI(
             this.runtime,
             this.body,
             params,
