@@ -13,7 +13,7 @@ import type { ValueType } from '../value/base.ts'
  *    stderr: console.error, // [!code highlight]
  * } // [!code highlight]
  *
- * yaksok(`"안녕" 보여주기`, runtimeConfig)
+ * await yaksok(`"안녕" 보여주기`, runtimeConfig)
  * ```
  */
 
@@ -43,7 +43,7 @@ export interface RuntimeConfig {
         runtime: string,
         code: string,
         args: FunctionInvokingParams,
-    ) => ValueType
+    ) => Promise<ValueType> | ValueType
     flags: EnabledFlags
 }
 

@@ -17,25 +17,29 @@ export class IfStatement extends Executable {
         super()
     }
 
-    override execute(scope: Scope, _callFrame: CallFrame) {
+    override async execute(scope: Scope, _callFrame: CallFrame) {
         const callFrame = new CallFrame(this, _callFrame)
 
         for (const { condition, body } of this.cases) {
-            const shouldStop = this.shouldStop(condition, scope, callFrame)
+            const shouldStop = await this.shouldStop(
+                condition,
+                scope,
+                callFrame,
+            )
             if (!shouldStop) continue
 
-            body.execute(scope, callFrame)
+            await body.execute(scope, callFrame)
             break
         }
     }
 
-    shouldStop(
+    async shouldStop(
         condition: Evaluable | undefined,
         scope: Scope,
         _callFrame: CallFrame,
-    ): boolean {
+    ): Promise<boolean> {
         const callFrame = new CallFrame(this, _callFrame)
-        return !condition || isTruthy(condition.execute(scope, callFrame))
+        return !condition || isTruthy(await condition.execute(scope, callFrame))
     }
 }
 

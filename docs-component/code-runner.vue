@@ -65,11 +65,11 @@ function viewAnswer() {
     editorInstance.setValue(props.challenge.answerCode)
 }
 
-function runCode() {
+async function runCode() {
     stdout.value = []
 
     try {
-        yaksok(code.value, {
+        await yaksok(code.value, {
             stdout: (output) => {
                 stdout.value = [...stdout.value, output]
             },

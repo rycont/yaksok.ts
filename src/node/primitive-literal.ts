@@ -1,10 +1,9 @@
+import { BooleanValue, NumberValue, StringValue } from '../value/primitive.ts'
 import { Evaluable } from './base.ts'
 
 import type { CallFrame } from '../executer/callFrame.ts'
-import type { Scope } from '../executer/scope.ts'
 import type { Position } from '../type/position.ts'
-import type { ValueType } from '../value/base.ts'
-import { BooleanValue, NumberValue, StringValue } from '../value/primitive.ts'
+import type { Scope } from '../executer/scope.ts'
 
 export class NumberLiteral extends Evaluable {
     static override friendlyName = '숫자'
@@ -13,8 +12,11 @@ export class NumberLiteral extends Evaluable {
         super()
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): ValueType {
-        return new NumberValue(this.content)
+    override execute(
+        _scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<NumberValue> {
+        return Promise.resolve(new NumberValue(this.content))
     }
 
     override toPrint(): string {
@@ -29,8 +31,11 @@ export class StringLiteral extends Evaluable {
         super()
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): ValueType {
-        return new StringValue(this.content)
+    override execute(
+        _scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<StringValue> {
+        return Promise.resolve(new StringValue(this.content))
     }
 
     override toPrint(): string {
@@ -45,8 +50,11 @@ export class BooleanLiteral extends Evaluable {
         super()
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): ValueType {
-        return new BooleanValue(this.content)
+    override execute(
+        _scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<BooleanValue> {
+        return Promise.resolve(new BooleanValue(this.content))
     }
 
     override toPrint(): string {

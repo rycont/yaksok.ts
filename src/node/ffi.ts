@@ -32,8 +32,9 @@ export class DeclareFFI extends Executable {
         this.position = props.position
     }
 
-    override execute(scope: Scope): void {
+    override execute(scope: Scope): Promise<void> {
         scope.addFunctionObject(this.toFFIObject(scope))
+        return Promise.resolve()
     }
 
     toFFIObject(scope: Scope): FFIObject {

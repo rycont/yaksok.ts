@@ -19,20 +19,23 @@ export class ListLoop extends Executable {
         super()
     }
 
-    override execute(_scope: Scope, _callFrame: CallFrame): void {
+    override async execute(
+        _scope: Scope,
+        _callFrame: CallFrame,
+    ): Promise<void> {
         const scope = new Scope({
             parent: _scope,
         })
         const callFrame = new CallFrame(this, _callFrame)
 
-        const list = this.list.execute(scope, callFrame)
+        const list = await this.list.execute(scope, callFrame)
 
         this.assertRepeatTargetIsList(list)
 
         try {
             for (const value of list.enumerate()) {
                 scope.setVariable(this.variableName, value)
-                this.body.execute(scope, callFrame)
+                await this.body.execute(scope, callFrame)
             }
         } catch (e) {
             if (!(e instanceof BreakSignal)) throw e

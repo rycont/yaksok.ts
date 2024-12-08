@@ -1,10 +1,10 @@
 import { equal } from 'assert'
 import { yaksok } from '../src/mod.ts'
 
-Deno.test('미래의 약속 호출 문법', () => {
+Deno.test('미래의 약속 호출 문법', async () => {
     let output = ''
 
-    yaksok(
+    await yaksok(
         `약속, (A)와 (B)를 더하기
     결과: A + B
 
