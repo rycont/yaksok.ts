@@ -5,11 +5,15 @@ import {
 } from 'quickjs-emscripten'
 import type { QuickJSWASMModule, QuickJSContext } from 'quickjs-emscripten-core'
 
-import { type FunctionInvokingParams } from '@yaksok-ts/core'
+import {
+    ListValue,
+    PrimitiveValue,
+    ValueType,
+    NumberValue,
+    StringValue,
+    type FunctionInvokingParams,
+} from '@yaksok-ts/core'
 import { bold, dim } from './util.ts'
-import { PrimitiveValue, ValueType } from '../src/value/base.ts'
-import { ListValue } from '../src/value/list.ts'
-import { NumberValue, StringValue } from '../src/value/primitive.ts'
 
 export class QuickJS {
     private instance: QuickJSWASMModule | null = null
