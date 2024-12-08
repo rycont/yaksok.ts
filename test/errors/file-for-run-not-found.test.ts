@@ -1,4 +1,4 @@
-import { yaksok } from '@yaksok-ts/core'
+import { yaksok } from '@dalbit-yaksok/core'
 import { assertIsError } from '@std/assert'
 import { FileForRunNotExistError } from '../../src/error/prepare.ts'
 
