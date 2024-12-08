@@ -1,4 +1,5 @@
 import type { Evaluable, Operator } from '../node/base.ts'
+import { Token, TOKEN_TYPE_TO_TEXT } from '../prepare/tokenize/token.ts'
 import type { CodeFile } from '../type/code-file.ts'
 import type { Position } from '../type/position.ts'
 import { ValueType } from '../value/base.ts'
@@ -47,6 +48,11 @@ export function operatorToText(operator: Operator) {
     if (toPrint !== 'unknown') text = blue(bold(toPrint)) + dim(`(${text})`)
 
     return text
+}
+
+export function tokenToText(token: Token) {
+    const type = TOKEN_TYPE_TO_TEXT[token.type]
+    return `${bold(`'${token.value}'`)}${dim(`(${type})`)}`
 }
 
 export function bold(text: string | number) {

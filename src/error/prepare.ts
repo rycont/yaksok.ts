@@ -1,7 +1,7 @@
 import { Node } from '../node/base.ts'
 import { Token } from '../prepare/tokenize/token.ts'
 import type { Position } from '../type/position.ts'
-import { YaksokError, blue, bold, dim } from './common.ts'
+import { YaksokError, blue, bold, dim, tokenToText } from './common.ts'
 
 export class CannotParseError extends YaksokError {
     constructor(props: {
@@ -101,9 +101,7 @@ export class UnexpectedTokenError extends YaksokError {
     }) {
         super(props)
 
-        this.message = `${bold(`'${props.resource.token.value}'`)}${dim(
-            `(${props.resource.token.type})`,
-        )}은 ${bold(props.resource.parts)}에 사용할 수 없어요.`
+        this.message = `${tokenToText(props.resource.token)}은 ${bold(props.resource.parts)}에 사용할 수 없어요.`
     }
 }
 
