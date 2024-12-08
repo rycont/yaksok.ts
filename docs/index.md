@@ -22,9 +22,9 @@ features:
       linkText: rycont/yaksok.ts
     - title: JSR에서 패키지 설치하기
       icon: 📦
-      link: https://jsr.dev/@yaksok-ts/core
+      link: https://jsr.dev/@dalbit-yaksok/core
       details: JSR에서 yaksok.ts를 설치하세요
-      linkText: 'jsr: @yaksok-ts/core'
+      linkText: 'jsr: @dalbit-yaksok/core'
 ---
 
 <script setup>

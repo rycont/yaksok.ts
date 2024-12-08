@@ -30,17 +30,25 @@
     },
     "lint": {
         "rules": {
-            "exclude": ["no-explicit-any"],
+            "exclude": [
+                "no-explicit-any"
+            ],
             "include": [],
-            "tags": ["recommended"]
+            "tags": [
+                "recommended"
+            ]
         }
     },
-    "name": "@yaksok-ts/core",
-    "version": "0.2.0-alpha.6+20241208.nightly",
+    "name": "@dalbit-yaksok/core",
+    "version": "0.2.0-alpha.8+20241208.nightly",
     "exports": "./src/mod.ts",
     "nodeModulesDir": "auto",
-    "workspace": ["./quickjs"],
+    "workspace": [
+        "./quickjs"
+    ],
     "publish": {
-        "include": ["./src"]
+        "include": [
+            "./src"
+        ]
     }
 }

@@ -6,7 +6,7 @@ import type { ValueType } from '../value/base.ts'
  * RuntimeConfig 객체를 사용하여 약속 런타임을 설정합니다.
  *
  * ```typescript
- * import { yaksok, RuntimeConfig } from '@yaksok-ts/core'
+ * import { yaksok, RuntimeConfig } from '@dalbit-yaksok/core'
  *
  * const runtimeConfig: RuntimeConfig = { // [!code highlight]
  *    stdout: console.log, // [!code highlight]
