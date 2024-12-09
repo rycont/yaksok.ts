@@ -2,7 +2,7 @@ import typedoc from 'typedoc'
 
 const app = await typedoc.Application.bootstrapWithPlugins({
     entryPoints: ['./src/mod.ts'],
-    name: 'yaksok.ts',
+    name: '달빛약속',
     categorizeByGroup: true,
 })
 
