@@ -3,7 +3,7 @@ import { FFIBody } from '../../node/ffi.ts'
 import { Mention } from '../../node/mention.ts'
 import { Indent, EOL } from '../../node/misc.ts'
 import { NumberLiteral, StringLiteral } from '../../node/primitive-literal.ts'
-import { Token, TOKEN_TYPE } from './token.ts'
+import { Token, TOKEN_TYPE } from '../tokenize/token.ts'
 
 export function convertTokensToNodes(tokens: Token[]): Node[] {
     return tokens.map(mapTokenToNode).filter(Boolean) as Node[]

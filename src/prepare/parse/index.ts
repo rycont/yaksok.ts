@@ -1,4 +1,4 @@
-import { convertTokensToNodes } from '../tokenize/convert-tokens-to-nodes.ts'
+import { convertTokensToNodes } from '../lex/convert-tokens-to-nodes.ts'
 import { createDynamicRule } from './dynamicRule/index.ts'
 import { SetVariable } from '../../node/variable.ts'
 import { callParseRecursively } from './srParse.ts'

@@ -2,7 +2,7 @@ import {
     IndentIsNotMultipleOf4Error,
     IndentLevelMismatchError,
 } from '../../error/prepare.ts'
-import { Token, TOKEN_TYPE } from './token.ts'
+import { Token, TOKEN_TYPE } from '../tokenize/token.ts'
 
 export function assertIndentValidity(_tokens: Token[]) {
     const tokens = trimTokens(_tokens)

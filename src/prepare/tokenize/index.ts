@@ -1,11 +1,8 @@
-import { mergeArgumentBranchingTokens } from './merge-argument-branching-tokens.ts'
 import { UnexpectedCharError } from '../../error/prepare.ts'
 import { NotAcceptableSignal } from './signal.ts'
 import { RULES } from './rules.ts'
 
 import type { Token } from './token.ts'
-import { getFunctionDeclareRanges } from '../../util/get-function-declare-ranges.ts'
-import { assertIndentValidity } from './indent-validity.ts'
 
 class Tokenizer {
     private tokens: Token[] = []
@@ -109,12 +106,7 @@ class Tokenizer {
 
 export function tokenize(text: string): Token[] {
     const tokens = new Tokenizer(text).tokenize()
-    const functionDeclareRanges = getFunctionDeclareRanges(tokens)
-    const merged = mergeArgumentBranchingTokens(tokens, functionDeclareRanges)
-
-    assertIndentValidity(merged)
-
-    return merged
+    return tokens
 }
 
 function preprocess(code: string) {
