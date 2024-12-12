@@ -40,7 +40,7 @@
         }
     },
     "name": "@dalbit-yaksok/core",
-    "version": "0.2.0-alpha.8+20241208.nightly",
+    "version": "0.2.0-alpha.9+20241212.nightly",
     "exports": "./src/mod.ts",
     "nodeModulesDir": "auto",
     "workspace": [
