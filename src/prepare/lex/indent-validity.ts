@@ -2,13 +2,13 @@ import {
     IndentIsNotMultipleOf4Error,
     IndentLevelMismatchError,
 } from '../../error/prepare.ts'
-import { Token, TOKEN_TYPE } from './token.ts'
+import { Token, TOKEN_TYPE } from '../tokenize/token.ts'
 
 export function assertIndentValidity(_tokens: Token[]) {
-    const tokens = [..._tokens]
+    const tokens = trimTokens(_tokens)
 
-    while (tokens[0].type === TOKEN_TYPE.NEW_LINE) {
-        tokens.shift()
+    if (tokens.length === 0) {
+        return
     }
 
     let currentDepth = 0
@@ -63,19 +63,26 @@ export function assertIndentValidity(_tokens: Token[]) {
     }
 }
 
+function trimTokens(_tokens: Token[]) {
+    const tokens = [..._tokens]
+
+    while (tokens.length && tokens[0].type === TOKEN_TYPE.NEW_LINE) {
+        tokens.shift()
+    }
+
+    while (
+        tokens.length &&
+        [TOKEN_TYPE.NEW_LINE, TOKEN_TYPE.SPACE, TOKEN_TYPE.INDENT].includes(
+            tokens[tokens.length - 1].type,
+        )
+    ) {
+        tokens.pop()
+    }
+
+    return tokens
+}
+
 function isCodeEnded(leftTokens: Token[]) {
-    // const tokens = [...leftTokens]
-
-    // while (
-    //     [TOKEN_TYPE.NEW_LINE, TOKEN_TYPE.SPACE, TOKEN_TYPE.INDENT].includes(
-    //         tokens[0].type,
-    //     )
-    // ) {
-    //     tokens.shift()
-    // }
-
-    // return tokens.length === 0
-
     for (let i = 0; i < leftTokens.length; i++) {
         const type = leftTokens[i].type
 

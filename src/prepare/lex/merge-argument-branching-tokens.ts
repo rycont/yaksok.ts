@@ -1,5 +1,5 @@
 import { UnexpectedEndOfCodeError } from '../../error/prepare.ts'
-import { Token, TOKEN_TYPE } from './token.ts'
+import { Token, TOKEN_TYPE } from '../tokenize/token.ts'
 
 export function mergeArgumentBranchingTokens(
     _tokens: Token[],

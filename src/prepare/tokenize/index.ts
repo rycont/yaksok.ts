@@ -1,12 +1,7 @@
-import { mergeArgumentBranchingTokens } from './merge-argument-branching-tokens.ts'
-import { UnexpectedCharError } from '../../error/prepare.ts'
 import { NotAcceptableSignal } from './signal.ts'
 import { RULES } from './rules.ts'
 
-import type { Token } from './token.ts'
-import type { CodeFile } from '../../type/code-file.ts'
-import { getFunctionDeclareRanges } from '../../util/get-function-declare-ranges.ts'
-import { assertIndentValidity } from './indent-validity.ts'
+import { TOKEN_TYPE, type Token } from './token.ts'
 
 class Tokenizer {
     private tokens: Token[] = []
@@ -27,31 +22,15 @@ class Tokenizer {
                 break
             }
 
-            const starterMatchedRules = RULES.filter((rule) => {
-                if (Array.isArray(rule.starter)) {
-                    return rule.starter.includes(char)
-                }
-
-                return char.match(rule.starter)
-            })
-
-            if (starterMatchedRules.length === 0) {
-                throw new UnexpectedCharError({
-                    resource: {
-                        char,
-                        parts: '코드',
-                    },
-                    position: {
-                        column: this.column,
-                        line: this.line,
-                    },
-                })
-            }
-
             let accepted = false
 
-            for (const rule of starterMatchedRules) {
-                const codeCheckpoint = [...this.code]
+            for (const rule of RULES) {
+                const isStarterMatched = this.isStarterMatched(rule, char)
+                if (!isStarterMatched) {
+                    continue
+                }
+
+                const codeCheckpoint = this.code.slice()
 
                 let columnCheckpoint = this.column
                 let lineCheckpoint = this.line
@@ -100,30 +79,34 @@ class Tokenizer {
                 continue
             }
 
-            throw new UnexpectedCharError({
-                resource: {
-                    char: this.code.slice(0, 5).join(''),
-                    parts: '코드',
-                },
+            this.tokens.push({
+                type: TOKEN_TYPE.UNKNOWN,
                 position: {
                     column: this.column,
                     line: this.line,
                 },
+                value: char,
             })
+
+            this.code.shift()
+            this.column++
         }
 
         return this.tokens
     }
+
+    private isStarterMatched(rule: (typeof RULES)[number], char: string) {
+        if (Array.isArray(rule.starter)) {
+            return rule.starter.includes(char)
+        }
+
+        return char.match(rule.starter)
+    }
 }
 
-export function tokenize(codeFile: CodeFile): Token[] {
-    const tokens = new Tokenizer(codeFile.text).tokenize()
-    const functionDeclareRanges = getFunctionDeclareRanges(tokens)
-    const merged = mergeArgumentBranchingTokens(tokens, functionDeclareRanges)
-
-    assertIndentValidity(merged)
-
-    return merged
+export function tokenize(text: string): Token[] {
+    const tokens = new Tokenizer(text).tokenize()
+    return tokens
 }
 
 function preprocess(code: string) {

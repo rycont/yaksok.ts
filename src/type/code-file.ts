@@ -1,4 +1,6 @@
+import { mergeArgumentBranchingTokens } from '../prepare/lex/merge-argument-branching-tokens.ts'
 import { getFunctionDeclareRanges } from '../util/get-function-declare-ranges.ts'
+import { assertIndentValidity } from '../prepare/lex/indent-validity.ts'
 import { executer, type ExecuteResult } from '../executer/index.ts'
 import { tokenize } from '../prepare/tokenize/index.ts'
 import { parse } from '../prepare/parse/index.ts'
@@ -29,11 +31,22 @@ export class CodeFile {
     }
 
     public get tokens(): Token[] {
-        if (this.tokenized === null) {
-            this.tokenized = tokenize(this)
+        if (this.tokenized) {
+            return this.tokenized
         }
 
-        return this.tokenized
+        const tokens = tokenize(this.text)
+
+        const functionDeclareRanges = getFunctionDeclareRanges(tokens)
+        const merged = mergeArgumentBranchingTokens(
+            tokens,
+            functionDeclareRanges,
+        )
+
+        assertIndentValidity(merged)
+        this.tokenized = merged
+
+        return merged
     }
 
     public get ast(): Block {

@@ -1,9 +1,10 @@
+import { UnexpectedCharError } from '../../error/prepare.ts'
 import { Expression, Identifier, Node, Operator } from '../../node/base.ts'
 import { FFIBody } from '../../node/ffi.ts'
 import { Mention } from '../../node/mention.ts'
 import { Indent, EOL } from '../../node/misc.ts'
 import { NumberLiteral, StringLiteral } from '../../node/primitive-literal.ts'
-import { Token, TOKEN_TYPE } from './token.ts'
+import { Token, TOKEN_TYPE } from '../tokenize/token.ts'
 
 export function convertTokensToNodes(tokens: Token[]): Node[] {
     return tokens.map(mapTokenToNode).filter(Boolean) as Node[]
@@ -38,5 +39,12 @@ function mapTokenToNode(token: Token) {
             return null
         case TOKEN_TYPE.MENTION:
             return new Mention(token.value.slice(1), token.position)
+        case TOKEN_TYPE.UNKNOWN:
+            throw new UnexpectedCharError({
+                resource: {
+                    parts: '코드',
+                    char: token.value,
+                },
+            })
     }
 }
