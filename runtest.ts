@@ -1,8 +1,8 @@
-import { tokenize } from '@dalbit-yaksok/core'
+import { yaksok } from '@dalbit-yaksok/core'
 
 const CODE = `약속, 회전설정 (회전)
     결과: "rotate:" + 회전
-
+내 이름: "정한";
 약속, 시간설정 (시간)
     결과: "time:" + 시간
 
@@ -33,14 +33,4 @@ const CODE = `약속, 회전설정 (회전)
 각도 도 회전하기
 (각도)도 회전하기`
 
-for (let i = 0; i < CODE.length; i++) {
-    const tokens = tokenize(CODE.slice(0, i))
-    const lastToken = tokens[tokens.length - 1]
-}
-
-const MASK_SIZE = 8
-
-for (let i = 0; i < CODE.length - MASK_SIZE; i++) {
-    const maskedCode = CODE.slice(0, i) + CODE.slice(i + MASK_SIZE)
-    const tokens = tokenize(maskedCode)
-}
+yaksok(CODE)

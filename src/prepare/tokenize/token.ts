@@ -17,6 +17,7 @@ export enum TOKEN_TYPE {
     COLON = 'COLON',
     LINE_COMMENT = 'LINE_COMMENT',
     MENTION = 'MENTION',
+    UNKNOWN = 'UNKNOWN',
 }
 
 export interface Token {
@@ -42,4 +43,5 @@ export const TOKEN_TYPE_TO_TEXT: Record<TOKEN_TYPE, string> = {
     [TOKEN_TYPE.COLON]: '쌍점',
     [TOKEN_TYPE.LINE_COMMENT]: '주석',
     [TOKEN_TYPE.MENTION]: '불러오기',
+    [TOKEN_TYPE.UNKNOWN]: '알 수 없음',
 }
