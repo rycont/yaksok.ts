@@ -237,6 +237,10 @@ export const RULES: {
             let value = quote
 
             while (view() !== quote) {
+                if (view() === undefined) {
+                    return value
+                }
+
                 value += shift()!
             }
 

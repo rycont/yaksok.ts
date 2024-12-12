@@ -30,7 +30,7 @@ export class CodeFile {
 
     public get tokens(): Token[] {
         if (this.tokenized === null) {
-            this.tokenized = tokenize(this)
+            this.tokenized = tokenize(this.text)
         }
 
         return this.tokenized
