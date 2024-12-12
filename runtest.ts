@@ -1,4 +1,4 @@
-import { yaksok } from '@dalbit-yaksok/core'
+import { tokenize } from '@dalbit-yaksok/core'
 
 const CODE = `약속, 회전설정 (회전)
     결과: "rotate:" + 회전
@@ -33,4 +33,4 @@ const CODE = `약속, 회전설정 (회전)
 각도 도 회전하기
 (각도)도 회전하기`
 
-yaksok(CODE)
+tokenize(CODE)

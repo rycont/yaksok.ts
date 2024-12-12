@@ -288,13 +288,6 @@ export const RULES: {
             return value
         },
     },
-    {
-        type: TOKEN_TYPE.UNKNOWN,
-        starter: /./,
-        parse: (_, shift) => {
-            return shift()!
-        },
-    },
 ]
 
 function getAppliableOperators(prefix: string) {

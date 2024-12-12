@@ -1,8 +1,7 @@
-import { UnexpectedCharError } from '../../error/prepare.ts'
 import { NotAcceptableSignal } from './signal.ts'
 import { RULES } from './rules.ts'
 
-import type { Token } from './token.ts'
+import { TOKEN_TYPE, type Token } from './token.ts'
 
 class Tokenizer {
     private tokens: Token[] = []
@@ -80,16 +79,17 @@ class Tokenizer {
                 continue
             }
 
-            throw new UnexpectedCharError({
-                resource: {
-                    char: this.code.slice(0, 5).join(''),
-                    parts: '코드',
-                },
+            this.tokens.push({
+                type: TOKEN_TYPE.UNKNOWN,
                 position: {
                     column: this.column,
                     line: this.line,
                 },
+                value: char,
             })
+
+            this.code.shift()
+            this.column++
         }
 
         return this.tokens
