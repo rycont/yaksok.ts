@@ -1,12 +1,12 @@
-import typedoc from 'typedoc'
+import { Application } from 'typedoc'
 
-const app = await typedoc.Application.bootstrapWithPlugins({
-    entryPoints: ['./src/mod.ts'],
+const app = await Application.bootstrapWithPlugins({
+    entryPoints: ['../src/mod.ts'],
     name: '달빛약속',
     categorizeByGroup: true,
 })
 
-const outputDir = 'docs/api'
+const outputDir = 'api'
 const VALID_OPERATIONS = ['create', 'modify', 'rename', 'remove']
 
 const isWatch = Deno.args.includes('--watch')

@@ -1,8 +1,10 @@
+import { withSidebar } from 'vitepress-sidebar'
+import pluginDeno from '@deno/vite-plugin'
 import { defineConfig } from 'vitepress'
-import { withSidebar, type VitePressSidebarOptions } from 'vitepress-sidebar'
+
+import type { VitePressSidebarOptions } from 'vitepress-sidebar/types'
 
 const SIDEBAR_CONFIG: VitePressSidebarOptions = {
-    documentRootPath: '/docs',
     hyphenToSpace: true,
     sortMenusOrderNumericallyFromLink: true,
     sortFolderTo: 'bottom',
@@ -36,6 +38,7 @@ export default defineConfig(
                 build: {
                     minify: false,
                 },
+                plugins: [pluginDeno()],
             },
         },
         SIDEBAR_CONFIG,

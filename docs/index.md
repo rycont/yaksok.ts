@@ -29,7 +29,7 @@ features:
 ---
 
 <script setup>
-import CodeRunner from "../docs-component/code-runner.vue"
+import CodeRunner from "./_/code-runner.vue"
 
 const DEFAULT_CODE = `약속, 키가 (키)cm이고 몸무게가 (몸무게)일 때 비만도
     결과: 몸무게 / (키 / 100 * 키 / 100)
