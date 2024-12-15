@@ -16,8 +16,8 @@
         "typedoc": "deno run --allow-read --allow-write --allow-env --allow-run ./_/create-docs.ts",
         "vitepress-dev": "deno run -A npm:vitepress dev .",
         "vitepress-build": "deno run -A npm:vitepress build .",
-        "docs-dev": "deno task typedoc --watch & deno task vitepress-dev",
-        "docs-build": "deno task typedoc && deno task vitepress-build"
+        "dev": "deno task typedoc --watch & deno task vitepress-dev",
+        "build": "deno task typedoc && deno task vitepress-build"
     },
     "exports": "./docs/.vitepress/dist"
 }
