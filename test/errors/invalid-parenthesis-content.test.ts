@@ -1,6 +1,6 @@
 import { assertIsError, unreachable } from 'assert'
-import { yaksok } from '../../src/mod.ts'
-import { CannotParseError } from '../../src/error/index.ts'
+import { yaksok } from '../../core/mod.ts'
+import { CannotParseError } from '../../core/error/index.ts'
 
 Deno.test('올바르지 않은 괄호 묶음', async () => {
     try {

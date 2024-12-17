@@ -1,9 +1,9 @@
 import { assertIsError } from '@std/assert'
-import { yaksok } from '../../src/mod.ts'
+import { yaksok } from '../../core/mod.ts'
 import {
     UnexpectedEndOfCodeError,
     UnexpectedTokenError,
-} from '../../src/error/index.ts'
+} from '../../core/error/index.ts'
 
 Deno.test('온전하지 않은 약속 정의', async () => {
     try {

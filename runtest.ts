@@ -1,4 +1,4 @@
-import { tokenize } from '@dalbit-yaksok/core'
+import { tokenize } from './core/mod.ts'
 
 const CODE = `약속, 회전설정 (회전)
     결과: "rotate:" + 회전

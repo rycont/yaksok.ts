@@ -1,5 +1,5 @@
 import { assertIsError, unreachable } from 'assert'
-import { yaksok } from '../../src/mod.ts'
+import { yaksok } from '../../core/mod.ts'
 
 Deno.test('끝나지 못한 괄호', async () => {
     try {

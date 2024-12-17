@@ -1,6 +1,6 @@
 import { assertIsError, unreachable } from 'assert'
-import { yaksok } from '../../src/mod.ts'
-import { FunctionMustHaveOneOrMoreStringPartError } from '../../src/error/index.ts'
+import { yaksok } from '../../core/mod.ts'
+import { FunctionMustHaveOneOrMoreStringPartError } from '../../core/error/index.ts'
 
 Deno.test('고정된 부분이 없는 함수', async () => {
     try {

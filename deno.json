@@ -4,14 +4,7 @@
         "assert": "jsr:@std/assert@^1.0.7"
     },
     "tasks": {
-        "coverage": "rm -rf ./cov && deno test --allow-net --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
-        "coverage-list": "rm -rf ./cov && deno test --allow-net --allow-read --parallel --coverage=cov && deno coverage ./cov && rm -rf ./cov",
-        "test": "deno task test-purge && deno task test-circular-dependencies && deno task test-cases && deno task test-deploy && deno task test-docs",
-        "test-purge": "rm -rf ./docs/.vitepress/dist && rm -rf ./docs/.vitepress/cache",
-        "test-circular-dependencies": "deno run -A npm:madge --circular --extensions ts ./",
-        "test-cases": "deno test --allow-net --allow-read --parallel && deno lint",
-        "test-deploy": "deno publish --dry-run --allow-dirty && cd quickjs && deno publish --dry-run --allow-dirty && cd ..",
-        "test-docs": "deno task docs-build"
+        "test-cases": "deno test --quiet --allow-net --allow-read --parallel && deno lint"
     },
     "lint": {
         "rules": {
@@ -24,13 +17,11 @@
             ]
         }
     },
-    "name": "@dalbit-yaksok/core",
-    "version": "0.2.0-alpha.9+20241212.nightly",
-    "exports": "./src/mod.ts",
     "nodeModulesDir": "auto",
     "workspace": [
-        "./quickjs",
-        "./docs"
+        "quickjs",
+        "docs",
+        "core"
     ],
     "publish": {
         "include": [

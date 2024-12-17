@@ -14,11 +14,13 @@
         "vue": "npm:vue@^3.5.12"
     },
     "tasks": {
+        "purge": "rm -rf ./docs/.vitepress/dist && rm -rf ./docs/.vitepress/cache",
         "typedoc": "deno run --allow-read --allow-write --allow-env --allow-run ./_/create-docs.ts",
         "vitepress-dev": "deno run -A npm:vitepress dev .",
         "vitepress-build": "deno run -A npm:vitepress build .",
         "dev": "deno task typedoc --watch & deno task vitepress-dev",
-        "build": "deno task typedoc && deno task vitepress-build"
+        "build": "deno task purge && deno task typedoc && deno task vitepress-build",
+        "test": "deno task build && deno task purge"
     },
     "exports": "./docs/.vitepress/dist"
 }

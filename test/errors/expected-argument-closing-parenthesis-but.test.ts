@@ -1,6 +1,6 @@
 import { assertIsError, unreachable } from 'assert'
-import { yaksok } from '../../src/mod.ts'
-import { UnexpectedTokenError } from '../../src/error/index.ts'
+import { yaksok } from '../../core/mod.ts'
+import { UnexpectedTokenError } from '../../core/error/index.ts'
 
 Deno.test('인자를 닫는 괄호가 제 위치에 없습니다', async () => {
     try {

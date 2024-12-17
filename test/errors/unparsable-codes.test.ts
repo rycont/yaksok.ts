@@ -1,7 +1,7 @@
 import { assertIsError } from '@std/assert'
-import { yaksok } from '../../src/mod.ts'
-import { CannotParseError } from '../../src/error/index.ts'
-import { UnexpectedCharError } from '../../src/error/prepare.ts'
+import { yaksok } from '../../core/mod.ts'
+import { CannotParseError } from '../../core/error/index.ts'
+import { UnexpectedCharError } from '../../core/error/prepare.ts'
 
 Deno.test('Unparsable codes', async () => {
     try {

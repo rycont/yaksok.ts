@@ -1,4 +1,4 @@
-import { yaksok, ListIndexTypeError } from '@dalbit-yaksok/core'
+import { yaksok, ListIndexTypeError } from '../../core/mod.ts'
 import { assertIsError, unreachable } from '@std/assert'
 
 Deno.test('Key for list fancy indexing is not a number', async () => {

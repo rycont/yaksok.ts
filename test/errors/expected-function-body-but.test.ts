@@ -1,7 +1,7 @@
 import { assertIsError } from 'assert'
-import { yaksok } from '../../src/mod.ts'
-import { UnexpectedTokenError } from '../../src/error/index.ts'
-import { UnexpectedEndOfCodeError } from '../../src/error/prepare.ts'
+import { yaksok } from '../../core/mod.ts'
+import { UnexpectedTokenError } from '../../core/error/index.ts'
+import { UnexpectedEndOfCodeError } from '../../core/error/prepare.ts'
 
 Deno.test('온전하지 않은 약속: 줄바꿈 후에 들여쓰기 없음', async () => {
     try {

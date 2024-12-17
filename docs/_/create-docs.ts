@@ -1,7 +1,7 @@
 import { Application } from 'typedoc'
 
 const app = await Application.bootstrapWithPlugins({
-    entryPoints: ['../src/mod.ts'],
+    entryPoints: ['../core/mod.ts'],
     name: '달빛약속',
     categorizeByGroup: true,
     plugin: ['typedoc-plugin-markdown', 'typedoc-vitepress-theme'],
