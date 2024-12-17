@@ -9,6 +9,7 @@ export { Scope } from './executer/scope.ts'
 export * from './node/index.ts'
 
 export { tokenize } from './prepare/tokenize/index.ts'
+export * from './prepare/tokenize/token.ts'
 
 export type { RuntimeConfig } from './runtime/runtime-config.ts'
 export type { FunctionInvokingParams } from './constant/type.ts'
