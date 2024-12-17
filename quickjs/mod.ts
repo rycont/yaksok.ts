@@ -12,7 +12,7 @@ import {
     NumberValue,
     StringValue,
     type FunctionInvokingParams,
-} from '@dalbit-yaksok/core'
+} from '../core/mod.ts'
 import { bold, dim } from './util.ts'
 
 export class QuickJS {

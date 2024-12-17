@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, useTemplateRef, watch } from 'vue'
 import AnsiCode from 'ansi-to-html'
-import { yaksok } from '../src/mod.ts'
+import { yaksok } from '@dalbit-yaksok/core'
 
 const props = defineProps({
     code: {
@@ -74,6 +74,7 @@ async function runCode() {
                 stdout.value = [...stdout.value, output]
             },
             stderr: (output) => {
+                console.log({ output })
                 stdout.value = [...stdout.value, ansiToHtml(output)]
             },
         })

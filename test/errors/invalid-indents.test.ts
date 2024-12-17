@@ -1,7 +1,7 @@
 import { assertIsError } from '@std/assert'
-import { IndentIsNotMultipleOf4Error } from '../../src/error/index.ts'
-import { IndentLevelMismatchError } from '../../src/error/prepare.ts'
-import { yaksok } from '../../src/mod.ts'
+import { IndentIsNotMultipleOf4Error } from '../../core/error/index.ts'
+import { IndentLevelMismatchError } from '../../core/error/prepare.ts'
+import { yaksok } from '../../core/mod.ts'
 
 Deno.test('온전하지 않은 인덴트', async () => {
     try {

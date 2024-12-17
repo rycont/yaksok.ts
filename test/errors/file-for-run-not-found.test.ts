@@ -1,6 +1,6 @@
-import { yaksok } from '@dalbit-yaksok/core'
+import { yaksok } from '../../core/mod.ts'
 import { assertIsError } from '@std/assert'
-import { FileForRunNotExistError } from '../../src/error/prepare.ts'
+import { FileForRunNotExistError } from '../../core/error/prepare.ts'
 
 Deno.test('없는 파일 실행 요청', async () => {
     try {

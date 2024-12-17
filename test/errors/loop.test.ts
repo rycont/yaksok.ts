@@ -1,5 +1,5 @@
 import { assertIsError, unreachable } from '@std/assert'
-import { yaksok } from '../../src/mod.ts'
+import { yaksok } from '../../core/mod.ts'
 import {
     InvalidTypeForOperatorError,
     IndexOutOfRangeError,
@@ -10,7 +10,7 @@ import {
     RangeStartMustBeNumberError,
     TargetIsNotIndexedValueError,
     ListIndexMustBeGreaterThan1Error,
-} from '../../src/error/index.ts'
+} from '../../core/error/index.ts'
 
 Deno.test('Error raised in loop', async () => {
     try {

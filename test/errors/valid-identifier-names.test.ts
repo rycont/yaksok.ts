@@ -1,6 +1,6 @@
 import { assertIsError, unreachable } from 'assert'
-import { yaksok } from '../../src/mod.ts'
-import { CannotUseReservedWordForIdentifierNameError } from '../../src/error/index.ts'
+import { yaksok } from '../../core/mod.ts'
+import { CannotUseReservedWordForIdentifierNameError } from '../../core/error/index.ts'
 
 Deno.test('Valid identifier names', async () => {
     try {

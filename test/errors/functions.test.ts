@@ -1,6 +1,6 @@
 import { assertIsError, unreachable } from 'assert'
-import { yaksok } from '../../src/mod.ts'
-import { InvalidTypeForOperatorError } from '../../src/error/index.ts'
+import { yaksok } from '../../core/mod.ts'
+import { InvalidTypeForOperatorError } from '../../core/error/index.ts'
 
 Deno.test('약속 안에서 발생한 오류', async () => {
     try {

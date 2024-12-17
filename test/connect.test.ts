@@ -1,9 +1,9 @@
 import { assertEquals, assertIsError, assert } from '@std/assert'
 import { QuickJS } from '@dalbit-yaksok/quickjs'
-import { yaksok } from '../src/mod.ts'
-import { FFIResultTypeIsNotForYaksokError } from '../src/error/ffi.ts'
-import { NumberValue, StringValue } from '../src/value/primitive.ts'
-import { ListValue } from '../src/value/list.ts'
+import { yaksok } from '../core/mod.ts'
+import { FFIResultTypeIsNotForYaksokError } from '../core/error/ffi.ts'
+import { NumberValue, StringValue } from '../core/value/primitive.ts'
+import { ListValue } from '../core/value/list.ts'
 
 const quickJS = new QuickJS({
     prompt: () => {
