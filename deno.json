@@ -21,5 +21,8 @@
         "core",
         "test"
     ],
-    "version": "0.2.0-alpha.9+20241212.nightly"
+    "version": "0.2.0-alpha.9+20241212.nightly",
+    "tasks": {
+        "publish": "deno run --allow-read --allow-write apply-version.ts && deno task --recursive test && deno publish --allow-dirty"
+    }
 }
