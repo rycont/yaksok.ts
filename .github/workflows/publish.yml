@@ -23,8 +23,11 @@ jobs:
               with:
                   deno-version: v2.x
 
+            - name: Install Dependencies
+              run: deno install --allow-scripts
+
             - name: Run tests
-              run: deno task test
+              run: deno task --recursive test
 
             - name: Get version from deno.json
               id: get_version

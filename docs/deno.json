@@ -1,5 +1,4 @@
 {
-    "name": "@dalbit-yaksok/docs",
     "imports": {
         "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.2",
         "@vue/runtime-dom": "npm:@vue/runtime-dom@^3.5.12",
@@ -21,6 +20,5 @@
         "dev": "deno task typedoc --watch & deno task vitepress-dev",
         "build": "deno task purge; deno task typedoc && deno task vitepress-build",
         "test": "deno task build; deno task purge"
-    },
-    "exports": "./docs/.vitepress/dist"
+    }
 }

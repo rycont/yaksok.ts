@@ -7,6 +7,5 @@
         "test": "deno task check-circular-dependencies & deno task check-deploy"
     },
     "name": "@dalbit-yaksok/core",
-    "version": "0.2.0-alpha.9+20241212.nightly",
     "exports": "./mod.ts"
 }
