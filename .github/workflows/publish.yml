@@ -27,7 +27,7 @@ jobs:
               run: deno install --allow-scripts
 
             - name: Run tests
-              run: deno task --recursive test
+              run: deno task test
 
             - name: Get version from deno.json
               id: get_version
