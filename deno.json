@@ -18,7 +18,8 @@
     "workspace": [
         "quickjs",
         "docs",
-        "core"
+        "core",
+        "test"
     ],
     "publish": {
         "include": [
