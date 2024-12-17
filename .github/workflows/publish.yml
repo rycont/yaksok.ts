@@ -23,6 +23,9 @@ jobs:
               with:
                   deno-version: v2.x
 
+            - name: Apply Workspace Version
+              run: deno task apply-version
+
             - name: Install Dependencies
               run: deno install --allow-scripts
 
