@@ -5,6 +5,10 @@ for (const subModule of subModules) {
     const subModulePath = `./${subModule}/deno.json`
     const subModuleJson = JSON.parse(await Deno.readTextFile(subModulePath))
 
+    if (!subModuleJson.name) {
+        continue
+    }
+
     subModuleJson.version = rootModule.version
 
     await Deno.writeTextFile(
