@@ -8,6 +8,7 @@
         "monaco-editor": "npm:monaco-editor@^0.52.0",
         "typedoc": "npm:typedoc@0.27.4",
         "typedoc-plugin-markdown": "npm:typedoc-plugin-markdown@^4.2.10",
+        "typedoc-vitepress-theme": "npm:typedoc-vitepress-theme@^1.1.1",
         "vitepress": "npm:vitepress@^1.5.0",
         "vitepress-sidebar": "npm:vitepress-sidebar@^1.29.0",
         "vue": "npm:vue@^3.5.12"

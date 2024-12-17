@@ -4,9 +4,10 @@ const app = await Application.bootstrapWithPlugins({
     entryPoints: ['../src/mod.ts'],
     name: '달빛약속',
     categorizeByGroup: true,
+    plugin: ['typedoc-plugin-markdown', 'typedoc-vitepress-theme'],
+    skipErrorChecking: true,
 })
 
-const outputDir = 'api'
 const VALID_OPERATIONS = ['create', 'modify', 'rename', 'remove']
 
 const isWatch = Deno.args.includes('--watch')
@@ -15,7 +16,7 @@ const CWD = Deno.cwd()
 async function buildMarkdownDocs() {
     const project = await app.convert()
     if (project) {
-        await app.generateDocs(project, outputDir)
+        await app.generateOutputs(project)
     }
 }
 

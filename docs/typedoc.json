@@ -1,9 +1,0 @@
-{
-    "entryPoints": ["../src/mod.ts"],
-    "out": "./api",
-    "skipErrorChecking": true,
-    "plugin": ["typedoc-plugin-markdown"],
-    "interfacePropertiesFormat": "htmlTable",
-    "useCodeBlocks": true
-    // "enumMembersFormat": "htmlTable"
-}
