@@ -1,8 +1,6 @@
 name: Test
 
 on:
-    push:
-        branches: ['main']
     pull_request:
         branches: ['main']
 
@@ -21,6 +19,9 @@ jobs:
               uses: denoland/setup-deno@v2
               with:
                   deno-version: v2.x
+
+            - name: Apply Workspace Version
+              run: deno task apply-version
 
             - name: Install Dependencies
               run: deno install --allow-scripts

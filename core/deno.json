@@ -1,12 +1,12 @@
 {
-    "tasks": {
-        "coverage": "rm -rf ./cov && deno test --quiet --allow-net --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
-        "coverage-list": "rm -rf ./cov && deno test --quiet --allow-net --allow-read --parallel --coverage=cov && deno coverage ./cov && rm -rf ./cov",
-        "check-circular-dependencies": "deno run -A npm:madge --circular --extensions ts ./",
-        "check-deploy": "deno publish --dry-run --allow-dirty",
-        "test": "deno task check-circular-dependencies & deno task check-deploy"
-    },
-    "name": "@dalbit-yaksok/core",
-    "version": "0.2.0-alpha.9+20241212.nightly",
-    "exports": "./mod.ts"
+  "tasks": {
+    "coverage": "rm -rf ./cov && deno test --quiet --allow-net --allow-read --parallel --coverage=cov && deno coverage --detailed ./cov && rm -rf ./cov",
+    "coverage-list": "rm -rf ./cov && deno test --quiet --allow-net --allow-read --parallel --coverage=cov && deno coverage ./cov && rm -rf ./cov",
+    "check-circular-dependencies": "deno run -A npm:madge --circular --extensions ts ./",
+    "check-deploy": "deno publish --dry-run --allow-dirty",
+    "test": "deno task check-circular-dependencies & deno task check-deploy"
+  },
+  "name": "@dalbit-yaksok/core",
+  "exports": "./mod.ts",
+  "version": "0.2.0-alpha.10+20241217.nightly"
 }

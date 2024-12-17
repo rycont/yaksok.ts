@@ -21,9 +21,9 @@
         "core",
         "test"
     ],
-    "publish": {
-        "include": [
-            "./src"
-        ]
+    "version": "0.2.0-alpha.10+20241217.nightly",
+    "tasks": {
+        "apply-version": "deno run --allow-read --allow-write apply-version.ts",
+        "publish": "deno task --recursive test && deno publish --allow-dirty"
     }
 }
