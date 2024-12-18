@@ -28,7 +28,7 @@ if (!isWatch) {
 
 console.log('Waiting for file changes...')
 
-const watcher = Deno.watchFs('./src', {
+const watcher = Deno.watchFs(new URL('../../core', import.meta.url).pathname, {
     recursive: true,
 })
 

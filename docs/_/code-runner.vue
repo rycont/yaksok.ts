@@ -1,7 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, useTemplateRef, watch } from 'vue'
 import AnsiCode from 'ansi-to-html'
-import { yaksok } from '@dalbit-yaksok/core'
+import type { editor, languages } from 'monaco-editor'
+import { yaksok, tokenize } from '@dalbit-yaksok/core'
 
 const props = defineProps({
     code: {
@@ -22,16 +23,97 @@ const editorRef = useTemplateRef('editor')
 
 const code = ref(props.code)
 const stdout = ref([])
-let editorInstance = null
+
+let editorInstance: editor.IStandaloneCodeEditor | null = null
 
 const ansiCode = new AnsiCode()
 
-async function initializeMonaco() {
-    const editorElement = editorRef.value
+class DalbitYaksokMonacoTokenizer implements languages.TokensProvider {
+    getInitialState() {
+        return {
+            clone() {
+                return this
+            },
+            equals() {
+                return false
+            },
+        }
+    }
 
-    const { editor, KeyCode, KeyMod } = await import(
+    tokenize(line: string, state: any) {
+        const tokenized = tokenize(line)
+        const tokens = tokenized.map((token) => {
+            const scopes =
+                (
+                    {
+                        STRING: 'string',
+                        OPERATOR: 'operator',
+                        NUMBER: 'number',
+                        SPACE: 'whitespace',
+                        INDENT: 'whitespace',
+                        COMMA: 'punctuation',
+                        OPENING_PARENTHESIS: 'punctuation',
+                        CLOSING_PARENTHESIS: 'punctuation',
+                        OPENING_BRACKET: 'punctuation',
+                        CLOSING_BRACKET: 'punctuation',
+                        FFI_BODY: 'string',
+                        NEW_LINE: 'whitespace',
+                        COLON: 'punctuation',
+                        LINE_COMMENT: 'comment',
+                        MENTION: 'tag',
+                        UNKNOWN: 'invalid',
+                    } as Record<string, string>
+                )[token.type] || 'invalid'
+
+            return {
+                startIndex: token.position.column - 1,
+                scopes,
+            }
+        })
+
+        return {
+            tokens,
+            endState: state,
+        }
+    }
+}
+
+async function initializeMonaco() {
+    const editorElement = editorRef.value!
+
+    const { editor, KeyCode, KeyMod, languages } = await import(
         'monaco-editor/esm/vs/editor/editor.api'
     )
+
+    languages.register({ id: 'yaksok' })
+
+    languages.onLanguage('yaksok', () => {
+        languages.setLanguageConfiguration('yaksok', {
+            comments: {
+                lineComment: '//',
+            },
+            brackets: [
+                ['{', '}'],
+                ['[', ']'],
+                ['(', ')'],
+            ],
+            autoClosingPairs: [
+                { open: '{', close: '}' },
+                { open: '[', close: ']' },
+                { open: '(', close: ')' },
+                { open: '"', close: '"', notIn: ['string'] },
+                { open: "'", close: "'", notIn: ['string'] },
+            ],
+            surroundingPairs: [
+                { open: '{', close: '}' },
+                { open: '[', close: ']' },
+                { open: '(', close: ')' },
+                { open: '"', close: '"' },
+                { open: "'", close: "'" },
+            ],
+        })
+        languages.setTokensProvider('yaksok', new DalbitYaksokMonacoTokenizer())
+    })
 
     editorInstance = editor.create(editorElement, {
         automaticLayout: true,
@@ -41,14 +123,15 @@ async function initializeMonaco() {
             enabled: false,
         },
         lineNumbersMinChars: 3,
+        language: 'yaksok',
     })
 
     editorInstance.onDidChangeModelContent(() => {
-        code.value = editorInstance.getValue()
+        code.value = editorInstance!.getValue()
     })
 
     editorInstance.onDidFocusEditorText(() => {
-        editorInstance.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, runCode)
+        editorInstance!.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, runCode)
     })
 }
 
@@ -62,7 +145,7 @@ function ansiToHtml(content) {
 }
 
 function viewAnswer() {
-    editorInstance.setValue(props.challenge.answerCode)
+    editorInstance!.setValue(props.challenge.answerCode)
 }
 
 async function runCode() {
