@@ -39,6 +39,8 @@ async function initializeMonaco() {
 
     languages.register({ id: 'yaksok' })
 
+    const tokenizeProvider = new TokenizeProvider(code.value)
+
     languages.onLanguage('yaksok', () => {
         languages.setLanguageConfiguration('yaksok', {
             comments: {
@@ -64,7 +66,8 @@ async function initializeMonaco() {
                 { open: "'", close: "'" },
             ],
         })
-        languages.setTokensProvider('yaksok', new TokenizeProvider())
+
+        languages.setTokensProvider('yaksok', tokenizeProvider)
     })
 
     editorInstance = editor.create(editorElement, {
@@ -79,7 +82,10 @@ async function initializeMonaco() {
     })
 
     editorInstance.onDidChangeModelContent(() => {
-        code.value = editorInstance!.getValue()
+        const updatedCode = editorInstance!.getValue()
+        code.value = updatedCode
+
+        tokenizeProvider.updateCode(updatedCode)
     })
 
     editorInstance.onDidFocusEditorText(() => {

@@ -1,8 +1,15 @@
 import type { languages } from 'monaco-editor'
-import { tokenize } from '@dalbit-yaksok/core'
+import { tokenize, parse, CodeFile } from '@dalbit-yaksok/core'
 import { mergeSyntax } from './merge-syntax.ts'
 
 export class TokenizeProvider implements languages.TokensProvider {
+    constructor(private code: string) {}
+
+    updateCode(code: string) {
+        console.log(parse(new CodeFile(code)))
+        this.code = code
+    }
+
     getInitialState() {
         return {
             clone() {
