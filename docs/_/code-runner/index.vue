@@ -2,7 +2,9 @@
 import { onMounted, ref, useTemplateRef, watch } from 'vue'
 import AnsiCode from 'ansi-to-html'
 import type { editor, languages } from 'monaco-editor'
+
 import { yaksok, tokenize } from '@dalbit-yaksok/core'
+import { TokenizeProvider } from './tokenize-provider'
 
 const props = defineProps({
     code: {
@@ -27,56 +29,6 @@ const stdout = ref([])
 let editorInstance: editor.IStandaloneCodeEditor | null = null
 
 const ansiCode = new AnsiCode()
-
-class DalbitYaksokMonacoTokenizer implements languages.TokensProvider {
-    getInitialState() {
-        return {
-            clone() {
-                return this
-            },
-            equals() {
-                return false
-            },
-        }
-    }
-
-    tokenize(line: string, state: any) {
-        const tokenized = tokenize(line)
-        const tokens = tokenized.map((token) => {
-            const scopes =
-                (
-                    {
-                        STRING: 'string',
-                        OPERATOR: 'operator',
-                        NUMBER: 'number',
-                        SPACE: 'whitespace',
-                        INDENT: 'whitespace',
-                        COMMA: 'punctuation',
-                        OPENING_PARENTHESIS: 'punctuation',
-                        CLOSING_PARENTHESIS: 'punctuation',
-                        OPENING_BRACKET: 'punctuation',
-                        CLOSING_BRACKET: 'punctuation',
-                        FFI_BODY: 'string',
-                        NEW_LINE: 'whitespace',
-                        COLON: 'punctuation',
-                        LINE_COMMENT: 'comment',
-                        MENTION: 'tag',
-                        UNKNOWN: 'invalid',
-                    } as Record<string, string>
-                )[token.type] || 'invalid'
-
-            return {
-                startIndex: token.position.column - 1,
-                scopes,
-            }
-        })
-
-        return {
-            tokens,
-            endState: state,
-        }
-    }
-}
 
 async function initializeMonaco() {
     const editorElement = editorRef.value!
@@ -112,7 +64,7 @@ async function initializeMonaco() {
                 { open: "'", close: "'" },
             ],
         })
-        languages.setTokensProvider('yaksok', new DalbitYaksokMonacoTokenizer())
+        languages.setTokensProvider('yaksok', new TokenizeProvider())
     })
 
     editorInstance = editor.create(editorElement, {
