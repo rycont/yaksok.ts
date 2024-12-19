@@ -3,6 +3,7 @@ export { ValueType, ObjectValue, PrimitiveValue } from './value/base.ts'
 export { ListValue } from './value/list.ts'
 
 export { CodeFile } from './type/code-file.ts'
+export type { Position } from './type/position.ts'
 export { yaksok, Runtime } from './runtime/index.ts'
 
 export { Scope } from './executer/scope.ts'

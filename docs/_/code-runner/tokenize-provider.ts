@@ -1,13 +1,40 @@
 import type { languages } from 'monaco-editor'
-import { tokenize, parse, CodeFile } from '@dalbit-yaksok/core'
-import { mergeSyntax } from './merge-syntax.ts'
+import { parse, CodeFile } from '@dalbit-yaksok/core'
+import { nodeToColorTokens } from './ast-to-colorize.ts'
+import { ColorPart } from './type.ts'
 
 export class TokenizeProvider implements languages.TokensProvider {
-    constructor(private code: string) {}
+    private colorPartsByLine: Map<number, ColorPart[]>
+    private lines: string[]
+
+    constructor(private code: string) {
+        this.lines = code.split('\n')
+        this.colorPartsByLine = this.createColorParts(code)
+    }
+
+    createColorParts(code: string) {
+        const ast = parse(new CodeFile(code)).ast
+        const colorParts = nodeToColorTokens(ast)
+
+        const colorPartsByLine = new Map<number, ColorPart[]>(
+            new Array(this.lines.length).fill(0).map((_, index) => [index, []]),
+        )
+        for (const colorPart of colorParts) {
+            colorPartsByLine.get(colorPart.position.line - 1)!.push(colorPart)
+        }
+
+        console.log({ colorPartsByLine })
+
+        return colorPartsByLine
+    }
 
     updateCode(code: string) {
-        console.log(parse(new CodeFile(code)))
         this.code = code
+        this.lines = code.split('\n')
+
+        console.time('Parse')
+        this.createColorParts(code)
+        console.timeEnd('Parse')
     }
 
     getInitialState() {
@@ -22,40 +49,16 @@ export class TokenizeProvider implements languages.TokensProvider {
     }
 
     tokenize(line: string, state: any) {
-        const tokenized = mergeSyntax(tokenize(line))
-        const tokens = tokenized.map((token) => {
-            const scopes =
-                token.scope ||
-                (
-                    {
-                        STRING: 'string',
-                        OPERATOR: 'operator',
-                        NUMBER: 'number',
-                        SPACE: 'whitespace',
-                        INDENT: 'whitespace',
-                        COMMA: 'punctuation',
-                        OPENING_PARENTHESIS: 'punctuation',
-                        CLOSING_PARENTHESIS: 'punctuation',
-                        OPENING_BRACKET: 'punctuation',
-                        CLOSING_BRACKET: 'punctuation',
-                        FFI_BODY: 'string',
-                        NEW_LINE: 'whitespace',
-                        COLON: 'punctuation',
-                        LINE_COMMENT: 'comment',
-                        MENTION: 'tag',
-                        UNKNOWN: 'invalid',
-                    } as Record<string, string>
-                )[token.type] ||
-                'invalid'
-
-            return {
-                startIndex: token.position.column - 1,
-                scopes,
-            }
-        })
+        const lineNumber = this.lines.indexOf(line)
+        const colorParts = this.colorPartsByLine
+            .get(lineNumber)!
+            .map((part) => ({
+                scopes: part.scopes,
+                startIndex: part.position.column,
+            }))
 
         return {
-            tokens,
+            tokens: colorParts,
             endState: state,
         }
     }
