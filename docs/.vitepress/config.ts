@@ -39,6 +39,13 @@ export default defineConfig(
                     minify: false,
                 },
                 plugins: [pluginDeno()],
+                server: {
+                    fs: {
+                        allow: [
+                            '..'
+                        ]
+                    }
+                }
             },
         },
         SIDEBAR_CONFIG,
