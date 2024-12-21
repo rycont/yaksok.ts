@@ -29,12 +29,12 @@ features:
 ---
 
 <script setup>
-import CodeRunner from "./_/code-runner.vue"
 
 const DEFAULT_CODE = `약속, 키가 (키)cm이고 몸무게가 (몸무게)일 때 비만도
     결과: 몸무게 / (키 / 100 * 키 / 100)
 
-비만도: 키가 (170)cm이고 몸무게가 (70)일 때 비만도
+내_이름: ""
+비만도: 키가 (170 + 내_이름)cm이고 몸무게가 (70)일 때 비만도 # 주석입니다
 
 비만도 보여주기
 비만도 보여줄까말까`
@@ -44,4 +44,4 @@ const codeFromUrl = (globalThis.location && new URL(globalThis.location.href).se
 
 ## 지금 달빛약속 코드 실행해보기
 
-<CodeRunner id="demo-code-runner" :code="codeFromUrl" />
+<code-runner id="demo-code-runner" :code="codeFromUrl" />
