@@ -1,7 +1,9 @@
 import type { languages } from 'monaco-editor'
 import { parse, CodeFile } from '@dalbit-yaksok/core'
-import { nodeToColorTokens } from './ast-to-colorize.ts'
+
 import { ColorPart } from './type.ts'
+import { nodeToColorTokens } from './ast-to-colorize/index.ts'
+import { getCommentColorParts } from './ast-to-colorize/get-comment-color-part.ts'
 
 export class TokenizeProvider implements languages.TokensProvider {
     private colorPartsByLine: Map<number, ColorPart[]>
@@ -13,8 +15,13 @@ export class TokenizeProvider implements languages.TokensProvider {
     }
 
     createColorParts(code: string) {
-        const ast = parse(new CodeFile(code)).ast
-        const colorParts = nodeToColorTokens(ast)
+        const codeFile = new CodeFile(code)
+        const { ast } = parse(codeFile)
+
+        const nodeColorParts = nodeToColorTokens(ast)
+        const commentColorParts = getCommentColorParts(codeFile.tokens)
+
+        const colorParts = nodeColorParts.concat(commentColorParts)
 
         const colorPartsByLine = new Map<number, ColorPart[]>(
             new Array(this.lines.length).fill(0).map((_, index) => [index, []]),
@@ -22,8 +29,6 @@ export class TokenizeProvider implements languages.TokensProvider {
         for (const colorPart of colorParts) {
             colorPartsByLine.get(colorPart.position.line - 1)!.push(colorPart)
         }
-
-        console.log({ colorPartsByLine })
 
         return colorPartsByLine
     }
@@ -33,7 +38,7 @@ export class TokenizeProvider implements languages.TokensProvider {
         this.lines = code.split('\n')
 
         console.time('Parse')
-        this.createColorParts(code)
+        this.colorPartsByLine = this.createColorParts(code)
         console.timeEnd('Parse')
     }
 
@@ -54,7 +59,7 @@ export class TokenizeProvider implements languages.TokensProvider {
             .get(lineNumber)!
             .map((part) => ({
                 scopes: part.scopes,
-                startIndex: part.position.column,
+                startIndex: part.position.column - 1,
             }))
 
         return {

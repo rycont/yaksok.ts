@@ -44,7 +44,7 @@ async function initializeMonaco() {
     languages.onLanguage('yaksok', () => {
         languages.setLanguageConfiguration('yaksok', {
             comments: {
-                lineComment: '//',
+                lineComment: '#',
             },
             brackets: [
                 ['{', '}'],
@@ -77,8 +77,14 @@ async function initializeMonaco() {
         minimap: {
             enabled: false,
         },
-        lineNumbersMinChars: 3,
         language: 'yaksok',
+        theme: 'vs',
+        guides: {
+            highlightActiveIndentation: false,
+            indentation: false,
+        },
+        renderLineHighlight: 'none',
+        lineNumbers: 'off',
     })
 
     editorInstance.onDidChangeModelContent(() => {
