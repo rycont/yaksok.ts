@@ -237,10 +237,6 @@ function functionInvoke(current: FunctionInvoke): ColorPart[] {
         colorParts = colorParts.concat(node(current.params[paramName]))
     }
 
-    colorParts = colorParts.toSorted(
-        (a, b) => a.position.column - b.position.column,
-    )
-
     return colorParts
 }
 
@@ -327,10 +323,6 @@ function ifStatement(current: IfStatement): ColorPart[] {
         colorParts = colorParts.concat(block(caseBlock.body))
     }
 
-    colorParts = colorParts.toSorted(
-        (a, b) => a.position.column - b.position.column,
-    )
-
     return colorParts
 }
 
@@ -339,10 +331,6 @@ function listLoop(current: ListLoop): ColorPart[] {
 
     colorParts = colorParts.concat(node(current.list))
     colorParts = colorParts.concat(block(current.body))
-
-    colorParts = colorParts.toSorted(
-        (a, b) => a.position.column - b.position.column,
-    )
 
     return colorParts
 }
@@ -377,9 +365,7 @@ function listLiteral(current: ListLiteral): ColorPart[] {
 
     const itemColorParts = current.items.flatMap(node)
 
-    const colorParts = listColorParts
-        .concat(itemColorParts)
-        .toSorted((a, b) => a.position.column - b.position.column)
+    const colorParts = listColorParts.concat(itemColorParts)
 
     return colorParts
 }
@@ -398,10 +384,6 @@ function setToIndex(current: SetToIndex): ColorPart[] {
 
     colorParts = colorParts.concat(node(current.target))
     colorParts = colorParts.concat(node(current.value))
-
-    colorParts = colorParts.toSorted(
-        (a, b) => a.position.column - b.position.column,
-    )
 
     return colorParts
 }

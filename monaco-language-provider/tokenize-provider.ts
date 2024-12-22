@@ -18,7 +18,9 @@ export class MonacoDalbitYaksokProvider implements languages.TokensProvider {
         const codeFile = new CodeFile(code)
         const { ast } = parse(codeFile)
 
-        const nodeColorParts = nodeToColorTokens(ast)
+        const nodeColorParts = nodeToColorTokens(ast).toSorted(
+            (a, b) => a.position.column - b.position.column,
+        )
         const commentColorParts = getCommentColorParts(codeFile.tokens)
 
         const colorParts = nodeColorParts.concat(commentColorParts)
