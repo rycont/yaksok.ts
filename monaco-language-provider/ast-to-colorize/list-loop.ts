@@ -3,7 +3,7 @@ import { ColorPart } from '../type.ts'
 import { SCOPE } from './scope.ts'
 
 export function parseListLoopHeader(node: ListLoop) {
-    let colorParts: ColorPart[] = [
+    const colorParts: ColorPart[] = [
         {
             position: node.tokens[0].position,
             scopes: SCOPE.KEYWORD,

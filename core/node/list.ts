@@ -111,8 +111,8 @@ export class SetToIndex extends Executable {
     static override friendlyName = '목록에 값 넣기'
 
     constructor(
-        private target: IndexFetch,
-        private value: Evaluable,
+        public target: IndexFetch,
+        public value: Evaluable,
         public override tokens: Token[],
     ) {
         super()

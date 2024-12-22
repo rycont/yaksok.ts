@@ -1,15 +1,19 @@
 import {
     Block,
     DeclareFunction,
+    EOL,
     Formula,
     FunctionInvoke,
     Identifier,
     IfStatement,
+    IndexFetch,
+    ListLiteral,
     ListLoop,
     Node,
     NumberLiteral,
     Operator,
     Print,
+    SetToIndex,
     SetVariable,
     StringLiteral,
     TOKEN_TYPE,
@@ -71,6 +75,22 @@ function node(node: Node): ColorPart[] {
 
     if (node instanceof ListLoop) {
         return listLoop(node)
+    }
+
+    if (node instanceof ListLiteral) {
+        return listLiteral(node)
+    }
+
+    if (node instanceof IndexFetch) {
+        return indexFetch(node)
+    }
+
+    if (node instanceof SetToIndex) {
+        return setToIndex(node)
+    }
+
+    if (node instanceof EOL) {
+        return []
     }
 
     console.log('Unknown node:', node)
@@ -267,6 +287,65 @@ function listLoop(current: ListLoop): ColorPart[] {
 
     colorParts = colorParts.concat(node(current.list))
     colorParts = colorParts.concat(block(current.body))
+
+    colorParts = colorParts.toSorted(
+        (a, b) => a.position.column - b.position.column,
+    )
+
+    return colorParts
+}
+
+function listLiteral(current: ListLiteral): ColorPart[] {
+    const itemTokens = new Set(current.items.flatMap((item) => item.tokens))
+    const allTokens = new Set(current.tokens)
+
+    const nonItemTokens = allTokens.difference(itemTokens)
+    const commas = Array.from(nonItemTokens).filter(
+        (token) => token.type === TOKEN_TYPE.COMMA,
+    )
+
+    let listColorParts: ColorPart[] = []
+
+    listColorParts.push({
+        position: current.tokens[0].position,
+        scopes: SCOPE.PARENTHESIS,
+    })
+
+    const commaColorParts: ColorPart[] = commas.map((comma) => ({
+        position: comma.position,
+        scopes: SCOPE.PUNCTUATION,
+    }))
+
+    listColorParts = listColorParts.concat(commaColorParts)
+
+    listColorParts.push({
+        position: current.tokens.slice(-1)[0].position,
+        scopes: SCOPE.PARENTHESIS,
+    })
+
+    const itemColorParts = current.items.flatMap(node)
+
+    const colorParts = listColorParts
+        .concat(itemColorParts)
+        .toSorted((a, b) => a.position.column - b.position.column)
+
+    return colorParts
+}
+
+function indexFetch(current: IndexFetch): ColorPart[] {
+    let colorParts: ColorPart[] = []
+
+    colorParts = colorParts.concat(node(current.list))
+    colorParts = colorParts.concat(node(current.index))
+
+    return colorParts
+}
+
+function setToIndex(current: SetToIndex): ColorPart[] {
+    let colorParts: ColorPart[] = []
+
+    colorParts = colorParts.concat(node(current.target))
+    colorParts = colorParts.concat(node(current.value))
 
     colorParts = colorParts.toSorted(
         (a, b) => a.position.column - b.position.column,
