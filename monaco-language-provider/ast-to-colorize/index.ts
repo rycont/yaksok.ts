@@ -261,20 +261,67 @@ function ifStatement(current: IfStatement): ColorPart[] {
         },
     ]
 
-    const newLineIndex = current.tokens.findIndex(
-        (token) => token.type === TOKEN_TYPE.NEW_LINE,
-    )
+    // const newLineIndex = current.tokens.findIndex(
+    //     (token) => token.type === TOKEN_TYPE.NEW_LINE,
+    // )
 
-    const ifStatementHeaderEnder: ColorPart = {
-        position: current.tokens[newLineIndex - 1].position,
-        scopes: SCOPE.KEYWORD,
-    }
+    // const ifStatementHeaderEnder: ColorPart = {
+    //     position: current.tokens[newLineIndex - 1].position,
+    //     scopes: SCOPE.KEYWORD,
+    // }
 
-    colorParts.push(ifStatementHeaderEnder)
+    // colorParts.push(ifStatementHeaderEnder)
 
     for (const caseBlock of current.cases) {
         if (caseBlock.condition) {
+            if (caseBlock.condition.tokens) {
+                const conditionStartTokenIndex = current.tokens.indexOf(
+                    caseBlock.condition.tokens[0],
+                )
+
+                const conditionEndTokenIndex = current.tokens.indexOf(
+                    caseBlock.condition.tokens.slice(-1)[0],
+                )
+
+                const beforeConditionIdentifier = current.tokens
+                    .slice(0, conditionStartTokenIndex)
+                    .findLast((token) => token.type === TOKEN_TYPE.IDENTIFIER)
+
+                if (beforeConditionIdentifier) {
+                    colorParts.push({
+                        position: beforeConditionIdentifier.position,
+                        scopes: SCOPE.KEYWORD,
+                    })
+                }
+
+                const afterConditionIdentifier = current.tokens
+                    .slice(conditionEndTokenIndex + 1)
+                    .find((token) => token.type === TOKEN_TYPE.IDENTIFIER)
+
+                if (afterConditionIdentifier) {
+                    colorParts.push({
+                        position: afterConditionIdentifier.position,
+                        scopes: SCOPE.KEYWORD,
+                    })
+                }
+            }
+
             colorParts = colorParts.concat(node(caseBlock.condition))
+        } else {
+            const bodyStartTokenIndex = current.tokens.indexOf(
+                caseBlock.body.tokens[0],
+            )
+
+            const beforeBodyIdentifier = current.tokens
+                .slice(0, bodyStartTokenIndex)
+                .findLast((token) => token.type === TOKEN_TYPE.IDENTIFIER)
+
+            if (beforeBodyIdentifier) {
+                colorParts.push({
+                    position: beforeBodyIdentifier.position,
+                    scopes: SCOPE.KEYWORD,
+                })
+            }
         }
 
         colorParts = colorParts.concat(block(caseBlock.body))
