@@ -14,7 +14,7 @@ export class MonacoDalbitYaksokProvider implements languages.TokensProvider {
         this.colorPartsByLine = this.createColorParts(code)
     }
 
-    createColorParts(code: string) {
+    createColorParts(code: string): Map<number, ColorPart[]> {
         const codeFile = new CodeFile(code)
         const { ast } = parse(codeFile)
 
@@ -44,7 +44,7 @@ export class MonacoDalbitYaksokProvider implements languages.TokensProvider {
         console.timeEnd('Parse')
     }
 
-    getInitialState() {
+    getInitialState(): languages.IState {
         return {
             clone() {
                 return this
@@ -55,7 +55,7 @@ export class MonacoDalbitYaksokProvider implements languages.TokensProvider {
         }
     }
 
-    tokenize(line: string, state: any) {
+    tokenize(line: string, state: any): languages.ILineTokens {
         const lineNumber = this.lines.indexOf(line)
 
         const colorParts = this.colorPartsByLine.get(lineNumber)
