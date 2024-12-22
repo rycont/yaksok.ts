@@ -57,16 +57,23 @@ export class MonacoDalbitYaksokProvider implements languages.TokensProvider {
 
     tokenize(line: string, state: any) {
         const lineNumber = this.lines.indexOf(line)
-        console.log(lineNumber)
-        const colorParts = this.colorPartsByLine
-            .get(lineNumber)!
-            .map((part) => ({
-                scopes: part.scopes,
-                startIndex: part.position.column - 1,
-            }))
+
+        const colorParts = this.colorPartsByLine.get(lineNumber)
+
+        if (!colorParts) {
+            return {
+                tokens: [],
+                endState: state,
+            }
+        }
+
+        const colorTokens = colorParts.map((part) => ({
+            scopes: part.scopes,
+            startIndex: part.position.column - 1,
+        }))
 
         return {
-            tokens: colorParts,
+            tokens: colorTokens,
             endState: state,
         }
     }

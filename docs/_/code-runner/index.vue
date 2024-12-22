@@ -138,7 +138,6 @@ function share() {
 }
 
 watch(stdout, (output) => {
-    console.log(props.challenge?.output, stdout.value.join('\n'))
     if (stdout.value.join('\n') === props?.challenge?.output) {
         alert('정답입니다!')
     }
