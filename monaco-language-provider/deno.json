@@ -1,0 +1,7 @@
+{
+    "imports": {
+        "monaco-editor": "npm:monaco-editor@^0.52.2"
+    },
+    "name": "@dalbit-yaksok/monaco-language-provider",
+    "exports": "./mod.ts"
+}

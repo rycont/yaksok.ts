@@ -10,6 +10,7 @@
     "npm:ansi-to-html@~0.7.2": "0.7.2",
     "npm:madge@*": "8.0.0",
     "npm:monaco-editor@0.52": "0.52.2",
+    "npm:monaco-editor@~0.52.2": "0.52.2",
     "npm:quickjs-emscripten-core@0.31": "0.31.0",
     "npm:quickjs-emscripten@0.31": "0.31.0",
     "npm:typedoc-plugin-markdown@^4.2.10": "4.3.2_typedoc@0.27.4__typescript@5.6.3",
@@ -2186,6 +2187,11 @@
           "npm:vitepress-sidebar@^1.29.0",
           "npm:vitepress@^1.5.0",
           "npm:vue@^3.5.12"
+        ]
+      },
+      "monaco-language-provider": {
+        "dependencies": [
+          "npm:monaco-editor@~0.52.2"
         ]
       },
       "quickjs": {

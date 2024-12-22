@@ -4,7 +4,7 @@ import AnsiCode from 'ansi-to-html'
 import type { editor, languages } from 'monaco-editor'
 
 import { yaksok, tokenize } from '@dalbit-yaksok/core'
-import { TokenizeProvider } from './tokenize-provider'
+import { MonacoDalbitYaksokProvider } from '@dalbit-yaksok/monaco-language-provider'
 
 const props = defineProps({
     code: {
@@ -39,7 +39,7 @@ async function initializeMonaco() {
 
     languages.register({ id: 'yaksok' })
 
-    const tokenizeProvider = new TokenizeProvider(code.value)
+    const tokenizeProvider = new MonacoDalbitYaksokProvider(code.value)
 
     languages.onLanguage('yaksok', () => {
         languages.setLanguageConfiguration('yaksok', {

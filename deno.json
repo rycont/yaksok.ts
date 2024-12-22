@@ -19,7 +19,8 @@
         "quickjs",
         "docs",
         "core",
-        "test"
+        "test",
+        "monaco-language-provider"
     ],
     "version": "0.2.0-alpha.11+20241217.nightly",
     "tasks": {

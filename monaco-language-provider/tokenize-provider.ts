@@ -1,11 +1,11 @@
 import type { languages } from 'monaco-editor'
 import { parse, CodeFile } from '@dalbit-yaksok/core'
 
-import { ColorPart } from './type.ts'
 import { nodeToColorTokens } from './ast-to-colorize/index.ts'
 import { getCommentColorParts } from './ast-to-colorize/get-comment-color-part.ts'
+import { ColorPart } from './type.ts'
 
-export class TokenizeProvider implements languages.TokensProvider {
+export class MonacoDalbitYaksokProvider implements languages.TokensProvider {
     private colorPartsByLine: Map<number, ColorPart[]>
     private lines: string[]
 
@@ -55,6 +55,7 @@ export class TokenizeProvider implements languages.TokensProvider {
 
     tokenize(line: string, state: any) {
         const lineNumber = this.lines.indexOf(line)
+        console.log(lineNumber)
         const colorParts = this.colorPartsByLine
             .get(lineNumber)!
             .map((part) => ({
