@@ -13,6 +13,7 @@ import {
     NumberLiteral,
     Operator,
     Print,
+    Return,
     SetToIndex,
     SetVariable,
     StringLiteral,
@@ -87,6 +88,10 @@ function node(node: Node): ColorPart[] {
 
     if (node instanceof SetToIndex) {
         return setToIndex(node)
+    }
+
+    if (node instanceof Return) {
+        return visitReturn(node)
     }
 
     if (node instanceof EOL) {
@@ -350,6 +355,17 @@ function setToIndex(current: SetToIndex): ColorPart[] {
     colorParts = colorParts.toSorted(
         (a, b) => a.position.column - b.position.column,
     )
+
+    return colorParts
+}
+
+function visitReturn(current: Return): ColorPart[] {
+    const colorParts: ColorPart[] = [
+        {
+            position: current.tokens[0].position,
+            scopes: SCOPE.KEYWORD,
+        },
+    ]
 
     return colorParts
 }
