@@ -4,6 +4,8 @@ import {
     Formula,
     FunctionInvoke,
     Identifier,
+    IfStatement,
+    ListLoop,
     Node,
     NumberLiteral,
     Operator,
@@ -16,6 +18,7 @@ import {
 import { ColorPart } from '../type.ts'
 import { SCOPE } from './scope.ts'
 import { parseFunctionDeclareHeader } from './declare-function.ts'
+import { parseListLoopHeader } from './list-loop.ts'
 
 function node(node: Node): ColorPart[] {
     if (node instanceof Block) {
@@ -60,6 +63,14 @@ function node(node: Node): ColorPart[] {
 
     if (node instanceof StringLiteral) {
         return stringLiteral(node)
+    }
+
+    if (node instanceof IfStatement) {
+        return ifStatement(node)
+    }
+
+    if (node instanceof ListLoop) {
+        return listLoop(node)
     }
 
     console.log('Unknown node:', node)
@@ -215,6 +226,53 @@ function stringLiteral(current: StringLiteral): ColorPart[] {
             scopes: SCOPE.STRING,
         },
     ]
+}
+
+function ifStatement(current: IfStatement): ColorPart[] {
+    let colorParts: ColorPart[] = [
+        {
+            position: current.tokens[0].position,
+            scopes: SCOPE.KEYWORD,
+        },
+    ]
+
+    const newLineIndex = current.tokens.findIndex(
+        (token) => token.type === TOKEN_TYPE.NEW_LINE,
+    )
+
+    const ifStatementHeaderEnder: ColorPart = {
+        position: current.tokens[newLineIndex - 1].position,
+        scopes: SCOPE.KEYWORD,
+    }
+
+    colorParts.push(ifStatementHeaderEnder)
+
+    for (const caseBlock of current.cases) {
+        if (caseBlock.condition) {
+            colorParts = colorParts.concat(node(caseBlock.condition))
+        }
+
+        colorParts = colorParts.concat(block(caseBlock.body))
+    }
+
+    colorParts = colorParts.toSorted(
+        (a, b) => a.position.column - b.position.column,
+    )
+
+    return colorParts
+}
+
+function listLoop(current: ListLoop): ColorPart[] {
+    let colorParts = parseListLoopHeader(current)
+
+    colorParts = colorParts.concat(node(current.list))
+    colorParts = colorParts.concat(block(current.body))
+
+    colorParts = colorParts.toSorted(
+        (a, b) => a.position.column - b.position.column,
+    )
+
+    return colorParts
 }
 
 export { node as nodeToColorTokens }

@@ -30,14 +30,18 @@ features:
 
 <script setup>
 
-const DEFAULT_CODE = `약속, 키가 (키)cm이고 몸무게가 (몸무게)일 때 비만도
-    결과: 몸무게 / (키 / 100 * 키 / 100)
-
-내_이름: ""
-비만도: 키가 (170 + 내_이름)cm이고 몸무게가 (70)일 때 비만도 # 주석입니다
-
-비만도 보여주기
-비만도 보여줄까말까`
+const DEFAULT_CODE = `목록: [3, 1, 4, 1, 5, 9]
+목록 보여주기
+목록_길이: 6  # TODO: 목록 길이
+반복 1~목록_길이-1 의 위치1 마다
+    반복 위치1+1~목록_길이 의 위치2 마다
+        만약 목록[위치2] < 목록[위치1] 이면
+            임시: 목록[위치1]
+            목록[위치1]: 목록[위치2]
+            목록[위치2]: 임시
+            목록 보여주기
+목록 보여주기
+`
 
 const codeFromUrl = (globalThis.location && new URL(globalThis.location.href).searchParams.get('code')) || DEFAULT_CODE
 </script>
