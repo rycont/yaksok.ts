@@ -3,8 +3,8 @@ import { onMounted, ref, useTemplateRef, watch } from 'vue'
 import AnsiCode from 'ansi-to-html'
 import type { editor, languages } from 'monaco-editor'
 
-import { yaksok } from '@dalbit-yaksok/core'
-import { DalbitYaksokApplier } from '@dalbit-yaksok/monaco-language-provider'
+import { yaksok } from '../../../core/mod'
+import { DalbitYaksokApplier } from '../../../monaco-language-provider/mod'
 
 const props = defineProps({
     code: {
@@ -24,7 +24,7 @@ const props = defineProps({
 const editorRef = useTemplateRef('editor')
 
 const code = ref(props.code)
-const stdout = ref([])
+const stdout = ref<string[]>([])
 
 let editorInstance: editor.IStandaloneCodeEditor | null = null
 

@@ -21,6 +21,7 @@ export class DalbitYaksokApplier {
     }
 
     public async register(languagesInstance: typeof languages) {
+        console.log(this.completionItemProvider)
         languagesInstance.register({ id: LANG_ID })
 
         await new Promise<void>((resolve) =>
@@ -57,8 +58,6 @@ export class DalbitYaksokApplier {
             LANG_ID,
             this.completionItemProvider,
         )
-
-        console.log(this.completionItemProvider)
     }
 
     updateCode(code: string) {

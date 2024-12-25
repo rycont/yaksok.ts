@@ -12,7 +12,7 @@ export class CompletionItemProvider
         context: languages.CompletionContext,
         token: CancellationToken,
     ): languages.ProviderResult<languages.CompletionList> {
-        console.log(model, position, context, token)
+        console.log({ model, position, context, token, test: '예?' })
 
         return {
             suggestions: [
