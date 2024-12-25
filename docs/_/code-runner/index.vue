@@ -1,7 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, useTemplateRef, watch } from 'vue'
 import AnsiCode from 'ansi-to-html'
-import { yaksok } from '@dalbit-yaksok/core'
+import type { editor, languages } from 'monaco-editor'
+
+import { yaksok } from '../../../core/mod'
+import { DalbitYaksokApplier } from '../../../monaco-language-provider/mod'
 
 const props = defineProps({
     code: {
@@ -21,17 +24,21 @@ const props = defineProps({
 const editorRef = useTemplateRef('editor')
 
 const code = ref(props.code)
-const stdout = ref([])
-let editorInstance = null
+const stdout = ref<string[]>([])
+
+let editorInstance: editor.IStandaloneCodeEditor | null = null
 
 const ansiCode = new AnsiCode()
 
 async function initializeMonaco() {
-    const editorElement = editorRef.value
+    const editorElement = editorRef.value!
 
-    const { editor, KeyCode, KeyMod } = await import(
+    const { editor, KeyCode, KeyMod, languages } = await import(
         'monaco-editor/esm/vs/editor/editor.api'
     )
+
+    const languageProvider = new DalbitYaksokApplier(code.value)
+    languageProvider.register(languages)
 
     editorInstance = editor.create(editorElement, {
         automaticLayout: true,
@@ -40,15 +47,25 @@ async function initializeMonaco() {
         minimap: {
             enabled: false,
         },
-        lineNumbersMinChars: 3,
+        language: 'yaksok',
+        theme: 'vs',
+        guides: {
+            highlightActiveIndentation: false,
+            indentation: false,
+        },
+        renderLineHighlight: 'none',
+        lineNumbers: 'off',
     })
 
     editorInstance.onDidChangeModelContent(() => {
-        code.value = editorInstance.getValue()
+        const updatedCode = editorInstance!.getValue()
+        code.value = updatedCode
+
+        languageProvider.updateCode(updatedCode)
     })
 
     editorInstance.onDidFocusEditorText(() => {
-        editorInstance.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, runCode)
+        editorInstance!.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, runCode)
     })
 }
 
@@ -62,7 +79,7 @@ function ansiToHtml(content) {
 }
 
 function viewAnswer() {
-    editorInstance.setValue(props.challenge.answerCode)
+    editorInstance!.setValue(props.challenge.answerCode)
 }
 
 async function runCode() {
@@ -91,7 +108,6 @@ function share() {
 }
 
 watch(stdout, (output) => {
-    console.log(props.challenge?.output, stdout.value.join('\n'))
     if (stdout.value.join('\n') === props?.challenge?.output) {
         alert('정답입니다!')
     }
