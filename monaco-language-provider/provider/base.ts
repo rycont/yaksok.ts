@@ -1,13 +1,13 @@
 import type { languages } from 'monaco-editor'
 import { parse, CodeFile } from '@dalbit-yaksok/core'
 
-import { nodeToColorTokens } from './ast-to-colorize/index.ts'
-import { getCommentColorParts } from './ast-to-colorize/get-comment-color-part.ts'
-import { ColorPart } from './type.ts'
+import { getCommentColorParts } from '../ast-to-colorize/get-comment-color-part.ts'
+import { nodeToColorTokens } from '../ast-to-colorize/index.ts'
+import { ColorPart } from '../type.ts'
 
-export class MonacoDalbitYaksokProvider implements languages.TokensProvider {
-    private colorPartsByLine: Map<number, ColorPart[]>
-    private lines: string[]
+export class BaseProvider {
+    public colorPartsByLine: Map<number, ColorPart[]>
+    public lines: string[]
 
     constructor(private code: string) {
         this.lines = code.split('\n')
@@ -42,39 +42,5 @@ export class MonacoDalbitYaksokProvider implements languages.TokensProvider {
         console.time('Parse')
         this.colorPartsByLine = this.createColorParts(code)
         console.timeEnd('Parse')
-    }
-
-    getInitialState(): languages.IState {
-        return {
-            clone() {
-                return this
-            },
-            equals() {
-                return false
-            },
-        }
-    }
-
-    tokenize(line: string, state: any): languages.ILineTokens {
-        const lineNumber = this.lines.indexOf(line)
-
-        const colorParts = this.colorPartsByLine.get(lineNumber)
-
-        if (!colorParts) {
-            return {
-                tokens: [],
-                endState: state,
-            }
-        }
-
-        const colorTokens = colorParts.map((part) => ({
-            scopes: part.scopes,
-            startIndex: part.position.column - 1,
-        }))
-
-        return {
-            tokens: colorTokens,
-            endState: state,
-        }
     }
 }

@@ -3,8 +3,8 @@ import { onMounted, ref, useTemplateRef, watch } from 'vue'
 import AnsiCode from 'ansi-to-html'
 import type { editor, languages } from 'monaco-editor'
 
-import { yaksok, tokenize } from '@dalbit-yaksok/core'
-import { MonacoDalbitYaksokProvider } from '@dalbit-yaksok/monaco-language-provider'
+import { yaksok } from '@dalbit-yaksok/core'
+import { DalbitYaksokApplier } from '@dalbit-yaksok/monaco-language-provider'
 
 const props = defineProps({
     code: {
@@ -37,38 +37,8 @@ async function initializeMonaco() {
         'monaco-editor/esm/vs/editor/editor.api'
     )
 
-    languages.register({ id: 'yaksok' })
-
-    const tokenizeProvider = new MonacoDalbitYaksokProvider(code.value)
-
-    languages.onLanguage('yaksok', () => {
-        languages.setLanguageConfiguration('yaksok', {
-            comments: {
-                lineComment: '#',
-            },
-            brackets: [
-                ['{', '}'],
-                ['[', ']'],
-                ['(', ')'],
-            ],
-            autoClosingPairs: [
-                { open: '{', close: '}' },
-                { open: '[', close: ']' },
-                { open: '(', close: ')' },
-                { open: '"', close: '"', notIn: ['string'] },
-                { open: "'", close: "'", notIn: ['string'] },
-            ],
-            surroundingPairs: [
-                { open: '{', close: '}' },
-                { open: '[', close: ']' },
-                { open: '(', close: ')' },
-                { open: '"', close: '"' },
-                { open: "'", close: "'" },
-            ],
-        })
-
-        languages.setTokensProvider('yaksok', tokenizeProvider)
-    })
+    const languageProvider = new DalbitYaksokApplier(code.value)
+    languageProvider.register(languages)
 
     editorInstance = editor.create(editorElement, {
         automaticLayout: true,
@@ -91,7 +61,7 @@ async function initializeMonaco() {
         const updatedCode = editorInstance!.getValue()
         code.value = updatedCode
 
-        tokenizeProvider.updateCode(updatedCode)
+        languageProvider.updateCode(updatedCode)
     })
 
     editorInstance.onDidFocusEditorText(() => {
